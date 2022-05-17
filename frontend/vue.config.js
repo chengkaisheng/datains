@@ -19,7 +19,7 @@ module.exports = {
     port: port,
     proxy: {
       '^(?!/login)': {
-        target: 'http://ofmfa31n5roz.ngrok2.xiaomiqiu.cn/',
+        target: 'http://192.168.1.76:8081/',
         ws: false
       }
     },

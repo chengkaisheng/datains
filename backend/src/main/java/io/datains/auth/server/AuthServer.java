@@ -127,6 +127,11 @@ public class AuthServer implements AuthApi {
         return result;
     }
 
+    public static void main(String[] args) {
+       String pwd = CodingUtil.md5("123456");
+        System.err.println(pwd);
+    }
+
     @Override
     public CurrentUserDto userInfo() {
         CurrentUserDto userDto = (CurrentUserDto) SecurityUtils.getSubject().getPrincipal();

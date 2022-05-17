@@ -2,21 +2,15 @@ package io.datains.plugins.server;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.datains.base.domain.*;
 import io.datains.commons.exception.DEException;
 import io.datains.commons.pool.PriorityThreadPoolExecutor;
 import io.datains.commons.utils.*;
-import io.datains.plugins.common.entity.GlobalTaskEntity;
-import io.datains.plugins.common.entity.GlobalTaskInstance;
-import io.datains.plugins.common.entity.XpackGridRequest;
 import io.datains.plugins.config.SpringContextUtil;
-import io.datains.plugins.xpack.email.dto.request.XpackEmailCreate;
-import io.datains.plugins.xpack.email.dto.request.XpackEmailTaskRequest;
 import io.datains.plugins.xpack.email.dto.request.XpackEmailViewRequest;
 import io.datains.plugins.xpack.email.dto.request.XpackPixelEntity;
-import io.datains.plugins.xpack.email.dto.response.XpackTaskGridDTO;
-import io.datains.plugins.xpack.email.dto.response.XpackTaskInstanceDTO;
-import io.datains.plugins.xpack.email.service.EmailXpackService;
 import io.datains.service.ScheduleService;
+import io.datains.service.sys.EmailXpackService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +18,8 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+import io.datains.plugins.common.entity.GlobalTaskEntity;
+
 
 import java.util.List;
 import java.util.concurrent.Future;
@@ -41,11 +37,13 @@ public class XEmailTaskServer {
     @Resource
     private PriorityThreadPoolExecutor priorityExecutor;
 
+    @Resource
+    private EmailXpackService emailXpackService;
+
     @RequiresPermissions("task-email:read")
     @PostMapping("/queryTasks/{goPage}/{pageSize}")
     public Pager<List<XpackTaskGridDTO>> queryTask(@PathVariable int goPage, @PathVariable int pageSize,
-            @RequestBody XpackGridRequest request) {
-        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
+                                                   @RequestBody XpackGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<XpackTaskGridDTO> tasks = emailXpackService.taskGrid(request);
         if (CollectionUtils.isNotEmpty(tasks)) {
@@ -78,7 +76,6 @@ public class XEmailTaskServer {
     @PostMapping("/save")
     public void save(@RequestBody XpackEmailCreate param) throws Exception {
         XpackEmailTaskRequest request = param.fillContent();
-        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         request.setCreator(AuthUtils.getUser().getUserId());
         emailXpackService.save(request);
         GlobalTaskEntity globalTask = BeanUtils.copyBean(new GlobalTaskEntity(), request);
@@ -88,7 +85,6 @@ public class XEmailTaskServer {
     @RequiresPermissions("task-email:read")
     @PostMapping("/queryForm/{taskId}")
     public XpackEmailCreate queryForm(@PathVariable Long taskId) {
-        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
 
         XpackEmailTaskRequest taskForm = emailXpackService.taskForm(taskId);
         XpackEmailCreate xpackEmailCreate = new XpackEmailCreate();
@@ -110,7 +106,6 @@ public class XEmailTaskServer {
 
     @PostMapping("/preview")
     public String preview(@RequestBody XpackEmailViewRequest request) {
-        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         String panelId = request.getPanelId();
         String content = request.getContent();
 
@@ -149,7 +144,6 @@ public class XEmailTaskServer {
     @RequiresPermissions("task-email:del")
     @PostMapping("/delete/{taskId}")
     public void delete(@PathVariable Long taskId) {
-        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         try {
             XpackEmailTaskRequest request = emailXpackService.taskForm(taskId);
             GlobalTaskEntity globalTaskEntity = BeanUtils.copyBean(new GlobalTaskEntity(), request);
@@ -163,26 +157,24 @@ public class XEmailTaskServer {
 
     @PostMapping("/stop/{taskId}")
     public void stop(@PathVariable Long taskId) throws Exception {
-        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         emailXpackService.stop(taskId);
     }
 
     @PostMapping("/queryInstancies/{goPage}/{pageSize}")
     public Pager<List<XpackTaskInstanceDTO>> instancesGrid(@PathVariable int goPage, @PathVariable int pageSize,
             @RequestBody XpackGridRequest request) {
-        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<XpackTaskInstanceDTO> instances = emailXpackService.taskInstanceGrid(request);
         Pager<List<XpackTaskInstanceDTO>> listPager = PageUtils.setPageInfo(page, instances);
         return listPager;
     }
 
-    @PostMapping("/execInfo/{instanceId}")
+  /*  @PostMapping("/execInfo/{instanceId}")
     public String execInfo(@PathVariable Long instanceId) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         GlobalTaskInstance instanceForm = emailXpackService.instanceForm(instanceId);
         return instanceForm.getInfo();
-    }
+    }*/
 
     private XpackPixelEntity buildPixel(String pixel) {
 

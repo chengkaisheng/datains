@@ -26,6 +26,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       validateLic().then(response => {
         const { data } = response
+        console.log('data: ', data)
         if (data && data.status && data.status === 'no_record') {
           commit('SET_VALIDATE', false)
           commit('SET_LIC_MSG', data.message)

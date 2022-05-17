@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.datains.base.mapper.ThemeMapper">
+
+
+    <resultMap id="xpackThemeMap" type="io.datains.base.domain.ThemeDto">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="imgId" column="img_id"/>
+        <result property="img" column="img"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <resultMap id="xpackThemeItemMap" type="io.datains.base.domain.ThemeItem">
+        <result property="key" column="key"/>
+        <result property="val" column="val"/>
+    </resultMap>
+
+
+
+    <select id="selectThemes" resultMap="xpackThemeMap">
+        select * from sys_theme
+    </select>
+
+    <insert id="insertTheme" parameterType="io.datains.base.domain.ThemeDto" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_theme (`name`, img_id,  img) values(#{name, jdbcType=VARCHAR}, #{imgId, jdbcType=VARCHAR}, #{img, jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateTheme" parameterType="io.datains.base.domain.ThemeDto">
+        update sys_theme set `name` = #{name, jdbcType=VARCHAR}, img_id = #{imgId, jdbcType=VARCHAR}, img = #{img, jdbcType=VARCHAR}, status = #{status, jdbcType=TINYINT} where id = #{id}
+    </update>
+
+    <select id="selectItems" resultMap="xpackThemeItemMap">
+        select `key`, val from sys_theme_item where theme_id = #{themeId}
+    </select>
+
+    <insert id="insertItems" >
+        insert into sys_theme_item (theme_id, `key`, val)
+        VALUES
+        <foreach collection="themeItems" item="item" separator=",">
+            (#{themeId}, #{item.key}, #{item.val, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+
+    <delete id="deleteItems">
+        delete from sys_theme_item where theme_id = #{themeId}
+    </delete>
+
+    <update id="resetStatus">
+        update sys_theme set status = 0 where status = 1
+    </update>
+
+    <delete id="deleteTheme">
+        delete from sys_theme where id = #{themeId}
+    </delete>
+
+    <select id="selectOneTheme" resultMap="xpackThemeMap">
+        select * from sys_theme where id = #{themeId}
+    </select>
+
+    <update id="activeFirst">
+        update sys_theme set status = 1 where id = 1
+    </update>
+
+
+
+
+
+
+
+
+</mapper>

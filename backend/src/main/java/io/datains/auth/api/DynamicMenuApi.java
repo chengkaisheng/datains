@@ -8,6 +8,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.io.IOException;
 import java.util.List;
 
 @Api(tags = "权限：动态菜单")
@@ -22,6 +24,6 @@ public interface DynamicMenuApi {
     @ApiOperation("查询")
     @PostMapping("/menus")
     @I18n
-    List<DynamicMenuDto> menus();
+    List<DynamicMenuDto> menus() throws IOException;
 
 }

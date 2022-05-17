@@ -2,16 +2,16 @@ package io.datains.plugins.server;
 
 
 import io.datains.auth.service.ExtAuthService;
+import io.datains.base.domain.XpackGridRequest;
+import io.datains.base.domain.XpackMoveDept;
+import io.datains.base.domain.XpackSysDept;
 import io.datains.commons.utils.BeanUtils;
 import io.datains.controller.sys.response.DeptNodeResponse;
-import io.datains.plugins.common.entity.XpackGridRequest;
-import io.datains.plugins.config.SpringContextUtil;
-import io.datains.plugins.xpack.dept.dto.request.XpackCreateDept;
-import io.datains.plugins.xpack.dept.dto.request.XpackDeleteDept;
-import io.datains.plugins.xpack.dept.dto.request.XpackMoveDept;
-import io.datains.plugins.xpack.dept.dto.response.XpackDeptTreeNode;
-import io.datains.plugins.xpack.dept.dto.response.XpackSysDept;
-import io.datains.plugins.xpack.dept.service.DeptXpackService;
+
+import io.datains.controller.sys.response.DeptTreeNode;
+import io.datains.controller.sys.response.XpackDeptTreeNode;
+import io.datains.service.sys.DeptService;
+import io.datains.service.sys.DeptXpackService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -29,10 +29,15 @@ public class XDeptServer {
     @Autowired
     private ExtAuthService extAuthService;
 
+    @Autowired
+    private DeptXpackService deptService;
+
+    @Autowired
+    private DeptService deptServices;
+
     @ApiOperation("查询子节点")
     @PostMapping("/childNodes/{pid}")
     public List<DeptNodeResponse> childNodes(@PathVariable("pid") Long pid){
-        DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         List<XpackSysDept> nodes = deptService.nodesByPid(pid);
         List<DeptNodeResponse> nodeResponses = nodes.stream().map(node -> {
             DeptNodeResponse deptNodeResponse = BeanUtils.copyBean(new DeptNodeResponse(), node);
@@ -47,7 +52,6 @@ public class XDeptServer {
     @ApiOperation("搜索组织树")
     @PostMapping("/search")
     public List<DeptNodeResponse> search(@RequestBody XpackGridRequest request){
-        DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         List<XpackSysDept> ndoes = deptService.nodesTreeByCondition(request);
         List<DeptNodeResponse> nodeResponses = ndoes.stream().map(node -> {
             DeptNodeResponse deptNodeResponse = BeanUtils.copyBean(new DeptNodeResponse(), node);
@@ -62,7 +66,6 @@ public class XDeptServer {
     @ApiIgnore
     @PostMapping("/root")
     public  List<XpackSysDept> rootData(){
-        DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         List<XpackSysDept> nodes = deptService.nodesByPid(null);
         return nodes;
     }
@@ -70,16 +73,15 @@ public class XDeptServer {
     @RequiresPermissions("dept:add")
     @ApiOperation("创建")
     @PostMapping("/create")
-    public int create(@RequestBody XpackCreateDept dept){
-        DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
+    public int create(@RequestBody XpackSysDept dept){
+
         return deptService.add(dept);
     }
 
     @RequiresPermissions("dept:del")
     @ApiOperation("删除")
     @PostMapping("/delete")
-    public void delete(@RequestBody List<XpackDeleteDept> requests){
-        DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
+    public void delete(@RequestBody List<XpackSysDept> requests){
         requests.forEach(request -> {
             extAuthService.clearDeptResource(request.getDeptId());
         });
@@ -89,8 +91,7 @@ public class XDeptServer {
     @RequiresPermissions("dept:edit")
     @ApiOperation("更新")
     @PostMapping("/update")
-    public int update(@RequestBody XpackCreateDept dept){
-        DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
+    public int update(@RequestBody XpackSysDept dept){
         return deptService.update(dept);
     }
 
@@ -98,16 +99,14 @@ public class XDeptServer {
 
     @ApiIgnore
     @PostMapping("/nodesByDeptId/{deptId}")
-    public List<XpackDeptTreeNode> nodesByDeptId(@PathVariable("deptId") Long deptId){
-        DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
-        return deptService.searchTree(deptId);
+    public List<DeptTreeNode> nodesByDeptId(@PathVariable("deptId") Long deptId){
+        return deptServices.searchTree(deptId);
     }
 
     @RequiresPermissions("dept:edit")
     @ApiOperation("移动")
     @PostMapping("/move")
     public void move(@RequestBody XpackMoveDept xpackMoveDept){
-        DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         deptService.move(xpackMoveDept);
     }
 }

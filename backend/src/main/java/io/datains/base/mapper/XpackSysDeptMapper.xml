@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.datains.base.mapper.XpackSysDeptMapper">
+    <resultMap id="BaseResultMap" type="io.datains.base.domain.XpackSysDept">
+        <id column="dept_id" jdbcType="BIGINT" property="deptId" />
+        <result column="pid" jdbcType="BIGINT" property="pid" />
+        <result column="sub_count" jdbcType="INTEGER" property="subCount" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="dept_sort" jdbcType="INTEGER" property="deptSort" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+        <result column="create_time" jdbcType="BIGINT" property="createTime" />
+        <result column="update_time" jdbcType="BIGINT" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    dept_id, pid, sub_count, `name`, dept_sort, create_by, update_by, create_time, update_time
+  </sql>
+    <select id="selectByExample" parameterType="io.datains.base.domain.XpackSysDept" resultMap="BaseResultMap">
+        select
+        *
+        from sys_dept
+        where 1=1
+        <if test="deptId != null">
+            and dept_id = #{deptId,jdbcType=BIGINT}
+        </if>
+        <if test="pid != null">
+            and pid = #{pid,jdbcType=BIGINT}
+        </if>
+        <if test="subCount != null">
+            and sub_count = #{subCount,jdbcType=INTEGER}
+        </if>
+        <if test="name != null">
+            and  `name` = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="deptSort != null">
+            and dept_sort = #{deptSort,jdbcType=INTEGER}
+        </if>
+        <if test="createBy != null">
+            and create_by = #{createBy,jdbcType=VARCHAR}
+        </if>
+        <if test="updateBy != null">
+            and update_by = #{updateBy,jdbcType=VARCHAR}
+        </if>
+            order by  create_time desc
+
+    </select>
+    <select id="selectLikeName" parameterType="io.datains.base.domain.XpackSysDept" resultMap="BaseResultMap">
+        select
+        *
+        from sys_dept
+        where 1=1
+        <if test="name != null">
+            and  `name`  like concat('%',#{name},'%')
+        </if>
+        order by  create_time desc
+
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from sys_dept
+        where dept_id = #{deptId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from sys_dept
+    where dept_id = #{deptId,jdbcType=BIGINT}
+  </delete>
+    <delete id="deleteByExample" parameterType="io.datains.base.domain.XpackSysDept">
+        delete from sys_dept
+        where 1=1
+        <if test="deptId != null">
+            and dept_id = #{deptId,jdbcType=BIGINT}
+        </if>
+        <if test="pid != null">
+            and pid = #{pid,jdbcType=BIGINT}
+        </if>
+        <if test="subCount != null">
+            and sub_count = #{subCount,jdbcType=INTEGER}
+        </if>
+        <if test="name != null">
+            and  `name` = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="deptSort != null">
+            and dept_sort = #{deptSort,jdbcType=INTEGER}
+        </if>
+        <if test="createBy != null">
+            and create_by = #{createBy,jdbcType=VARCHAR}
+        </if>
+        <if test="updateBy != null">
+            and update_by = #{updateBy,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null">
+            and create_time = #{createTime,jdbcType=BIGINT}
+        </if>
+        <if test="updateTime != null">
+            and update_time = #{updateTime,jdbcType=BIGINT}
+        </if>
+    </delete>
+    <insert id="insert" parameterType="io.datains.base.domain.XpackSysDept">
+    insert into sys_dept (dept_id, pid, sub_count,
+      `name`, dept_sort, create_by,
+      update_by, create_time, update_time
+      )
+    values (#{deptId,jdbcType=BIGINT}, #{pid,jdbcType=BIGINT}, #{subCount,jdbcType=INTEGER},
+      #{name,jdbcType=VARCHAR}, #{deptSort,jdbcType=INTEGER}, #{createBy,jdbcType=VARCHAR},
+      #{updateBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="io.datains.base.domain.XpackSysDept">
+        insert into sys_dept
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">
+                dept_id,
+            </if>
+            <if test="pid != null">
+                pid,
+            </if>
+            <if test="subCount != null">
+                sub_count,
+            </if>
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="deptSort != null">
+                dept_sort,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deptId != null">
+                #{deptId,jdbcType=BIGINT},
+            </if>
+            <if test="pid != null">
+                #{pid,jdbcType=BIGINT},
+            </if>
+            <if test="subCount != null">
+                #{subCount,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="deptSort != null">
+                #{deptSort,jdbcType=INTEGER},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=BIGINT},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="io.datains.base.domain.XpackSysDept" resultType="java.lang.Long">
+        select count(*) from sys_dept
+        where 1=1
+        <if test="deptId != null">
+            and dept_id = #{deptId,jdbcType=BIGINT}
+        </if>
+        <if test="pid != null">
+            and pid = #{pid,jdbcType=BIGINT}
+        </if>
+        <if test="subCount != null">
+            and sub_count = #{subCount,jdbcType=INTEGER}
+        </if>
+        <if test="name != null">
+            and  `name` = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="deptSort != null">
+            and dept_sort = #{deptSort,jdbcType=INTEGER}
+        </if>
+        <if test="createBy != null">
+            and create_by = #{createBy,jdbcType=VARCHAR}
+        </if>
+        <if test="updateBy != null">
+            and update_by = #{updateBy,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null">
+            and create_time = #{createTime,jdbcType=BIGINT}
+        </if>
+        <if test="updateTime != null">
+            and update_time = #{updateTime,jdbcType=BIGINT}
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="io.datains.base.domain.XpackSysDept">
+        update sys_dept
+        <set>
+            <if test="deptId != null">
+                dept_id = #{deptId,jdbcType=BIGINT},
+            </if>
+            <if test="pid != null">
+                pid = #{pid,jdbcType=BIGINT},
+            </if>
+            <if test="subCount != null">
+                sub_count = #{subCount,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="deptSort != null">
+                dept_sort = #{deptSort,jdbcType=INTEGER},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=BIGINT},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=BIGINT},
+            </if>
+        </set>
+        wehre 1= 1
+        <if test="deptId != null">
+            and dept_id = #{deptId,jdbcType=BIGINT},
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="io.datains.base.domain.XpackSysDept">
+        update sys_dept
+        set dept_id = #{deptId,jdbcType=BIGINT},
+        pid = #{pid,jdbcType=BIGINT},
+        sub_count = #{subCount,jdbcType=INTEGER},
+        `name` = #{name,jdbcType=VARCHAR},
+        dept_sort = #{deptSort,jdbcType=INTEGER},
+        create_by = #{createBy,jdbcType=VARCHAR},
+        update_by = #{updateBy,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=BIGINT},
+        update_time = #{updateTime,jdbcType=BIGINT}
+        wehre 1= 1
+        <if test="deptId != null">
+            and dept_id = #{deptId,jdbcType=BIGINT},
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="io.datains.base.domain.XpackSysDept">
+        update sys_dept
+        <set>
+            <if test="pid != null">
+                pid = #{pid,jdbcType=BIGINT},
+            </if>
+            <if test="subCount != null">
+                sub_count = #{subCount,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="deptSort != null">
+                dept_sort = #{deptSort,jdbcType=INTEGER},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=BIGINT},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=BIGINT},
+            </if>
+        </set>
+        where dept_id = #{deptId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="io.datains.base.domain.XpackSysDept">
+    update sys_dept
+    set pid = #{pid,jdbcType=BIGINT},
+      sub_count = #{subCount,jdbcType=INTEGER},
+      `name` = #{name,jdbcType=VARCHAR},
+      dept_sort = #{deptSort,jdbcType=INTEGER},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=BIGINT},
+      update_time = #{updateTime,jdbcType=BIGINT}
+    where dept_id = #{deptId,jdbcType=BIGINT}
+  </update>
+</mapper>

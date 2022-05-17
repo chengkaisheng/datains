@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.datains.base.mapper.XpackSysRoleMapper">
+    <resultMap id="BaseResultMap" type="io.datains.base.domain.XpackSysRole">
+        <id column="role_id" jdbcType="BIGINT" property="roleId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+        <result column="create_time" jdbcType="BIGINT" property="createTime" />
+        <result column="update_time" jdbcType="BIGINT" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    role_id, `name`, description, create_by, update_by, create_time, update_time
+  </sql>
+    <select id="selectByExample" parameterType="io.datains.base.domain.XpackSysRole" resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List" />
+        from sys_role
+        where 1 = 1
+        <if test="roleId != null">
+            role_id = #{roleId,jdbcType=BIGINT}
+        </if>
+        <if test="name != null">
+            and `name` = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="description != null">
+            and description = #{description,jdbcType=VARCHAR}
+        </if>
+        <if test="createBy != null">
+            and create_by = #{createBy,jdbcType=VARCHAR}
+        </if>
+        <if test="updateBy != null">
+            and update_by = #{updateBy,jdbcType=VARCHAR}
+        </if>
+            order by create_time desc
+    </select>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from sys_role
+        where role_id = #{roleId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from sys_role
+    where role_id = #{roleId,jdbcType=BIGINT}
+  </delete>
+    <delete id="deleteByExample" parameterType="io.datains.base.domain.XpackSysRole">
+        delete from sys_role
+        where 1 = 1
+        <if test="roleId != null">
+            role_id = #{roleId,jdbcType=BIGINT}
+        </if>
+        <if test="name != null">
+            and `name` = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="description != null">
+            and description = #{description,jdbcType=VARCHAR}
+        </if>
+        <if test="createBy != null">
+            and create_by = #{createBy,jdbcType=VARCHAR}
+        </if>
+        <if test="updateBy != null">
+            and update_by = #{updateBy,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null">
+            and create_time = #{createTime,jdbcType=BIGINT}
+        </if>
+        <if test="updateTime != null">
+            and update_time = #{updateTime,jdbcType=BIGINT}
+        </if>
+    </delete>
+    <insert id="insert" parameterType="io.datains.base.domain.XpackSysRole">
+    insert into sys_role (role_id, `name`, description,
+      create_by, update_by, create_time,
+      update_time)
+    values (#{roleId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+      #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT},
+      #{updateTime,jdbcType=BIGINT})
+  </insert>
+    <insert id="insertSelective" parameterType="io.datains.base.domain.XpackSysRole">
+        insert into sys_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleId != null">
+                role_id,
+            </if>
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roleId != null">
+                #{roleId,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=BIGINT},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+    <select id="countByExample" parameterType="io.datains.base.domain.XpackSysRole" resultType="java.lang.Long">
+        select count(*) from sys_role
+        where 1 = 1
+        <if test="name != null">
+            and `name` = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="description != null">
+            and description = #{description,jdbcType=VARCHAR}
+        </if>
+        <if test="createBy != null">
+            and create_by = #{createBy,jdbcType=VARCHAR}
+        </if>
+        <if test="updateBy != null">
+            and update_by = #{updateBy,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null">
+            and create_time = #{createTime,jdbcType=BIGINT}
+        </if>
+        <if test="updateTime != null">
+            and update_time = #{updateTime,jdbcType=BIGINT}
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="io.datains.base.domain.XpackSysRole">
+        update sys_role
+        <set>
+            <if test="record.roleId != null">
+                role_id = #{record.roleId,jdbcType=BIGINT},
+            </if>
+            <if test="record.name != null">
+                `name` = #{record.name,jdbcType=VARCHAR},
+            </if>
+            <if test="record.description != null">
+                description = #{record.description,jdbcType=VARCHAR},
+            </if>
+            <if test="record.createBy != null">
+                create_by = #{record.createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="record.updateBy != null">
+                update_by = #{record.updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="record.createTime != null">
+                create_time = #{record.createTime,jdbcType=BIGINT},
+            </if>
+            <if test="record.updateTime != null">
+                update_time = #{record.updateTime,jdbcType=BIGINT},
+            </if>
+        </set>
+        where 1 = 1
+        <if test="roleId != null">
+            role_id = #{roleId,jdbcType=BIGINT}
+        </if>
+    </update>
+    <update id="updateByExample" parameterType="io.datains.base.domain.XpackSysRole">
+        update sys_role
+        set role_id = #{record.roleId,jdbcType=BIGINT},
+        `name` = #{record.name,jdbcType=VARCHAR},
+        description = #{record.description,jdbcType=VARCHAR},
+        create_by = #{record.createBy,jdbcType=VARCHAR},
+        update_by = #{record.updateBy,jdbcType=VARCHAR},
+        create_time = #{record.createTime,jdbcType=BIGINT},
+        update_time = #{record.updateTime,jdbcType=BIGINT}
+        where 1 = 1
+        <if test="roleId != null">
+            role_id = #{roleId,jdbcType=BIGINT}
+        </if>
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="io.datains.base.domain.XpackSysRole">
+        update sys_role
+        <set>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=BIGINT},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=BIGINT},
+            </if>
+        </set>
+        where role_id = #{roleId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="io.datains.base.domain.XpackSysRole">
+    update sys_role
+    set `name` = #{name,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=BIGINT},
+      update_time = #{updateTime,jdbcType=BIGINT}
+    where role_id = #{roleId,jdbcType=BIGINT}
+  </update>
+</mapper>

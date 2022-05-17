@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.datains.base.mapper.XpackTaskMapper">
+
+
+  <resultMap id="xpackTaskResult" type="io.datains.base.domain.XpackTaskGridDTO">
+    <id property="taskId" column="task_id"/>
+    <result property="taskName" column="task_name"/>
+    <result property="lastSendTime" column="last_send_time"/>
+    <result property="instanceId" column="instance_id"/>
+    <result property="lastSendStatus" column="last_send_status"/>
+    <result property="creator" column="creator"/>
+    <result property="creatorName" column="creator_name"/>
+    <result property="createTime" column="create_time"/>
+    <result property="rateType" column="rate_type"/>
+    <result property="rateVal" column="rate_val"/>
+    <result property="endTime" column="end_time"/>
+  </resultMap>
+
+  <resultMap id="emailFormResult" type="io.datains.base.domain.XpackEmailTaskRequest" >
+    <id property="taskId" column="task_id"/>
+    <result property="taskName" column="task_name"/>
+    <result property="startTime" column="start_time"/>
+    <result property="endTime" column="end_time"/>
+    <result property="rateType" column="rate_type"/>
+    <result property="rateVal" column="rate_val"/>
+    <result property="creator" column="creator"/>
+    <result property="createTime" column="create_time"/>
+    <result property="id" column="id"/>
+    <result property="title" column="title"/>
+    <result property="panelId" column="panel_id"/>
+    <result property="recipients" column="recipients"/>
+    <result property="content" column="content"/>
+    <result property="pixel" column="pixel"/>
+  </resultMap>
+
+
+
+
+  <select id="queryTasks" parameterType="io.datains.base.domain.XpackGridExample" resultMap="xpackTaskResult">
+    SELECT
+    t.task_id,
+    t.task_name,
+    y.instance_id,
+    y.execute_time AS last_send_time,
+    y.STATUS AS last_send_status,
+    t.creator,
+    u.nick_name AS creator_name,
+    t.create_time,
+    t.rate_type,
+    t.rate_val,
+    t.end_time
+    FROM
+    sys_task t
+    LEFT JOIN sys_user u ON u.user_id = t.creator
+    LEFT JOIN (
+    SELECT
+    i.task_id, i.instance_id, i.execute_time, i.STATUS
+    FROM
+    ( SELECT task_id, max( instance_id ) AS instance_id FROM sys_task_instance
+    <if test="extendCondition != null">
+      <where>
+        ${extendCondition}
+      </where>
+    </if>
+    GROUP BY task_id ORDER BY execute_time DESC ) x
+    INNER JOIN sys_task_instance i ON i.instance_id = x.instance_id
+    ) y ON y.task_id = t.task_id
+
+    order by y.execute_time desc
+
+
+
+
+  </select>
+
+  <insert id="insertTask" useGeneratedKeys="true" keyProperty="taskId" parameterType="io.datains.base.domain.XpackTaskCreateRequest">
+        insert into sys_task(task_name, task_type, start_time, end_time, rate_type, rate_val, creator, create_time)
+        values (
+            #{taskName, jdbcType=VARCHAR},
+            #{taskType, jdbcType=VARCHAR},
+            #{startTime, jdbcType=BIGINT},
+            #{endTime, jdbcType=BIGINT},
+            #{rateType, jdbcType=INTEGER},
+            #{rateVal, jdbcType=VARCHAR},
+            #{creator, jdbcType=BIGINT},
+            #{createTime, jdbcType=BIGINT}
+        )
+    </insert>
+
+  <update id="updateTask" parameterType="io.datains.base.domain.XpackTaskCreateRequest">
+        update sys_task set
+            task_name = #{taskName, jdbcType=VARCHAR},
+
+            start_time = #{startTime, jdbcType=BIGINT},
+            end_time = #{endTime, jdbcType=BIGINT},
+            rate_type = #{rateType, jdbcType=INTEGER},
+            rate_val = #{rateVal, jdbcType=VARCHAR}
+        where task_id = #{taskId}
+
+    </update>
+
+  <update id="stopTask" parameterType="io.datains.base.domain.XpackTaskCreateRequest">
+        update sys_task set end_time = #{endTime, jdbcType=BIGINT} where task_id = #{taskId}
+    </update>
+
+  <select id="selectTaskForm" resultMap="emailFormResult" >
+        select
+        t.*,
+        e.id,
+        e.title,
+        e.panel_id,
+        e.recipients,
+        e.content,
+        e.pixel
+        from sys_task t
+        left join sys_task_email e on t.task_id = e.task_id
+        where t.task_id = #{taskId}
+    </select>
+
+
+
+  <select id="emailTemplate" resultType="io.datains.base.domain.XpackEmailTemplateDTO" >
+        select * from sys_task_email where task_id = #{taskId}
+    </select>
+
+  <insert id="insertEmailTemplate" parameterType="io.datains.base.domain.XpackEmailTaskRequest">
+        insert into sys_task_email(title, panel_id, recipients, content, pixel, task_id)
+        values (
+            #{title, jdbcType=VARCHAR},
+            #{panelId, jdbcType=VARCHAR},
+            #{recipients, jdbcType=VARCHAR},
+            #{content, jdbcType=BLOB},
+            #{pixel, jdbcType=VARCHAR},
+            #{taskId, jdbcType=BIGINT}
+        )
+    </insert>
+
+  <update id="updateEmailTemplate" parameterType="io.datains.base.domain.XpackEmailTaskRequest">
+        update sys_task_email set
+            title = #{title, jdbcType=VARCHAR},
+            panel_id = #{panelId, jdbcType=VARCHAR},
+            recipients = #{recipients, jdbcType=VARCHAR},
+            content = #{content, jdbcType=BLOB},
+            pixel = #{pixel, jdbcType=VARCHAR}
+        where id = #{id}
+    </update>
+
+  <select id="templateCountWithTaskId" resultType="java.lang.Integer">
+        select count(*) as count
+        from sys_task_email
+        where task_id = #{taskId}
+    </select>
+
+
+
+
+  <insert id="insertTaskInstance" useGeneratedKeys="true" keyProperty="instanceId" parameterType="io.datains.base.domain.XpackTaskInstanceDTO">
+        insert into sys_task_instance(task_id, execute_time, finish_time, status, info)
+        values (
+            #{taskId, jdbcType=BIGINT},
+            #{executeTime, jdbcType=BIGINT},
+            #{finishTime, jdbcType=BIGINT},
+            #{status, jdbcType=INTEGER},
+            #{info, jdbcType=LONGVARCHAR}
+        )
+    </insert>
+
+  <update id="updateTaskInstance" parameterType="io.datains.base.domain.XpackTaskInstanceDTO">
+        update sys_task_instance set
+            finish_time = #{finishTime, jdbcType=BIGINT},
+            status = #{status, jdbcType=VARCHAR},
+            info = #{info, jdbcType=LONGVARCHAR}
+        where instance_id = #{instanceId}
+    </update>
+
+
+
+  <select id="queryTaskInstances" parameterType="io.datains.base.domain.XpackTaskInstanceDTO" resultType="io.datains.base.domain.XpackTaskInstanceDTO">
+    select
+    t.task_id, t.task_name, i.instance_id, i.execute_time, i.status, i.info
+    from
+    sys_task_instance i
+    left join sys_task t on t.task_id = i.task_id
+    where 1=1
+    <if test="taskId !=null">
+      and i.task_id = #{taskId}
+    </if>
+    <if test="instanceId !=null">
+      and i.instance_id = #{instanceId}
+    </if>
+    <if test="taskName !=null">
+      and i.task_name = #{taskName}
+    </if>
+    <if test="status !=null">
+      and i.status = #{status}
+    </if><if test="info !=null">
+    and i.info = #{info}
+    </if>
+    order by i.execute_time desc
+
+  </select>
+
+  <select id="selectInstanceForm" resultType="io.datains.base.domain.XpackTaskInstanceDTO" >
+        select *
+        from sys_task_instance t
+        where t.instance_id = #{instanceId}
+    </select>
+
+  <select id="selectTasks" resultType="io.datains.base.domain.GlobalTaskEntity">
+        select * from sys_task
+    </select>
+
+
+  <delete id="deleteTask">
+        delete from sys_task where task_id = #{taskId}
+    </delete>
+
+  <delete id="deleteInstance">
+        delete from sys_task_instance where task_id = #{taskId}
+    </delete>
+
+  <delete id="deleteEmailTemplate">
+        delete from sys_task_email where task_id = #{taskId}
+    </delete>
+
+
+  <select id="timeout" resultType="int">
+        select param_value from system_parameter where param_key = 'basic.frontTimeOut'
+    </select>
+
+
+
+
+
+</mapper>
