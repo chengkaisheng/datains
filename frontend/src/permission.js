@@ -30,7 +30,7 @@ router.beforeEach(async(to, from, next) => {
   NProgress.start()
   const mobileIgnores = ['/delink']
   const mobilePreview = '/preview/'
-
+  console.log('触发发此处------------------')
   if (isMobile() && !to.path.includes(mobilePreview) && mobileIgnores.indexOf(to.path) === -1) {
     window.location.href = window.origin + '/app.html'
     NProgress.done()

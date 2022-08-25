@@ -110,6 +110,7 @@ Vue.prototype.hasDataPermission = function(pTarget, pSource) {
   }
   return false
 }
+console.log('数据会触发的地方1111111111111111', window.location.href)
 
 Vue.prototype.checkPermission = function(pers) {
   const permissions = store.getters.permissions

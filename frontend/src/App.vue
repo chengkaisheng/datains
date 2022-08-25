@@ -12,7 +12,7 @@ export default {
   name: 'App',
   components: { PluginCom },
   beforeCreate() {
-
+    console.log('window.location.href;', window.location.href)
   }
 }
 </script>

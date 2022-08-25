@@ -24,6 +24,7 @@ const mutations = {
     state.mainActiveName = mainActiveName
   },
   setPanelInfo: (state, panelInfo) => {
+    console.log('window.location.href;', window.location.href)
     console.log('存储数据======', panelInfo)
     state.panelInfo = panelInfo
   },

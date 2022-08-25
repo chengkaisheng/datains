@@ -617,6 +617,9 @@ export default {
   },
   mounted() {
     this.bindPluginEvent()
+    window.addEventListener('message', e => {
+      console.log('跨页面传输的数据--------------------------------------', e.data.user, e)
+    })
   },
 
   created() {
