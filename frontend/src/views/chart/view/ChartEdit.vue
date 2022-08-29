@@ -823,7 +823,7 @@
                     v-show="view.render && view.render === 'antv' && (view.type.includes('roll') || view.type.includes('dialog'))"
                     :title="$t('chart.pop_config')"
                   >
-                    <pop-selector-ant-v 
+                    <pop-selector-ant-v
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -1112,6 +1112,21 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
+                    v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))"
+                    name="alarm"
+                    :title="'告警设置'"
+                  >
+                    <span style="margin-left:20px;font-size:18px;color:#409EFF;cursor:pointer;">
+                      <i class="el-icon-alarm-clock" @click="setAlarm()" />
+                    </span>
+                    <!-- <assist-line
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onAssistLineChange="onAssistLineChange"
+                    /> -->
+                  </el-collapse-item>
+                  <el-collapse-item
                     v-if="view.type && (view.type.includes('gauge'))"
                     name="threshold"
                     :title="$t('chart.threshold')"
@@ -1125,6 +1140,11 @@
                   </el-collapse-item>
                 </el-collapse>
               </el-row>
+              <!-- <el-row>
+                <el-col>
+                  <span class="padding-lr">{{ '告警设置' }}</span>
+                </el-col>
+              </el-row> -->
             </div>
             <div v-else class="no-senior">
               {{ $t('chart.chart_no_senior') }}
@@ -1200,6 +1220,37 @@
       </el-col>
     </el-row>
 
+    <!-- 告警设置 -->
+    <el-dialog v-dialogDrag :title="'告警设置'" :visible="alarmSettings" :show-close="false" width="40%">
+      <!-- <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
+        <el-form-item :label="$t('commons.name')" prop="name">
+          <el-input v-model="itemForm.name" size="mini" clearable />
+        </el-form-item>
+      </el-form> -->
+      <el-row>
+        <el-col :span="10">
+          <el-select v-model="alarmValue" placeholder="请选择">
+            <el-option
+              v-for="item in quota"
+              :key="item.id"
+              :label="item.name"
+              :value="item.datainsName"
+            />
+          </el-select>
+        </el-col>
+        <el-col :span="3">
+          告警阈值
+        </el-col>
+        <el-col :span="10">
+          <!-- <el-input v-model="alarmInput" placeholder="请输入内容" /> -->
+          <el-input-number v-model="alarmInput" label="描述文字" />
+        </el-col>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeAlarm()">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="setAlarmBtn()">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
     <!--显示名修改-->
     <el-dialog v-dialogDrag :title="$t('chart.show_name_set')" :visible="renameItem" :show-close="false" width="30%">
       <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
@@ -1478,6 +1529,9 @@ export default {
   data() {
     return {
       loading: false,
+      alarmValue: '',
+      alarmInput: '',
+      alarmSettings: false,
       table: {},
       dimension: [],
       quota: [],
@@ -1643,6 +1697,23 @@ export default {
   },
 
   methods: {
+    // 告警设置功能
+    setAlarm() {
+      console.log('获取告警设置功能-------')
+      this.alarmSettings = true
+    },
+    closeAlarm() {
+      this.alarmSettings = false
+    },
+    setAlarmBtn() {
+      const alarmData = {
+        alarmName: this.alarmValue,
+        alarmNum: this.alarmInput
+      }
+      this.view.senior.alarmForm = alarmData
+      this.calcStyle()
+      this.alarmSettings = false
+    },
     loadPluginType() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
       const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
@@ -1694,6 +1765,7 @@ export default {
     initTableField(id) {
       if (this.table) {
         post('/dataset/table/getFieldsFromDE', this.table).then(response => {
+          console.log('请求的接口数据---------------------------', response)
           this.dimension = response.data.dimension
           this.quota = response.data.quota
           this.dimensionData = JSON.parse(JSON.stringify(this.dimension))
