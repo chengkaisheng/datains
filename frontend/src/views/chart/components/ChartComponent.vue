@@ -52,6 +52,7 @@ import {
 } from '../chart/bar/bar'
 import {
   baseLineOption,
+  areaLineOption,
   stackLineOption,
   heatMapOption
 } from '../chart/line/line'
@@ -205,17 +206,20 @@ export default {
       // type
       // console.log(this.$store.state.canvasStyleData)
       if (chart.type === 'bar') {
-        chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart,this.$store.state.canvasStyleData)
+        chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack') {
-        chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart,this.$store.state.canvasStyleData)
+        chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-horizontal') {
-        chart_option = horizontalBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart,this.$store.state.canvasStyleData)
+        chart_option = horizontalBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack-horizontal') {
-        chart_option = horizontalStackBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart,this.$store.state.canvasStyleData)
+        chart_option = horizontalStackBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line') {
         chart_option = baseLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line-stack') {
         chart_option = stackLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'line-area') {
+        // areaLineOption
+        chart_option = areaLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie') {
         chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie-rose') {
@@ -243,7 +247,7 @@ export default {
         chart_option = baseWordCloudOption(JSON.parse(JSON.stringify(BASE_WORD_CLOUD)), chart, this.$store.state.canvasStyleData, this.$store.state.previewCanvasScale.scalePointWidth)
       } else if (chart.type === 'pictorial-bar') {
         chart_option = basePictorialBarOption(JSON.parse(JSON.stringify(BASE_PICTORIAL_BAR)), chart, this.$store.state.canvasStyleData)
-      } 
+      }
       // console.log(JSON.stringify(chart_option))
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false

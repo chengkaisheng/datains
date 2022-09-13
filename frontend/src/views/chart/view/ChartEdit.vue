@@ -1058,6 +1058,19 @@
                       @onLegendChange="onLegendChange"
                     />
                   </el-collapse-item>
+                  <el-collapse-item
+                    v-show="view.type && view.type =='line-area'"
+                    name="lineSet"
+                    :title="'折线图样式'"
+                  >
+                    <lineStyleSet
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLegendChange="onLegendChange"
+                    />
+                    <!--  -->
+                  </el-collapse-item>
                   <el-collapse-item v-if="chart.customStyle && view.customStyle.background" name="background" :title="$t('chart.background')">
                     <background-color-selector
                       :param="param"
@@ -1411,6 +1424,7 @@ import RotateSelector from '../components/shape-attr/RotateSelector'
 import LabelSelector from '../components/shape-attr/LabelSelector'
 import TitleSelector from '../components/component-style/TitleSelector'
 import LegendSelector from '../components/component-style/LegendSelector'
+import lineStyleSet from '../components/component-style/lineStyleSet'
 import TooltipSelector from '../components/shape-attr/TooltipSelector'
 import XAxisSelector from '../components/component-style/XAxisSelector'
 import YAxisSelector from '../components/component-style/YAxisSelector'
@@ -1477,6 +1491,7 @@ export default {
     YAxisSelectorAntV,
     XAxisSelectorAntV,
     LegendSelectorAntV,
+    lineStyleSet,
     TooltipSelectorAntV,
     LabelSelectorAntV,
     TitleSelectorAntV,

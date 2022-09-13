@@ -256,6 +256,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_trend',
+    value: 'line-area',
+    title: '面积线图',
+    icon: 'line'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_trend',
     value: 'chart-mix',
     title: 'chart.chart_mix',
     icon: 'chart-mix'

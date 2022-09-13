@@ -28,6 +28,7 @@
       :obj="{ chart, trackMenu, searchCount, terminalType: scaleCoefficientType }"
       class="chart-class"
     />
+    
     <chart-component
       v-else-if="charViewShowFlag"
       :ref="element.propValue.id"
@@ -1395,6 +1396,7 @@ export default {
     saveThemeInfo(data, trigger, needRefreshGroup = false, switchType = false) {
       console.log('saveTheme...', data)
       if (!data.resultCount ||
+
         data.resultCount === '' ||
         isNaN(Number(data.resultCount)) ||
         String(data.resultCount).includes('.') ||
@@ -1469,6 +1471,7 @@ export default {
           }
         }
         if (!ele.sort || ele.sort === '') {
+          
           ele.sort = 'none'
         }
         if (!ele.filter) {
