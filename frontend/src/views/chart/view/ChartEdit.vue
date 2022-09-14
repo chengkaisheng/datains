@@ -1067,7 +1067,7 @@
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
-                      @onLegendChange="onLegendChange"
+                      @onLineChange="onLineChange"
                     />
                     <!--  -->
                   </el-collapse-item>
@@ -1579,7 +1579,8 @@ export default {
           yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
           zAxis: DEFAULT_ZAXIS_STYLE,
           background: DEFAULT_BACKGROUND_COLOR,
-          split: DEFAULT_SPLIT
+          split: DEFAULT_SPLIT,
+          lineStyle: {}
         },
         senior: {
           functionCfg: DEFAULT_FUNCTION_CFG,
@@ -2296,6 +2297,10 @@ export default {
 
     onLegendChange(val) {
       this.view.customStyle.legend = val
+      this.calcStyle()
+    },
+    onLineChange(val) {
+      this.view.customStyle.lineStyle = val
       this.calcStyle()
     },
 
