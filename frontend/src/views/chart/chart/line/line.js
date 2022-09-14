@@ -99,6 +99,9 @@ export function areaLineOption(chart_option, chart, cstyle = {}) {
   baseLineOption(chart_option, chart, cstyle)
   console.log('0---------------------', chart_option, chart,)
   let customAttr = {}
+  const newStyle = JSON.parse(chart.customStyle)
+
+  console.log('newStyle----', newStyle)
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
   }
@@ -111,6 +114,8 @@ export function areaLineOption(chart_option, chart, cstyle = {}) {
     // s.push(
 
     s.areaStyle = {}
+    s.symbol = newStyle.lineStyle.lineIcon
+    s.symbolSize = newStyle.lineStyle.symbolSize
     // s.symbol = {}
 
     s.itemStyle = {

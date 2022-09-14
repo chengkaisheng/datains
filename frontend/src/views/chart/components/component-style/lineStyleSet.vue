@@ -17,6 +17,11 @@
               />
             </el-select>
           </el-form-item>
+          <el-form-item :label="'线图标大小'" class="form-item">
+            <el-select v-model="legendForm.symbolSize" :placeholder="'线图标大小'" size="mini" @change="changeLegendStyle">
+              <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
         </div>
       </el-form>
     </el-col>
@@ -41,7 +46,8 @@ export default {
   data() {
     return {
       legendForm: {
-        lineIcon: 'circle'
+        lineIcon: 'circle',
+        symbolSize: 16
       },
       fontSize: [],
       iconSymbolOptions: [
