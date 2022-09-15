@@ -263,6 +263,20 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_trend',
+    value: 'line-ladder',
+    title: '阶梯折线图',
+    icon: 'line'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_trend',
+    value: 'line-pole',
+    title: '极坐标图',
+    icon: 'line'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_trend',
     value: 'chart-mix',
     title: 'chart.chart_mix',
     icon: 'chart-mix'

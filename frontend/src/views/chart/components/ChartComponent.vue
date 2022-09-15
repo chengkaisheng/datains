@@ -29,6 +29,7 @@
 import {
   BASE_BAR,
   BASE_LINE,
+  BASE_POLE_LINE,
   HORIZONTAL_BAR,
   BASE_PICTORIAL_BAR,
   BASE_PIE,
@@ -53,6 +54,8 @@ import {
 import {
   baseLineOption,
   areaLineOption,
+  ladderLineOption,
+  poleLineOption,
   stackLineOption,
   heatMapOption
 } from '../chart/line/line'
@@ -220,6 +223,12 @@ export default {
       } else if (chart.type === 'line-area') {
         // areaLineOption
         chart_option = areaLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
+        // ladderLineOption
+      } else if (chart.type === 'line-ladder') {
+        chart_option = ladderLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
+        // line-pole
+      } else if (chart.type === 'line-pole') {
+        chart_option = poleLineOption(JSON.parse(JSON.stringify(BASE_POLE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie') {
         chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie-rose') {

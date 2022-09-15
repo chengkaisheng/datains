@@ -107,7 +107,7 @@ export const DEFAULT_LABEL = {
   popContentColor: '#FFFFFF',
   popContentHeight: 25,
   // popContentBorderBottomStyle: 'dashed',
-  popContentBorderBottomColor: '#ffffff',
+  popContentBorderBottomColor: '#ffffff'
   // popContentBorderBottomWidth: 1,
 }
 export const DEFAULT_TOOLTIP = {
@@ -174,7 +174,7 @@ export const DEFAULT_LEGEND_STYLE = {
   },
   itemGap: 10,
   marginTop: 5,
-  marginButtom: 5,
+  marginButtom: 5
 }
 export const DEFAULT_XAXIS_STYLE = {
   show: true,
@@ -184,7 +184,7 @@ export const DEFAULT_XAXIS_STYLE = {
   nameTextStyle: {
     color: '#333333',
     fontSize: 12,
-    lineHeight: 40,
+    lineHeight: 40
   },
   axisLabel: {
     show: true,
@@ -660,9 +660,71 @@ export const BASE_LINE = {
     }
   ]
 }
+export const BASE_POLE_LINE = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true
+  },
+  tooltip: {},
+  angleAxis: {
+    type: 'value',
+    startAngle: 0
+  },
+  radiusAxis: {},
+  legend: {
+    show: true,
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect',
+    data: []
+  },
+  xAxis: {
+    boundaryGap: false,
+    data: []
+  },
+  yAxis: {
+    type: 'value'
+  },
+  series: [],
+  dataZoom: [
+    {
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 0,
+      end: 100
+    }
+  ]
+}
 
 export const BASE_PICTORIAL_BAR = {
-  animation: false, //去除加载时缓动动画
+  animation: false, // 去除加载时缓动动画
   title: {
     text: '',
     textStyle: {
@@ -677,7 +739,7 @@ export const BASE_PICTORIAL_BAR = {
     data: [],
     textStyle: {
       color: '#ccc'
-    },
+    }
   },
   xAxis: {
     data: [],
@@ -688,12 +750,12 @@ export const BASE_PICTORIAL_BAR = {
       color: '#333333',
       fontSize: '12',
       formatter: '{value}'
-    },
+    }
   },
   yAxis: {
-    type: 'value',
+    type: 'value'
   },
-  series: [],
+  series: []
   // dataZoom: [
   //   {
   //     type: 'slider',
@@ -1283,7 +1345,7 @@ export const BASE_WORD_CLOUD = {
     height: '90%',
     textStyle: { // 词云中文字的样式， normal 是初始的样式， emphasis 是鼠标移到文字上的样式。
       normal: {
-        color: function () {
+        color: function() {
           // Random color
           return 'rgb(' + [
             Math.round(Math.random() * 160),

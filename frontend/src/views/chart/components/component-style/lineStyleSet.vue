@@ -22,6 +22,17 @@
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
+          <el-form-item :label="'面积颜色'" class="form-item">
+            <el-color-picker v-model="legendForm.bgColor" class="color-picker-style" :predefine="predefineColors" @change="changeLegendStyle" />
+          </el-form-item>
+          <el-form-item :label="'标线颜色'" class="form-item">
+            <el-color-picker v-model="legendForm.borderColor" class="color-picker-style" :predefine="predefineColors" @change="changeLegendStyle" />
+          </el-form-item>
+          <el-form-item :label="'图标线宽'" class="form-item">
+            <el-select v-model="legendForm.borderWidth" :placeholder="'线图标大小'" size="mini" @change="changeLegendStyle">
+              <el-option v-for="option in borderWidthSize" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
         </div>
       </el-form>
     </el-col>
@@ -47,8 +58,12 @@ export default {
     return {
       legendForm: {
         lineIcon: 'circle',
-        symbolSize: 16
+        symbolSize: 16,
+        borderColor: '',
+        bgColor: '',
+        borderWidth: 1
       },
+      borderWidthSize: [],
       fontSize: [],
       iconSymbolOptions: [
         { name: 'circle', value: 'circle' },
@@ -57,7 +72,8 @@ export default {
         { name: 'triangle', value: 'triangle' },
         { name: 'pin', value: 'pin' },
         { name: 'diamond', value: 'diamond' },
-        { name: 'arrow', value: 'arrow' }
+        { name: 'arrow', value: 'arrow' },
+        { name: 'none', value: 'none' }
       ],
       isSetting: false,
       predefineColors: COLOR_PANEL
@@ -91,13 +107,21 @@ export default {
     },
     init() {
       const arr = []
-      for (let i = 10; i <= 60; i = i + 2) {
+      for (let i = 8; i <= 60; i = i + 2) {
         arr.push({
           name: i + '',
           value: i + ''
         })
       }
       this.fontSize = arr
+      const arr2 = []
+      for (let i = 1; i <= 10; i++) {
+        arr2.push({
+          name: i + '',
+          value: i + ''
+        })
+      }
+      this.borderWidthSize = arr2
     },
     changeLegendStyle() {
       // if (!this.legendForm.show) {
