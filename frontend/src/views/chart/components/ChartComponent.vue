@@ -46,6 +46,8 @@ import {
 } from '../chart/chart'
 import {
   baseBarOption,
+  waterfallBarOption,
+  extremumBarOption,
   stackBarOption,
   horizontalBarOption,
   horizontalStackBarOption,
@@ -210,6 +212,10 @@ export default {
       // console.log(this.$store.state.canvasStyleData)
       if (chart.type === 'bar') {
         chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-waterfall') {
+        chart_option = waterfallBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-extremum') {
+        chart_option = extremumBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack') {
         chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-horizontal') {

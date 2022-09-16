@@ -154,7 +154,9 @@ export function poleLineOption(chart_option, chart, cstyle = {}) {
     console.log('stack............', s, i)
     s.stack = 'stack'
     // s.coordinateSystem = 'polar'
-    // s.data = []
+
+    console.log('数据处理部分', s.data)
+    // s.data = [1, 2, 5, 7, 8]
     s.itemStyle = {
       color: {
         type: 'linear',
@@ -173,6 +175,8 @@ export function poleLineOption(chart_option, chart, cstyle = {}) {
       }
     }
   })
+  console.log('chart_option-----', chart_option)
+  // chart_option.series[0].data = [1, 2, 3, 4, 5, 6]
   return chart_option
 }
 // ladderLineOption

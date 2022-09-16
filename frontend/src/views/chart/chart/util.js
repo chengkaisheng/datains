@@ -292,6 +292,34 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
+    value: 'bar-waterfall',
+    title: '瀑布柱状图',
+    icon: 'bar'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-extremum',
+    title: '极值柱状图',
+    icon: 'bar'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-coordinate',
+    title: '极坐标柱状图',
+    icon: 'bar'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar',
+    title: 'chart.chart_bar',
+    icon: 'bar'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
     value: 'bar-stack',
     title: 'chart.chart_bar_stack',
     icon: 'bar-stack'
