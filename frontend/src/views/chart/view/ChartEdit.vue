@@ -892,7 +892,7 @@
                 </el-collapse>
               </el-row>
               <el-row>
-                <span class="padding-lr">{{ $t('chart.module_style') }}</span>
+                <span class="padding-lr">{{ $t('chart.module_style') +222 }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
                   <el-collapse-item
                     v-show="view.type
@@ -1070,6 +1070,19 @@
                       @onLineChange="onLineChange"
                     />
                     <!--  -->
+                  </el-collapse-item>
+                  <el-collapse-item
+                    v-show="view.type && view.type =='pie'"
+                    name="pieSet"
+                    :title="'图表样式'"
+                  >
+                    图表样式
+                    <pieStyleSet
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLineChange="onLineChange"
+                    />
                   </el-collapse-item>
                   <el-collapse-item v-if="chart.customStyle && view.customStyle.background" name="background" :title="$t('chart.background')">
                     <background-color-selector
@@ -1425,6 +1438,8 @@ import LabelSelector from '../components/shape-attr/LabelSelector'
 import TitleSelector from '../components/component-style/TitleSelector'
 import LegendSelector from '../components/component-style/LegendSelector'
 import lineStyleSet from '../components/component-style/lineStyleSet'
+import pieStyleSet from '../components/component-style/pieStyleSet'
+
 import TooltipSelector from '../components/shape-attr/TooltipSelector'
 import XAxisSelector from '../components/component-style/XAxisSelector'
 import YAxisSelector from '../components/component-style/YAxisSelector'
@@ -1492,6 +1507,7 @@ export default {
     XAxisSelectorAntV,
     LegendSelectorAntV,
     lineStyleSet,
+    pieStyleSet,
     TooltipSelectorAntV,
     LabelSelectorAntV,
     TitleSelectorAntV,
