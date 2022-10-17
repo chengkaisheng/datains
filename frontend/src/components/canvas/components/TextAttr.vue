@@ -1,6 +1,6 @@
 <template>
-  <el-card class="el-card-main" :style="mainStyle">
-    <div id="main-attr" style="position: relative;">
+  <el-card id="textAttr" class="el-card-main" :style="mainStyle">
+    <div id="main-attr" class="box_class" style="position: relative;" @mousedown.stop @mouseup.stop>
       <div v-if="attrShow('textAlign')" style="width: 100px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-radio-group v-model="styleInfo.textAlign" size="mini" @change="styleChange">
           <el-radio-button
@@ -51,7 +51,18 @@
       </el-tooltip>
 
       <div v-if="attrShow('fontSize')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="initFontSize" type="number" size="mini" :min="miniFontSize" :max="maxFontSize" @change="styleChange" />
+        <el-input v-model="initFontSize" type="number" size="mini" :max="maxFontSize" @change="styleChange" />
+      </div>
+      
+      <div v-if="attrShow('fontFamily')" :title="$t('chart.text_style')" style="width: 80px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-select v-model="styleInfo.fontFamily" placeholder="请选择" size="mini" @change="styleChange">
+          <el-option
+            v-for="item in fontOptions"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
+        </el-select>
       </div>
 
       <el-tooltip v-if="attrShow('fontWeight')" :content="$t('panel.fontWeight')">
@@ -185,12 +196,14 @@ export default {
   data() {
     return {
       predefineColors: COLOR_PANEL,
+      selfWidth: 0,
       showMain: true,
       innerOpacity: 0,
       mainWidthOffset: 600,
       initFontSize: 12,
-      miniFontSize: 12,
+      miniFontSize: 1,
       maxFontSize: 128,
+      fontOptions: ['宋体', '楷体', '黑体', '仿宋', '新宋体'],
       textAlignOptions: [
         {
           icon: 'iconfont icon-juzuo',
@@ -285,7 +298,8 @@ export default {
         'fontWeight',
         'letterSpacing',
         'color',
-        'hyperlinks'
+        'hyperlinks',
+        'fontFamily'
       ],
       'de-video': [
         'opacity',
@@ -326,12 +340,22 @@ export default {
 
     mainStyle() {
       const style = {
-        left: (this.getPositionX(this.curComponent.style.left) - this.scrollLeft) + 'px',
-        top: (this.getPositionY(this.curComponent.style.top) - this.scrollTop - 3) + 'px'
+
+        // left: (this.getPositionX(this.curComponent.style.left) - this.scrollLeft) + 'px',
+        left: this.curComponent.style.left + 'px',
+        // top: (this.getPositionY(this.curComponent.style.top) - this.scrollTop - 3) + 'px'
+        top: (this.curComponent.style.top - 40) + 'px'
       }
+      if ((this.selfWidth + this.curComponent.style.left >= this.canvasStyleData.width)) {
+        style.left = (this.canvasStyleData.width - this.selfWidth) + 'px'
+      }
+      console.log('this.curComponent=====', this.curComponent)
+      console.log('this.scrollLeft', this.scrollLeft)
+      console.log('this.this.curComponent.style.left', this.curComponent.style.left)
       return style
     },
     styleInfo() {
+      console.log('文本样式',this.curComponent)
       return this.$store.state.curComponent.style
     },
     canvasWidth() {
@@ -361,7 +385,7 @@ export default {
     initFontSize: {
       handler(newVal) {
         if (newVal < this.miniFontSize) {
-          this.styleInfo.fontSize = this.miniFontSize
+          // this.styleInfo.fontSize = this.miniFontSize
         } else if (newVal > this.maxFontSize) {
           this.styleInfo.fontSize = this.maxFontSize
         } else {
@@ -397,6 +421,9 @@ export default {
       } else {
         this.mainWidthOffset = document.getElementById('main-attr').offsetWidth - 50
       }
+      console.log('t----------------', document.getElementById('textAttr').offsetWidth)
+      this.selfWidth = document.getElementById('textAttr').offsetWidth
+
       // console.log('mainWidthOffset:' + this.mainWidthOffset)
     },
     attrShow(attr) {
@@ -413,6 +440,7 @@ export default {
       this.$refs.backgroundColorPicker.handleTrigger()
     },
     getPositionX(x) {
+      console.log('this.curCanvasScale.scalePointWidth', this.curCanvasScale.scalePointWidth)
       let ps = 0
       ps = (x * this.curCanvasScale.scalePointWidth) + 60
       // 防止toolbar超出边界
@@ -457,6 +485,9 @@ export default {
     z-index: 10;
     position: absolute;
 
+  }
+  .box_class{
+    display:flex;
   }
   .el-card-main ::v-deep .el-card__body {
     padding: 0px!important;

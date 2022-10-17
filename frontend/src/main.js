@@ -23,6 +23,14 @@ import DeComplexInput from '@/components/business/condition-table/DeComplexInput
 import DeComplexSelect from '@/components/business/condition-table/DeComplexSelect'
 import '@/components/canvas/custom-component' // 注册自定义组件
 
+import { loadModules } from 'esri-loader'
+Vue.prototype.$loadModules = loadModules
+
+// Vue.prototype.$option = { url: '../public/arcgisapi/init.js' }
+
+// import '../public/api/esri/themes/light/main.css'
+// import '../public/arcgisapi/esri/themes/light/main.css'
+
 import '@/utils/DateUtil'
 import draggable from 'vuedraggable'
 Vue.config.productionTip = false
@@ -34,6 +42,9 @@ Vue.prototype.$api = api
 import * as echarts from 'echarts'
 
 Vue.prototype.$echarts = echarts
+
+import 'echarts-liquidfill'
+import 'echarts-wordcloud'
 
 import UmyUi from 'umy-ui'
 Vue.use(UmyUi)
@@ -86,10 +97,6 @@ Vue.config.productionTip = false
 
 import vueToPdf from 'vue-to-pdf'
 Vue.use(vueToPdf)
-
-import VueVideoPlayer from 'vue-video-player'
-import 'video.js/dist/video-js.css'
-Vue.use(VueVideoPlayer)
 
 // 控制标签宽高成比例的指令
 import proportion from 'vue-proportion-directive'

@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { baseLiquid } from '@/views/chart/chart/liquid/liquid'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
@@ -74,6 +75,7 @@ export default {
         textAlign: 'left',
         fontStyle: 'normal',
         fontWeight: 'normal',
+        fontFamily: '',
         background: hexColorToRGBA('#ffffff', 0)
       },
       title_show: true,
@@ -89,7 +91,11 @@ export default {
       return {
         borderRadius: this.borderRadius
       }
-    }
+    },
+    ...mapState([
+      'canvasStyleData',
+      'previewCanvasScale'
+    ])
   },
   watch: {
     chart: {
@@ -136,24 +142,25 @@ export default {
           ]
         }
       }
+      // console.log(this.$store.state.canvasStyleData)
       if (chart.type === 'bar') {
-        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
+        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false, this.canvasStyleData)
       } else if (chart.type === 'bar-stack') {
-        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
+        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true, this.canvasStyleData)
       } else if (chart.type === 'bar-horizontal') {
-        this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
+        this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false, this.canvasStyleData)
       } else if (chart.type === 'bar-stack-horizontal') {
-        this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
+        this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true, this.canvasStyleData)
       } else if (chart.type === 'line') {
-        this.myChart = baseLineOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseLineOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData)
       } else if (chart.type === 'line-stack') {
-        this.myChart = baseAreaOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseAreaOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData)
       } else if (chart.type === 'scatter') {
-        this.myChart = baseScatterOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseScatterOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData)
       } else if (chart.type === 'radar') {
-        this.myChart = baseRadarOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseRadarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.state.canvasStyleData)
       } else if (chart.type === 'gauge') {
-        this.myChart = baseGaugeOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseGaugeOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.state.canvasStyleData)
       } else if (chart.type === 'pie') {
         this.myChart = basePieOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'pie-rose') {
@@ -163,11 +170,11 @@ export default {
       } else if (chart.type === 'treemap') {
         this.myChart = baseTreemapOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'liquid') {
-        this.myChart = baseLiquid(this.myChart, this.chartId, chart)
+        this.myChart = baseLiquid(this.myChart, this.chartId, chart, this.canvasStyleData)
       } else if (chart.type === 'waterfall') {
-        this.myChart = baseWaterfallOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseWaterfallOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData)
       } else if (chart.type === 'word-cloud') {
-        this.myChart = baseWordCloudOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseWordCloudOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData,this.previewCanvasScale.scalePointWidth)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false
@@ -257,6 +264,7 @@ export default {
           this.title_class.textAlign = customStyle.text.hPosition
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
+          this.title_class.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily : this.canvasStyleData.fontFamily
         }
         if (customStyle.background) {
           this.title_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)

@@ -31,12 +31,12 @@
       </ux-grid>
 
       <el-row v-show="chart.type === 'table-info'" class="table-page">
-        <span class="total-style">
+        <!-- <span class="total-style">
           {{ $t('chart.total') }}
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
           {{ $t('chart.items') }}
-        </span>
-        <el-pagination
+        </span> -->
+        <!-- <el-pagination
           small
           :current-page="currentPage.page"
           :page-sizes="[10,20,50,100]"
@@ -47,13 +47,14 @@
           class="page-style"
           @current-change="pageClick"
           @size-change="pageChange"
-        />
+        /> -->
       </el-row>
     </el-row>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
 
@@ -88,7 +89,8 @@ export default {
         color: '#303133',
         textAlign: 'left',
         fontStyle: 'normal',
-        fontWeight: 'normal'
+        fontWeight: 'normal',
+        fontFamily: '',
       },
       //   bg_class: {
       //     background: hexColorToRGBA('#ffffff', 0),
@@ -98,19 +100,22 @@ export default {
         fontSize: '12px',
         color: '#606266',
         background: '#e8eaec',
-        height: '36px'
+        height: '36px',
+        fontFamily: '',
       },
       table_item_class: {
         fontSize: '12px',
         color: '#606266',
         background: '#ffffff',
-        height: '36px'
+        height: '36px',
+        fontFamily: '',
       },
       table_item_class_stripe: {
         fontSize: '12px',
         color: '#606266',
         background: '#ffffff',
-        height: '36px'
+        height: '36px',
+        fontFamily: '',
       },
       title_show: true,
       borderRadius: '0px',
@@ -127,10 +132,14 @@ export default {
         background: hexColorToRGBA('#ffffff', 0),
         borderRadius: this.borderRadius
       }
-    }
+    },
+    ...mapState([
+      'canvasStyleData',
+    ])
   },
   watch: {
     chart: function() {
+      console.log('this.chart.data', this.chart.data)
       this.resetPage()
       this.init()
     }
@@ -143,6 +152,13 @@ export default {
     })
   },
   methods: {
+    changeColumnWidth({ column, columnIndex }) {
+      console.log('23123213213231232132121', column, columnIndex)
+      // if (column.width !== column.renderWidth) {
+      //   this.tableHeadList[columnIndex - 2].width = column.renderWidth
+      //   // this.saveHeadConfig()
+      // }
+    },
     init() {
       this.resetHeight()
       this.$nextTick(() => {
@@ -225,14 +241,18 @@ export default {
         if (customAttr.color) {
           this.table_header_class.color = customAttr.color.tableFontColor
           this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
+          this.table_header_class.fontFamily = this.canvasStyleData.fontFamily? this.canvasStyleData.fontFamily : ''
           this.table_item_class.color = customAttr.color.tableFontColor
           this.table_item_class.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha)
+          this.table_item_class.fontFamily = this.canvasStyleData.fontFamily? this.canvasStyleData.fontFamily : ''
         }
         if (customAttr.size) {
           this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
           this.table_item_class.height = customAttr.size.tableItemHeight + 'px'
+          this.table_header_class.fontFamily = this.canvasStyleData.fontFamily? this.canvasStyleData.fontFamily : ''
+          this.table_item_class.fontFamily = this.canvasStyleData.fontFamily? this.canvasStyleData.fontFamily : ''
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
         // 暂不支持斑马纹
@@ -248,6 +268,7 @@ export default {
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
+        console.log('TableNormal...style',customStyle)
         if (customStyle.text) {
           this.title_show = customStyle.text.show
           this.title_class.fontSize = customStyle.text.fontSize + 'px'
@@ -255,6 +276,7 @@ export default {
           this.title_class.textAlign = customStyle.text.hPosition
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
+          this.title_class.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily : this.canvasStyleData.fontFamily? this.canvasStyleData.fontFamily : ''
         }
         if (customStyle.background) {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)

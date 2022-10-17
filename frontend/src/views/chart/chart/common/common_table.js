@@ -1,7 +1,11 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '@/views/chart/chart/chart'
 
-export function getCustomTheme(chart) {
+export function getCustomTheme(chart, fontFamily) {
+  if (fontFamily === '') {
+    fontFamily = 'sans-serif'
+  }
+  console.log('common_table,antv', chart, fontFamily)
   const headerColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableHeaderBgColor, DEFAULT_COLOR_CASE.alpha)
   const itemColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableItemBgColor, DEFAULT_COLOR_CASE.alpha)
   const borderColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableBorderColor, DEFAULT_COLOR_CASE.alpha)
@@ -21,16 +25,19 @@ export function getCustomTheme(chart) {
         backgroundColor: headerColor,
         horizontalBorderColor: borderColor,
         verticalBorderColor: borderColor
+        // fontFamily: fontFamily
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
-        textAlign: headerAlign
+        textAlign: headerAlign,
+        fontFamily: fontFamily
       },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
-        textAlign: headerAlign
+        textAlign: headerAlign,
+        fontFamily: fontFamily
       }
     },
     rowCell: {
@@ -38,16 +45,19 @@ export function getCustomTheme(chart) {
         backgroundColor: headerColor,
         horizontalBorderColor: borderColor,
         verticalBorderColor: borderColor
+        // fontFamily: fontFamily
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
-        textAlign: headerAlign
+        textAlign: headerAlign,
+        fontFamily: fontFamily
       },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
-        textAlign: headerAlign
+        textAlign: headerAlign,
+        fontFamily: fontFamily
       }
     },
     colCell: {
@@ -55,16 +65,19 @@ export function getCustomTheme(chart) {
         backgroundColor: headerColor,
         horizontalBorderColor: borderColor,
         verticalBorderColor: borderColor
+        // fontFamily: fontFamily
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
-        textAlign: headerAlign
+        textAlign: headerAlign,
+        fontFamily: fontFamily
       },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
-        textAlign: headerAlign
+        textAlign: headerAlign,
+        fontFamily: fontFamily
       }
     },
     dataCell: {
@@ -72,16 +85,20 @@ export function getCustomTheme(chart) {
         backgroundColor: itemColor,
         horizontalBorderColor: borderColor,
         verticalBorderColor: borderColor
+        // fontFamily: fontFamily
       },
       text: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        // fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fill: DEFAULT_COLOR_CASE.tableInfoFontColor,
         fontSize: DEFAULT_SIZE.tableItemFontSize,
-        textAlign: itemAlign
+        textAlign: itemAlign,
+        fontFamily: fontFamily
       },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableItemFontSize,
-        textAlign: itemAlign
+        textAlign: itemAlign,
+        fontFamily: fontFamily
       }
     }
   }
@@ -120,11 +137,12 @@ export function getCustomTheme(chart) {
       theme.dataCell.cell.horizontalBorderColor = b_c
       theme.dataCell.cell.verticalBorderColor = b_c
       theme.dataCell.bolderText.fill = c.tableFontColor
-      theme.dataCell.text.fill = c.tableFontColor
+      theme.dataCell.text.fill = c.tableInfoFontColor
     }
     // size
     if (customAttr.size) {
       const s = JSON.parse(JSON.stringify(customAttr.size))
+      console.log('sssssssssssssssssssss', s)
       const h_a = s.tableHeaderAlign ? s.tableHeaderAlign : DEFAULT_SIZE.tableHeaderAlign
       const i_a = s.tableItemAlign ? s.tableItemAlign : DEFAULT_SIZE.tableItemAlign
 

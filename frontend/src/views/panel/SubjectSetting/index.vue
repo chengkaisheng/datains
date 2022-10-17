@@ -14,9 +14,25 @@
     <!--折叠面板-->
     <div v-if="collapseShow" style="margin: 10px;overflow-y: auto">
       <el-collapse v-model="activeNames" @change="handleChange">
+        <el-collapse-item :title="$t('chart.style_priority')" name="priority">
+          <el-row class="selector-div">
+            <el-col>
+              <el-radio-group
+                v-model="stylePriority"
+                size="mini"
+                @change="onPriorityChange"
+              >
+                <el-radio label="view"><span>{{ $t('chart.chart') }}</span></el-radio>
+                <el-radio label="panel"><span>{{ $t('chart.dashboard') }}</span></el-radio>
+              </el-radio-group>
+            </el-col>
+          </el-row>
+        </el-collapse-item>
         <el-collapse-item :title="$t('panel.panel')" name="panel">
           <el-row class="selector-div">
             <SetDrawSize class="attr-selector" />
+            <SetDrawFont class="attr-selector" />
+            <SetRuleColor class="attr-selector" />
             <background-selector class="attr-selector" />
             <component-gap class="attr-selector" />
             <panel-refresh-time class="attr-selector" />
@@ -30,6 +46,14 @@
               class="attr-selector"
               :chart="chart"
               @onChangeBackgroundForm="onChangeBackgroundForm"
+            />
+          </el-row>
+          <el-row class="selector-div">
+            <panel-title-selector
+              v-if="chart"
+              class="attr-selector"
+              :chart="chart"
+              @onTitleChange="onTitleChange"
             />
           </el-row>
         </el-collapse-item>
@@ -63,7 +87,10 @@
 import slider from './PreSubject/Slider'
 import BackgroundSelector from './PanelStyle/BackgroundSelector'
 import SetDrawSize from './PanelStyle/setDrawSize'
+import SetRuleColor from './PanelStyle/setRuleColor'
+import SetDrawFont from './PanelStyle/setDrawFont'
 import PanelBackgroundColorSelector from './PanelStyle/PanelBackgroundColorSelector'
+import PanelTitleSelector from './PanelStyle/PanelTitleSelector'
 import PanelColorSelector from './PanelStyle/PanelColorSelector'
 import ComponentGap from './PanelStyle/ComponentGap'
 import PanelRefreshTime from './PanelStyle/PanelRefreshTime'
@@ -77,12 +104,15 @@ export default {
   components: {
     PanelViewResult,
     SetDrawSize,
+    SetRuleColor,
     slider,
     BackgroundSelector,
     ComponentGap,
     PanelColorSelector,
     PanelBackgroundColorSelector,
-    PanelRefreshTime
+    PanelTitleSelector,
+    PanelRefreshTime,
+    SetDrawFont
   },
   data() {
     return {
@@ -91,7 +121,8 @@ export default {
       activeNames: ['panel'],
       chart: null,
       tableChart: null,
-      collapseShow: true
+      collapseShow: true,
+      stylePriority: 'view'
     }
   },
   computed: mapState([
@@ -131,8 +162,13 @@ export default {
       }
       chart.customAttr = JSON.parse(chart.customAttr)
       chart.customStyle = JSON.parse(chart.customStyle)
+      console.log('对过滤值进行处理-------------------------------------------------------------------------------', chart.customFilter)
       chart.customFilter = JSON.parse(chart.customFilter)
       this.chart = chart
+      console.log('subject-setting,,init:::::', this.chart)
+
+      // 样式优先级
+      this.stylePriority = chart.stylePriority
 
       // 因为 table 的color 设置和view的共用 所以单独设置一个对象
       this.tableChart = deepCopy(this.chart)
@@ -143,10 +179,12 @@ export default {
     onChangePanelStyle(parma) {
     },
     onColorChange(val) {
+      console.log('colors', val)
       this.chart.customAttr.color = val
       this.save()
     },
     onTableColorChange(val) {
+      console.log('table', val)
       this.chart.customAttr.tableColor = val
       this.save()
     },
@@ -158,6 +196,16 @@ export default {
       this.chart.customStyle.background = val
       this.save()
     },
+    onTitleChange(val) {
+      // console.log('测试标题',val)
+      this.chart.customStyle.text = val
+      this.save()
+    },
+    onPriorityChange(val) {
+      console.log(val)
+      this.chart.stylePriority = this.stylePriority
+      this.save()
+    },
     save() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
       const chart = deepCopy(this.chart)
@@ -167,8 +215,19 @@ export default {
       chart.customStyle = JSON.stringify(this.chart.customStyle)
       chart.customFilter = JSON.stringify(this.chart.customFilter)
       canvasStyleData.chart = chart
+      console.log('改变的', canvasStyleData)
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'save')
+      //  判断是否使用 仪表板的样式
+      if (chart.stylePriority === 'panel') {
+        this.$store.commit('setTemplateStatus', true)
+        this.$store.commit('setPriorityStatus', false)
+      } else {
+        this.$store.commit('setTemplateStatus', false)
+        this.$store.commit('setPriorityStatus', true)
+      }
+
+      bus.$emit('plugins-calc-style')
     },
     styleChange() {
       this.$store.state.styleChangeTimes++

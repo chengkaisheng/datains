@@ -2,7 +2,7 @@
   <div v-show="contentShow" v-loading="loading" class="login-background">
     <div class="login-container">
       <el-row type="flex">
-        <el-col :span="9" :offset="9">
+        <el-col :span="8" :offset="8">
           <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
             <div class="login-logo">
               <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="datains" custom-class="login-logo-icon" />
@@ -12,7 +12,7 @@
               {{ uiInfo['ui.loginTitle'].paramValue }}
             </div>
             <div v-else class="login-welcome">
-              {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || ' DataIns') }}
+              {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || '可视化配置平台') }}
             </div>
             <div class="login-form">
               <el-form-item v-if="loginTypes.length > 1">
@@ -192,7 +192,7 @@ export default {
     },
 
     handleLogin() {
-      console.log('111111')
+      // console.log('111111')
       this.initCache()
       this.clearOidcMsg()
       this.$refs.loginForm.validate(valid => {
@@ -243,6 +243,10 @@ export default {
   height: 100vh;
   // @include login-center;
   background: url(../../assets/login-background.png) no-repeat;
+  background-size:100% 100%;
+  display:flex;
+  justify-content: center;
+  padding-top:20px;
 }
 
 .login-container {

@@ -1,10 +1,11 @@
 <template>
-  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="background-color: #f7f8fa">
+  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="background-color: #f7f8fa;position:relative;">
     <de-main-container :class="{'full-height':fullHeightFlag}">
       <panel-main v-show="componentName==='PanelMain'" ref="panel_main" />
       <chart-edit v-if="componentName==='ChartEdit'" :param="param" />
       <panel-edit v-if="componentName==='PanelEdit'" />
     </de-main-container>
+    <!-- <div class="nav_log">213213</div> -->
   </de-container>
 </template>
 
@@ -71,6 +72,10 @@ export default {
 </script>
 
 <style scoped>
+    .nav_log{
+      position:absolute;
+
+    }
   .ms-aside-container {
     height: calc(100vh - 56px);
     padding: 0px;

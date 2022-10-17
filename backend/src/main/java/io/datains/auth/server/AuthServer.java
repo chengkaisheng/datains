@@ -128,8 +128,8 @@ public class AuthServer implements AuthApi {
     }
 
     public static void main(String[] args) {
-       String pwd = CodingUtil.md5("123456");
-        System.err.println(pwd);
+        String s = CodingUtil.md5("123456");
+        System.err.println(s);
     }
 
     @Override

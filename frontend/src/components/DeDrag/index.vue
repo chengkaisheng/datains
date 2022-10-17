@@ -20,6 +20,7 @@
     @touchstart="elementTouchDown"
     @mouseenter="enter"
     @mouseleave="leave"
+    @keyup.alt="keyboard"
   >
     <div
       :class="[
@@ -31,7 +32,26 @@
       ]"
       :style="mainSlotStyle"
     >
-      <edit-bar v-if="editBarShow" style="transform: translateZ(10px)" :active-model="'edit'" :element="element" @showViewDetails="showViewDetails" @amRemoveItem="amRemoveItem" @amAddItem="amAddItem" @resizeView="resizeView" @linkJumpSet="linkJumpSet" @boardSet="boardSet" />
+      <edit-bar
+        v-if="editBarShow"
+        style="transform: translateZ(10px)"
+        :active-model="'edit'"
+        :element="element"
+        @showViewDetails="showViewDetails"
+        @amRemoveItem="amRemoveItem"
+        @amAddItem="amAddItem"
+        @resizeView="resizeView"
+        @linkJumpSet="linkJumpSet"
+        @bannerImg="bannerImg"
+        @setNavInfo="setNavInfo"
+        @setFontIcon="setFontIcon"
+        @setPicture="setPicture"
+        @setWeather="setWeather"
+        @setJump="setJump"
+        @setCustom="setCustom"
+        @boardSet="boardSet"
+        @tabRelation="tabRelation"
+      />
       <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
       <div v-if="resizing" style="transform: translateZ(11px);position: absolute; z-index: 3" :style="resizeShadowStyle" />
       <div
@@ -63,6 +83,7 @@ import { mapState } from 'vuex'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { deepCopy } from '../canvas/utils/utils'
 
 export default {
   replace: true,
@@ -338,6 +359,7 @@ export default {
   data: function() {
     return {
       manualSetting: false,
+      slecltKey: false,
       left: this.x,
       top: this.y,
       right: null,
@@ -382,17 +404,17 @@ export default {
   },
   computed: {
     boxWidth() {
-      // console.log('修改触发=====0001boxWidth2222222222222222')
+      console.log('修改触发=====0001boxWidth2222222222222222', this.element)
       return this.element.commonBackground && this.element.commonBackground.boxWidth || 0
     },
     boxHeight() {
-      // console.log('修改触发=====0001boxWidth2222222222222222')
+      // console.log('修改触发=====0001boxHeight2222222222222222')
       return this.element.commonBackground && this.element.commonBackground.boxHeight || 0
     },
     // 编辑组件显示
     editBarShow() {
       // 编辑组件显示条件：1.当前组件存在 2.组件是激活状态或者当前在联动设置撞他 3.当前不在移动端画布编辑状态
-      return this.curComponent && (this.active || this.linkageSettingStatus) && !this.mobileLayoutStatus
+      return ((this.curComponent && (this.active || this.linkageSettingStatus)) || this.checkboxStatus) && !this.mobileLayoutStatus
     },
     // 移动端编辑组件选择按钮显示
     mobileCheckBarShow() {
@@ -511,6 +533,7 @@ export default {
 
     //  根据left right 算出元素的宽度
     computedMainSlotWidth() {
+      // console.log('触发改变前this.width=====', this.width)
       if (this.w === 'auto') {
         if (!this.widthTouched) {
           return 'auto'
@@ -600,6 +623,7 @@ export default {
       'curCanvasScale',
       'canvasStyleData',
       'linkageSettingStatus',
+      'checkboxStatus',
       'mobileLayoutStatus',
       'componentGap',
       'scrollAutoMove'
@@ -608,18 +632,34 @@ export default {
   watch: {
     'boxWidth': {
       handler: function(val1, val2) {
-        // console.log('监听视图层变化=============2222222222222', val1, val2)
+        console.log('监听视图层变化=============2222222222222', val1, val2)
+        // console.log('this.$el.getBoundingClientRect()', this.$el.getBoundingClientRect())
+        if (val1 !== val2) {
+          // console.log('this.$el.getBoundingClientRect()', this.$el.getBoundingClientRect())
+          this.width = val1
+          this.element.sizex = Math.round(this.width / this.curCanvasScale.matrixStyleWidth)
+          this.element.style.width = val1
+        }
         // this.resizeChart()
-        this.width = val1
+        // this.width = val1
+        // this.element.style.width = val1
         // this.changeWidth(val1)
       },
       deep: true
     },
     'boxHeight': {
       handler: function(val1, val2) {
-        // console.log('监听视图层变化=============2222222222222', val1, val2)
+        console.log('监听视图层变化=============3333333333333', val1, val2)
+        // console.log('this.$el.getBoundingClientRect()', this.$el.getBoundingClientRect())
+        if (val1 !== val2) {
+          // console.log('this.$el.getBoundingClientRect()', this.$el.getBoundingClientRect())\
+          this.height = val1
+          this.element.sizeY = Math.round(this.height / this.curCanvasScale.matrixStyleHeight)
+          this.element.style.height = val1
+        }
         // this.resizeChart()
-        this.height = val1
+        // this.height = val1
+        // this.element.style.height = val1
         // this.changeHeight(val1)
       },
       deep: true
@@ -702,6 +742,7 @@ export default {
       if (this.parent) {
         this.bounds = this.calcResizeLimits()
       }
+      // console.log('w()下的bounds',this.bounds)
       // console.log('changeWidth：' + val)
       this.changeWidth(val)
     },
@@ -766,6 +807,7 @@ export default {
     // 检查父元素大小
     checkParentSize() {
       if (this.parent) {
+        console.log('通道0001------------------------')
         const [newParentWidth, newParentHeight] = this.getParentSize()
         // 修复父元素改变大小后，组件resizing时活动异常
         this.right = newParentWidth - this.width - this.left
@@ -776,14 +818,17 @@ export default {
     },
     // 获取父元素大小
     getParentSize() {
+      // console.log('this.canvasStyleData===', this.canvasStyleData)
       if (this.parent === true) {
         const style = window.getComputedStyle(this.$el.parentNode, null)
         const rect = this.$el.parentNode.getBoundingClientRect()
         this.parentX = rect.x
         this.parentY = rect.y
-        return [Math.round(parseFloat(style.getPropertyValue('width'), 10)) + 6, 100000]
+        // console.log('this.canvasStyleData===22222')
+        return [Math.round(parseFloat(style.getPropertyValue('width'), 10)) + 6, this.canvasStyleData.height]
       }
       if (typeof this.parent === 'string') {
+        // console.log('this.canvasStyleData===33333')
         const parentNode = document.querySelector(this.parent)
         if (!(parentNode instanceof HTMLElement)) {
           throw new Error(`The selector ${this.parent} does not match any element`)
@@ -794,19 +839,34 @@ export default {
     },
     // 元素触摸按下
     elementTouchDown(e) {
+      // console.log('元素触摸按下====')
       eventsFor = events.touch
       this.elementDown(e)
     },
+    keyboard(e) {
+      // console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', e)
+    },
     elementMouseDown(e) {
-      // console.log('设置参数002', this.element, e)
+      console.log('设置参数002', this.element, e)
+      if (this.element.commonBackground.boxWidth && this.element.commonBackground.boxHeight) {
+        // console.log('11111111111111111111====', typeof (this.element.commonBackground.boxWidth), this.element.commonBackground.boxWidth)
+        // var width = deepCopy(this.element.commonBackground)
+        // this.element.style.width = this.element.commonBackground.boxWidth
+        // this.element.style.height = this.element.commonBackground.boxHeight
+        this.element.commonBackground.boxWidth = Math.floor(this.element.commonBackground.boxWidth)
+        this.element.commonBackground.boxHeight = Math.floor(this.element.commonBackground.boxHeight)
+      } else {
+        // console.log('22222222222222222222====')
+        var info = document.getElementById('eleId' + this.element.id)
+        console.log('设置参数003', info, info.offsetWidth, info.offsetHeight)
+        this.element.commonBackground.boxWidth = Math.floor(info.offsetWidth)
+        this.element.commonBackground.boxHeight = Math.floor(info.offsetHeight)
+      }
+
+      // console.log('设置参数002', this.element.style, e)
 
       // console.log('设置参数003', this.style)
-      var info = document.getElementById('eleId' + this.element.id)
-      // console.log('设置参数003', info.offsetWidth, info.offsetHeight)
-      this.element.commonBackground.boxWidth = info.offsetWidth
-      this.element.commonBackground.boxHeight = info.offsetHeight
-      this.element.style.width = this.element.commonBackground.boxWidth
-      this.element.style.height = this.element.commonBackground.boxWidth
+
       // private 设置当前组件数据及状态
       this.$store.commit('setClickComponentStatus', true)
       if (this.element.component !== 'v-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-select-grid' && this.element.component !== 'de-number-range' && this.element.component !== 'de-date') {
@@ -817,6 +877,9 @@ export default {
       // 此处阻止冒泡 但是外层需要获取pageX pageY
       this.element.auxiliaryMatrix && this.$emit('elementMouseDown', e)
 
+      // const newData = JSON.parse(JSON.stringify(this.element))
+      // console.log('传输', newData)
+
       this.$store.commit('setCurComponent', { component: this.element, index: this.index })
       // 移动端组件点击自动置顶
       this.mobileLayoutStatus && this.$store.commit('topComponent')
@@ -825,6 +888,7 @@ export default {
     },
     // 元素按下
     elementDown(e) {
+      console.log('元素按下')
       if (e instanceof MouseEvent && e.which !== 1) {
         return
       }
@@ -865,8 +929,15 @@ export default {
         if (this.parent) {
           this.bounds = this.calcDragLimits()
         }
-        addEvent(document.documentElement, eventsFor.move, this.move)
-        addEvent(document.documentElement, eventsFor.stop, this.handleUp)
+        console.log('边界', this.bounds)
+        var width = deepCopy(this.element.commonBackground)
+        this.element.style.width = width.boxWidth
+        this.element.style.height = width.boxHeight
+        // return
+        if (!this.element.isLock) {
+          addEvent(document.documentElement, eventsFor.move, this.move)
+          addEvent(document.documentElement, eventsFor.stop, this.handleUp)
+        }
       }
     },
     // 计算移动范围
@@ -925,6 +996,7 @@ export default {
     },
     // 控制柄按下
     handleDown(handle, e) {
+      // console.log('handle, e', handle, e)
       if (e instanceof MouseEvent && e.which !== 1) {
         return false
       }
@@ -949,6 +1021,7 @@ export default {
       // 新增保存矩形信息
       // 获取父元素的位置大小信息
       const { top, left, width, height } = this.$el.getBoundingClientRect()
+      // console.log('this.$el.getBoundingClientRect()', this.$el.getBoundingClientRect())
       // 保存旋转中心的绝对坐标
       this.lastCenterX = window.pageXOffset + left + width / 2
       this.lastCenterY = window.pageYOffset + top + height / 2
@@ -975,17 +1048,22 @@ export default {
       this.mouseClickPosition.height = this.height
       // 计算边界
       this.bounds = this.calcResizeLimits()
+      console.log('边界。。。。。', this.bounds)
       // 添加事件
       addEvent(document.documentElement, eventsFor.move, this.move)
       addEvent(document.documentElement, eventsFor.stop, this.handleUp)
     },
     // 计算调整大小范围
     calcResizeLimits() {
+      this.mountedFunction() // 从新计算一下
+      console.log('计算调整大小范围')
       const minW = this.minW
       const minH = this.minH
+      console.log(minW, minH)
       let maxW = this.maxW
       let maxH = this.maxH
       const [gridX, gridY] = this.grid
+      console.log('grid:::', gridX, gridY)
       // 获取矩形信息
       const width = this.width
       const height = this.height
@@ -993,6 +1071,13 @@ export default {
       const top = this.top
       const right = this.right
       const bottom = this.bottom
+      console.log('矩形信息：')
+      console.log('width:', width)
+      console.log('height:', height)
+      console.log('left:', left)
+      console.log('top:', top)
+      console.log('right:', right)
+      console.log('bottom:', bottom)
       // 对齐网格
       maxW = maxW - (maxW % gridX)
       maxH = maxH - (maxH % gridY)
@@ -1006,8 +1091,10 @@ export default {
         minBottom: null,
         maxBottom: null
       }
+      console.log('网格', maxW, maxH)
       // 边界限制
       if (this.parent) {
+        console.log('11111111111111111')
         limits.minLeft = left
         limits.maxLeft = left + Math.floor((width - minW) / gridX)
         limits.minTop = top
@@ -1025,6 +1112,7 @@ export default {
           limits.minBottom = Math.max(limits.minBottom, this.parentHeight - top - maxH)
         }
       } else {
+        console.log('22222222222222222')
         limits.minLeft = null
         limits.maxLeft = left + Math.floor(width - minW)
         limits.minTop = null
@@ -1052,11 +1140,15 @@ export default {
     },
     // 移动
     move(e) {
+      console.log('鼠标移动事件-----------------------------------', e)
       if (this.resizing) {
+        console.log('resizing')
         this.handleResize(e)
       } else if (this.dragging) {
+        console.log('dragging')
         this.handleDrag(e)
       } else if (this.rotating) {
+        console.log('rotating')
         this.handleRotate(e)
       }
     },
@@ -1089,15 +1181,26 @@ export default {
 
     // 元素移动
     async handleDrag(e) {
+      // 需要获取缩放值计算比例
+      console.log('this. console.log()----------', this.curCanvasScale)
+      let scaleRule = 1
+      if (this.curCanvasScale.scaleRule) {
+        scaleRule = this.curCanvasScale.scaleRule
+      }
+
       const axis = this.axis
       const grid = this.grid
       const bounds = this.bounds
       const mouseClickPosition = this.mouseClickPosition
+      console.log('this.mouseClickPosition', this.mouseClickPosition)
       // 水平移动
-      const tmpDeltaX = axis && axis !== 'y' ? mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX) : 0
+      const tmpDeltaX = axis && axis !== 'y' ? Math.round((mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX)) / scaleRule) : 0
+
       // 垂直移动
       const mY = e.touches ? e.touches[0].pageY : e.pageY
-      const tmpDeltaY = axis && axis !== 'x' ? mouseClickPosition.mouseY - mY : 0
+      const tmpDeltaY = axis && axis !== 'x' ? Math.round((mouseClickPosition.mouseY - mY) / scaleRule) : 0
+
+      console.log('各种移动值：：：', tmpDeltaX, mY, tmpDeltaY)
       // mY 鼠标指针移动的点 mY - this.latestMoveY 是计算向下移动还是向上移动
       const offsetY = mY - this.latestMoveY
       // console.log('mY:' + mY + ';latestMoveY=' + this.latestMoveY + ';offsetY=' + offsetY)
@@ -1115,6 +1218,7 @@ export default {
       this.top = top + this.scrollAutoMove
       this.right = right
       this.bottom = bottom
+      // console.log()
       await this.snapCheck()
       this.$emit('dragging', this.left, this.top)
       // 如果当前视图遵循矩阵设计则 进行位置挤压检查
@@ -1293,6 +1397,7 @@ export default {
           newH = newW / this.aspectFactor
         }
       }
+      console.log('width改变点666===', this.width)
       this.width = newW
       // console.log('width2:' + this.width)
       this.height = newH
@@ -1305,7 +1410,7 @@ export default {
       this.element.propValue && this.element.propValue.viewId && eventBus.$emit('resizing', this.element.propValue.viewId)
     },
     changeWidth(val) {
-      // console.log('changeWidth====', val)
+      console.log('changeWidth====', val)
       // console.log('parentWidth', this.parentWidth)
       // console.log('parentHeight', this.parentHeight)
       // eslint-disable-next-line no-unused-vars
@@ -1322,7 +1427,7 @@ export default {
       this.right = right
       this.bottom = bottom
       this.width = width
-      // console.log('width3:' + this.width)
+      console.log('width3:' + this.width)
       this.height = height
     },
     changeHeight(val) {
@@ -1341,7 +1446,7 @@ export default {
       this.right = right
       this.bottom = bottom
       this.width = width
-      // console.log('width4:' + this.width)
+      console.log('width4:' + this.width)
       this.height = height
     },
     // 从控制柄松开
@@ -1682,6 +1787,10 @@ export default {
       style.height = this.height
       style.rotate = this.rotate
       this.hasMove = true
+      this.element.commonBackground.boxWidth = this.width
+      this.element.commonBackground.boxHeight = this.height
+      // console.log('元素是否修改状态=======222222', style)
+      this.slecltKey = true
       this.$store.commit('setShapeStyle', style)
     },
 
@@ -1700,6 +1809,7 @@ export default {
       style.height = height
       style.rotate = this.rotate
       // this.hasMove = true
+      console.log('元素是否修改状态=======33333')
       this.$store.commit('setShapeStyle', style)
 
       // resize
@@ -1724,14 +1834,26 @@ export default {
       const style = {
         ...this.defaultStyle
       }
+      // var info = document.getElementById('eleId' + this.element.id)
       style.left = left
       style.top = top
       style.width = width
       style.height = height
+
       style.rotate = this.rotate
+      // style.width = this.element.commonBackground.boxWidth
+      // style.height = this.element.commonBackground.boxHeight
+      // if (this.slecltKey & !this.hasMove) {
+      //   style.width = width
+      //   style.height = height
+      // } else {
+      //   style.width = info.offsetWidth
+      //   style.height = info.offsetHeight
+      // }
+      this.slecltKey = false
       // this.hasMove = true
       // console.log('recordMatrixCurShadowStyle:t1:' + JSON.stringify(style))
-
+      console.log('元素是否修改状态=======44444', style, this.element)
       this.$store.commit('setShapeStyle', style)
 
       // resize
@@ -1747,11 +1869,12 @@ export default {
       // this.snap = this.horizontal
       // this.snapTolerance = 5
       // this.grid = [10, 10]
-
+      // console.log('是否走这里呢?????')
       if (!this.enableNativeDrag) {
         this.$el.ondragstart = () => false
       }
       const [parentWidth, parentHeight] = this.getParentSize()
+      // console.log('parentWidth, parentHeight', parentWidth, parentHeight)
       this.parentWidth = parentWidth
       this.parentHeight = parentHeight
       const [width, height] = getComputedSize(this.$el)
@@ -1759,12 +1882,17 @@ export default {
       if (this.outsideAspectRatio) {
         this.aspectFactor = this.outsideAspectRatio
       }
+      // console.log('this.element.style===', this.element.style)
       this.width = this.w !== 'auto' ? this.w : width
+      // this.width = this.element.style.width
+      // console.log('with改变点5====', this.width, this.w, width)
       // console.log('width1:' + this.width)
       this.height = this.h !== 'auto' ? this.h : height
+      // this.height = this.element.style.height
       this.right = this.parentWidth - this.width - this.left
       this.bottom = this.parentHeight - this.height - this.top
-
+      // this.width = this.element.style.width
+      // this.height = this.element.style.height
       // 绑定data-*属性
       this.settingAttribute()
       // 监听取消操作
@@ -1772,6 +1900,11 @@ export default {
       addEvent(document.documentElement, 'touchend touchcancel', this.deselect)
       //  窗口变化时，检查容器大小
       addEvent(window, 'resize', this.checkParentSize)
+      // this.changeWidth(this.element.style.width)
+      // this.changeHeight(this.element.style.height)
+      // document.addEventListener('keydown', function(e) {
+      //   console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-------------------------', e)
+      // })
     },
     createdFunction() {
       // minWidth不能大于maxWidth
@@ -1821,7 +1954,40 @@ export default {
     },
     // 跳转设置
     boardSet() {
+      console.log('是否触发这3333')
       this.$emit('boardSet')
+    },
+    tabRelation() {
+      this.$emit('tabRelation')
+    },
+    // 跳转设置
+    bannerImg() {
+      console.log('-----------2222222', this.element)
+      this.$emit('bannerImg')
+    },
+    // 导航条状设置
+    setNavInfo() {
+      this.$emit('setNavInfo')
+    },
+    // 字体图标的设置
+    setFontIcon() {
+      this.$emit('setFontIcon')
+    },
+    // 图片库
+    setPicture() {
+      this.$emit('setPicture')
+    },
+    // 天气
+    setWeather() {
+      this.$emit('setWeather')
+    },
+    // 文本轮播
+    setCustom() {
+      this.$emit('setCustom')
+    },
+    // 下拉跳转
+    setJump() {
+      this.$emit('setJump')
     }
   }
 
@@ -1931,5 +2097,6 @@ export default {
     width: 100%;
     height: 100%;
     background-size: 100% 100% !important;
+    /* padding:0 6px 6px 6px; */
   }
 </style>

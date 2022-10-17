@@ -5,9 +5,25 @@
         <slot name="icon" />
         <el-dropdown-menu v-if="curComponent">
           <el-dropdown-item v-if="editFilter.includes(curComponent.type)" icon="el-icon-edit-outline" @click.native="edit">{{ $t('panel.edit') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-document-copy" @click.native="copy">{{ $t('panel.copy') }}</el-dropdown-item>
+          <el-popover
+            width="90"
+            trigger="hover"
+            placement="right"
+          > 
+            <div>
+              <p>
+                <el-button type="text" @click.native="copy">{{$t('panel.copy_current')}}</el-button>
+              </p>
+              <p>
+                <el-button type="text" @click.native="copyOther">{{$t('panel.copy_other')}}</el-button>
+              </p>
+              
+            </div>
+            <el-dropdown-item slot="reference" icon="el-icon-document-copy">{{ $t('panel.copy') }}</el-dropdown-item>
+          </el-popover>
+          <!-- <el-dropdown-item icon="el-icon-document-copy" @click.native="copy">{{ $t('panel.copy') }}</el-dropdown-item> -->
           <el-dropdown-item icon="el-icon-delete" @click.native="deleteComponent">{{ $t('panel.delete') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-upload2" @click.native="topComponent">{{ $t('panel.topComponent') }}</el-dropdown-item>
+          <el-dropdown-item icon="el-icon-upload2" @click.native="topComponent">{{ $t('panel.topComponent')}}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-download" @click.native="bottomComponent">{{ $t('panel.bottomComponent') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-arrow-up" @click.native="upComponent">{{ $t('panel.upComponent') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-arrow-down" @click.native="downComponent">{{ $t('panel.downComponent') }}</el-dropdown-item>
@@ -15,8 +31,10 @@
           <el-dropdown-item v-if="'de-tabs'===curComponent.type" icon="el-icon-link" @click.native="addTab">{{ $t('panel.add_tab') }}</el-dropdown-item>
           <el-dropdown-item v-if="'view'===curComponent.type" icon="el-icon-connection" @click.native="linkJumpSet">{{ $t('panel.setting_jump') }}</el-dropdown-item>
           <el-dropdown-item icon="el-icon-magic-stick" @click.native="boardSet">{{ $t('panel.component_style') }}</el-dropdown-item>
+          <el-dropdown-item v-if="'de-nav'!==curComponent.type" icon="el-icon-connection" @click.native="tabRelation">{{ '导航关联' }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+
     </div>
   </div>
 </template>
@@ -75,12 +93,38 @@ export default {
       this.paste()
     },
 
+    copyOther() {
+      this.$store.commit('copy')
+      this.$store.commit('setCopyToPaste',true)
+    },
+
     paste() {
       this.$store.commit('paste', true)
       this.$store.commit('recordSnapshot', 'paste')
     },
 
     deleteComponent() {
+      console.log('curComponent----', this.curComponent)
+      let key = false
+      if (this.curComponent.type === 'de-nav') {
+        console.log(this.curComponent.options.navTabList)
+        if (JSON.stringify(this.curComponent.options.navTabList) !== '[]') {
+          this.curComponent.options.navTabList.forEach(ele => {
+            if (JSON.stringify(ele.relation) !== '[]') {
+              console.log('导航绑定值未解除')
+              key = true
+            }
+          })
+        }
+      }
+      if (key) {
+        this.$message({
+          message: '导航绑定值未解除,不能删除',
+          type: 'warning'
+        })
+        return
+      }
+
       this.$emit('amRemoveItem')
       this.deleteCurCondition()
       this.$store.commit('deleteComponent')
@@ -126,7 +170,9 @@ export default {
         'sourceViewId': this.curComponent.propValue.viewId,
         'targetViewIds': targetViewIds
       }
+      console.log('联动设置',requestInfo)
       getViewLinkageGather(requestInfo).then(rsp => {
+        console.log('查询的数据', rsp)
         this.$store.commit('setLinkageInfo', rsp.data)
       })
     },
@@ -141,6 +187,10 @@ export default {
     boardSet() {
       console.log('点击条状组件样式设置窗口====')
       this.$emit('boardSet')
+    },
+    tabRelation() {
+      console.log('第一层')
+      this.$emit('tabRelation')
     }
   }
 }

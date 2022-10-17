@@ -5,7 +5,8 @@ import {
 } from '@/views/chart/chart/common/common_antv'
 import { WordCloud } from '@antv/g2plot'
 
-export function baseWordCloudOptionAntV(plot, container, chart, action) {
+export function baseWordCloudOptionAntV(plot, container, chart, action,cstyle = {},scalePointWidth) {
+  console.log('词云',chart,scalePointWidth)
   // theme
   const theme = getTheme(chart)
   // attr
@@ -20,10 +21,10 @@ export function baseWordCloudOptionAntV(plot, container, chart, action) {
     weightField: 'value',
     colorField: 'field',
     wordStyle: {
-      fontFamily: 'Verdana',
+      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : 'Verdana',
       fontSize: [8, 32],
-      rotation: [0, 0],
-      padding: 6
+      rotation: [-20, 20],
+      padding: 2
     },
     random: () => 0.5,
     appendPadding: getPadding(chart),
@@ -51,6 +52,18 @@ export function baseWordCloudOptionAntV(plot, container, chart, action) {
   //     }
   //   }
   // }
+  
+  //绘制图形
+
+  if(chart.customAttr) {
+    const customAttr = JSON.parse(chart.customAttr)
+    // console.log('/??????',customAttr)
+    if(customAttr.size) {
+      // console.log(customAttr.size)
+      options.wordStyle.fontSize[0] = customAttr.size.wordMin * scalePointWidth
+      options.wordStyle.fontSize[1] = customAttr.size.wordMax * scalePointWidth
+    }
+  }
 
   // 开始渲染
   if (plot) {

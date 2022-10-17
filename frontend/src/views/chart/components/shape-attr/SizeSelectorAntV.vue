@@ -9,7 +9,17 @@
         <!--          <el-slider v-model="sizeForm.barWidth" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="1" :max="80" @change="changeBarSizeCase" />-->
         <!--        </el-form-item>-->
         <el-form-item :label="$t('chart.bar_gap')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="0" :max="5" :step="0.1" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="-1" :max="5" :step="0.1" @change="changeBarSizeCase" />
+        </el-form-item>
+      </el-form>
+
+      <!-- 词云组件字体大小设置 -->
+      <el-form v-show="chart.type && chart.type === 'word-cloud'" ref="sizeFormWord" :model="sizeForm" label-width="100px" size="mini">
+        <el-form-item :label="$t('chart.wordMin')" class="form-item">
+          <el-slider v-model="sizeForm.wordMin" show-input :show-input-controls="false" input-size="mini" :min="10" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.wordMax')" class="form-item">
+          <el-slider v-model="sizeForm.wordMax" show-input :show-input-controls="false" input-size="mini" :min="sizeForm.wordMin" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
 
@@ -49,6 +59,17 @@
           <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
 
+        <!-- <el-form-item :label="$t('chart.pie_circle_center_left')" class="form-item">
+          <el-slider v-model="sizeForm.pieCircleLeft" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.pie_circle_center_top')" class="form-item">
+          <el-slider v-model="sizeForm.pieCircleTop" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item> -->
+
+        <el-form-item v-if="chart.type && chart.type === 'pie-rose'" :label="$t('chart.pie_rose_label_offset')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.pieRoseOffset" show-input :show-input-controls="false" input-size="mini" :min="-100" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+
         <!--        <span v-show="chart.type && chart.type.includes('pie-rose')">-->
         <!--          <el-form-item :label="$t('chart.rose_type')" class="form-item">-->
         <!--            <el-radio-group v-model="sizeForm.pieRoseType" size="mini" @change="changeBarSizeCase">-->
@@ -62,11 +83,11 @@
         <!--        </span>-->
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('funnel')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
-        <!--        <el-form-item :label="$t('chart.funnel_width')" class="form-item form-item-slider">-->
-        <!--          <el-slider v-model="sizeForm.funnelWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />-->
-        <!--        </el-form-item>-->
-      </el-form>
+      <!-- <el-form v-show="chart.type && chart.type.includes('funnel')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+               <el-form-item :label="$t('chart.funnel_width')" class="form-item form-item-slider">
+                 <el-slider v-model="sizeForm.funnelWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+               </el-form-item>
+      </el-form> -->
 
       <el-form v-show="chart.type && chart.type.includes('radar')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.shape')" class="form-item">
@@ -80,7 +101,7 @@
         </el-form-item>
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('table')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+      <el-form v-show="chart.type && (chart.type.includes('table')||chart.type.includes('roll')||chart.type.includes('dialog'))" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item v-show="chart.type && chart.type === 'table-info'" :label="$t('chart.table_page_size')" class="form-item">
           <el-select v-model="sizeForm.tablePageSize" :placeholder="$t('chart.table_page_size')" @change="changeBarSizeCase">
             <el-option
@@ -101,6 +122,17 @@
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="$t('chart.table_Highlight')" class="form-item">
+          <el-slider v-model="sizeForm.highlightNumber" show-input :show-input-controls="false" input-size="mini" :min="1" :max="50" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'表格展示行数'" class="form-item">
+          <el-slider v-model="sizeForm.tableRowsNumber" show-input :show-input-controls="false" input-size="mini" :min="1" :max="50" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮字体大小'" class="form-item">
+          <el-select v-model="sizeForm.heightLightFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
+            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
         <el-form-item :label="$t('chart.table_header_align')" class="form-item">
           <el-select v-model="sizeForm.tableHeaderAlign" :placeholder="$t('chart.table_header_align')" @change="changeBarSizeCase">
             <el-option v-for="option in alignOptions" :key="option.value" :label="option.name" :value="option.value" />
@@ -111,9 +143,44 @@
             <el-option v-for="option in alignOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
+        <!-- <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'是否启用轮播'" class="form-item">
+          <el-radio-group v-model="sizeForm.automatic" @change="changeBarSizeCase">
+            <el-radio :label="true">是</el-radio>
+            <el-radio :label="false">否</el-radio>
+          </el-radio-group>
+        </el-form-item> -->
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'轮播速率'" class="form-item">
+          <el-select v-model="sizeForm.automaticTime" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
+            <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'轮播联动'" class="form-item">
+          <!-- <el-select v-model="sizeForm.bannerLinkage" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
+            <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select> -->
+          <el-radio-group v-model="sizeForm.bannerLinkage" @change="changeBarSizeCase">
+            <el-radio :label="true"><span>是</span></el-radio>
+            <el-radio :label="false">
+              <span>否</span>
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <!-- <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮行'" class="form-item">
+          <el-select v-model="sizeForm.heightLightLine" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
+            <el-option v-for="option in heightLightLineOps" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item> -->
+        <!-- <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'滚动速率'" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.tableRollingRate" :min="0" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+        </el-form-item> -->
+        <!-- <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮透明度'" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.tableHeightLight" :min="0" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+        </el-form-item> -->
+
         <el-form-item :label="$t('chart.table_title_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableTitleHeight" :min="20" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
+
         <el-form-item :label="$t('chart.table_item_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableItemHeight" :min="20" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
@@ -206,7 +273,7 @@
           <el-slider v-model="sizeForm.barWidth" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="1" :max="80" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.bar_gap')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="0" :max="5" :step="0.1" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="-1" :max="5" :step="0.1" @change="changeBarSizeCase" />
         </el-form-item>
         <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_line') }}</el-divider>
         <el-form-item :label="$t('chart.line_width')" class="form-item form-item-slider">
@@ -292,6 +359,7 @@ export default {
   data() {
     return {
       sizeForm: JSON.parse(JSON.stringify(DEFAULT_SIZE)),
+
       lineSymbolOptions: [
         // { name: this.$t('chart.line_symbol_none'), value: 'none' },
         { name: this.$t('chart.line_symbol_circle'), value: 'circle' },
@@ -317,6 +385,28 @@ export default {
         { name: this.$t('chart.table_align_left'), value: 'left' },
         { name: this.$t('chart.table_align_center'), value: 'center' },
         { name: this.$t('chart.table_align_right'), value: 'right' }
+      ],
+      automaticTimeOptions: [
+        { name: '1秒', value: 1000 },
+        { name: '2秒', value: 2000 },
+        { name: '3秒', value: 3000 },
+        { name: '4秒', value: 4000 },
+        { name: '5秒', value: 5000 },
+        { name: '6秒', value: 6000 },
+        { name: '7秒', value: 7000 },
+        { name: '8秒', value: 8000 },
+        { name: '9秒', value: 9000 }
+      ],
+      heightLightLineOps: [
+        { name: '第一行', value: 0 },
+        { name: '第二行', value: 1 },
+        { name: '第三行', value: 2 },
+        { name: '第四行', value: 3 },
+        { name: '第五行', value: 4 },
+        { name: '第六行', value: 5 },
+        { name: '第七行', value: 6 },
+        { name: '第八行', value: 7 },
+        { name: '第九行', value: 8 }
       ]
     }
   },
@@ -334,6 +424,7 @@ export default {
   methods: {
     initData() {
       const chart = JSON.parse(JSON.stringify(this.chart))
+      console.log('chartchartchartchartchartchartchartchartchartchartchartchart', chart)
       if (chart.customAttr) {
         let customAttr = null
         if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
@@ -341,6 +432,7 @@ export default {
         } else {
           customAttr = JSON.parse(chart.customAttr)
         }
+        console.log('customAttr', customAttr)
         if (customAttr.size) {
           this.sizeForm = customAttr.size
           this.sizeForm.treemapWidth = this.sizeForm.treemapWidth ? this.sizeForm.treemapWidth : 80
@@ -375,7 +467,12 @@ export default {
       }
       this.fontSize = arr
     },
-    changeBarSizeCase() {
+    changeBarSizeCase(e, key) {
+      console.log('this.sizeForm.automatic', this.sizeForm.automatic, e, key)
+      // if (this.sizeForm.automatic && e !== true) {
+      //   this.$message.warning('修改前请关闭轮播效果')
+      //   return
+      // }
       this.$emit('onSizeChange', this.sizeForm)
     }
   }

@@ -46,6 +46,10 @@ const data = {
     editMode: 'edit',
     // 当前页面全局数据 包括扩展公共样式 公共的仪表板样式，用来实时响应样式的变化
     canvasStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING,
+    // 新建仪表板自定义样式
+    isPanelStyle: false,
+    // 新建仪表板样式数据
+    panelStyleData: null,
     // 当前展示画布缓存数据
     componentDataCache: null,
     // 当前展示画布组件数据
@@ -63,10 +67,19 @@ const data = {
       scalePointWidth: 1,
       scalePointHeight: 1
     },
+    isCopyToPaste: false, // 是否复制到其他页，展示粘贴
     // 点击画布时是否点中组件，主要用于取消选中组件用。
     // 如果没点中组件，并且在画布空白处弹起鼠标，则取消当前组件的选中状态
     isClickComponent: false,
     canvasCommonStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING,
+    // 主题模板是否为改变
+    templateStatus: false,
+    // 是否启用仪表板样式,不启时，需要刷新页面查询组件数据，启用时为false
+    isStylePriority: false,
+    // 多选选择状态
+    checkboxStatus: false,
+    // 是否可均匀分布
+    isUniformity: false,
     // 联动设置状态
     linkageSettingStatus: false,
     // 当前设置联动的组件
@@ -84,7 +97,7 @@ const data = {
     // 拖拽的组件信息
     dragComponentInfo: null,
     // 仪表板组件间隙大小 px
-    componentGap: 5,
+    componentGap: 0,
     // 移动端布局状态
     mobileLayoutStatus: false,
     // 公共链接状态(当前是否是公共链接打开)
@@ -121,15 +134,37 @@ const data = {
       state.isClickComponent = status
     },
 
+    setCopyToPaste(state,status) {
+      state.isCopyToPaste = status
+    },
+
     setEditMode(state, mode) {
       state.editMode = mode
     },
 
     setCanvasStyle(state, style) {
+      console.log('设置样式：', style)
       if (style) {
         style['selfAdaption'] = true
       }
+
       state.canvasStyleData = style
+    },
+
+    setPanelStatus(state,status) {
+      state.isPanelStyle = status
+    },
+    setPanelStyleData(state,style) {
+      state.panelStyleData = style
+    },
+
+    setTemplateStatus(state, status) {
+      console.log('设置temp样式', status)
+      state.templateStatus = status
+    },
+    setPriorityStatus(state, status) {
+      console.log('设置priority', status)
+      state.isStylePriority = status
     },
 
     setCurComponent(state, { component, index }) {
@@ -165,6 +200,7 @@ const data = {
         if (height || height === 0) curComponent.style.height = (height / curCanvasScale.scalePointHeight) + 0.0000001
         if (rotate || rotate === 0) curComponent.style.rotate = rotate
       }
+      // console.log('宽高处理出？？？？？？', width, height, curComponent, curCanvasScale)
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {
@@ -200,9 +236,11 @@ const data = {
       })
     },
     addViewFilter(state, data) {
+      console.log('过滤器修改-----------', state, data)
       const condition = formatCondition(data)
       const vValid = valueValid(condition)
       //   1.根据componentId过滤
+      console.log('condition', condition, 'vValid', vValid)
       const filterComponentId = condition.componentId
 
       //   2.循环每个Component 得到 三种情况 a增加b删除c无操作
@@ -210,7 +248,9 @@ const data = {
 
       for (let index = 0; index < state.componentData.length; index++) {
         const element = state.componentData[index]
+        console.log('1---------------点')
         if (element.type && element.type === 'de-tabs') {
+          console.log('2---------------点')
           for (let idx = 0; idx < element.options.tabList.length; idx++) {
             const ele = element.options.tabList[idx].content
             if (!ele.type || ele.type !== 'view') continue
@@ -232,6 +272,7 @@ const data = {
           state.componentData[index] = element
         }
         if (!element.type || element.type !== 'view') continue
+        console.log('3---------------点', condition)
         const currentFilters = element.filters || []
         const vidMatch = viewIdMatch(condition.viewIds, element.propValue.viewId)
 
@@ -242,12 +283,18 @@ const data = {
             currentFilters.splice(j, 1)
           }
         }
+        console.log('4---------------点', condition, data)
         // 不存在该条件 且 条件有效 直接保存该条件
         // !filterExist && vValid && currentFilters.push(condition)
         vidMatch && vValid && currentFilters.push(condition)
         element.filters = currentFilters
+        console.log('5---------------点', element, data)
+        state.componentData[index] = {}
         state.componentData[index] = element
+
+        // this.$set(state.componentData[index], 'newKey', data.value)
       }
+      console.log('state.componentData', state.componentData)
     },
 
     // 添加联动 下钻 等过滤组件
@@ -404,6 +451,7 @@ const data = {
       state.componentData.splice(index, 1)
     },
     setLinkageInfo(state, targetLinkageInfo) {
+      console.log('联动设置：：', state, targetLinkageInfo)
       state.linkageSettingStatus = true
       state.curLinkageView = state.curComponent
       state.targetLinkageInfo = targetLinkageInfo
@@ -412,6 +460,12 @@ const data = {
       state.linkageSettingStatus = false
       state.curLinkageView = null
       state.targetLinkageInfo = []
+    },
+    setCheckBoxStatus(state, status) {
+      state.checkboxStatus = status
+    },
+    setUniformityStatus(state, status) {
+      state.isUniformity = status
     },
     setNowPanelTrackInfo(state, trackInfo) {
       state.nowPanelTrackInfo = trackInfo
@@ -440,10 +494,14 @@ const data = {
         height: 0,
         width: 0
       }
+      console.log('setDragComp', dragComponentInfo)
       state.dragComponentInfo = dragComponentInfo
     },
     clearDragComponentInfo(state) {
+      console.log(state)
       // 如果当前没有拖拽的元素没有放置到画布 清理一下矩阵的占位符
+      if (state.dragComponentInfo === null) return
+
       if (state.dragComponentInfo.moveStatus !== 'drop') {
         bus.$emit('onRemoveLastItem')
       }

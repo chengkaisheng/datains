@@ -28,30 +28,53 @@
 <script>
 import {
   BASE_BAR,
+  BASE_BAR_PART,
   BASE_LINE,
   HORIZONTAL_BAR,
+  BASE_PICTORIAL_BAR,
   BASE_PIE,
   BASE_FUNNEL,
+  THERMODYNAMIC_DIAGRAM,
   BASE_RADAR,
   BASE_GAUGE,
   BASE_MAP,
   BASE_SCATTER,
   BASE_TREEMAP,
-  BASE_MIX
+  BASE_MIX,
+  BASE_GRAPH,
+  BASE_WORD_CLOUD,
+  BASE_LIQUID
 } from '../chart/chart'
 import {
   baseBarOption,
+  doubleBarOption,
+  contrastBarOption,
+  rankingBarOption,
+  polarStackBarOption,
+  pyramidBarOption,
+  triangleBarOption,
+  annularBarOption,
+  annularBarOptions,
   stackBarOption,
+  stackBarPartOption,
   horizontalBarOption,
-  horizontalStackBarOption
+  horizontalStackBarOption,
+  basePictorialBarOption
+  // clockcatterOption
 } from '../chart/bar/bar'
 import {
   baseLineOption,
-  stackLineOption
+  stackLineOption,
+  polarLineOption,
+  heatMapOption
 } from '../chart/line/line'
 import {
   basePieOption,
-  rosePieOption
+  rosePieOption,
+  rosePieGradientOption,
+  texturePieOption,
+  prominentPieOption
+  // newHartOption
 } from '../chart/pie/pie'
 import {
   baseMapOption
@@ -66,7 +89,14 @@ import {
   baseGaugeOption
 } from '../chart/gauge/gauge'
 import {
+  baseGraphOption
+} from '../chart/graph/graph'
+import {
+  baseWordCloudOption
+} from '@/views/chart/chart/wordCloud/word_cloud_es'
+import {
   baseScatterOption
+  // clockcatterOption
 } from '../chart/scatter/scatter'
 import {
   baseTreemapOption
@@ -74,6 +104,10 @@ import {
 import {
   baseMixOption
 } from '@/views/chart/chart/mix/mix'
+
+import {
+  baseLiquidOption
+} from '@/views/chart/chart/liquid/liquid_es'
 // import eventBus from '@/components/canvas/utils/eventBus'
 import {
   uuid
@@ -189,34 +223,78 @@ export default {
       const chart = this.chart
       let chart_option = {}
       // type
+
+      // console.log(this.$store.state.canvasStyleData)
+      // bar-contrast 对比
+      // bar-double
       if (chart.type === 'bar') {
-        chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart)
+        chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-contrast') {
+        chart_option = contrastBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-double') {
+        chart_option = doubleBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-ranking') {
+        chart_option = rankingBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'clock-pie') {
+        chart_option = prominentPieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
+
+        // chart_option = prominentPieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'pyramid') {
+        chart_option = pyramidBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-circular') {
+        chart_option = annularBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-annular') {
+        chart_option = annularBarOptions(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-triangle') {
+        chart_option = triangleBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack') {
-        chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart)
+        chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-stack-part') {
+        chart_option = stackBarPartOption(JSON.parse(JSON.stringify(BASE_BAR_PART)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-polarStack') {
+        chart_option = polarStackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-horizontal') {
-        chart_option = horizontalBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart)
+        chart_option = horizontalBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack-horizontal') {
-        chart_option = horizontalStackBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart)
+        chart_option = horizontalStackBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line') {
-        chart_option = baseLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart)
+        // line-polar
+        chart_option = baseLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'line-polar') {
+        chart_option = polarLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line-stack') {
-        chart_option = stackLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart)
+        chart_option = stackLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie') {
-        chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
+        chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie-rose') {
-        chart_option = rosePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
+        chart_option = rosePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'pie-rose-gradient') {
+        chart_option = rosePieGradientOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'pie-txture') {
+        chart_option = texturePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'diagram') {
+        chart_option = heatMapOption(JSON.parse(JSON.stringify(THERMODYNAMIC_DIAGRAM)), chart, this.$store.state.canvasStyleData)
+        // chart_option = heatMapOption(JSON.parse(JSON.stringify(THERMODYNAMIC_DIAGRAM)), chart)
       } else if (chart.type === 'funnel') {
-        chart_option = baseFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart)
+        chart_option = baseFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'radar') {
-        chart_option = baseRadarOption(JSON.parse(JSON.stringify(BASE_RADAR)), chart)
+        chart_option = baseRadarOption(JSON.parse(JSON.stringify(BASE_RADAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'gauge') {
-        chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart)
+        chart_option = baseGaugeOption(JSON.parse(JSON.stringify(BASE_GAUGE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'scatter') {
-        chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart, this.terminalType)
+        chart_option = baseScatterOption(JSON.parse(JSON.stringify(BASE_SCATTER)), chart, this.terminalType, this.$store.state.canvasStyleData)
       } else if (chart.type === 'treemap') {
-        chart_option = baseTreemapOption(JSON.parse(JSON.stringify(BASE_TREEMAP)), chart)
+        chart_option = baseTreemapOption(JSON.parse(JSON.stringify(BASE_TREEMAP)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'chart-mix') {
-        chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart)
+        chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'graph') {
+        chart_option = baseGraphOption(JSON.parse(JSON.stringify(BASE_GRAPH)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'word-cloud') {
+        chart_option = baseWordCloudOption(JSON.parse(JSON.stringify(BASE_WORD_CLOUD)), chart, this.$store.state.canvasStyleData, this.$store.state.previewCanvasScale.scalePointWidth)
+      } else if (chart.type === 'pictorial-bar') {
+        chart_option = basePictorialBarOption(JSON.parse(JSON.stringify(BASE_PICTORIAL_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'liquid') {
+        chart_option = baseLiquidOption(JSON.parse(JSON.stringify(BASE_LIQUID)), chart, this.$store.state.canvasStyleData)
       }
       // console.log(JSON.stringify(chart_option))
       if (this.myChart && this.searchCount > 0) {

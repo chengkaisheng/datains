@@ -11,7 +11,8 @@ import {
   getAnalyse
 } from '@/views/chart/chart/common/common_antv'
 
-export function baseLineOptionAntV(plot, container, chart, action) {
+export function baseLineOptionAntV(plot, container, chart, action,cstyle = {}) {
+  console.log('折线，antv，line',chart,cstyle)
   // theme
   const theme = getTheme(chart)
   // attr
@@ -19,8 +20,8 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   const tooltip = getTooltip(chart)
   // style
   const legend = getLegend(chart)
-  const xAxis = getXAxis(chart)
-  const yAxis = getYAxis(chart)
+  const xAxis = getXAxis(chart,cstyle)
+  const yAxis = getYAxis(chart,cstyle)
   // data
   const data = chart.data.datas
   // config
@@ -91,6 +92,7 @@ export function baseLineOptionAntV(plot, container, chart, action) {
     }
   }
 
+  console.log('antv,line',options)
   // 开始渲染
   if (plot) {
     plot.destroy()
@@ -103,7 +105,8 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   return plot
 }
 
-export function baseAreaOptionAntV(plot, container, chart, action) {
+export function baseAreaOptionAntV(plot, container, chart, action, cstyle = {}) {
+  console.log('折线，antv，line_stack',plot, container, chart)
   // theme
   const theme = getTheme(chart)
   // attr
@@ -111,8 +114,8 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
   const tooltip = getTooltip(chart)
   // style
   const legend = getLegend(chart)
-  const xAxis = getXAxis(chart)
-  const yAxis = getYAxis(chart)
+  const xAxis = getXAxis(chart,cstyle)
+  const yAxis = getYAxis(chart,cstyle)
   // data
   const data = chart.data.datas
   // config
@@ -195,4 +198,41 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
   plot.on('point:click', action)
 
   return plot
+}
+
+export function compare (prop) {
+  console.log('prop',prop)
+  return function (obj1,obj2) {
+    var val1 = obj1[prop] 
+    var val2 = obj2[prop]
+    if (!isNaN(Number(val1)) && !isNaN(Number(val2))) {
+        val1 = Number(val1);
+        val2 = Number(val2);
+    }
+    if (val1 < val2) {
+        return -1;
+    } else if (val1 > val2) {
+        return 1;
+    } else {
+        return 0;
+    }   
+  }
+}
+export function compare1 (prop) {
+  console.log('prop1',prop)
+  return function (obj1,obj2) {
+    var val1 = obj1[prop] 
+    var val2 = obj2[prop]
+    if (!isNaN(Number(val1)) && !isNaN(Number(val2))) {
+        val1 = Number(val1);
+        val2 = Number(val2);
+    }
+    if (val1 < val2) {
+        return 1;
+    } else if (val1 > val2) {
+        return -1;
+    } else {
+        return 0;
+    }   
+  }
 }

@@ -27,7 +27,9 @@ export const COMMON_BACKGROUND = {
   borderRadius: 5,
   innerPadding: 0,
   boxHeight: 0,
-  boxWidth: 0
+  boxWidth: 0,
+  fontSize: 16,
+  fontColor: '#000000'
 }
 
 // 空组件仪表板样式
@@ -41,7 +43,9 @@ export const COMMON_BACKGROUND_NONE = {
   borderRadius: 0,
   innerPadding: 0,
   boxHeight: 0,
-  boxWidth: 0
+  boxWidth: 0,
+  fontSize: 16,
+  fontColor: '#000000'
 }
 
 // 公共样式
@@ -57,7 +61,8 @@ export const commonAttr = {
   animations: [],
   events: {},
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
-  isLock: false // 是否锁定组件
+  isLock: false, // 是否锁定组件
+  isCheck: false // 多选删除使用
 }
 
 // 超链接配置
@@ -85,6 +90,7 @@ export const VIDEOLINKS = {
       pause: false
     },
     sources: [{
+      type: 'application/x-mpegURL'
     }]
   },
   rtmp: {
@@ -105,12 +111,30 @@ export const VIDEOLINKS = {
 
 // 流媒体视频信息配置
 export const STREAMMEDIALINKS = {
-  videoType: 'flv',
+  videoType: 'hls',
   flv: {
     type: 'flv',
     isLive: false,
     cors: true, // 允许跨域
     loop: true
+    // url: null // 网络动画视频
+  },
+  hls: {
+    type: 'hls',
+    cors: true, // 允许跨域
+    loop: true,
+    // url: null // 网络动画视频
+    params: '', // 参数
+    link: '1', // 链接类型
+  },
+  rtmp: {
+    type: 'rtmp',
+    cors: true // 允许跨域
+    // url: null // 网络动画视频
+  },
+  webrtc: {
+    type: 'webrtc',
+    cors: true // 允许跨域
     // url: null // 网络动画视频
   }
 }
@@ -137,11 +161,27 @@ export const assistList = [
     icon: 'iconfont icon-juxing1',
     defaultClass: 'text-filter'
   },
+  // {
+  //   id: '10006',
+  //   component: 'de-tabs',
+  //   type: 'de-tabs',
+  //   label: '选项卡',
+  //   icon: 'iconfont icon-tabs',
+  //   defaultClass: 'text-filter'
+  // },
   {
-    id: '10006',
-    component: 'de-tabs',
-    type: 'de-tabs',
-    label: '选项卡',
+    id: '10007',
+    component: 'de-banner',
+    type: 'de-banner',
+    label: '轮播组件',
+    icon: 'iconfont icon-tabs',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '10008',
+    component: 'de-nav',
+    type: 'de-nav',
+    label: '导航栏',
     icon: 'iconfont icon-tabs',
     defaultClass: 'text-filter'
   }
@@ -172,6 +212,22 @@ export const pictureList = [
     label: '流媒体',
     icon: 'iconfont icon-a-liumeitimeitiliebiao',
     defaultClass: 'text-filter'
+  },
+  {
+    id: '20004',
+    component: 'de-icons',
+    type: 'de-icons',
+    label: '字体图标',
+    icon: 'iconfont icon-text',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '20005',
+    component: 'de-picture',
+    type: 'de-picture',
+    label: '图片库',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter'
   }
 ]
 
@@ -189,6 +245,22 @@ export const otherList = [
     component: 'de-frame',
     type: 'de-frame',
     label: '网页',
+    icon: 'iconfont icon-iframe',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '30003',
+    component: 'de-weather',
+    type: 'de-weather',
+    label: '天气',
+    icon: 'iconfont icon-shijian',
+    defaultClass: 'text-filter'
+  },
+  {
+    id: '30004',
+    component: 'de-jump',
+    type: 'de-jump',
+    label: '下拉跳转',
     icon: 'iconfont icon-iframe',
     defaultClass: 'text-filter'
   }
@@ -213,7 +285,8 @@ const list = [
       letterSpacing: 0,
       textAlign: 'center',
       color: '#000000',
-      verticalAlign: 'middle'
+      verticalAlign: 'middle',
+      fontFamily: ''
     },
     hyperlinks: HYPERLINKS,
     x: 1,
@@ -357,6 +430,84 @@ const list = [
     miniSizey: 1
   },
   {
+    id: '10007',
+    component: 'de-banner',
+    label: '轮播组件',
+    propValue: '',
+    icon: 'tabs',
+    type: 'de-banner',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 400,
+      height: 200,
+      borderStyle: 'solid',
+      borderWidth: 0,
+      borderColor: '#000000'
+    },
+    options: {
+      tabList: [{
+        title: 'Tab1',
+        name: '1',
+        content: null
+      }],
+      slidesPerView: 3,
+      rotationTime: 1,
+      pictureGap: 10,
+      bannerImgList: []
+      // autoplay: { delay: 1000, disableOnInteraction: false }
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 10,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '10008',
+    component: 'de-nav',
+    label: '导航组件',
+    propValue: '',
+    icon: 'tabs',
+    type: 'de-nav',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 200,
+      height: 100,
+      borderStyle: 'solid',
+      borderWidth: 0,
+      borderColor: '#000000'
+    },
+    options: {
+      tabList: [{
+        title: 'Tab1',
+        name: '1',
+        content: null
+      }],
+      navTabList: [],
+      fontSize: 12,
+      color: '#333',
+      vertical: 'directory',
+      horizontal: 'center',
+      heightTabs: '',
+      defaultBg: '',
+      highlight: '#333',
+      highlightBg: '',
+      heightBgImg: '',
+      spacing: 0,
+      pattern: 'default', // 滚动和默认
+      scrollPage: 2,
+      autoplay: true,
+      autoTime: 1
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 10,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
     id: '30001',
     component: 'de-show-date',
     label: '时间',
@@ -397,13 +548,67 @@ const list = [
     id: '30002',
     component: 'de-frame',
     type: 'de-frame',
-    label: '',
+
+    label: '网页',
     icon: 'iconfont icon-iframe',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 400,
       height: 200
+    },
+    frameLinks: FRAMELINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '30003',
+    component: 'de-weather',
+    type: 'de-weather',
+    label: '天气',
+    icon: 'iconfont icon-iframe',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 240,
+      height: 50
+    },
+    frameLinks: FRAMELINKS,
+    weatherStyle: {
+      iocnSize: 40,
+      fontSize: 16,
+      color: '#333'
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '30004',
+    component: 'de-jump',
+    type: 'de-jump',
+    label: '下拉跳转',
+    icon: 'iconfont icon-iframe',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 200,
+      height: 59
+    },
+    options: {
+      jumpList: [
+        {
+          jumpName: '',
+          jumpLink: '',
+        }
+      ],
     },
     frameLinks: FRAMELINKS,
     x: 1,
@@ -466,6 +671,79 @@ const list = [
       height: 200
     },
     streamMediaLinks: STREAMMEDIALINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '20004',
+    component: 'de-icons',
+    type: 'de-icons',
+    label: '字体图标',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    iconData: {
+      color: '#333',
+      fontSize: 12,
+      type: 'system',
+      icon: ''
+    },
+    style: {
+      width: 100,
+      height: 100
+    },
+    streamMediaLinks: STREAMMEDIALINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '20005',
+    component: 'de-picture',
+    type: 'de-picture',
+    label: '图片库',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    picData: '',
+    iconData: {
+      color: '#333',
+      fontSize: 12,
+      type: 'system',
+      icon: ''
+    },
+    style: {
+      width: 300,
+      height: 200
+    },
+    streamMediaLinks: STREAMMEDIALINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '40001',
+    component: 'de-icon',
+    type: 'de-icon',
+    label: '图标',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    hyperlinks: HYPERLINKS,
+    style: {
+      width: 400,
+      height: 200
+    },
     x: 1,
     y: 1,
     sizex: 10,

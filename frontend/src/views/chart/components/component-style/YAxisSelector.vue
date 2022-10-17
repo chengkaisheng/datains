@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="axisForm" :model="axisForm" label-width="80px" size="mini">
+      <el-form ref="axisForm" :model="axisForm" label-width="90px" size="mini">
         <el-form-item :label="$t('chart.show')" class="form-item">
           <el-checkbox v-model="axisForm.show" @change="changeYAxisStyle">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
@@ -18,8 +18,33 @@
           <el-form-item :label="$t('chart.axis_name_color')" class="form-item">
             <el-color-picker v-model="axisForm.nameTextStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeYAxisStyle" />
           </el-form-item>
-          <el-form-item :label="$t('chart.axis_name_fontsize')" class="form-item">
-            <el-select v-model="axisForm.nameTextStyle.fontSize" :placeholder="$t('chart.axis_name_fontsize')" @change="changeYAxisStyle">
+          <el-form-item :label="$t('chart.axis_name_location')" class="form-item">
+            <el-radio-group v-model="axisForm.nameLocation" size="mini" @change="changeYAxisStyle">
+              <el-radio-button label="end">{{ $t('chart.text_pos_top') }}</el-radio-button>
+              <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
+              <el-radio-button label="start">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          <!-- <el-form-item :label="$t('chart.axias_name_gap')" class="form-item">
+            <el-slider v-model="axisForm.nameGap" show-input :show-input-controls="false" :min="0" :max="100" input-size="mini" @change="changeYAxisStyle" />
+          </el-form-item> -->
+          <el-form-item :label="$t('chart.axias_name_top')" class="form-item">
+            <el-slider v-model="axisForm.paddingTop" show-input :show-input-controls="false" :min="-100" :max="100" input-size="mini" @change="changeYAxisStyle" />
+          </el-form-item>
+          <el-form-item :label="$t('chart.axias_name_Bottom')" class="form-item">
+            <el-slider v-model="axisForm.paddingBottom" show-input :show-input-controls="false" :min="-100" :max="100" input-size="mini" @change="changeYAxisStyle" />
+          </el-form-item>
+          <el-form-item :label="$t('chart.axias_name_left')" class="form-item">
+            <el-slider v-model="axisForm.paddingLeft" show-input :show-input-controls="false" :min="-100" :max="100" input-size="mini" @change="changeYAxisStyle" />
+          </el-form-item>
+          <el-form-item :label="$t('chart.axias_name_right')" class="form-item">
+            <el-slider v-model="axisForm.paddingRight" show-input :show-input-controls="false" :min="-100" :max="100" input-size="mini" @change="changeYAxisStyle" />
+          </el-form-item>
+          <!-- <el-form-item  :label="$t('chart.axias_name_lineHeight')" class="form-item">
+            <el-slider v-model="axisForm.nameTextStyle.lineHeight" show-input :show-input-controls="false" :min="0" :max="100" input-size="mini" @change="changeYAxisStyle" />
+          </el-form-item> -->
+          <el-form-item :label="$t('chart.dimension_font_size')" class="form-item">
+            <el-select v-model="axisForm.nameTextStyle.fontSize" :placeholder="$t('chart.dimension_font_size')" @change="changeYAxisStyle">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>

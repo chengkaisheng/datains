@@ -3,6 +3,7 @@
   <el-select
     v-if="element.options!== null && element.options.attrs!==null && show"
     ref="deSelect"
+    class="deSelect"
     v-model="value"
     :collapse-tags="showNumber"
     :clearable="!element.options.attrs.multiple"
@@ -164,6 +165,7 @@ export default {
       }
     },
     changeValue(value) {
+      console.log('下拉框的值', value)
       if (!this.inDraw) {
         if (value === null) {
           this.element.options.value = ''
@@ -196,6 +198,7 @@ export default {
         value: this.formatFilterValue(),
         operator: this.operator
       }
+      console.log('param触发---', param)
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
     formatFilterValue() {
@@ -236,5 +239,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+// .deSelect ::v-deep .el-input__inner {
+//   background-color: transparent;
+// }
 </style>

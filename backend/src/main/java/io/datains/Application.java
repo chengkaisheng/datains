@@ -44,5 +44,6 @@ public class Application {
                 "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n" +
                 "         佛祖保佑       永无BUG\n" +
                 "");
+        System.err.println("启动成功");
     }
 }

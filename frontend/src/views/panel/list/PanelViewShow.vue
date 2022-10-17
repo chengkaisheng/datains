@@ -80,11 +80,15 @@
       <!-- 仪表板预览区域-->
       <el-row class="panel-design-preview">
         <!--        <div id="imageWrapper" ref="imageWrapper" style="width: 4096px;height: 2160px">-->
-        <!-- <div>12321312</div> -->
         <div id="imageWrapper" ref="imageWrapper" :style="imageWrapperStyle">
-          <!-- <div>12321</div> -->
           <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
-            <Preview v-if="showMainFlag" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
+            <PortalNavMenu v-if="portal" :portal="portal" @update="updatePortal">
+              <!-- <div>页面加载区域</div> -->
+              <Preview v-if="showMainFlag" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
+            </PortalNavMenu>
+            <template v-else>
+              <Preview v-if="showMainFlag" :in-screen="!fullscreen" :show-type="'width'" :screen-shot="dataLoading" />
+            </template>
           </fullscreen>
         </div>
       </el-row>
@@ -140,13 +144,18 @@ import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
 import { initPanelData } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
+import PortalNavMenu from '@/views/portal/components/PortalNavMenu.vue'
 export default {
   name: 'PanelViewShow',
-  components: { Preview, SaveToTemplate, PDFPreExport, ShareHead },
+  components: { Preview, SaveToTemplate, PDFPreExport, ShareHead, PortalNavMenu },
   props: {
     activeTab: {
       type: String,
       required: false
+    },
+    portal: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -183,6 +192,7 @@ export default {
       }
     },
     showMainFlag() {
+      console.log('22222', this.showMain)
       return this.showMain
     },
     panelInfo() {
@@ -357,6 +367,11 @@ export default {
         const param = { userId: this.shareUserId }
         proxyInitPanelData(this.panelInfo.id, param, null)
       } else { initPanelData(this.panelInfo.id) }
+    },
+
+    updatePortal(trendId) {
+      console.log('trendId', trendId)
+      this.$emit('update', trendId)
     }
   }
 }

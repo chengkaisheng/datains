@@ -1,6 +1,8 @@
 <template>
-  <div class="bg" :style="customStyle" @scroll="canvasScroll">
+  <div id="vaeryBigBox" class="bg" :style="customStyle" @scroll="canvasScroll">
+    <!-- <div id="vaeryBigBox" class="bg" style="width:100%;height:100%" @scroll="canvasScroll"> -->
     <div id="canvasInfoMain" ref="canvasInfoMain" :style="canvasInfoMainStyle">
+      <!-- <div>数据问题</div> -->
       <div
         id="canvasInfoTemp"
         ref="canvasInfoTemp"
@@ -9,13 +11,22 @@
         @mouseup="deselectCurComponent"
         @mousedown="handleMouseDown"
       >
+        <!-- <el-row v-if="shareKey" class="custom-position">
+          2121111111111111111111111
+        </el-row> -->
         <el-row v-if="componentDataShow.length===0" class="custom-position">
-          {{ $t('panel.panelNull') }}
+          <span v-if="shareKey">{{ $t('panel.panelLoading') }} </span>
+          <span v-else>{{ $t('panel.panelNull') }}</span>
+
         </el-row>
         <canvas-opt-bar />
+        <!-- v-if="exhibition(item)" -->
+        <!-- display:displayClass(item) -->
         <ComponentWrapper
           v-for="(item, index) in componentDataInfo"
+
           :key="index"
+          :style="{opacity:opacityClass(item),visibility:displayClass(item)}"
           :config="item"
           :search-count="searchCount"
           :in-screen="inScreen"
@@ -75,6 +86,10 @@ export default {
     event: 'change'
   },
   props: {
+    shareKey: {
+      type: Boolean,
+      default: false
+    },
     // 后端截图
     backScreenShot: {
       type: Boolean,
@@ -118,6 +133,7 @@ export default {
       scaleHeight: '100',
       timer: null,
       componentDataShow: [],
+      pageRatio: 0,
       mainWidth: '100%',
       mainHeight: '100%',
       searchCount: 0,
@@ -126,22 +142,102 @@ export default {
       showChartInfo: {},
       showChartTableInfo: {},
       // 布局展示 1.pc pc端布局 2.mobile 移动端布局
-      terminal: 'pc'
+      terminal: 'pc',
+      offsetWidth: 1100,
+      scaleSize: 1,
+      onsizeKey: false
     }
   },
   created() {
   },
   computed: {
+    exhibition() {
+      return function(value) {
+        console.log('value===', value)
+        if (this.canvasStyleData.navShowKey && value.showName) {
+          if (this.canvasStyleData.navShowKey === value.showName) {
+            return true
+          } else {
+            return false
+          }
+        } else {
+          return true
+        }
+      }
+      // console.log('item', item, this.canvasStyleData)
+      // console.log('this.showOrNot', this.showOrNot)
+      // return true
+    },
+    opacityClass() {
+      return function(value) {
+        // console.log('value-----', value)
+        if (value.showName) {
+          if (this.canvasStyleData.showArr && value.navModel === 'elementKey') {
+            if (this.canvasStyleData.showArr.includes(value.showName)) {
+              return 1
+            } else {
+              return 0
+            }
+          } else {
+            if (this.canvasStyleData.navShowKey === value.showName) {
+              return 1
+            } else {
+              return 0
+            }
+          }
+        } else {
+          return 1
+        }
+      }
+    },
+    displayClass() {
+      return function(value) {
+        // console.log('value-----', value)
+        // if (value.type === 'de-frame') {
+        if (value.showName) {
+          if (this.canvasStyleData.showArr && value.navModel === 'elementKey') {
+            if (this.canvasStyleData.showArr.includes(value.showName)) {
+              return 'visible'
+            } else {
+              return 'hidden'
+            }
+          } else {
+            if (this.canvasStyleData.navShowKey === value.showName) {
+              return 'visible'
+            } else {
+              return 'hidden'
+            }
+          }
+        } else {
+          return 'visible'
+        }
+        // } else {
+        //   return 'visible'
+        // }
+      }
+    },
+    scaleNewHeight() {
+      var height = 800
+      // if (this.offsetWidth <= this.canvasStyleData.width) {
+      //   height = this.canvasStyleData.height * (this.offsetWidth / this.canvasStyleData.width)
+      // } else {
+      //   height = this.canvasStyleData.height
+      // }
+      console.log('修改高度====')
+      height = this.canvasStyleData.height * (this.offsetWidth / this.canvasStyleData.width)
+      console.log('修改高度====', height)
+      return height
+    },
     canvasInfoMainStyle() {
       if (this.backScreenShot) {
         return {
           width: '100%',
-          height: this.mainHeight
+          height: this.scaleNewHeight + 'px'
         }
       } else {
         return {
           width: '100%',
-          height: '100%'
+          height: this.scaleNewHeight + 'px'
         }
       }
     },
@@ -149,19 +245,24 @@ export default {
       if (this.screenShot) {
         return {
           width: '100%',
-          height: this.mainHeight
+          height: this.scaleNewHeight + 'px'
         }
       } else {
         return {
           width: '100%',
-          height: '100%'
+          height: this.scaleNewHeight + 'px'
         }
       }
+    },
+    showOrNot() {
+      console.log('是否触发')
+      return this.canvasStyleData
     },
     customStyle() {
       let style = {
         width: '100%'
       }
+      // console.log('样式修改库=====', this.canvasStyleData)
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
@@ -178,8 +279,11 @@ export default {
       if (this.backScreenShot) {
         style.height = this.mainHeight
       } else {
-        style.padding = '5px'
+        // style.padding = '5px'
       }
+      style.height = this.scaleNewHeight + 'px'
+      style.fontFamily = this.canvasStyleData.fontFamily
+      // console.log('改变的样式库===', style)
       return style
     },
     screenShotStyle() {
@@ -187,7 +291,24 @@ export default {
     },
     // 此处单独计算componentData的值 不放入全局mapState中
     componentDataInfo() {
-      return this.componentDataShow
+      // console.log('this.componentDataShow', this.componentDataShow)
+      // const style = this.componentDataShow.map(res => {
+      //   console.log('res==', res)
+      //   Object.keys(res.style).forEach(key => {
+      //     console.log(key)
+      //     if (this.needToChangeHeight.includes(key)) {
+      //       res.style[key] = this.format(res.style[key], this.scaleHeight)
+      //     }
+      //     if (this.needToChangeWidth.includes(key)) {
+      //       res.style[key] = this.format(res.style[key], this.scaleWidth)
+      //     }
+      //   })
+      //   return res
+      // })
+      const style = this.componentDataShow
+      // console.log('this.componentDataShow222222222222222', this.componentDataShow)
+
+      return style
     },
     ...mapState([
       'isClickComponent',
@@ -204,7 +325,9 @@ export default {
   watch: {
     componentData: {
       handler(newVal, oldVla) {
-        this.restore()
+        console.log('触发值的变化------')
+        // this.restore()
+        this.changeData()
       },
       deep: true
     },
@@ -217,17 +340,29 @@ export default {
   },
   mounted() {
     this._isMobile()
+    this.onsizeKey = this.inScreen
     const _this = this
     const erd = elementResizeDetectorMaker()
-    // 监听主div变动事件
-    erd.listenTo(document.getElementById('canvasInfoMain'), element => {
-      _this.$nextTick(() => {
-        _this.restore()
-      })
+    this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
+    this.scaleSize = document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width
+    // this.$nextTick(() => {
+    //   _this.restore()
+    // })
+    // if (!this.inScreen) {
+
+    // }
+
+    setTimeout(() => {
+      _this.restore()
     })
+
+    // console.log('放大会不会修改这个值---------------------------------')
+    // 监听主div变动事件
+
     // 监听画布div变动事件
     const tempCanvas = document.getElementById('canvasInfoTemp')
     erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
+      // console.log('修改状态值')
       _this.$nextTick(() => {
         // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
         _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
@@ -238,7 +373,7 @@ export default {
     _this.$store.commit('clearLinkageSettingInfo', false)
     _this.canvasStyleDataInit()
     // 如果当前终端设备是移动端，则进行移动端的布局设计
-    console.log('huoqude1shuju1===')
+    // console.log('huoqude1shuju1===')
     if (_this.terminal === 'mobile') {
       _this.initMobileCanvas()
     }
@@ -247,6 +382,43 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    changeData() {
+      this.componentDataShow.forEach((ele, index) => {
+        this.componentData.forEach((item, inx) => {
+          if (index === inx) {
+            ele.filters = item.filters
+          }
+        })
+      })
+    },
+
+    detectZoom() {
+      var ratio = 0; var // 浏览器当前缩放比
+        screen = window.screen; var // 获取屏幕
+        ua = navigator.userAgent.toLowerCase()// 判断登陆端是pc还是手机
+
+      if (window.devicePixelRatio !== undefined) {
+        ratio = window.devicePixelRatio
+      } else if (~ua.indexOf('msie')) {
+        if (screen.deviceXDPI && screen.logicalXDPI) {
+          ratio = screen.deviceXDPI / screen.logicalXDPI
+        }
+      } else if (window.outerWidth !== undefined && window.innerWidth !== undefined) {
+        ratio = window.outerWidth / window.innerWidth
+      }
+
+      if (ratio) {
+        ratio = Math.round(ratio * 100)
+      }
+      this.pageRatio = ratio
+      // if (ratio !== 100) {
+      //   this.$message({
+      //     message: '您当前的窗口缩放比例为' + ratio + '%建议您的窗口比例调为100%，窗口比例不为100%可能导致页面排版错乱',
+      //     type: 'warning'
+      //   })
+      //   // layer.msg('您当前的窗口缩放比例为' + ratio + '%建议您的窗口比例调为100%，窗口比例不为100%可能导致页面排版错乱')/// 这里layer是layui框架自带弹窗，如果不是layui可以使用alert（）代替；
+      // }
+    },
     _isMobile() {
       const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
       this.terminal = flag ? 'mobile' : 'pc'
@@ -271,17 +443,29 @@ export default {
     changeStyleWithScale,
     getStyle,
     restore() {
-      const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
+      this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
+      this.scaleSize = document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width
+      // console.log('计算宽高比----------', this.offsetWidth, this.canvasStyleData.width, document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
+      // const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
       const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
       this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
+      // this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
+      // this.scaleWidth = this.scaleSize * 100 // 获取宽度比
       // 如果是后端截图方式使用 的高度伸缩比例和宽度比例相同
+
+      // console.log('获取的当前元素宽度', canvasWidth, this.scaleWidth, this.canvasStyleData)
       if (this.backScreenShot) {
-        this.scaleHeight = this.scaleWidth
+        this.scaleHeight = this.scaleWidth * 100
       } else {
-        this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
+        // this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
+        this.scaleHeight = this.scaleWidth// 获取高度比
+        // this.scaleHeight = this.scaleSize// 获取高度比
       }
+      // console.log('原代码中的宽高比例==', this.scaleHeight, this.scaleWidth)
       this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
-      this.handleScaleChange()
+      this.$nextTick(() => {
+        this.handleScaleChange()
+      })
     },
     resetID(data) {
       if (data) {
@@ -292,15 +476,19 @@ export default {
       return data
     },
     format(value, scale) {
-      return value * scale / 100
+      // console.log('value===', value, value * scale / 100, this.pageRatio)
+      return (value * scale / 100)
     },
     handleScaleChange() {
       if (this.componentData) {
         const componentData = deepCopy(this.componentData)
+        // console.log('componentData====', componentData)
         componentData.forEach(component => {
+          // console.log('切割线===================================================')
           Object.keys(component.style).forEach(key => {
             if (this.needToChangeHeight.includes(key)) {
               component.style[key] = this.format(component.style[key], this.scaleHeight)
+              // console.log('循环对象得到的key===', key, component.style[key])
             }
             if (this.needToChangeWidth.includes(key)) {
               if (key === 'fontSize' && this.terminal === 'mobile') {
@@ -308,12 +496,23 @@ export default {
               } else {
                 component.style[key] = this.format(component.style[key], this.scaleWidth)
               }
+              // console.log('循环对象得到的key===222', key, component.style[key])
             }
           })
         })
+
+        if (!this.onsizeKey) {
+          setTimeout(() => {
+            this.onsizeKey = true
+          })
+        }
         this.componentDataShow = componentData
         this.$nextTick(() => (eventBus.$emit('resizing', '')))
       }
+      // this.scaleNewHeight = this.canvasStyleData.height * (document.getElementById('canvasInfoTemp').offsetWidth / this.canvasStyleData.width)
+      // this.$nextTick(() => {
+      //   this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
+      // })
     },
     openChartDetailsDialog(chartInfo) {
       this.showChartInfo = chartInfo.chart
@@ -353,6 +552,7 @@ export default {
     height: 100%;
     overflow-x: hidden;
     background-size: 100% 100% !important;
+    // font-family:'楷体';
   }
 
   .main-class {

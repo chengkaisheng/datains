@@ -137,6 +137,7 @@ export default {
   },
   mounted() {
     runAnimation(this.$el, this.config.animations)
+    console.log('全屏展示。。。。。。')
   },
   methods: {
     getStyle,
@@ -179,6 +180,7 @@ export default {
         })
         result['rotate'] = style['rotate']
       }
+      // console.log('------------------------', result)
       return result
     },
 
@@ -190,6 +192,7 @@ export default {
           height: '100%'
         }
       } else {
+        // console.log('getStyle', getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
         return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       }
     },
@@ -227,7 +230,7 @@ export default {
   }
 
   .component:hover {
-    box-shadow: 0px 0px 3px #0a7be0;
+    // box-shadow: 0px 0px 3px #0a7be0;
   }
 
   .gap_class {

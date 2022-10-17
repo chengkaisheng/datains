@@ -22,7 +22,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -149,12 +152,16 @@ public class PluginUtils {
 
     public static List<PluginSysMenu> getMenus() throws IOException {
         try{
-            String fileName = menusDir;
+            ClassLoader classLoader = PluginUtils.class.getClassLoader();
+            /*String fileName = menusDir;
             Path path = Paths.get(fileName);
             byte[] bytes = Files.readAllBytes(path);
-            List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+            List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);*/
+            InputStream inputStream = classLoader.getResourceAsStream("menus/menus.key");
+            InputStreamReader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            BufferedReader br = new BufferedReader(isr);
             EncryptUtil instance = EncryptUtil.getInstance();
-            String s1 = instance.Base64Decode(allLines.get(0));
+            String s1 = instance.Base64Decode(br.readLine());
             //DES解密
             String s3 = instance.DESdecode(s1,"DataIns");
             String res = JSON.toJSON(s3).toString();

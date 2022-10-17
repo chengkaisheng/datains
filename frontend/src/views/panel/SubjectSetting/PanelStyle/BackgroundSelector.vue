@@ -28,6 +28,7 @@
                 :class="{disabled:uploadDisabled}"
                 :on-preview="handlePictureCardPreview"
                 :on-remove="handleRemove"
+                :before-upload="beforeAvatarUpload"
                 :http-request="upload"
                 :file-list="fileList"
                 :on-change="onChange"
@@ -37,6 +38,11 @@
               <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogVisible">
                 <img width="100%" :src="dialogImageUrl" alt="">
               </el-dialog>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :offset="4" :span="20">
+              <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
             </el-col>
           </el-row>
         </el-col>
@@ -98,7 +104,23 @@ export default {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
+    beforeAvatarUpload(file) {
+      console.log('file.size', file.size)
+      const isLt10M = file.size / 1024 / 1024 < 10
+      if (!isLt10M) {
+        // this.$message.error('上传的文件大小不能超过 1MB!')
+        return false
+      }
+      return isLt10M
+    },
     onChange(file, fileList) {
+      console.log('file-----', file, file.size / 1024 / 1024)
+      if (file.size / 1024 / 1024 > 10) {
+        this.$message.error('上传的文件大小不能超过 10MB!')
+        this.fileList = []
+        return
+      }
+
       var _this = this
       _this.uploadDisabled = true
       const reader = new FileReader()

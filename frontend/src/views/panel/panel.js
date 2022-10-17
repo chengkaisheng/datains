@@ -18,12 +18,17 @@ export const CANVAS_STYLE = {
   scaleWidth: 100,
   scaleHeight: 100,
   selfAdaption: true,
-  auxiliaryMatrix: true,
+  navShowKey: '',
+  navModel: 'independent',
+  showArr: [],
+  auxiliaryMatrix: false,
+  ruleBgColor: '',
   openCommonStyle: true,
   panel: DEFAULT_PANEL_STYLE,
   refreshViewLoading: true, // 仪表板视图loading提示
   refreshUnit: 'minute', // 仪表板刷新时间带外 默认 分钟
-  refreshTime: 5 // 仪表板刷新时间 默认5分钟
+  refreshTime: 5, // 仪表板刷新时间 默认5分钟
+  fontFamily: '' // 字体样式
 }
 
 export const DEFAULT_COMMON_CANVAS_STYLE_STRING = {
@@ -47,6 +52,7 @@ export function chartTransStr2Object(targetIn, copy) {
       target.chart.customStyle = JSON.parse(target.chart.customStyle)
     }
     if (target.chart.customFilter && typeof target.chart.customFilter === 'string') {
+      console.log('==========================================!!!!!!!!!!1')
       target.chart.customFilter = JSON.parse(target.chart.customFilter)
     }
   }
@@ -70,6 +76,7 @@ export function chartTransObject2Str(targetIn, deepCopy) {
       target.chart.customStyle = JSON.stringify(target.chart.customStyle)
     }
     if (target.chart.customFilter && typeof target.chart.customFilter !== 'string') {
+      console.log('==========================================!!!!!!!!!!2')
       target.chart.customFilter = JSON.stringify(target.chart.customFilter)
     }
   }

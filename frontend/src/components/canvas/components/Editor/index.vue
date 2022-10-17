@@ -12,6 +12,14 @@
     @mousedown="handleMouseDown"
     @scroll="canvasScroll"
   >
+    <!-- 绘制盒子的基线框 用来框住所选中的组件元素 -->
+    <!-- <div
+      v-show="baseLineShow"
+      class="baseClass"
+      :style="{'top':baseline.top+'px','left': baseline.left+'px','height':baseline.height+'px','width':baseline.width+'px'}"
+      @mousedown="baseMoseDown"
+      @dblclick="clearInfo()"
+    /> -->
     <!-- 网格线 -->
     <Grid v-if="psDebug&&canvasStyleData.auxiliaryMatrix&&!linkageSettingStatus" :matrix-style="matrixStyle" />
     <!--    positionBox:{{positionBoxInfo}}-->
@@ -20,10 +28,14 @@
     <!-- 仪表板联动清除按钮-->
     <canvas-opt-bar />
     <!--页面组件列表展示-->
+    <!-- v-if="showOrNot(item)" -->
+    <!-- display:displayClass(item) -->
     <de-drag
       v-for="(item, index) in componentData"
+
       ref="deDragRef"
       :key="item.id"
+      :style="{opacity:opacityClass(item),visibility:displayClass(item)}"
       :class="{item:true,moveAnimation:moveAnimate,movingItem:item.isPlayer}"
       :index="index"
       :x="getShapeStyleIntDeDrag(item.style,'left')"
@@ -51,11 +63,19 @@
       @onHandleUp="onMouseUp"
       @onDragging="onDragging"
       @onResizing="onResizing"
+      @bannerImg="bannerImg(item)"
+      @setNavInfo="setNavInfo(item)"
+      @setFontIcon="setFontIcon(item)"
+      @setPicture="setPicture(item)"
+      @setCustom="setCustomBtn(item)"
+      @setWeather="setWeather(item)"
+      @setJump="setJump(item)"
       @elementMouseDown="containerMouseDown"
       @amRemoveItem="removeItem(item._dragId)"
       @amAddItem="addItemBox(item)"
       @linkJumpSet="linkJumpSet(item)"
       @boardSet="boardSet(item)"
+      @tabRelation="tabRelation(item)"
       @canvasDragging="canvasDragging"
       @editComponent="editComponent(index,item)"
     >
@@ -96,6 +116,31 @@
         :element="item"
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
+      />
+      <!-- <component
+        :is="item.component"
+        v-else-if="renderOk&&item.type==='de-banner'"
+        :id="'component' + item.id"
+        ref="wrapperChild"
+        class="component"
+        :style="getComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
+      /> -->
+      <component
+        :is="item.component"
+        v-else-if="renderOk&&item.type==='de-icon'"
+        :id="'component' + item.id"
+        ref="wrapperChild"
+        class="component"
+        :style="getComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :out-style="getShapeStyleInt(item.style)"
+        :active="item === curComponent"
+        :h="getShapeStyleIntDeDrag(item.style,'height')"
       />
       <component
         :is="item.component"
@@ -181,6 +226,99 @@
     >
       <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" />
     </el-dialog>
+    <el-dialog
+      :visible.sync="bannerSetVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <BannerSet v-if="bannerSetVisible" :element="bannerelement" @backgroundSetClose="bannerSetClose" />
+      <!-- <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" /> -->
+    </el-dialog>
+    <el-dialog
+      :visible.sync="navVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <navgationSet v-if="navVisible" :element="navElement" @backgroundSetClose="navSetClose" />
+      <!-- <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" /> -->
+    </el-dialog>
+    <el-dialog
+      :visible.sync="tabVisible"
+      width="600px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <tabSet v-if="tabVisible" :element="tabElement" @backgroundSetClose="tabSetClose" />
+    </el-dialog>
+    <el-dialog
+      :visible.sync="iconVisible"
+      width="900px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <iconSet v-if="iconVisible" :element="iconElement" @backgroundSetClose="iconSetClose" />
+    </el-dialog>
+    <el-dialog
+      :visible.sync="pictureVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <pictureSet v-if="pictureVisible" :element="pictureElement" @backgroundSetClose="pictureSetClose" />
+    </el-dialog>
+    <!-- 文本轮播 -->
+    <el-dialog
+      :visible.sync="customVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <setCustom v-if="customVisible" :element="customElement" @backgroundSetClose="setCustomClose" />
+    </el-dialog>
+    <!-- 天气 -->
+    <el-dialog
+      :visible.sync="weatherVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <weatherSet v-if="weatherVisible" :element="weatherElement" @backgroundSetClose="weatherSetClose" />
+    </el-dialog>
+    <!-- 下拉跳转 -->
+    <el-dialog
+      :visible.sync="jumpVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <jumpSet v-if="jumpVisible" :element="jumpElement" @backgroundSetClose="jumpSetClose" />
+    </el-dialog>
   </div>
 </template>
 
@@ -211,6 +349,18 @@ import { buildFilterMap } from '@/utils/conditionUtil'
 import _ from 'lodash'
 import $ from 'jquery'
 import Background from '@/views/background/index'
+import BannerSet from '@/views/background/bannerSet'
+import navgationSet from '@/views/background/navgationSet'
+import tabSet from '@/views/background/tabSet'
+import iconSet from '@/views/background/iconSet'
+import pictureSet from '@/views/background/pictureSet'
+import weatherSet from '@/views/background/weatherSet'
+import setCustom from '@/views/background/setCustom'
+import jumpSet from '@/views/background/jumpSet'
+
+import { events } from '../../../DeDrag/option.js'
+import { addEvent, removeEvent } from '../../../../utils/dom.js'
+const eventsForBus = events.mouse
 
 let positionBox = []
 let coordinates = [] // 坐标点集合
@@ -777,7 +927,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, tabSet, pictureSet, setCustom, weatherSet, jumpSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -842,7 +992,29 @@ export default {
   },
   data() {
     return {
+      baseline: {
+        top: 0,
+        left: 0,
+        height: 0,
+        width: 0
+      },
+      baseLineShow: false,
+      navElement: {},
+      tabElement: {},
+      iconElement: {},
+      pictureElement: {},
+      weatherElement: {},
+      jumpElement: {},
+      customElement: {},
       boardSetVisible: false,
+      bannerSetVisible: false,
+      navVisible: false,
+      tabVisible: false,
+      iconVisible: false,
+      pictureVisible: false,
+      customVisible: false,
+      weatherVisible: false,
+      jumpVisible: false,
       psDebug: false, // 定位调试模式
       editorX: 0,
       editorY: 0,
@@ -916,6 +1088,86 @@ export default {
     dialogVisible() {
       return this.chartDetailsVisible || this.linkJumpSetVisible
     },
+    showOrDanne() {
+      return function(value) {
+        if (this.canvasStyleData.navShowKey && value.showName) {
+          if (this.canvasStyleData.navShowKey === value.showName) {
+            return { opacity: 1 }
+          } else {
+            return { opacity: 0 }
+          }
+        } else {
+          return { opacity: 1 }
+        }
+      }
+    },
+    opacityClass() {
+      return function(value) {
+        if (value.showName) {
+          if (this.canvasStyleData.showArr && value.navModel === 'elementKey') {
+            if (this.canvasStyleData.showArr.includes(value.showName)) {
+              return 1
+            } else {
+              return 0
+            }
+          } else {
+            if (this.canvasStyleData.navShowKey === value.showName) {
+              return 1
+            } else {
+              return 0
+            }
+          }
+        } else {
+          return 1
+        }
+      }
+    },
+    displayClass() {
+      return function(value) {
+        // console.log('value-----', value)
+        // if (value.type === 'de-frame') {
+        if (value.showName) {
+          if (this.canvasStyleData.showArr && value.navModel === 'elementKey') {
+            if (this.canvasStyleData.showArr.includes(value.showName)) {
+              return 'visible'
+            } else {
+              return 'hidden'
+            }
+          } else {
+            if (this.canvasStyleData.navShowKey === value.showName) {
+              return 'visible'
+            } else {
+              return 'hidden'
+            }
+          }
+        } else {
+          return 'visible'
+        }
+        // } else {
+        //   return 'visible'
+        // }
+      }
+    },
+    showOrNot(item) {
+      return function(value) {
+        console.log('value===', value)
+        if (item.type === 'de-frame') {
+          return true
+        } else {
+          if (this.canvasStyleData.navShowKey && value.showName) {
+            if (this.canvasStyleData.navShowKey === value.showName) {
+              return true
+            } else {
+              return false
+            }
+          } else {
+            return true
+          }
+        }
+      }
+
+      // return true
+    },
     // 挤占式画布设计
     coordinates() {
       return coordinates
@@ -939,13 +1191,14 @@ export default {
           }
         }
       }
-      console.log('backgroundType--------',)
+      // console.log('backgroundType--------',)
       return style
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
     dragComponentInfo() {
+      // console.log('是否触发这个事件------')
       return this.$store.state.dragComponentInfo
     },
 
@@ -974,14 +1227,17 @@ export default {
     },
     outStyle: {
       handler(newVal, oldVla) {
+        // console.log('改变从这里开始-------------', newVal)
         this.resizeParentBoundsRef()
-        this.changeScale()
+        this.changeScale() // 暂时禁用为解决s2表格出现的加载问题
         this.outStyleOld = deepCopy(newVal)
       },
       deep: true
     },
     componentData: {
       handler(newVal, oldVla) {
+        // console.log('++++++this.componentData', this.componentData)
+        // console.log('组件：', newVal)
         // 初始化时componentData 加载可能出现慢的情况 此时重新初始化一下matrix
         if (newVal.length !== this.lastComponentDataLength) {
           this.lastComponentDataLength = newVal.length
@@ -1016,6 +1272,7 @@ export default {
     eventBus.$on('hideArea', () => {
       this.hideArea()
     })
+
     eventBus.$on('startMoveIn', this.startMoveIn)
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('onRemoveLastItem', this.removeLastItem)
@@ -1030,16 +1287,135 @@ export default {
   created() {
   },
   methods: {
+    // showOrNot(item) {
+    //   console.log('判断展示数据', item, this.canvasStyleData)
+    //   // return true
+    //   if (item.showName) {
+    //     if (this.canvasStyleData.navShowKey === item.showName) {
+    //       return true
+    //     } else {
+    //       return false
+    //     }
+    //   } else {
+    //     return true
+    //   }
+    // },
     backgroundSetClose() {
       this.boardSetVisible = false
     },
+    bannerSetClose() {
+      this.bannerSetVisible = false
+    },
+    navSetClose() {
+      this.navVisible = false
+    },
+    tabSetClose() {
+      this.tabVisible = false
+    },
+    iconSetClose() {
+      this.iconVisible = false
+    },
+    pictureSetClose() {
+      this.pictureVisible = false
+    },
+    weatherSetClose() {
+      this.weatherVisible = false
+    },
+    jumpSetClose() {
+      this.jumpVisible = false
+    },
+    setCustomClose() {
+      this.customVisible = false
+    },
     boardSet(item) {
-      console.log('itsm00001', item)
+      // console.log('itsm00001', item)
       this.$emit('boardSet', item)
+
       this.boardSetVisible = true
     },
+    tabRelation(item) {
+      this.tabElement = item
+      this.tabVisible = true
+      // console.log('最终触发呗')
+      // this.boardSetVisible = true
+    },
+    bannerImg(item) {
+      console.log('bannerImg,item-----', item)
+      this.bannerelement = item
+      this.bannerSetVisible = true
+    },
+    setNavInfo(item) {
+      //
+      this.navElement = item
+      this.navVisible = true
+    },
+    setFontIcon(item) {
+      this.iconVisible = true
+      this.iconElement = item
+
+      console.log('触发字体图标修改')
+    },
+    setPicture(item) {
+      this.pictureVisible = true
+      this.pictureElement = item
+      console.log('触发图片库')
+    },
+    setCustomBtn(item) {
+      console.log('触发轮播修改图-----')
+      this.customVisible = true
+      this.customElement = item
+    },
+    setWeather(item) {
+      this.weatherVisible = true
+      this.weatherElement = item
+      console.log('天气组件样式设置')
+    },
+    setJump(item) {
+      this.jumpVisible = true
+      this.jumpElement = item
+      console.log('下拉跳转设置')
+    },
     changeStyleWithScale,
+    setLine(e) {
+      // console.log('组件外的移动----------', e)
+      if (e.offsetY >= this.baseline.top) {
+        this.baseline.height = e.offsetY - this.baseline.top
+      }
+      if (e.offsetX >= this.baseline.left) {
+        this.baseline.width = e.offsetX - this.baseline.left
+      }
+    },
+    hangdleMouseUp(e) {
+      // console.log('松开鼠标的时候触发-----------', e)
+      if (this.baseline.width <= 50 || this.baseline.height <= 50) {
+        this.baseLineShow = false
+      }
+      removeEvent(document.documentElement, 'mousemove', this.setLine)
+      removeEvent(document.documentElement, 'mouseup', this.hangdleMouseUp)
+    },
+    baseMoseDown(e) {
+      e.stopPropagation()
+      // console.log('----------------------111111111111111111111111111111111', e)
+    },
+    clearInfo() {
+      // console.log('双击事件---', this.componentData)
+      this.baseLineShow = false
+      this.baseline.left = 0
+      this.baseline.top = 0
+      this.baseline.height = 0
+      this.baseline.width = 0
+    },
     handleMouseDown(e) {
+      // console.log('---------------------点击画布非元素-----------------------------', e)
+      // removeEvent(document.documentElement, 'mouseup', this.hangdleMouseUp)
+      if (!this.baseLineShow) {
+        this.baseline.left = e.offsetX
+        this.baseline.top = e.offsetY
+        addEvent(document.documentElement, eventsForBus.move, this.setLine)
+        addEvent(document.documentElement, eventsForBus.stop, this.hangdleMouseUp)
+        this.baseLineShow = true
+      }
+
       // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件
       if (!this.curComponent || (this.curComponent.component !== 'v-text' && this.curComponent.component !== 'rect-shape')) {
         e.preventDefault()
@@ -1153,18 +1529,20 @@ export default {
       result['rotate'] = style['rotate']
       result['borderWidth'] = style['borderWidth']
       result['opacity'] = style['opacity']
-
+      // console.log('这里的style改变了什么======', style, result)
       return result
     },
 
     getComponentStyleDefault(style) {
+      // console.log('style触发器1111==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
       return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       // return style
     },
 
     getComponentStyle(style) {
-      //   return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
-      return style
+      // console.log('style触发器2222==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
+      return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+      // return style
     },
 
     handleInput(element, value) {
@@ -1186,25 +1564,31 @@ export default {
 
     format(value, scale) {
       // 自适应画布区域 返回原值
-      return value * scale / 100
+      // return value * scale / 100  // 原来的缩放
+      return value
     },
     changeScale() {
+      // console.log('this.matrixCount-------------------什么玩意11111111', this.canvasStyleData, this.outStyle)
       if (this.canvasStyleData.matrixCount) {
         this.matrixCount = this.canvasStyleData.matrixCount
       }
       // 1.3 版本重新设计仪表板定位方式，基准画布宽高为 1600*900 宽度自适应当前画布获取缩放比例scaleWidth
       // 高度缩放比例scaleHeight = scaleWidth 基础矩阵为128*72 矩阵原始宽度12.5*12.5 矩阵高度可以调整
-
+      // console.log('this.matrixCount-------------------什么玩意', this.matrixCount)
       if (this.outStyle.width && this.outStyle.height) {
         // 矩阵计算
         this.matrixStyle.originWidth = this.canvasStyleData.width / this.matrixCount.x
         this.matrixStyle.originHeight = this.canvasStyleData.height / this.matrixCount.y
         if (!this.canvasStyleData.selfAdaption) {
-          this.matrixStyle.width = this.canvasStyleData.width / this.matrixCount.x
-          this.matrixStyle.height = this.canvasStyleData.height / this.matrixCount.y
+          // this.matrixStyle.width = this.canvasStyleData.width / this.matrixCount.x
+          // this.matrixStyle.height = this.canvasStyleData.height / this.matrixCount.y
+          this.matrixStyle.width = this.canvasStyleData.width
+          this.matrixStyle.height = this.canvasStyleData.height
         } else {
-          this.matrixStyle.width = this.outStyle.width / this.matrixCount.x
-          this.matrixStyle.height = this.outStyle.height / this.matrixCount.y
+          // this.matrixStyle.width = this.outStyle.width / this.matrixCount.x
+          // this.matrixStyle.height = this.outStyle.height / this.matrixCount.y
+          this.matrixStyle.width = this.outStyle.width
+          this.matrixStyle.height = this.outStyle.height
         }
         this.baseWidth = this.matrixStyle.width
         this.baseHeight = this.matrixStyle.height
@@ -1212,9 +1596,11 @@ export default {
         this.cellHeight = this.matrixStyle.height
         // console.log('.initMatrix1')
         this.initMatrix()
-
-        this.scaleWidth = this.outStyle.width * 100 / this.canvasStyleData.width
-        this.scaleHeight = this.outStyle.height * 100 / this.canvasStyleData.height
+        // console.log('this.outStyle.width * 100 / this.canvasStyleData.width', this.outStyle.width, this.canvasStyleData.width)
+        // this.scaleWidth = this.outStyle.width * 100 / this.canvasStyleData.width
+        this.scaleWidth = 100
+        // this.scaleHeight = this.outStyle.height * 100 / this.canvasStyleData.height
+        this.scaleHeight = 100
         this.scalePointWidth = this.scaleWidth / 100
         this.scalePointHeight = this.scaleHeight / 100
         this.$store.commit('setCurCanvasScale',
@@ -1232,20 +1618,26 @@ export default {
       }
     },
     getShapeStyleIntDeDrag(style, prop) {
+      // console.log('什么问题啊？',style,prop)
       if (prop === 'rotate') {
         return style['rotate']
       }
       if (prop === 'width') {
-        return this.format(style['width'], this.scaleWidth)
+        // return this.format(style['width'], this.scaleWidth)
+        return style['width']
       }
       if (prop === 'left') {
         return this.format(style['left'], this.scaleWidth)
+        // return style['left']
       }
       if (prop === 'height') {
-        return this.format(style['height'], this.scaleHeight)
+        // conditions
+        // return this.format(style['height'], this.scaleHeight)
+        return style['height']
       }
       if (prop === 'top') {
         const top = this.format(style['top'], this.scaleHeight)
+        // const top = style['top']
         // console.log('top:' + top)
         return top
       }
@@ -1281,6 +1673,7 @@ export default {
       this.$refs['userViewDialog'].exportExcel()
     },
     showViewDetails(index) {
+      console.log('删除第几个？', index)
       this.$refs.wrapperChild[index].openChartDetailsDialog()
     },
 
@@ -1295,6 +1688,8 @@ export default {
       }
     },
     handleDragOver(e) {
+      if (this.dragComponentInfo === null) return
+      // console.log('展示？？？？？？？', this.dragComponentInfo, e)
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth
@@ -1340,6 +1735,7 @@ export default {
       return true
     },
     containerMouseDown(e) {
+      // console.log('修改值状态', e)
       // e.preventDefault();
       if (!this.infoBox) {
         this.infoBox = {}
@@ -1508,7 +1904,7 @@ export default {
      * @returns
      */
     getRenderState() {
-      // console.log('getRenderState:')
+      console.log('getRenderState:', this.moveAnimate)
 
       return this.moveAnimate
     },
@@ -1567,7 +1963,7 @@ export default {
     resizeParentBoundsRef() {
       const _this = this
       _this.componentData.forEach(function(data, index) {
-        _this.$refs.deDragRef && _this.$refs.deDragRef[index] && _this.$refs.deDragRef[index].checkParentSize()
+        // _this.$refs.deDragRef && _this.$refs.deDragRef[index] && _this.$refs.deDragRef[index].checkParentSize()
       })
     },
     canvasDragging(mY, offsetY) {
@@ -1580,6 +1976,8 @@ export default {
 <style lang="scss" scoped>
 .editor {
     position: relative;
+    width: 100%;
+    height: 100%;
     /*background: #fff;*/
     margin: auto;
     /*会影响设置组件不能出现在最高层*/
@@ -1628,5 +2026,11 @@ export default {
 .dialog-css >>> .el-dialog__body {
   padding: 10px 20px 20px;
 }
+.baseClass{
+          position: absolute;
+          background: #409EFF;
+          opacity: 0.5;
+          z-index: 99;
+        }
 
 </style>

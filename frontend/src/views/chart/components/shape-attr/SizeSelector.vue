@@ -9,10 +9,32 @@
           <el-slider v-model="sizeForm.barWidth" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="1" :max="80" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item v-show="chart.type && chart.type !== 'bar-stack'" :label="$t('chart.bar_gap')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="0" :max="5" :step="0.1" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="-1" :max="5" :step="0.1" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item v-show="chart.type==='bar'" :label="'柱圆角'" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.barBorderRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="50" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item v-show="chart.type==='bar'" :label="'柱边框'" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.barBorderValue" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
+        </el-form-item>
+      </el-form>
+      <!-- {{ sizeForm }} -->
+      <el-form v-show="chart.type &&(chart.type.includes('bar')||chart.type.includes('line')) " ref="spaceSize" :model="sizeForm" label-width="100px" size="mini">
+        <el-form-item :label="'左间距'" class="form-item">
+          <el-slider v-model="sizeForm.spaceleft" show-input :show-input-controls="false" input-size="mini" :min="0" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="'右间距'" class="form-item">
+          <el-slider v-model="sizeForm.spaceRight" show-input :show-input-controls="false" input-size="mini" :min="0" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="'上间距'" class="form-item">
+          <el-slider v-model="sizeForm.spaceTop" show-input :show-input-controls="false" input-size="mini" :min="0" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="'下间距'" class="form-item">
+          <el-slider v-model="sizeForm.spaceBottom" show-input :show-input-controls="false" input-size="mini" :min="0" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
 
+      <!-- 折线设置 -->
       <el-form v-show="chart.type && chart.type.includes('line')" ref="sizeFormLine" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.line_width')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.lineWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="10" @change="changeBarSizeCase" />
@@ -44,12 +66,22 @@
         <!--        </el-form-item>-->
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('pie')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+      <el-form v-show="chart.type && chart.type.includes('pie')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item :label="$t('chart.pie_inner_radius')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.pieInnerRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.pie_outer_radius')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+
+        <el-form-item :label="$t('chart.pie_circle_center_left')" class="form-item">
+          <el-slider v-model="sizeForm.pieCircleLeft" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.pie_circle_center_top')" class="form-item">
+          <el-slider v-model="sizeForm.pieCircleTop" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item v-show="chart.type === 'clock-pie'" :label="'饼图突出模块'" class="form-item">
+          <el-slider v-model="sizeForm.pieKeyValue" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
         </el-form-item>
 
         <span v-show="chart.type && chart.type.includes('pie-rose')">
@@ -65,13 +97,23 @@
         </span>
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('funnel')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+      <!-- 词云组件字体大小设置 -->
+      <el-form v-show="chart.type && chart.type === 'word-cloud'" ref="sizeFormWord" :model="sizeForm" label-width="100px" size="mini">
+        <el-form-item :label="$t('chart.wordMin')" class="form-item">
+          <el-slider v-model="sizeForm.wordMin" show-input :show-input-controls="false" input-size="mini" :min="10" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.wordMax')" class="form-item">
+          <el-slider v-model="sizeForm.wordMax" show-input :show-input-controls="false" input-size="mini" :min="sizeForm.wordMin" @change="changeBarSizeCase" />
+        </el-form-item>
+      </el-form>
+
+      <el-form v-show="chart.type && chart.type.includes('funnel')" ref="sizeFormFunnel" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.funnel_width')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.funnelWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('radar')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+      <el-form v-show="chart.type && chart.type.includes('radar')" ref="sizeFormRadar" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.shape')" class="form-item">
           <el-radio-group v-model="sizeForm.radarShape" size="mini" @change="changeBarSizeCase">
             <el-radio-button label="polygon">{{ $t('chart.polygon') }}</el-radio-button>
@@ -83,22 +125,39 @@
         </el-form-item>
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('table')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
-        <el-form-item :label="$t('chart.table_title_fontsize')" class="form-item">
+      <el-form v-show="chart.type && (chart.type.includes('table')||chart.type.includes('vertical'))" ref="sizeFormTable" :model="sizeForm" label-width="100px" size="mini">
+        <el-form-item :label="chart.type && chart.type.includes('vertical')?'表格字体':$t('chart.table_title_fontsize')" class="form-item">
           <el-select v-model="sizeForm.tableTitleFontSize" :placeholder="$t('chart.table_title_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.table_item_fontsize')" class="form-item">
+        <el-form-item v-show="chart.type && chart.type.includes('vertical')" :label="'高亮字体大小'" class="form-item">
           <el-select v-model="sizeForm.tableItemFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.table_title_height')" class="form-item form-item-slider">
+        <el-form-item v-show="chart.type && !chart.type.includes('vertical')" :label="$t('chart.table_item_fontsize')" class="form-item">
+          <el-select v-model="sizeForm.tableItemFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
+            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="chart.type && chart.type.includes('vertical')" :label="'表格间距'" class="form-item">
+          <el-input-number v-model="sizeForm.tableSpacing" :min="0" :max="200" label="描述文字" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item v-show="chart.type && chart.type.includes('vertical')" :label="'表头宽度'" class="form-item">
+          <el-input-number v-model="sizeForm.tableHeightWidth" :min="0" :max="200" label="描述文字" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item v-show="chart.type && !chart.type.includes('vertical')" :label="$t('chart.table_title_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableTitleHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item :label="$t('chart.table_item_height')" class="form-item form-item-slider">
+        <el-form-item v-show="chart.type && !chart.type.includes('vertical')" :label="$t('chart.table_item_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableItemHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+        </el-form-item>
+        <!-- 轮播速率 -->
+        <el-form-item v-show="chart.type && chart.type.includes('vertical')" :label="'轮播速率'" class="form-item">
+          <el-select v-model="sizeForm.automaticTime" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
+            <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
         </el-form-item>
         <el-form-item v-show="chart.type && chart.type === 'table-info'" :label="$t('chart.table_page_size')" class="form-item">
           <el-select v-model="sizeForm.tablePageSize" :placeholder="$t('chart.table_page_size')" @change="changeBarSizeCase">
@@ -127,7 +186,7 @@
         </el-form-item>
       </el-form>
 
-      <el-form v-show="chart.type && (chart.type.includes('text') || chart.type === 'label')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+      <el-form v-show="chart.type && (chart.type.includes('text') || chart.type === 'label')" ref="sizeFormText" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item :label="$t('chart.quota_font_size')" class="form-item">
           <el-select v-model="sizeForm.quotaFontSize" :placeholder="$t('chart.quota_font_size')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -176,11 +235,11 @@
         <el-form-item :label="$t('chart.adapt')" class="form-item">
           <el-checkbox v-model="sizeForm.barDefault" @change="changeBarSizeCase">{{ $t('chart.adapt') }}</el-checkbox>
         </el-form-item>
-        <el-form-item :label="$t('chart.bar_width')" class="form-item form-item-slider">
+        <el-form-item :label="$t('chart.bar_width')+'22'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barWidth" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="1" :max="80" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.bar_gap')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="0" :max="5" :step="0.1" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="-1" :max="5" :step="0.1" @change="changeBarSizeCase" />
         </el-form-item>
         <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_line') }}</el-divider>
         <el-form-item :label="$t('chart.line_width')" class="form-item form-item-slider">
@@ -238,11 +297,17 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.liquid_max')" class="form-item form-item-slider">
+        <!-- <el-form-item :label="$t('chart.liquid_max')" class="form-item form-item-slider">
           <el-input-number v-model="sizeForm.liquidMax" :min="1" size="mini" @change="changeBarSizeCase" />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item :label="$t('chart.radar_size')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.liquidSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.liquid_ban')" class="form-item">
+          <el-checkbox v-model="sizeForm.liquidBan" @change="changeBarSizeCase">波动</el-checkbox>
+        </el-form-item>
+        <el-form-item :label="$t('chart.liquid_outline_show')" class="form-item">
+          <el-checkbox v-model="sizeForm.liquidShow" @change="changeBarSizeCase">显示</el-checkbox>
         </el-form-item>
         <el-form-item :label="$t('chart.liquid_outline_border')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.liquidOutlineBorder" show-input :show-input-controls="false" input-size="mini" :min="1" :max="20" @change="changeBarSizeCase" />
@@ -253,16 +318,16 @@
         <el-form-item :label="$t('chart.liquid_wave_length')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.liquidWaveLength" show-input :show-input-controls="false" input-size="mini" :min="10" :max="500" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item :label="$t('chart.liquid_wave_count')" class="form-item form-item-slider">
+        <!-- <el-form-item :label="$t('chart.liquid_wave_count')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.liquidWaveCount" show-input :show-input-controls="false" input-size="mini" :min="2" :max="10" @change="changeBarSizeCase" />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
     </el-col>
   </div>
 </template>
 
 <script>
-import { DEFAULT_SIZE } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_SIZE } from '../../chart/chart'
 export default {
   name: 'SizeSelector',
   props: {
@@ -289,6 +354,17 @@ export default {
         { name: this.$t('chart.line_symbol_pin'), value: 'pin' },
         { name: this.$t('chart.line_symbol_arrow'), value: 'arrow' }
       ],
+      automaticTimeOptions: [
+        { name: '1秒', value: 1000 },
+        { name: '2秒', value: 2000 },
+        { name: '3秒', value: 3000 },
+        { name: '4秒', value: 4000 },
+        { name: '5秒', value: 5000 },
+        { name: '6秒', value: 6000 },
+        { name: '7秒', value: 7000 },
+        { name: '8秒', value: 8000 },
+        { name: '9秒', value: 9000 }
+      ],
       liquidShapeOptions: [
         { name: this.$t('chart.liquid_shape_circle'), value: 'circle' },
         { name: this.$t('chart.liquid_shape_diamond'), value: 'diamond' },
@@ -302,7 +378,8 @@ export default {
         { name: '50' + this.$t('chart.table_page_size_unit'), value: '50' },
         { name: '100' + this.$t('chart.table_page_size_unit'), value: '100' }
       ],
-      fontSize: []
+      fontSize: [],
+      predefineColors: COLOR_PANEL
     }
   },
   watch: {
@@ -355,6 +432,7 @@ export default {
       this.fontSize = arr
     },
     changeBarSizeCase() {
+      console.log('--------', this.sizeForm)
       this.$emit('onSizeChange', this.sizeForm)
     }
   }

@@ -117,6 +117,7 @@ export default {
   methods: {
 
     watchSize() {
+      console.log('watchSize', this.element)
       const erd = elementResizeDetectorMaker()
       erd.listenTo(this.$refs.myContainer, ele => {
         const deContentContainer = this.$refs.deContentContainer
@@ -244,7 +245,7 @@ export default {
     width: calc(100% - 10px);
     background: initial;
     position: absolute;
-    bottom: 5px;
+    bottom: 0px; // 原值为5px
     margin: 0 4px;
 
     div {

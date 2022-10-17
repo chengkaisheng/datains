@@ -38,6 +38,20 @@ export const TYPE_CONFIGS = [
   {
     render: 'antv',
     category: 'chart.chart_type_table',
+    value: 'roll-elemnt',
+    title: '滚动表格',
+    icon: 'table-normal'
+  },
+  // {
+  //   render: 'antv',
+  //   category: 'chart.chart_type_table',
+  //   value: 'dialog-list',
+  //   title: '详情表格',
+  //   icon: 'table-normal'
+  // },
+  {
+    render: 'antv',
+    category: 'chart.chart_type_table',
     value: 'table-info',
     title: 'chart.chart_table_info',
     icon: 'table-info'
@@ -191,6 +205,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_table',
+    value: 'vertical-ele',
+    title: '滚动表格',
+    icon: 'table-normal'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_table',
     value: 'table-info',
     title: 'chart.chart_table_info',
     icon: 'table-info'
@@ -217,12 +238,25 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_gauge',
     icon: 'gauge'
   },
-
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_quota',
+    value: 'liquid',
+    title: 'chart.chart_liquid',
+    icon: 'liquid'
+  },
   {
     render: 'echarts',
     category: 'chart.chart_type_trend',
     value: 'line',
     title: 'chart.chart_line',
+    icon: 'line'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_trend',
+    value: 'line-polar',
+    title: '极坐标数值轴',
     icon: 'line'
   },
   {
@@ -250,8 +284,66 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
+    value: 'bar-triangle',
+    title: '三角柱状图',
+    icon: 'bar'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-ranking',
+    title: '极坐标柱状图',
+    icon: 'bar'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-contrast',
+    title: '对比柱状图',
+    icon: 'bar'
+  },
+  // 暂时隐藏环形朱柱状图
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-annular',
+    title: '环形柱状图',
+    icon: 'bar'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-circular',
+    title: '圆形柱状图',
+    icon: 'bar'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-double',
+    title: '双向柱状图',
+    icon: 'bar'
+  },
+  // circular
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
     value: 'bar-stack',
     title: 'chart.chart_bar_stack',
+    icon: 'bar-stack'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-stack-part',
+    title: 'chart.chart_bar_stack_part',
+    icon: 'bar-stack'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-polarStack',
+    title: '极坐标堆叠柱状图',
     icon: 'bar-stack'
   },
   {
@@ -268,7 +360,27 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_bar_stack_horizontal',
     icon: 'bar-stack-horizontal'
   },
-
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'pictorial-bar',
+    title: 'chart.chart_column',
+    icon: 'pictorial-bar'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'progress-loop',
+    title: 'chart.chart_loop_progress',
+    icon: 'progress-loop'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'progress',
+    title: 'chart.chart_bar_progress',
+    icon: 'progress'
+  },
   {
     render: 'echarts',
     category: 'chart.chart_type_distribute',
@@ -286,6 +398,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_distribute',
+    value: 'pie-rose-gradient',
+    title: 'chart.chart_pie_rose_gradient',
+    icon: 'pie-rose-gradient'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
     value: 'radar',
     title: 'chart.chart_radar',
     icon: 'radar'
@@ -296,6 +415,13 @@ export const TYPE_CONFIGS = [
     value: 'treemap',
     title: 'chart.chart_treemap',
     icon: 'treemap'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'word-cloud',
+    title: 'chart.chart_word_cloud',
+    icon: 'word-cloud'
   },
 
   {
@@ -312,6 +438,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_funnel',
     icon: 'funnel'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'clock-pie',
+    title: '凸块饼图',
+    icon: 'pie'
+  },
 
   {
     render: 'echarts',
@@ -320,12 +453,99 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_map',
     icon: 'map'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'pie-txture',
+    title: 'chart.texture_pie',
+    icon: 'pie-txture'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'diagram',
+    title: 'chart.heat_map',
+    icon: 'diagram'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'graph',
+    title: 'chart.chart_graph',
+    icon: 'graph'
+  },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_distribute',
+  //   value: 'pyramid',
+  //   title: '金字塔图',
+  //   icon: 'pyramid'
+  // },
+
   /* 下面是highcharts图表类型 */
+  // highcharts
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_distribute',
+    value: '3dpie',
+    title: 'chart.chart_pie',
+    icon: '3dpie'
+  },
   // {
   //   render: 'highcharts',
   //   category: 'chart.chart_type_distribute',
-  //   value: '3Dpie',
-  //   title: 'chart.chart_3Dpie',
-  //   icon: '3Dpie'
+  //   value: '3dpie-annular',
+  //   title: 'chart.chart_pie',
+  //   icon: '3dpie-annular'
   // },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_compare',
+    value: '3dcolumn',
+    title: 'chart.chart_column',
+    icon: '3dcolumn'
+  },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_compare',
+    value: '3dcylinder',
+    title: 'chart.chart_cylinder',
+    icon: '3dcylinder'
+  },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_compare',
+    value: '3dcolumn_stack',
+    title: 'chart.chart_column_stack',
+    icon: '3dcolumn_stack'
+  },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_relation',
+    value: '3dfunnel',
+    title: 'chart.chart_3dfunnel',
+    icon: '3dfunnel'
+  },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_relation',
+    value: '3dpyramid',
+    title: 'chart.chart_3dpyramid',
+    icon: '3dpyramid'
+  },
+  // {
+  //   render: 'highcharts',
+  //   category: 'chart.chart_type_relation',
+  //   value: '3dscatter',
+  //   title: 'chart.chart_3dscatter',
+  //   icon: '3dscatter'
+  // },
+
+  {
+    render: 'other',
+    category: 'chart.chart_type_distribute',
+    value: 'arc_map',
+    title: 'chart.chart_arcgis_map',
+    icon: 'arc_map'
+  }
 ]

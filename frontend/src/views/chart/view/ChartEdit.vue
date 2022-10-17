@@ -127,7 +127,7 @@
                   <transition-group>
                     <span
                       v-for="item in quotaData"
-                      v-show="chart.type && (chart.type !== 'table-info' || (chart.type === 'table-info' && item.id !=='count'))"
+                      v-show="view.type && (view.type !== 'table-info' || (view.type === 'table-info' && item.id !=='count'))"
                       :key="item.id"
                       class="item-quota"
                       :title="item.name"
@@ -256,8 +256,8 @@
                     :obj="{view, param, chart, dimensionData, quotaData}"
                   />
                   <div v-else>
-
-                    <el-row v-if="view.type ==='map'" class="padding-lr">
+                    <!-- map -->
+                    <el-row v-if="view.type ==='map' || view.type === 'arc_map'" class="padding-lr">
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.map_range') }}</span>
                       </span>
@@ -276,6 +276,42 @@
                         />
                       </span>
                     </el-row>
+
+                    <!-- <el-row v-if="view.type === 'arc_map'" class="padding-lr">
+                      <span style="width: 80px;text-align: right;">
+                        <span>{{ $t('chart.arc_map_update') }}</span>
+                      </span>
+                      <span class="tree-select-span">
+                        <el-upload
+                          class="upload-demo"
+                          action="#"
+                          :show-file-list="false"
+                          :on-success="handleAvatarSuccess"
+                          :before-upload="beforeAvatarUpload"
+                          :http-request="httpRequestUpdate"
+                          accept=".tar,.zip"
+                        >
+                          <el-button size="small" type="primary">选择附件</el-button>
+                          <div slot="tip" class="el-upload__tip">
+                            支持格式：.tar .zip
+                          </div>
+                        </el-upload>
+                      </span>
+                    </el-row> -->
+
+                    <!-- <el-row v-if="view.type === 'arc_map'" class="padding-lr">
+                      <span style="width: 80px;text-align: right;">
+                        <span>{{ $t('chart.arc_map_url') }}</span>
+                      </span>
+                      <span class="tree-select-span">
+                        <el-input
+                          v-model="view.urlMap"
+                          :placeholder="$t('chart.arc_map_url_place')"
+                          size="small"
+                          @change="calcData"
+                        />
+                      </span>
+                    </el-row> -->
 
                     <!--xAxisExt-->
                     <el-row
@@ -326,7 +362,7 @@
                           $t('chart.drag_block_table_data_column')
                         }}</span>
                         <span
-                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
+                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type.includes('column') || view.type === 'chart-mix' || view.type === 'waterfall')"
                         >{{ $t('chart.drag_block_type_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
@@ -345,6 +381,7 @@
                           $t('chart.drag_block_word_cloud_label')
                         }}</span>
                         <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
+                        <span v-else-if="view.type && view.type === 'arc_map'">{{ $t('chart.drag_block_arc_map_info') }}</span>
                         /
                         <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
                         <span
@@ -391,7 +428,7 @@
                           $t('chart.drag_block_table_data_column')
                         }}</span>
                         <span
-                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'waterfall')"
+                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter')|| view.type.includes('column') || view.type === 'waterfall')"
                         >{{ $t('chart.drag_block_value_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
@@ -421,6 +458,7 @@
                         <span v-else-if="view.type && view.type === 'word-cloud'">{{
                           $t('chart.drag_block_word_cloud_size')
                         }}</span>
+                        <span v-else-if="view.type && view.type === 'arc_map'">{{ $t('chart.drag_block_arc_map_coordinate') }}</span>
                         /
                         <span>{{ $t('chart.quota') }}</span>
                       </span>
@@ -493,6 +531,42 @@
                         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                       </div>
                     </el-row>
+                    <!-- zAxis -->
+                    <!-- <el-row v-if="view.type && view.type === '3dscatter'" class="padding-lr" style="margin-top: 6px;">
+                      <span style="width: 80px;text-align: right;">
+                        <span>{{ $t('chart.drag_block_scatter_zaxis') }}</span>
+                        /
+                        <span>{{ $t('chart.dimension') }}</span>
+                      </span>
+                      <draggable
+                        v-model="view.zaxis"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-block-style"
+                        @add="addZaxis"
+                        @update="calcData(true)"
+                      >
+                        <transition-group class="draggable-group">
+                          <dimension-item
+                            v-for="(item,index) in view.zaxis"
+                            :key="item.id"
+                            :param="param"
+                            :index="index"
+                            :item="item"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
+                            @onDimensionItemChange="dimensionItemChange"
+                            @onDimensionItemRemove="dimensionItemRemove"
+                            @editItemFilter="showDimensionEditFilter"
+                            @onNameEdit="showRename"
+                          />
+                        </transition-group>
+                      </draggable>
+                      <div v-if="!view.zaxis || view.zaxis.length === 0" class="drag-placeholder-style">
+                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      </div>
+                    </el-row> -->
                     <!--extStack-->
                     <el-row v-if="view.type && view.type.includes('stack')" class="padding-lr" style="margin-top: 6px;">
                       <span style="width: 80px;text-align: right;">
@@ -530,7 +604,7 @@
                     </el-row>
                     <!--extBubble-->
                     <el-row
-                      v-if="view.type && view.type.includes('scatter')"
+                      v-if="view.type && view.type.includes('scatter') && view.type !== '3dscatter'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -606,15 +680,22 @@
                         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                       </div>
                     </el-row>
+                    <!-- drillFields -->
                     <el-row
-                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud' && view.type !== 'table-pivot' && view.type !=='label'"
+                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') 
+                        && !view.type.includes('text') && !view.type.includes('gauge') 
+                        && view.type !== 'liquid' && view.type !== 'word-cloud' 
+                        && view.type !== 'table-pivot' && view.type !=='label'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
-                      <span style="width: 80px;text-align: right;">
+                      <span style="width: 80px;text-align: right;" v-if="view.type && !this.view.type.includes('roll')">
                         <span>{{ $t('chart.drill') }}</span>
                         /
                         <span>{{ $t('chart.dimension') }}</span>
+                      </span>
+                      <span style="width: 80px;text-align: right;" v-if="view.type && this.view.type.includes('roll')">
+                        <span>{{$t('chart.detail')}}</span>
                       </span>
                       <draggable
                         v-model="view.drillFields"
@@ -685,7 +766,19 @@
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud'"
+                    v-show="view.render && view.render === 'highcharts' && view.type && (view.type.includes('3dcolumn') || view.type === '3dpie' || view.type === '3dcylinder')"
+                    name="rotate"
+                    :title="$t('chart.rotate')"
+                  >
+                    <rotate-selector
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onSizeChange="onSizeChange"
+                    />
+                  </el-collapse-item>
+                  <el-collapse-item
+                    v-show="view.render && view.render === 'echarts' && view.type !== 'map' && !view.type.includes('progress') && view.type !== 'waterfall' && view.type !== 'graph'"
                     name="size"
                     :title="$t('chart.size')"
                   >
@@ -697,9 +790,34 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'antv' && chart.type !== 'map' && chart.type !== 'waterfall' && chart.type !== 'word-cloud' && chart.type !== 'treemap' && chart.type !== 'funnel' && chart.type !== 'bar-stack'"
+                    v-show="view.render && view.render === 'echarts' && view.type === 'word-cloud'"
+                    name="shape"
+                    :title="$t('chart.shape')"
+                  >
+                    <shape-selector
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onSizeChange="onSizeChange"
+                    />
+                  </el-collapse-item>
+                  <el-collapse-item
+                    v-show="view.render && view.render === 'echarts' && view.type === 'graph'"
+                    name="focus"
+                    :title="$t('chart.focus')"
+                  >
+                    <focus-selector
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLabelChange="onLabelChange"
+                    />
+                  </el-collapse-item>
+                  <!-- && chart.type !== 'word-cloud' -->
+                  <el-collapse-item
+                    v-show="view.render && view.render === 'antv' && view.type !== 'map' && view.type !== 'waterfall' && view.type !== 'treemap' && view.type !== 'funnel' && view.type !== 'bar-stack'"
                     name="size"
-                    :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : $t('chart.size')"
+                    :title="(view.type && (view.type.includes('table')|| (view.type.includes('roll')||view.type.includes('dialog')))) ? $t('chart.table_config') : $t('chart.size')"
                   >
                     <size-selector-ant-v
                       :param="param"
@@ -709,7 +827,18 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
+                    v-show="view.render && view.render === 'antv' && (view.type.includes('roll') || view.type.includes('dialog'))"
+                    :title="$t('chart.pop_config')"
+                  >
+                    <pop-selector-ant-v 
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLabelChange="onLabelChange"
+                    />
+                  </el-collapse-item>
+                  <el-collapse-item
+                    v-show="!view.type.includes('table')&&!view.type.includes('vertical')&&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -727,14 +856,21 @@
                       :chart="chart"
                       @onLabelChange="onLabelChange"
                     />
+                    <label-selector-Hc
+                      v-else-if="view.render && view.render === 'highcharts'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLabelChange="onLabelChange"
+                    />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
+                    v-show="view.type &&!view.type.includes('vertical')&&!view.type.includes('dialog') && !view.type.includes('table') && !view.type.includes('progress') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
                     <tooltip-selector
-                      v-if="view.render && view.render === 'echarts'"
+                      v-if="view.render && (view.render === 'echarts' || view.render === 'highcharts')"
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -766,7 +902,10 @@
                 <span class="padding-lr">{{ $t('chart.module_style') }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
                   <el-collapse-item
-                    v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
+                    v-show="view.type
+                      && (view.type.includes('bar') || view.type.includes('line')
+                      || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
+                      || view.type === '3dcolumn' || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
                     name="xAxis"
                     :title="$t('chart.xAxis')"
                   >
@@ -784,9 +923,19 @@
                       :chart="chart"
                       @onChangeXAxisForm="onChangeXAxisForm"
                     />
+                    <x-axis-selector-hc
+                      v-if="view.render && view.render === 'highcharts'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onChangeXAxisForm="onChangeXAxisForm"
+                    />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
+                    v-show="view.type
+                      && (view.type.includes('bar') || view.type.includes('line')
+                      || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
+                      || view.type === '3dcolumn' || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
                     name="yAxis"
                     :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')"
                   >
@@ -799,6 +948,13 @@
                     />
                     <y-axis-selector-ant-v
                       v-else-if="view.render && view.render === 'antv'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onChangeYAxisForm="onChangeYAxisForm"
+                    />
+                    <y-axis-selector-hc
+                      v-if="view.render && view.render === 'highcharts'"
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -860,9 +1016,30 @@
                       :chart="chart"
                       @onTextChange="onTextChange"
                     />
+                    <title-selector
+                      v-else-if="view.render && view.render === 'highcharts'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onTextChange="onTextChange"
+                    />
+                    <title-selector
+                      v-else-if="view.render && view.render === 'other'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onTextChange="onTextChange"
+                    />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type && view.type !== 'map' && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && (chart.type !== 'treemap' || chart.render === 'antv') && view.type !== 'liquid' && view.type !== 'waterfall' && chart.type !== 'gauge' && chart.type !== 'word-cloud'"
+                    v-show="view.type && view.type !== 'map'
+                      && view.type !== 'arc_map' && !view.type.includes('table')&& !view.type.includes('vertical')&&!view.type.includes('dialog')
+                      && view.type !== '3dfunnel' && view.type !== '3dpyramid'
+                      && !view.type.includes('text') && view.type !== 'label'
+                      && (view.type !== 'treemap' || view.render === 'antv')
+                      && view.type !== 'liquid' && view.type !== 'waterfall'
+                      && view.type !== 'gauge' && view.type !== 'word-cloud' && !view.type.includes('progress')
+                      && view.type !== 'graph'"
                     name="legend"
                     :title="$t('chart.legend')"
                   >
@@ -875,6 +1052,13 @@
                     />
                     <legend-selector-ant-v
                       v-else-if="view.render && view.render === 'antv'"
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLegendChange="onLegendChange"
+                    />
+                    <legend-selector
+                      v-else-if="view.render && view.render === 'highcharts'"
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -960,14 +1144,14 @@
         <el-row style="width: 100%;height: 100%;" class="padding-lr">
           <div ref="imageWrapper" style="height: 100%">
             <plugin-com
-              v-if="httpRequest.status && chart.type && view.isPlugin"
+              v-if="httpRequest.status && view.type && view.isPlugin"
               ref="dynamicChart"
-              :component-name="chart.type + '-view'"
+              :component-name="view.type + '-view'"
               :obj="{chart}"
               class="chart-class"
             />
             <chart-component
-              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'echarts'"
+              v-else-if="httpRequest.status && view.type && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && renderComponent() === 'echarts'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -975,7 +1159,7 @@
               @onChartClick="chartClick"
             />
             <chart-component-g2
-              v-else-if="httpRequest.status && chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'antv'"
+              v-else-if="httpRequest.status && view.type && !view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && renderComponent() === 'antv'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -983,7 +1167,7 @@
               @onChartClick="chartClick"
             />
             <chart-component-s2
-              v-else-if="httpRequest.status && chart.type && chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label' && renderComponent() === 'antv'"
+              v-else-if="httpRequest.status && view.type && view.type.includes('table') && !view.type.includes('text') && view.type !== 'label' && renderComponent() === 'antv'"
               ref="dynamicChart"
               :chart-id="chart.id"
               :chart="chart"
@@ -991,18 +1175,18 @@
               @onChartClick="chartClick"
             />
             <table-normal
-              v-else-if="httpRequest.status && chart.type && chart.type.includes('table') && renderComponent() === 'echarts' && chart.type !== 'table-pivot'"
-              :show-summary="chart.type === 'table-normal'"
+              v-else-if="httpRequest.status && view.type && view.type.includes('table') && renderComponent() === 'echarts' && view.type !== 'table-pivot'"
+              :show-summary="view.type === 'table-normal'"
               :chart="chart"
               class="table-class"
             />
             <label-normal
-              v-else-if="httpRequest.status && chart.type && chart.type.includes('text')"
+              v-else-if="httpRequest.status && view.type && view.type.includes('text')"
               :chart="chart"
               class="table-class"
             />
             <label-normal-text
-              v-else-if="httpRequest.status && chart.type && chart.type === 'label'"
+              v-else-if="httpRequest.status && view.type && view.type === 'label'"
               :chart="chart"
               class="table-class"
             />
@@ -1172,10 +1356,14 @@ import {
   DEFAULT_TOTAL,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_EXT_STYLE,
-  DEFAULT_YAXIS_STYLE
+  DEFAULT_YAXIS_STYLE,
+  DEFAULT_ZAXIS_STYLE
 } from '../chart/chart'
 import ColorSelector from '../components/shape-attr/ColorSelector'
 import SizeSelector from '../components/shape-attr/SizeSelector'
+import ShapeSelector from '../components/shape-attr/ShapeSelector'
+import FocusSelector from '../components/shape-attr/FocusSelector'
+import RotateSelector from '../components/shape-attr/RotateSelector'
 import LabelSelector from '../components/shape-attr/LabelSelector'
 import TitleSelector from '../components/component-style/TitleSelector'
 import LegendSelector from '../components/component-style/LegendSelector'
@@ -1188,6 +1376,7 @@ import QuotaFilterEditor from '../components/filter/QuotaFilterEditor'
 import DimensionFilterEditor from '../components/filter/DimensionFilterEditor'
 import TableNormal from '../components/table/TableNormal'
 import LabelNormal from '../components/normal/LabelNormal'
+import LabelSelectorHc from '../components/shape-attr/LabelSelectorHc'
 // import html2canvas from 'html2canvasde'
 import TableSelector from './TableSelector'
 import FieldEdit from '../../dataset/data/FieldEdit'
@@ -1204,6 +1393,7 @@ import XAxisSelectorAntV from '@/views/chart/components/component-style/XAxisSel
 import YAxisSelectorAntV from '@/views/chart/components/component-style/YAxisSelectorAntV'
 import YAxisExtSelectorAntV from '@/views/chart/components/component-style/YAxisExtSelectorAntV'
 import SizeSelectorAntV from '@/views/chart/components/shape-attr/SizeSelectorAntV'
+import PopSelectorAntV from '@/views/chart/components/shape-attr/PopSelectorAntV'
 import SplitSelectorAntV from '@/views/chart/components/component-style/SplitSelectorAntV'
 import CompareEdit from '@/views/chart/components/compare/CompareEdit'
 import { compareItem } from '@/views/chart/chart/compare'
@@ -1212,15 +1402,22 @@ import DimensionExtItem from '@/views/chart/components/drag-item/DimensionExtIte
 import PluginCom from '@/views/system/plugin/PluginCom'
 import { mapState } from 'vuex'
 
+import XAxisSelectorHc from '@/views/chart/components/component-style/XAxisSelectorHc'
+import YAxisSelectorHc from '@/views/chart/components/component-style/YAxisSelectorHc'
+
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
 import Threshold from '@/views/chart/components/senior/Threshold'
 import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { pluginTypes } from '@/api/chart/chart'
+// import ArcGIS from "@/map/init.js"
+// const Map = new ArcGIS()
 export default {
   name: 'ChartEdit',
   components: {
+    XAxisSelectorHc,
+    YAxisSelectorHc,
     LabelNormalText,
     TotalCfg,
     Threshold,
@@ -1231,6 +1428,7 @@ export default {
     CompareEdit,
     SplitSelectorAntV,
     SizeSelectorAntV,
+    PopSelectorAntV,
     YAxisExtSelectorAntV,
     YAxisSelectorAntV,
     XAxisSelectorAntV,
@@ -1238,6 +1436,7 @@ export default {
     TooltipSelectorAntV,
     LabelSelectorAntV,
     TitleSelectorAntV,
+    LabelSelectorHc,
     ChartType,
     ChartComponentG2,
     YAxisExtSelector,
@@ -1260,6 +1459,9 @@ export default {
     LegendSelector,
     TitleSelector,
     SizeSelector,
+    ShapeSelector,
+    FocusSelector,
+    RotateSelector,
     ColorSelector,
     ChartComponent,
     QuotaItem,
@@ -1296,6 +1498,7 @@ export default {
         extStack: [],
         drillFields: [],
         extBubble: [],
+        zaxis: [],
         show: true,
         type: 'bar',
         title: '',
@@ -1312,6 +1515,7 @@ export default {
           xAxis: DEFAULT_XAXIS_STYLE,
           yAxis: DEFAULT_YAXIS_STYLE,
           yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
+          zAxis: DEFAULT_ZAXIS_STYLE,
           background: DEFAULT_BACKGROUND_COLOR,
           split: DEFAULT_SPLIT
         },
@@ -1322,8 +1526,11 @@ export default {
         },
         customFilter: [],
         render: 'antv',
-        isPlugin: false
+        isPlugin: false,
+        file: '',
+        urlMap: ''
       },
+      urlMap1: '',
       moveId: -1,
       chart: {
         id: 'echart',
@@ -1365,7 +1572,7 @@ export default {
       renderOptions: [
         { name: 'AntV', value: 'antv' },
         { name: 'ECharts', value: 'echarts' },
-        // { name: 'HighCharts', value: 'highcharts' }
+        { name: 'HighCharts', value: 'highcharts' }
       ],
       drill: false,
       hasEdit: false,
@@ -1384,7 +1591,8 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     ...mapState([
-      'panelViewEditInfo'
+      'panelViewEditInfo',
+      'canvasStyleData'
     ])
     /* pluginRenderOptions() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
@@ -1408,7 +1616,7 @@ export default {
       this.fieldFilter(val)
     },
     'chartType': function(newVal, oldVal) {
-      if ((newVal === 'map' || newVal === 'buddle-map') && newVal !== oldVal) {
+      if ((newVal === 'map' || newVal === 'buddle-map' || newVal === 'arc_map') && newVal !== oldVal) {
         this.initAreas()
       }
       this.$emit('typeChange', newVal)
@@ -1460,6 +1668,8 @@ export default {
       this.hasEdit = (this.panelViewEditInfo[this.param.id] || false)
     },
     chartInit() {
+      this.urlMap1 = this.view.urlMap
+      console.log('chartInit::::::::::', this.urlMap1, this.view)
       this.resetDrill()
       this.initFromPanel()
       this.getChart(this.param.id)
@@ -1514,6 +1724,16 @@ export default {
         parseInt(this.view.resultCount) < 1) {
         this.view.resultCount = '1000'
       }
+      // console.log('这是个啥？',this.canvasStyleData)
+      // if(this.canvasStyleData.chart.stylePriority === 'panel') {
+      //   if(this.canvasStyleData.panel.resultMode === 'custom') {
+      //     data.resultCount = this.canvasStyleData.panel.resultCount
+      //   } else {
+      //     data.resultCount = '1000'
+      //   }
+      // } else {
+      //     console.log('aaaaaa')
+      // }
       if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
         this.$message({
           showClose: true,
@@ -1522,6 +1742,20 @@ export default {
         })
         this.view.xaxis = []
       }
+
+      if (switchType && (this.view.type === '3dcolumn_stack' || this.chart.type === '3dcolumn_stack') && (this.view.xaxis.length > 0 || this.view.yaxis.length > 0)) {
+        this.$message({
+          showClose: true,
+          message: this.$t('chart.highchart_view_switch'),
+          type: 'warning'
+        })
+        this.view.xaxis = []
+        this.view.yaxis = []
+      }
+      if (switchType && (this.view.type.includes('3d') || this.chart.type.includes('3d')) && this.view.extStack.length > 0) {
+        this.view.extStack = []
+      }
+
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
       view.sceneId = this.view.sceneId
@@ -1672,12 +1906,22 @@ export default {
           ele.filter = []
         }
       })
+
+      if (view.type === 'arc_map') {
+        view.urlMap = view.urlMap
+      }
+
+      if (view.type === '3dscatter') {
+        // view.zaxis
+      }
+
       this.chart = JSON.parse(JSON.stringify(view))
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
       view.xaxis = JSON.stringify(view.xaxis)
       view.xaxisExt = JSON.stringify(view.xaxisExt)
       view.yaxis = JSON.stringify(view.yaxis)
+      view.zaxis = JSON.stringify(view.zaxis)
       view.yaxisExt = JSON.stringify(view.yaxisExt)
       view.customAttr = JSON.stringify(view.customAttr)
       view.customStyle = JSON.stringify(view.customStyle)
@@ -1686,6 +1930,8 @@ export default {
       view.drillFields = JSON.stringify(view.drillFields)
       view.extBubble = JSON.stringify(view.extBubble)
       view.senior = JSON.stringify(view.senior)
+
+      console.log('buildParam：', view)
       delete view.data
       return view
     },
@@ -1734,7 +1980,10 @@ export default {
     calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
       this.changeEditStatus(true)
       const view = this.buildParam(true, 'chart', false, switchType)
+      console.log('calcData：', this.panelInfo, view)
       if (!view) return
+      // 缓存 拖动的数据并调用 UserView组件的view-in-cache 方法传值
+      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^保存还是--走这里')
       save2Cache(this.panelInfo.id, view).then(() => {
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
@@ -1747,6 +1996,7 @@ export default {
       view.xaxisExt = JSON.stringify(this.view.xaxisExt)
       view.yaxis = JSON.stringify(this.view.yaxis)
       view.yaxisExt = JSON.stringify(this.view.yaxisExt)
+      view.zaxis = JSON.stringify(this.view.zaxis)
       view.extStack = JSON.stringify(this.view.extStack)
       view.drillFields = JSON.stringify(this.view.drillFields)
       view.extBubble = JSON.stringify(this.view.extBubble)
@@ -1755,12 +2005,16 @@ export default {
       view.customFilter = JSON.stringify(this.view.customFilter)
       view.senior = JSON.stringify(this.view.senior)
       view.title = this.view.title
+      if (this.canvasStyleData.chart.stylePriority === 'panel') {
+        this.view.stylePriority = this.canvasStyleData.chart.stylePriority
+      }
       view.stylePriority = this.view.stylePriority
       // view.data = this.data
       this.chart = view
-
+      console.log('calcStyle,,,,', this.panelInfo, view)
       // 保存到缓存表
       const viewSave = this.buildParam(true, 'chart', false, false)
+      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^保存走这里')
       if (!viewSave) return
       save2Cache(this.panelInfo.id, viewSave)
 
@@ -1806,12 +2060,14 @@ export default {
           drill: this.drillClickDimensionList,
           queryFrom: 'panelEdit'
         }).then(response => {
+          console.log('接口数据获取----------', response)
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
           this.view.xaxisExt = this.view.xaxisExt ? JSON.parse(this.view.xaxisExt) : []
           this.view.yaxis = this.view.yaxis ? JSON.parse(this.view.yaxis) : []
           this.view.yaxisExt = this.view.yaxisExt ? JSON.parse(this.view.yaxisExt) : []
+          this.view.zaxis = this.view.zaxis ? JSON.parse(this.view.zaxis) : []
           this.view.extStack = this.view.extStack ? JSON.parse(this.view.extStack) : []
           this.view.drillFields = this.view.drillFields ? JSON.parse(this.view.drillFields) : []
           this.view.extBubble = this.view.extBubble ? JSON.parse(this.view.extBubble) : []
@@ -1868,7 +2124,9 @@ export default {
           this.view.customStyle = this.view.customStyle ? JSON.parse(this.view.customStyle) : {}
           this.view.customFilter = this.view.customFilter ? JSON.parse(this.view.customFilter) : {}
           this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
-
+          // this.view.file = this.view.file ? this.view.file : ''
+          this.view.urlMap = this.view.urlMap ? this.view.urlMap : this.urlMap1
+          console.log('getChart::::::::::', this.view)
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
@@ -1882,8 +2140,32 @@ export default {
       }
     },
 
+    // 上传成功
+    handleAvatarSuccess(res, file) {
+      console.log(res, file)
+    },
+    // 上传之前
+    beforeAvatarUpload(file) {
+      console.log('file', file)
+      if (file.type !== 'application/x-tar' && file.type !== 'application/x-zip-compressed') {
+        this.$message.error('支持格式为：.tar .zip')
+        return
+      }
+    },
+    // 获取上传数据
+    httpRequestUpdate(data) {
+      console.log(data, this.view.file)
+      // let _this = this
+      // let rd = new FileReader() // 创建文件读取对象
+      // let file = data.file
+      // rd.readAsDataURL(file) // 文件读取转化为base64类型
+      // rd.onloadend = function(e) {
+
+      // }
+    },
     // move回调方法
     onMove(e, originalEvent) {
+      console.log('拖动', e)
       this.moveId = e.draggedContext.element.id
       return true
     },
@@ -1915,11 +2197,13 @@ export default {
     },
 
     onColorChange(val) {
+      console.log('val: ', val)
       this.view.customAttr.color = val
       this.calcStyle()
     },
 
     onSizeChange(val) {
+      console.log('12121212----------------', val)
       this.view.customAttr.size = val
       this.calcStyle()
     },
@@ -1936,6 +2220,7 @@ export default {
     },
 
     onLabelChange(val) {
+      console.log(val)
       this.view.customAttr.label = val
       this.calcStyle()
     },
@@ -1951,6 +2236,7 @@ export default {
     },
 
     onChangeXAxisForm(val) {
+      console.log(val)
       this.view.customStyle.xAxis = val
       this.calcStyle()
     },
@@ -2060,6 +2346,7 @@ export default {
       this.calcData(true)
     },
     showEditFilter(item) {
+      console.log('item-------', item)
       this.filterItem = JSON.parse(JSON.stringify(item))
       this.chartForFilter = JSON.parse(JSON.stringify(this.view))
       if (!this.filterItem.logic) {
@@ -2077,6 +2364,7 @@ export default {
       this.resultFilterEdit = false
     },
     saveResultFilter() {
+      console.log('this.view======', this.view, this.view.customFilter)
       if (((this.filterItem.deType === 0 || this.filterItem.deType === 5) && this.filterItem.filterType !== 'enum') ||
         this.filterItem.deType === 1 ||
         this.filterItem.deType === 2 ||
@@ -2128,6 +2416,9 @@ export default {
           } else if (this.itemForm.renameType === 'dimensionExt') {
             this.view.xaxisExt[this.itemForm.index].name = this.itemForm.name
           }
+          //  else if (this.itemForm.renameType === '') {
+          //   this.view.zaxis[this.itemForm.index].name = this.itemForm.name
+          // }
           this.calcData(true)
           this.closeRename()
         } else {
@@ -2178,6 +2469,7 @@ export default {
       this.view = {
         xAxis: [],
         yAxis: [],
+        zAxis: [],
         type: ''
       }
     },
@@ -2209,6 +2501,7 @@ export default {
         this.view.xaxisExt = []
         this.view.yaxis = []
         this.view.yaxisExt = []
+        this.view.zaxis = []
         this.view.customFilter = []
         this.view.extStack = []
         this.view.extBubble = []
@@ -2254,6 +2547,7 @@ export default {
       }
     },
     dragMoveDuplicate(list, e, mode) {
+      console.log('dragMoveDuplicate::::::::::', list, e, mode)
       if (mode === 'ds') {
         list.splice(e.newDraggableIndex, 1)
       } else {
@@ -2277,6 +2571,7 @@ export default {
       this.calcData(true)
     },
     addXaxisExt(e) {
+      console.log('维度添加：', e, this.view)
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
       }
@@ -2302,7 +2597,13 @@ export default {
       }
       this.calcData(true)
     },
+    addZaxis(e) {
+      this.dragMoveDuplicate(this.view.zaxis, e)
+
+      this.calcData(true)
+    },
     moveToDimension(e) {
+      console.log('moveToDimension:::::::::::', e)
       this.dragMoveDuplicate(this.dimensionData, e, 'ds')
       this.calcData(true)
     },
@@ -2371,7 +2672,10 @@ export default {
       this.calcData(true)
     },
     addDrill(e) {
-      this.dragCheckType(this.view.drillFields, 'd')
+      console.log('drill,,',this.view.drillFields,this.view.type)
+      if(!this.view.type.includes('roll')) {
+        this.dragCheckType(this.view.drillFields, 'd')
+      }
       this.dragMoveDuplicate(this.view.drillFields, e)
       this.calcData(true)
     },
@@ -2394,7 +2698,7 @@ export default {
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.view.drillFields.length - 1) {
         // const isSwitch = (this.chart.type === 'map' && this.sendToChildren(param))
-        if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
+        if (this.chart.type === 'map' || this.chart.type === 'buddle-map' || this.chart.type === 'arc_map') {
           if (this.sendToChildren(param)) {
             this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
             // this.getData(this.param.id)
@@ -2417,7 +2721,7 @@ export default {
     resetDrill() {
       const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = []
-      if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
+      if (this.chart.type === 'map' || this.chart.type === 'buddle-map' || this.chart.type === 'arc_map') {
         this.backToParent(0, length)
         this.currentAcreaNode = null
         const current = this.$refs.dynamicChart
@@ -2518,6 +2822,7 @@ export default {
       })
     },
     changeEditStatus(status) {
+      console.log('changeEditStatus', status)
       this.hasEdit = status
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
     },
@@ -2896,7 +3201,7 @@ span {
 }
 
 .result-count {
-  width: 50px;
+  width: 80px;
 }
 
 .result-count > > > input {

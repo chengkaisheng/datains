@@ -10,6 +10,7 @@ export function getPadding(chart) {
 // color,label,tooltip,axis,legend,background
 export function getTheme(chart) {
   const colors = []
+  const gColors = []
   let bgColor, labelFontsize, labelColor, tooltipColor, tooltipFontsize, legendColor, legendFontsize
   let customAttr = {}
   if (chart.customAttr) {
@@ -35,6 +36,29 @@ export function getTheme(chart) {
     }
   }
 
+  if(chart.data.fields && chart.data.fields.length) {
+    let fields = chart.data.fields
+    let arr = []
+    for (let i = 0; i < fields.length; i++) {
+        if(fields[i].chartType) {
+          arr.push(fields[i])
+        }
+    }
+    for (let i = 0; i < arr.length; i++) {
+      if(customAttr.color && customAttr.color.variety) {
+        // 定义柱状图渐变色
+        let a = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        let b = hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+        if (chart.type === 'bar' || chart.type === 'line-stack') { // 柱状图
+          gColors.push(`l(270) 0:${a} 1:${b}`)
+        } else if (chart.type === 'bar-horizontal') { // 横向柱状图
+          gColors.push(`l(0) 0:${a} 1:${b}`)
+        }
+      }
+    }
+    console.log('gColors...',gColors)
+  }
+
   let customStyle
   if (chart.customStyle) {
     customStyle = JSON.parse(chart.customStyle)
@@ -53,8 +77,8 @@ export function getTheme(chart) {
   return {
     styleSheet: {
       brandColor: colors[0],
-      paletteQualitative10: colors,
-      paletteQualitative20: colors,
+      paletteQualitative10: customAttr.color.variety && (chart.type === 'bar' || chart.type === 'bar-horizontal' || chart.type === 'line-stack') ? gColors : colors,
+      paletteQualitative20: customAttr.color.variety && (chart.type === 'bar' || chart.type === 'bar-horizontal' || chart.type === 'line-stack') ? gColors : colors,
       backgroundColor: bgColor
     },
     labels: {
@@ -163,8 +187,9 @@ export function getLegend(chart) {
     // legend
     if (customStyle.legend) {
       const l = JSON.parse(JSON.stringify(customStyle.legend))
+      console.log('lllllllllll',l)
       if (l.show) {
-        let offsetX, offsetY, position
+        let offsetX, offsetY, position, itemSpacing
         const orient = l.orient
         const legendSymbol = l.icon
         // fix position
@@ -219,6 +244,12 @@ export function getLegend(chart) {
             offsetY = 0
           }
         }
+        
+        if (l.itemGap) {
+          itemSpacing = l.itemGap
+        } else {
+          itemSpacing = 10
+        }
 
         legend = {
           layout: orient,
@@ -227,7 +258,8 @@ export function getLegend(chart) {
           offsetY: offsetY,
           marker: {
             symbol: legendSymbol
-          }
+          },
+          itemSpacing: itemSpacing
         }
       } else {
         legend = false
@@ -237,7 +269,7 @@ export function getLegend(chart) {
   return legend
 }
 // xAxis
-export function getXAxis(chart) {
+export function getXAxis(chart, cstyle = {}) {
   let axis = {}
   let customStyle
   if (chart.customStyle) {
@@ -245,16 +277,19 @@ export function getXAxis(chart) {
     // legend
     if (customStyle.xAxis) {
       const a = JSON.parse(JSON.stringify(customStyle.xAxis))
-      if (a.show) {
+      if (a && a.show) {
         const title = (a.name && a.name !== '') ? {
           text: a.name,
+          position: a.nameLocation? a.nameLocation : 'center',
+          offset: a.nameGap? a.nameGap : 20,
           style: {
             fill: a.nameTextStyle.color,
-            fontSize: parseInt(a.nameTextStyle.fontSize)
+            fontSize: parseInt(a.nameTextStyle.fontSize),
+            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif'
           },
           spacing: 8
         } : null
-        const grid = a.splitLine.show ? {
+        const grid = a.splitLine && a.splitLine.show ? {
           line: {
             style: {
               stroke: a.splitLine.lineStyle.color,
@@ -262,11 +297,14 @@ export function getXAxis(chart) {
             }
           }
         } : null
-        const label = a.axisLabel.show ? {
+        var fontFamess = cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif'
+        const label = a.axisLabel && a.axisLabel.show ? {
           rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
           style: {
             fill: a.axisLabel.color,
-            fontSize: parseInt(a.axisLabel.fontSize)
+            fontSize: parseInt(a.axisLabel.fontSize),
+            fontFamily: fontFamess
+            // fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
           }
         } : null
 
@@ -294,10 +332,11 @@ export function getXAxis(chart) {
       }
     }
   }
+  console.log('x轴：：：', axis)
   return axis
 }
 // yAxis
-export function getYAxis(chart) {
+export function getYAxis(chart, cstyle = {}) {
   let axis = {}
   let customStyle
   if (chart.customStyle) {
@@ -308,13 +347,19 @@ export function getYAxis(chart) {
       if (a.show) {
         const title = (a.name && a.name !== '') ? {
           text: a.name,
+          position: a.nameLocation? a.nameLocation : 'center',
+          offset: a.nameGap? a.nameGap : 20,
           style: {
             fill: a.nameTextStyle.color,
-            fontSize: parseInt(a.nameTextStyle.fontSize)
+            fontSize: parseInt(a.nameTextStyle.fontSize),
+            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif',
+            // x: a.nameLeft? a.nameLeft : 10,
+            // y: a.nameTop? a.nameTop : 10,
           },
-          spacing: 8
+          autoRotate: false,
+          spacing: 10
         } : null
-        const grid = a.splitLine.show ? {
+        const grid = a.splitLine && a.splitLine.show ? {
           line: {
             style: {
               stroke: a.splitLine.lineStyle.color,
@@ -322,11 +367,12 @@ export function getYAxis(chart) {
             }
           }
         } : null
-        const label = a.axisLabel.show ? {
+        const label = a.axisLabel && a.axisLabel.show ? {
           rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
           style: {
             fill: a.axisLabel.color,
-            fontSize: parseInt(a.axisLabel.fontSize)
+            fontSize: parseInt(a.axisLabel.fontSize),
+            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif'
           }
         } : null
 
@@ -354,6 +400,7 @@ export function getYAxis(chart) {
       }
     }
   }
+  console.log('Y轴：', axis)
   return axis
 }
 // yAxisExt
@@ -374,7 +421,7 @@ export function getYAxisExt(chart) {
           },
           spacing: 8
         } : null
-        const grid = a.splitLine.show ? {
+        const grid = a.splitLine && a.splitLine.show ? {
           line: {
             style: {
               stroke: a.splitLine.lineStyle.color,
@@ -382,7 +429,7 @@ export function getYAxisExt(chart) {
             }
           }
         } : null
-        const label = a.axisLabel.show ? {
+        const label = a.axisLabel && a.axisLabel.show ? {
           rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
           style: {
             fill: a.axisLabel.color,
@@ -414,6 +461,7 @@ export function getYAxisExt(chart) {
       }
     }
   }
+  console.log('yExt')
   return axis
 }
 

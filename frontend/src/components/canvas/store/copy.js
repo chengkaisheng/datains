@@ -17,7 +17,13 @@ export default {
         data: deepCopy(state.curComponent),
         index: state.curComponentIndex
       }
-
+      if (state.copyData.data.type === 'de-nav') {
+        state.copyData.data.options.navTabList.forEach(ele => {
+          ele.name = ele.name + '-copy'
+          ele.relation = []
+        })
+      }
+      console.log('触发复制---------', state.copyData)
       state.isCut = false
     },
 
@@ -30,7 +36,7 @@ export default {
       const data = state.copyData.data
       // 仪表板复制的组件默认不在移动端部署中mobileSelected = false
       data.mobileSelected = false
-      if (!state.curComponent.auxiliaryMatrix) {
+      if (state.curComponent && !state.curComponent.auxiliaryMatrix) {
         data.style.top += 20
         data.style.left += 20
       }

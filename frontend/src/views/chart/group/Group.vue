@@ -291,6 +291,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { post, chartGroupTree } from '@/api/chart/chart'
 import { queryAuthModel } from '@/api/authModel/authModel'
 import TableSelector from '../view/TableSelector'
@@ -412,7 +413,8 @@ export default {
       renderOptions: [
         { name: 'AntV', value: 'antv' },
         { name: 'ECharts', value: 'echarts' },
-        // { name: 'HighCharts', value: 'highcharts'}
+        { name: 'HighCharts', value: 'highcharts' },
+        { name: '其他', value: 'other' }
       ],
       searchPids: [], // 查询命中的pid
       filterText: '',
@@ -432,7 +434,10 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
-    }
+    },
+    ...mapState([
+      'canvasStyleData'
+    ])
     /* pluginRenderOptions() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
       const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
@@ -817,7 +822,11 @@ export default {
         assistLine: [],
         threshold: DEFAULT_THRESHOLD
       })
-      view.stylePriority = 'view' // 默认样式优先级视图
+      if(this.canvasStyleData.chart.stylePriority === 'panel') {
+        view.stylePriority= 'panel'
+      } else {
+        view.stylePriority = 'view' // 默认样式优先级视图
+      }
       view.xaxis = JSON.stringify([])
       view.xaxisExt = JSON.stringify([])
       view.yaxis = JSON.stringify([])
@@ -827,6 +836,7 @@ export default {
       view.drillFields = JSON.stringify([])
       view.extBubble = JSON.stringify([])
       this.setChartDefaultOptions(view)
+      console.log('view', view)
       const _this = this
       post('/chart/view/newOne/' + this.panelInfo.id, view, true).then(response => {
         this.closeCreateChart()
@@ -871,6 +881,7 @@ export default {
     },
 
     getTable(table) {
+      console.log('表格：', table)
       this.table = JSON.parse(JSON.stringify(table))
     },
 

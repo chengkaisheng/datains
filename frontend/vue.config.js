@@ -4,6 +4,7 @@ const defaultSettings = require('./src/settings.js')
 
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 // const CompressionPlugin = require('compression-webpack-plugin')
+// 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
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -23,9 +24,18 @@ module.exports = {
         // target: 'http://ofmfa31n5roz.ngrok2.xiaomiqiu.cn/',
 
         // target: 'http://localhost:9528/',
-        // target: 'http://ew5nffth3rvv.ngrok2.xiaomiqiu.cn/',
-        //target: 'http://122.9.188.217:8082/',
-
+        // target: 'http://ew5nffth3rvv.ngrok2.xiaomiqiu.cn/', 192.168.3.223
+        // target: 'http://172.16.226.133/',
+        // target: 'http://122.9.188.217:8082/',
+        // target: 'http://183.194.64.166:10080/',
+        // target: 'http://192.168.3.223/',
+        // target: 'http://183.194.65.250:9091/',
+        // http://183.194.64.166:9091/
+        // target: 'http://192.168.3.67/',
+        //target: 'http://183.194.64.166:9091/',
+        // target: 'http://192.168.3.223/',
+        // target: 'http://192.168.3.67/',
+        // target: 'http://ofmfa31n5roz.ngrok.xiaomiqiu123.top',
         ws: false
       }
     },
