@@ -114,6 +114,11 @@ public class XEmailTaskServer {
         String token = ServletUtils.getToken();
         String fileId = null;
         try {
+
+            System.err.println(url);
+            System.err.println(token);
+            System.err.println(buildPixel(request.getPixel()));
+
             Future<?> future = priorityExecutor.submit(() -> {
                 try {
                     return emailXpackService.print(url, token, buildPixel(request.getPixel()));
@@ -131,12 +136,18 @@ public class XEmailTaskServer {
             LogUtil.error(e.getMessage(), e);
             DEException.throwException("预览失败，请联系管理员");
         }
-        String imageUrl = "/system/ui/image/" + fileId;
-        String html = "<div>" +
+      /*  String imageUrl = "/system/ui/image/" + fileId;*/
+
+        String imageUrl = "http://yimalingxian.oss-accelerate.aliyuncs.com/yimalingxian1602297075859.png";
+
+      /*  String html = "<div>" +
                 "<h2>" + content + "</h2>" +
                 "<img style='width: 100%;' id='" + panelId + "' src='" + imageUrl + "' />" +
+                "</div>";*/
+        String html = "<div>" +
+                "<h2>" + content + "</h2>" +
+                "<img style='width: 100%;' id='" + "d2bda4c3-3c25-40c6-bed3-994ffe2949df" + "' src='" + imageUrl + "' />" +
                 "</div>";
-
         return html;
 
     }

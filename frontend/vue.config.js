@@ -19,7 +19,13 @@ module.exports = {
     port: port,
     proxy: {
       '^(?!/login)': {
-        target: 'http://192.168.1.76:8081/',
+        target: 'http://localhost:8081/',
+        // target: 'http://ofmfa31n5roz.ngrok2.xiaomiqiu.cn/',
+
+        // target: 'http://localhost:9528/',
+        // target: 'http://ew5nffth3rvv.ngrok2.xiaomiqiu.cn/',
+        //target: 'http://122.9.188.217:8082/',
+
         ws: false
       }
     },

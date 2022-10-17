@@ -238,7 +238,7 @@ public class AboutController {
 
             LicenseVo license = new LicenseVo();
             license.setCompany("上海哲锦科技");
-            license.setExpirationTime("2022-06-06 17:16:18");
+            license.setExpirationTime("2022-11-11 17:16:18");
             license.setEdition("2.1.2");
             license.setProduct("DataIns");
             license.setCreateTime("2022-04-09 17:16:18");

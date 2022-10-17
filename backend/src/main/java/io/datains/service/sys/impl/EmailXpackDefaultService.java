@@ -59,6 +59,10 @@ public class EmailXpackDefaultService implements EmailXpackService {
     @Override
     public String print(String paramString1, String paramString2, XpackPixelEntity paramXpackPixelEntity) throws Exception {
         int var4 = (var4 = xpackTaskMapper.timeout()) > 0 ? var4 : 60;
+        System.err.println(paramString1);
+        System.err.println(paramString2);
+        System.err.println(paramXpackPixelEntity);
+        System.err.println(var4);
         /*return WebDriverUtil.screenshotAsBytes(a, a, a, var4);*/
         return null;
     }
