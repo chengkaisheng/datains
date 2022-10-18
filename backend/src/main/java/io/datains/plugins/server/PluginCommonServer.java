@@ -9,6 +9,7 @@ import io.datains.plugins.common.dto.StaticResource;
 import io.datains.plugins.common.service.PluginComponentService;
 import io.datains.plugins.common.service.PluginMenuService;
 import io.datains.plugins.config.SpringContextUtil;
+import io.datains.plugins.util.PluginUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -18,10 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +36,7 @@ public class PluginCommonServer {
     @Autowired
     ResourceLoader resourceLoader;
 
-    private static String menusDir = "/opt/datains/plugins/menus/menus.key";
+    //private static String menusDir = "/opt/datains/plugins/menus/menus.key";
 
    /* @GetMapping("/async/{menuId}")
     public void menuInfo(@PathVariable Long menuId) {
@@ -126,13 +124,16 @@ public class PluginCommonServer {
 
     public List<PluginSysMenu> getMenus() throws IOException {
         try{
-            String fileName = menusDir;
+            ClassLoader classLoader = PluginUtils.class.getClassLoader();
+            /*String fileName = menusDir;
             Path path = Paths.get(fileName);
             byte[] bytes = Files.readAllBytes(path);
-            List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);//原文出自【易百教程】，商业转载请联系作者获得授权，非商业请保留原文链接：https://www.yiibai.com/java/java-read-text-file.html
-            System.out.println(allLines.get(0));
+            List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);*/
+            InputStream inputStream = classLoader.getResourceAsStream("menus/menus.key");
+            InputStreamReader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            BufferedReader br = new BufferedReader(isr);
             EncryptUtil instance = EncryptUtil.getInstance();
-            String s1 = instance.Base64Decode(allLines.get(0));
+            String s1 = instance.Base64Decode(br.readLine());
             System.err.println(s1);
             //DES解密
             String s3 = instance.DESdecode(s1,"DataIns");
