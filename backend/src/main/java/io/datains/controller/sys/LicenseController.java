@@ -53,7 +53,7 @@ public class LicenseController {
     @Value("${License.key}")
     private String key;
 
-    private static String mac = "/opt/datains/plugins/mac/mac.txt";
+    private static String mac = "/opt/datains/hostinfo/address";
 
     @GetMapping(value = "anonymous/license/validate")
     public ResultHolder validateLicense() throws Exception {

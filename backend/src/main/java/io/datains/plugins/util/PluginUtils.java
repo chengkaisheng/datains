@@ -46,9 +46,8 @@ public class PluginUtils {
 
     /*@Value("${datains.plugin.dir:/opt/datains/plugins/menus/menus.key}")*/
     //private static String menusDir = "/opt/datains/plugins/menus/menus.key";
-
     /*@Value("${datains.plugin.dir:/opt/datains/plugins/menus/menus.key}")*/
-    private static String mac = "/opt/datains/plugins/mac/mac.txt";
+    private static String mac = "/opt/datains/hostinfo/address";
 
     @Autowired
     public void setDefaultLicenseService(DefaultLicenseService defaultLicenseService) {
