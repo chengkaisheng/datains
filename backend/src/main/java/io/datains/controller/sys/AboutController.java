@@ -106,7 +106,7 @@ public class AboutController {
                 f2CLicenseResponse.setMessage("非此服务器授权");
                 return f2CLicenseResponse;
             }
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date expirationTime = simpleDateFormat.parse(licenseVo.getExpirationTime());
             String format = simpleDateFormat.format(new Date());
             Date newData = simpleDateFormat.parse(format);
@@ -175,7 +175,7 @@ public class AboutController {
                     f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
                     return f2CLicenseResponse;
                 }
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Date expirationTime = simpleDateFormat.parse(licenseVo.getExpirationTime());
                 String format = simpleDateFormat.format(new Date());
                 Date newData = simpleDateFormat.parse(format);

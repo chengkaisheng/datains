@@ -115,7 +115,7 @@ public class LicenseController {
                     f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
                     return f2CLicenseResponse;
                 }
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 Date expirationTime = simpleDateFormat.parse(licenseVo.getExpirationTime());
                 String format = simpleDateFormat.format(new Date());
                 Date newData = simpleDateFormat.parse(format);
