@@ -30,7 +30,7 @@ public class DefaultLicenseService {
     private static final String LICENSE_ID = "datains_license";
     private static final String validatorUtil = "/usr/bin/validator";
     private static final String product = "DataIns";
-    private static String mac = "/opt/datains/plugins/mac/mac.txt";
+    private static String mac = "/opt/datains/hostinfo/address";
 
     /*public F2CLicenseResponse validateLicense(String product, String licenseKey) {
         List<String> command = new ArrayList<String>();

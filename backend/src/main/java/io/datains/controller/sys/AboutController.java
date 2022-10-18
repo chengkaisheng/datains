@@ -52,7 +52,7 @@ public class AboutController {
     private LicenseMapper licenseMapper;
 
     //private static String mac = "/opt/datains/hostinfo/address";
-    private static String mac = "/opt/datains/plugins/mac/mac.txt";
+    private static String mac = "/opt/datains/hostinfo/address";
 
  /*   @PostMapping("/license/update")
     public F2CLicenseResponse updateLicense(@RequestBody Map<String, String> map) {
