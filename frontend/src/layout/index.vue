@@ -225,6 +225,7 @@ export default {
       padding: 0px !important;
   }
   .le-aside-container {
+    padding: 0px;
       .sidebar-container {
         width: 100% !important;
         position: initial !important;

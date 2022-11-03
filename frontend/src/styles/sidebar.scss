@@ -63,13 +63,15 @@
       border: none;
       height: 100%;
       width: 100% !important;
-      background-color: var(--SiderBG, #ffffff);     
+      // background-color: var(--SiderBG, #ffffff); 
+      background-color: #151d55;    
     }
 
     
 
     .submenu-title-noDropdown:not(.is-active), .el-submenu__title {
-      color: var(--SiderTextColor, #1e212a);
+      // color: var(--SiderTextColor, #1e212a);
+      color: #FFFFFF;
       &:hover {
         background-color: var(--MenuHovorBG, rgba(158,158,158,.2)) !important;
         color: var(--TextActive, #409EFF);
@@ -95,10 +97,12 @@
     & .el-submenu .el-menu-item {
       min-width: $sideBarWidth !important;
       background-color: var(--SiderBG) !important;
-      color: var(--SiderTextColor);
+      // color: var(--SiderTextColor);
+      color: #ffffff;
       &:hover {
         background-color: var(--MenuHovorBG, rgba(158,158,158,.2)) !important;
-        color: var(--TextActive) !important;
+        // color: var(--TextActive) !important;
+        color: var(--TextActive, #409EFF);
       }
     }
 

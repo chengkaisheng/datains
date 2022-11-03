@@ -142,6 +142,7 @@ export default {
   .tab-panel{
     height: 100%;
     overflow-y: auto;
+    background-color: #151d55;
   }
   .tab-panel>>>.el-tabs__nav-wrap{
     padding: 0 10px;
@@ -152,5 +153,6 @@ export default {
   .tab-panel>>>.el-tabs__item{
     /* width: 10px; */
     padding: 0 10px;
+    color: #ffffff;
   }
 </style>

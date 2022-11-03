@@ -87,6 +87,14 @@ export default {
     width: 100%;
     height: 25px;
     margin: 0 0 0 10px;
+    color: #ffffff;
+}
+
+::v-deep .de-filter-data-table .el-table__body tr.current-row > td.el-table__cell {
+  background-color: #5f6277;
+}
+::v-deep .el-table--enable-row-hover .el-table__body tr:hover > td.el-table__cell {
+  background-color: #5f6277;
 }
 .star-item-content {
     width: calc(100% - 60px);
