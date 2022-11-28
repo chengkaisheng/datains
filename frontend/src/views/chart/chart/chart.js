@@ -1617,6 +1617,56 @@ export const BASE_BUBBLE_MAP = {
   ]
 }
 
+export const BASE_COLUMN_MAP = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  backgroundColor:'#010b43',
+  top : '-40%',
+  bottom : '-40%',
+  tooltip: {
+      trigger: 'axis'
+  },
+  geo : {
+    type : 'map',
+    map : 'MAP_COLUMN',
+    label : {
+      normal : {
+        textStyle : {
+          color : '#fff'
+        },
+        show : false
+      },
+      emphasis : {
+        textStyle : {
+          color : '#C6A300'
+        },
+        show : false
+      }
+    },
+    itemStyle : {
+      normal : {
+        areaColor : "rgba(0,0,0,0)",
+        borderColor : "#126cc4",
+        borderWidth : 1.3
+      },
+      emphasis : {
+        areaColor : "rgba(233,0,200,0.3)"
+      }
+    }
+  },
+
+  //   legend: {},
+  legend:[],
+  xAxis : [],
+  yAxis : [],
+  grid : [],
+  series : []
+}
+
 export const BASE_SCATTER = {
   title: {
     text: '',

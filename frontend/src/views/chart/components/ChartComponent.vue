@@ -1,3 +1,9 @@
+、、、、、、、、、、、、、、
+添加 地图柱状图的代码，但是柱状图全部都在同一个地方，并不能满足要求
+
+
+
+
 <template>
   <div style="display: flex;position:relative">
     <view-track-bar
@@ -8,7 +14,7 @@
       @trackClick="trackClick"
     />
     <div :id="chartId" style="width: 100%;height: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius}" />
-    <div v-if="chart.type === 'map'" class="map-zoom-box">
+    <div v-if="chart.type === 'map' || chart.type === 'map_column'" class="map-zoom-box">
       <div style="margin-bottom: 0.5em;">
         <el-button size="mini" icon="el-icon-plus" circle @click="roamMap(true)" />
       </div>
@@ -38,6 +44,7 @@ import {
   BASE_RADAR,
   BASE_GAUGE,
   BASE_MAP,
+  BASE_COLUMN_MAP,
   BASE_SCATTER,
   BASE_TREEMAP,
   BASE_MIX,
@@ -102,7 +109,8 @@ import {
   // newHartOption
 } from '../chart/pie/pie'
 import {
-  baseMapOption
+  baseMapOption,
+  baseMapColumnOption
 } from '../chart/map/map'
 import {
   baseContrastFunnelOption,
@@ -147,6 +155,7 @@ import {
   geoJson
 } from '@/api/map/map'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
   name: 'ChartComponent',
@@ -378,6 +387,28 @@ export default {
         })
         return
       }
+      if( chart.type === 'map_column') {
+        const customAttr = JSON.parse(chart.customAttr)
+        if(!customAttr.areaCode) {
+          this.myChart.clear()
+          return
+        }
+        const cCode = this.dynamicAreaCode || customAttr.areaCode
+        if (this.$store.getters.geoMap[cCode]) {
+          const json = this.$store.getters.geoMap[cCode]
+          this.initMapColumnChart(json, chart)
+          return
+        }
+        geoJson(cCode).then(res => {
+          this.$store.dispatch('map/setGeo', {
+            key: cCode,
+            value: res
+          }).then(() => {
+            this.initMapColumnChart(res, chart)
+          })
+        })
+        return
+      }
       this.myEcharts(chart_option)
     },
     registerDynamicMap(areaCode) {
@@ -408,6 +439,127 @@ export default {
       // this.$echarts.getMap('MAP') || this.$echarts.registerMap('MAP', geoJson)
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
       const chart_option = baseMapOption(base_json, chart)
+      this.myEcharts(chart_option)
+      const opt = this.myChart.getOption()
+      if (opt && opt.series) {
+        const center = opt.series[0].center
+        this.mapCenter = center
+      }
+    },
+    initMapColumnChart(geoJson, chart) {
+      console.log('获取的啥？？？？？？',geoJson,chart)
+      this.$echarts.registerMap('MAP_COLUMN', geoJson)
+      if(BASE_COLUMN_MAP && typeof BASE_COLUMN_MAP === 'object') {
+        this.myChart.setOption(BASE_COLUMN_MAP)
+      }
+      setTimeout(() => {
+        this.mapColumnData(geoJson, chart)
+      },1)
+    },
+    mapColumnData(geoJson, chart) {
+      const base_json = JSON.parse(JSON.stringify(BASE_COLUMN_MAP))
+      
+      var geoCoordMap = {}
+      if(geoJson.features.length) {
+        let geos = JSON.parse(JSON.stringify(geoJson.features))
+        let arr = []
+        geos.map((item,index) => {
+          geoCoordMap[item.properties.name] = item.properties.center
+        })
+      }
+      console.log('geoCoordMap',geoCoordMap)
+
+      if(chart.data) {
+        let customAttr = JSON.parse(chart.customAttr)
+
+        if (chart.data.series && chart.data.series.length > 0) {
+          const valueArr = chart.data.series[0].data
+          let arr = []
+          for (let i = 0; i < valueArr.length; i++) {
+            arr.push({
+              name: chart.data.x[i],
+              value: [valueArr[i].value]
+            })
+          }
+          console.log('arrrrrrr',arr,chart)
+
+          base_json.legend.push({
+            data : chart.data.series[0].name,
+            left:'70%',
+            top:'85%',
+            itemWidth:25,
+            itemHeight:15,
+            textStyle:{
+                color:'#ddd',
+                fontSize:15
+            },
+          })
+
+          arr.map((item,index) => {
+            let geoCoord = geoCoordMap[item.name]
+            if(geoCoord === undefined) return
+            let coord = this.myChart.convertToPixel('geo',geoCoord)
+            console.log('coorddddddddd',coord)
+            index += ''
+            
+            base_json.xAxis.push({
+              id: index,
+              gridId: index,
+              name: item.name,
+              nameTextStyle : {
+                color : '#fff',
+                fontSize : 14
+              },
+              nameLocation : 'middle',
+              nameGap : 3,
+              splitLine : {
+                show : false
+              },
+              axisTick : {
+                show : false
+              },
+              axisLabel : {
+                show : false
+              },
+              axisLine : {
+                show : false,
+                lineStyle : {
+                  color : '#bbb'
+                }
+              },
+              data: [item.name]
+            })
+            base_json.yAxis.push({
+              id: index,
+              gridId: index,
+              show: false
+            })
+            base_json.grid.push({
+              id: index,
+              width: 50,
+              height: 40,
+              left: coord[0],
+              top: coord[1]
+            })
+          
+            for(let i=0;i<chart.data.series.length;i++) {
+              base_json.series.push({
+                name: chart.data.series[i].name,
+                type: 'bar',
+                xAxis: index,
+                yAxis: index,
+                barWidth: '20%',
+                itemStyle: {
+                  color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+                },
+                data: [item.value[i]]
+              })
+            }
+          })
+        }
+      }
+      console.log('base_json',base_json)
+      const chart_option = baseMapColumnOption(base_json, chart)
       this.myEcharts(chart_option)
       const opt = this.myChart.getOption()
       if (opt && opt.series) {

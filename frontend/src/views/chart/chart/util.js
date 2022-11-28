@@ -495,13 +495,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_map_bubble',
     icon: 'map_bubble'
   },
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_space',
-  //   value: 'map_column',
-  //   title: 'chart.chart_map_column',
-  //   icon: 'map_column'
-  // },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_space',
+    value: 'map_column',
+    title: 'chart.chart_map_column',
+    icon: 'map_column'
+  },
   {
     render: 'echarts',
     category: 'chart.chart_type_space',

@@ -257,7 +257,7 @@
                   />
                   <div v-else>
                     <!-- map -->
-                    <el-row v-if="view.type ==='map' || view.type === 'arc_map'" class="padding-lr">
+                    <el-row v-if="view.type ==='map' || view.type === 'arc_map' || view.type === 'map_column'" class="padding-lr">
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.map_range') }}</span>
                       </span>
@@ -1642,7 +1642,7 @@ export default {
       this.fieldFilter(val)
     },
     'chartType': function(newVal, oldVal) {
-      if ((newVal === 'map' || newVal === 'buddle-map' || newVal === 'arc_map') && newVal !== oldVal) {
+      if ((newVal === 'map' || newVal === 'buddle-map' || newVal === 'arc_map' || newVal === 'map_column') && newVal !== oldVal) {
         this.initAreas()
       }
       this.$emit('typeChange', newVal)
@@ -1907,7 +1907,8 @@ export default {
         view.type === 'liquid' ||
         view.type === 'word-cloud' ||
         view.type === 'waterfall' ||
-        view.type === 'contrast-funnel') {
+        view.type === 'contrast-funnel' ||
+        view.type === 'map_column') {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
@@ -2758,7 +2759,7 @@ export default {
     resetDrill() {
       const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = []
-      if (this.chart.type === 'map' || this.chart.type === 'buddle-map' || this.chart.type === 'arc_map') {
+      if (this.chart.type === 'map' || this.chart.type === 'buddle-map' || this.chart.type === 'arc_map' || this.chart.type === 'map_column') {
         this.backToParent(0, length)
         this.currentAcreaNode = null
         const current = this.$refs.dynamicChart
