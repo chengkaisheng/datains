@@ -5,6 +5,12 @@
         <el-form-item :label="$t('chart.adapt')" class="form-item">
           <el-checkbox v-model="widthForm.adaptWidth" @change="changeSizeCase"></el-checkbox>
         </el-form-item>
+
+        <el-form-item v-for="(item,index) in widthInfoList" 
+          :label="$t('chart.widthFirstName')+(index+1)+$t('chart.widthLastName')" :key="index"
+        >
+
+        </el-form-item>
       </el-form>
     </el-col>
   </div>
@@ -12,6 +18,7 @@
 
 <script>
 import {COLOR_PANEL, DEFAULT_SIZE } from '../../chart/chart'
+import { mapState } from 'vuex'
 
 export default {
   name: 'WidthSelectorAntV',
@@ -30,6 +37,25 @@ export default {
       widthForm: JSON.parse(JSON.stringify(DEFAULT_SIZE)),
     }
   },
+  computed: {
+    ...mapState([
+      'curComponent',
+      'componentData',
+      'canvasStyleData',
+      'previewCanvasScale'
+    ]),
+    widthInfoList() {
+      if(this.chart.customAttr) {
+        const customAttr = JSON.parse(this.chart.customAttr)
+        console.log('customAttr',customAttr,this.curComponent)
+        if(customAttr.size) {
+
+        }
+      }
+      
+      return []
+    }
+  },
   watch: {
     'chart': {
       handler: function() {
@@ -38,7 +64,7 @@ export default {
     }
   },
   mounted() {
-    console.log('宽度设置，，，，')
+    console.log('宽度设置，，，，',this.chart)
     this.initData()
   },
   methods: {
@@ -54,6 +80,10 @@ export default {
 
         if(customAttr.size) {
           this.widthForm = customAttr.size
+
+          // if(customAttr.size.widthInfoList === undefined) {
+          //   customAttr.size.widthInfoList = []
+          // }
         }
       }
     },

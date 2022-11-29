@@ -108,7 +108,7 @@ export const DEFAULT_SIZE = {
   liquidShape: 'circle',
 
   adaptWidth: true, // 自适应
-
+  widthInfoList: [], // 列宽数据集
 }
 export const DEFAULT_LABEL = {
   show: false,

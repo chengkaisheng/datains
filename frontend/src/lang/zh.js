@@ -767,6 +767,8 @@ export default {
     bar_width: '柱宽',
     bar_gap: '柱间隔',
     adapt: '自适应',
+    widthFirstName: '第',
+    widthLastName: '列宽',
     line_width: '线宽',
     line_type: '线型',
     line_symbol: '折点',
