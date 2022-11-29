@@ -242,7 +242,7 @@
         <el-form-item :label="$t('chart.adapt')" class="form-item">
           <el-checkbox v-model="sizeForm.barDefault" @change="changeBarSizeCase">{{ $t('chart.adapt') }}</el-checkbox>
         </el-form-item>
-        <el-form-item :label="$t('chart.bar_width')+'22'" class="form-item form-item-slider">
+        <el-form-item :label="$t('chart.bar_width')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barWidth" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="1" :max="80" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.bar_gap')" class="form-item form-item-slider">
@@ -291,6 +291,20 @@
         <el-form-item :label="$t('chart.bubble_size')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.scatterSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="40" @change="changeBarSizeCase" />
         </el-form-item>
+        <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_pie') }}</el-divider>
+        <el-form-item :label="$t('chart.pie_inner_radius')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.pieInnerRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.pie_outer_radius')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+
+        <el-form-item :label="$t('chart.pie_circle_center_left')" class="form-item">
+          <el-slider v-model="sizeForm.pieCircleLeft" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.pie_circle_center_top')" class="form-item">
+          <el-slider v-model="sizeForm.pieCircleTop" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
       </el-form>
 
       <el-form v-show="chart.type && chart.type === 'liquid'" ref="sizeFormLine" :model="sizeForm" label-width="80px" size="mini">
@@ -328,6 +342,30 @@
         <!-- <el-form-item :label="$t('chart.liquid_wave_count')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.liquidWaveCount" show-input :show-input-controls="false" input-size="mini" :min="2" :max="10" @change="changeBarSizeCase" />
         </el-form-item> -->
+      </el-form>
+
+      <el-form v-show="chart.type && chart.type === 'calendar'" ref="sizeFormLine" :model="sizeForm" label-width="90px" size="mini">
+        <el-form-item label="宽度自适应" class="form-item">
+          <el-checkbox v-model="sizeForm.caldWAdapt" @change="changeBarSizeCase">自适应</el-checkbox>
+        </el-form-item>
+        <el-form-item label="图表宽度" class="form-item form-item-slider">
+          <el-slider :disabled="sizeForm.caldWAdapt" v-model="sizeForm.caldWidth" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item label="高度自适应" class="form-item">
+          <el-checkbox v-model="sizeForm.caldHAdapt" @change="changeBarSizeCase">自适应</el-checkbox>
+        </el-form-item>
+        <el-form-item label="图表高度" class="form-item form-item-slider">
+          <el-slider :disabled="sizeForm.caldHAdapt" v-model="sizeForm.caldHeight" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item label="饼图大小" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.caldPieSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="50" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item label="日期水平偏移" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.caldTimelevel" show-input :show-input-controls="false" input-size="mini" :min="-50" :max="50" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item label="日期垂直偏移" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.caldTimevertical" show-input :show-input-controls="false" input-size="mini" :min="-50" :max="50" @change="changeBarSizeCase" />
+        </el-form-item>
       </el-form>
     </el-col>
   </div>

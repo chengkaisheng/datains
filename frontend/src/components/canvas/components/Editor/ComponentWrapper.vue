@@ -1,4 +1,5 @@
 <template>
+<div>
   <div
     :style="getOutStyleDefault(config.style)"
     class="component"
@@ -52,6 +53,18 @@
       />
     </div>
   </div>
+  <el-dialog
+    :title="textTitle"
+    :visible.sync="showVisible"
+    width="38%"
+    class="dialog-css"
+    :close-on-click-modal="false"
+    :append-to-body="inScreen"
+    :destroy-on-close="true"
+  >
+    <textPopShow :element="textElement" />
+  </el-dialog>
+</div>
 </template>
 
 <script>
@@ -64,9 +77,10 @@ import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 import CloseBar from '@/components/canvas/components/Editor/CloseBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import textPopShow from '@/views/background/textPopShow'
 
 export default {
-  components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar },
+  components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar, textPopShow },
   mixins: [mixins],
   props: {
     config: {
@@ -104,7 +118,9 @@ export default {
   },
   data() {
     return {
-      previewVisible: false
+      previewVisible: false,
+      showVisible: false,
+      textElement: {},
     }
   },
   computed: {
@@ -140,6 +156,13 @@ export default {
     },
     curGap() {
       return (this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix) ? this.componentGap : 0
+    },
+    textTitle() {
+      if (this.textElement && this.textElement.options && this.textElement.options.popTitle) {
+        return this.textElement.options.popTitle
+      } else {
+        return ''
+      }
     },
     ...mapState([
       'mobileLayoutStatus',
@@ -215,6 +238,12 @@ export default {
       Object.keys(events).forEach(event => {
         this[event](events[event])
       })
+      console.log('click,,,,,',this.showVisible,this.curComponent)
+      if(this.config.component === 'v-text' && this.curComponent && this.config.options && this.config.options.isPopVisible) {
+        this.showVisible = true
+        this.textElement = this.config
+      }
+
     },
     elementMouseDown(e) {
       // private 设置当前组件数据及状态
@@ -238,6 +267,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.dialog-css>>>.el-dialog__title {
+  font-size: 14px;
+}
+.dialog-css >>> .el-dialog__header {
+  padding: 20px 20px 0;
+}
+.dialog-css >>> .el-dialog__body {
+  padding: 10px 20px 20px;
+}
+
   .component {
     position: absolute;
   }

@@ -105,7 +105,15 @@ export const DEFAULT_SIZE = {
   liquidOutlineDistance: 8,
   liquidWaveLength: 128,
   liquidWaveCount: 3,
-  liquidShape: 'circle'
+  liquidShape: 'circle',
+
+  caldWAdapt: false,
+  caldWidth: 60,
+  caldHAdapt: false,
+  caldHeight: 60,
+  caldPieSize: 20,
+  caldTimelevel: -20,
+  caldTimevertical: -20,
 
 }
 export const DEFAULT_LABEL = {
@@ -907,6 +915,152 @@ export const BASE_BOXPLOT = {
   ]
 }
 
+export const BASE_3DSURFACE = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  tooltip: {},
+  xAxis3D: {
+    type: 'value'
+  },
+  yAxis3D: {
+    type: 'value'
+  },
+  zAxis3D: {
+    type: 'value'
+  },
+  grid3D: {
+    viewControl: {
+    }
+  },
+  series: [
+    {
+      type: 'surface',
+      wireframe: {
+        show: true,
+        lineStyle: {}
+      },
+      data: []
+    }
+  ]
+}
+
+export const BASE_3DCOLUMN = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid3D: {},
+  tooltip: {},
+  xAxis3D: {
+    type: 'category'
+  },
+  yAxis3D: {
+    type: 'category'
+  },
+  zAxis3D: {},
+  // visualMap: {
+  //   max: 1e8,
+  //   dimension: 'Population'
+  // },
+  // dataset: {
+  //   dimensions: [
+  //     'Income',
+  //     'Life Expectancy',
+  //     'Population',
+  //     'Country',
+  //     { name: 'Year', type: 'ordinal' }
+  //   ],
+  //   source: [
+  //     ["Income","Life Expectancy","Population","Country","Year"],
+  //     [815,34.05,351014,"Australia",1800],
+  //     [1314,39,645526,"Canada",1800],
+  //     [985,32,321675013,"China",1800],
+  //     [864,32.2,345043,"Cuba",1800],
+  //     [1244,36.5731262,977662,"Finland",1800],
+  //     [1803,33.96717024,29355111,"France",1800],
+  //     [1639,38.37,22886919,"Germany",1800],
+  //     [926,42.84559912,61428,"Iceland",1800],
+  //     [1052,25.4424,168574895,"India",1800],
+  //     [1050,36.4,30294378,"Japan",1800],
+  //     [579,26,4345000,"North Korea",1800],
+  //     [576,25.8,9395000,"South Korea",1800],
+  //     [658,34.05,100000,"New Zealand",1800],
+  //     [1278,37.91620899,868570,"Norway",1800],
+  //     [1213,35.9,9508747,"Poland",1800],
+  //     [1430,29.5734572,31088398,"Russia",1800],
+  //     [1221,35,9773456,"Turkey",1800],
+  //     [3431,38.6497603,12327466,"United Kingdom",1800],
+  //     [2128,39.41,6801854,"United States",1800],
+  //     [834,34.05,342440,"Australia",1810],
+  //     [1400,39.01496774,727603,"Canada",1810],
+  //     [985,32,350542958,"China",1810],
+  //     [970,33.64,470176,"Cuba",1810],
+  //     [1267,36.9473378,1070625,"Finland",1810],
+  //     [1839,37.4,30293172,"France",1810],
+  //     [1759,38.37,23882461,"Germany",1810],
+  //     [928,43.13915533,61428,"Iceland",1810],
+  //     [1051,25.4424,171940819,"India",1810],
+  //     [1064,36.40397538,30645903,"Japan",1810],
+  //     [573,26,4345000,"North Korea",1810],
+  //     [570,25.8,9395000,"South Korea",1810],
+  //     [659,34.05,100000,"New Zealand",1810],
+  //     [1299,36.47500606,918398,"Norway",1810],
+  //     [1260,35.9,9960687,"Poland",1810],
+  //     [1447,29.5734572,31088398,"Russia",1810],
+  //     [1223,35,9923007,"Turkey",1810],
+  //     [3575,38.34738144,14106058,"United Kingdom",1810],
+  //     [2283,39.41,8294928,"United States",1810],
+  //     [853,34.05,334002,"Australia",1820],
+  //     [1491,39.02993548,879432,"Canada",1820],
+  //     [985,32,380055273,"China",1820]  
+  //   ]
+  // },
+  series: [
+    {
+      type: 'bar3D',
+      // symbolSize: symbolSize,
+      shading: 'lambert',
+      // encode: {
+      //   x: 'Year',
+      //   y: 'Country',
+      //   z: 'Life Expectancy',
+      //   tooltip: [0, 1, 2, 3, 4]
+      // }
+      data: []
+    }
+  ]
+}
+
+export const BASE_3DSCATTER = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid3D: {},
+  tooltip: {},
+  xAxis3D: {
+    type: 'category'
+  },
+  yAxis3D: {
+    type: 'category'
+  },
+  zAxis3D: {},
+  series: [
+    {
+      type: 'scatter3D',
+      data: []
+    }
+  ]
+}
+
 export const BASE_SANKEY = {
   title: {
     text: '',
@@ -974,6 +1128,7 @@ export const BASE_SANKEY = {
     ]
   }
 }
+
 export const BASE_3DEARTH = {
   background: "#000",
   globe: {
@@ -1101,7 +1256,7 @@ export const BASE_PIE = {
   ]
 }
 
-export const BASE_FUNNEL = {
+export const BASE_CALENDAR_PIE = {
   title: {
     text: '',
     textStyle: {
@@ -1110,6 +1265,51 @@ export const BASE_FUNNEL = {
   },
   grid: {
     containLabel: true
+  },
+  tooltip: {},
+  legend: {
+    show: true,
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect',
+    data: [],
+  },
+  calendar: {
+    top: 'middle',
+    left: 'center',
+    orient: 'vertical',
+    cellSize: [60,60],
+    yearLabel: {
+      show: false,
+      fontSize: 30
+    },
+    dayLabel: {
+      margin: 20,
+      firstDay: 1,
+      nameMap: ['日', '一', '二', '三', '四', '五', '六', '日']
+    },
+    monthLabel: {
+      show: false
+    },
+    range: []
+  },
+  series: []
+}
+
+export const BASE_FUNNEL = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true,
+    left: 10,
+    top: 10,
+    right: 10,
+    bottom: 10
   },
   tooltip: {
     trigger: 'item'

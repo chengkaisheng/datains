@@ -604,7 +604,7 @@
                     </el-row>
                     <!--extBubble-->
                     <el-row
-                      v-if="view.type && view.type.includes('scatter') && view.type !== '3dscatter'"
+                      v-if="view.type && view.type.includes('scatter') && view.type !== '3d-scatter'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -778,7 +778,11 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick' && view.type !== 'map' && !view.type.includes('progress') && view.type !== 'waterfall' && view.type !== 'graph'"
+                    v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick' 
+                        && view.type !== 'contrast-funnel' && view.type !== 'map' 
+                        && !view.type.includes('progress') && view.type !== 'waterfall' 
+                        && view.type !== 'graph' && view.type !== '3d-column'
+                        && view.type !== '3dsurface' && view.type !== '3d-scatter'"
                     name="size"
                     :title="$t('chart.size')"
                   >
@@ -838,7 +842,9 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')&&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
+                    v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')
+                        &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' 
+                        && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -865,7 +871,11 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type &&!view.type.includes('vertical')&&!view.type.includes('dialog') && !view.type.includes('table') && !view.type.includes('progress') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
+                    v-show="view.type &&!view.type.includes('vertical')
+                      &&!view.type.includes('dialog') && !view.type.includes('table') 
+                      && !view.type.includes('progress') && !view.type.includes('text') 
+                      && view.type !== 'liquid' && view.type !== 'gauge' 
+                      && view.type !== 'label' && view.type !== 'calendar'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
@@ -1039,7 +1049,8 @@
                       && (view.type !== 'treemap' || view.render === 'antv')
                       && view.type !== 'liquid' && view.type !== 'waterfall'
                       && view.type !== 'gauge' && view.type !== 'word-cloud' && !view.type.includes('progress')
-                      && view.type !== 'graph' && view.type !== 'candlestick'"
+                      && view.type !== 'graph' && view.type !== 'candlestick'
+                      && view.type !== '3dsurface' && view.type !== '3d-column'"
                     name="legend"
                     :title="$t('chart.legend')"
                   >
@@ -1880,11 +1891,22 @@ export default {
         view.type === 'treemap' ||
         view.type === 'liquid' ||
         view.type === 'word-cloud' ||
-        view.type === 'waterfall') {
+        view.type === 'waterfall' ||
+        view.type === 'contrast-funnel') {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
       }
+      if(view.type === '3d-column' || view.type === '3d-scatter') {
+        if (view.yaxis.length > 3) {
+          view.yaxis.splice(3,1)
+        }
+      }
+      // if( view.type === 'contrast-funnel') {
+      //   if (view.yaxis.length > 4) {
+      //     view.yaxis.splice(4,1)
+      //   }
+      // }
       if (view.type === 'line-stack' && trigger === 'chart') {
         view.customAttr.size.lineArea = true
       }

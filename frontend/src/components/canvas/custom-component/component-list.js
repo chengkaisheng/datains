@@ -288,6 +288,11 @@ const list = [
       verticalAlign: 'middle',
       fontFamily: ''
     },
+    options: {
+      isPopVisible: false,
+      popTitle: '',
+      popImgList: [],
+    },
     hyperlinks: HYPERLINKS,
     x: 1,
     y: 1,
@@ -615,10 +620,13 @@ const list = [
     },
     options: {
       color: '#333333',
+      nameType: 'color',
+      nameBgColor: '#EEEEEE',
+      nameBgImg: '',
       bgType: 'color',
       jumpBgColor: '#EEEEEE',
-      placeholder: '',
       jumpBgImg: '',
+      placeholder: '',
       jumpList: [
         {
           jumpName: '',

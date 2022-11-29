@@ -47,7 +47,11 @@ import {
   BASE_CANDLESTICK,
   BASE_BOXPLOT,
   BASE_SANKEY,
-  BASE_3DEARTH
+  BASE_3DEARTH,
+  BASE_3DSURFACE,
+  BASE_3DCOLUMN,
+  BASE_3DSCATTER,
+  BASE_CALENDAR_PIE
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -63,7 +67,8 @@ import {
   stackBarPartOption,
   horizontalBarOption,
   horizontalStackBarOption,
-  basePictorialBarOption
+  basePictorialBarOption,
+  base3DColumnOption
   // clockcatterOption
 } from '../chart/bar/bar'
 import {
@@ -85,6 +90,9 @@ import {
   base3dEarthOption
 } from '../chart/other/earth'
 import {
+  base3DsurfaceOption
+} from '../chart/other/surface'
+import {
   basePieOption,
   rosePieOption,
   rosePieGradientOption,
@@ -96,6 +104,7 @@ import {
   baseMapOption
 } from '../chart/map/map'
 import {
+  baseContrastFunnelOption,
   baseFunnelOption
 } from '../chart/funnel/funnel'
 import {
@@ -111,7 +120,9 @@ import {
   baseWordCloudOption
 } from '@/views/chart/chart/wordCloud/word_cloud_es'
 import {
-  baseScatterOption
+  baseScatterOption,
+  base3DScatterOption,
+  baseCalendarPieOption
   // clockcatterOption
 } from '../chart/scatter/scatter'
 import {
@@ -293,6 +304,8 @@ export default {
         // chart_option = heatMapOption(JSON.parse(JSON.stringify(THERMODYNAMIC_DIAGRAM)), chart)
       } else if (chart.type === 'funnel') {
         chart_option = baseFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'contrast-funnel') {
+        chart_option = baseContrastFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'radar') {
         chart_option = baseRadarOption(JSON.parse(JSON.stringify(BASE_RADAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'gauge') {
@@ -315,7 +328,15 @@ export default {
         chart_option = candlestickOption(JSON.parse(JSON.stringify(BASE_CANDLESTICK)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'boxplot') {
         chart_option = baseBoxPlotOption(JSON.parse(JSON.stringify(BASE_BOXPLOT)), chart, this.$store.state.canvasStyleData)
-      } 
+      } else if (chart.type === '3dsurface') {
+        chart_option = base3DsurfaceOption(JSON.parse(JSON.stringify(BASE_3DSURFACE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === '3d-column') {
+        chart_option = base3DColumnOption(JSON.parse(JSON.stringify(BASE_3DCOLUMN)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === '3d-scatter') {
+        chart_option = base3DScatterOption(JSON.parse(JSON.stringify(BASE_3DSCATTER)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'calendar') {
+        chart_option = baseCalendarPieOption(JSON.parse(JSON.stringify(BASE_CALENDAR_PIE)), chart, this.$store.state.canvasStyleData)
+      }
       // else if (chart.type === 'sankey') {
       //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)
       //   // chart_option = BASE_SANKEY

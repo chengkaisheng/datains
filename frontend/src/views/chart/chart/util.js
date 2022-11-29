@@ -461,6 +461,13 @@ export const TYPE_CONFIGS = [
   },
   {
     render: 'echarts',
+    category: 'chart.chart_type_relation',
+    value: 'contrast-funnel',
+    title: 'chart.chart_contrast_funnel',
+    icon: 'contrast-funnel'
+  },
+  {
+    render: 'echarts',
     category: 'chart.chart_type_distribute',
     value: 'clock-pie',
     title: '凸块饼图',
@@ -473,6 +480,27 @@ export const TYPE_CONFIGS = [
     value: 'map',
     title: 'chart.chart_map',
     icon: 'map'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_space',
+    value: '3dsurface',
+    title: 'chart.chart_3d_surface',
+    icon: '3dsurface'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_space',
+    value: '3d-column',
+    title: 'chart.chart_3d_column',
+    icon: '3d-column'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_space',
+    value: '3d-scatter',
+    title: 'chart.chart_3dscatter',
+    icon: '3d-scatter'
   },
   // {
   //   render: 'echarts',
@@ -502,6 +530,14 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_graph',
     icon: 'graph'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'calendar',
+    title: 'chart.chart_calendar_pie',
+    icon: 'calendar'
+  },
+  
   // {
   //   render: 'echarts',
   //   category: 'chart.chart_type_distribute',
@@ -566,7 +602,7 @@ export const TYPE_CONFIGS = [
   //   category: 'chart.chart_type_relation',
   //   value: '3dscatter',
   //   title: 'chart.chart_3dscatter',
-  //   icon: '3dscatter'
+  //   icon: '3d-scatter'
   // },
 
   {
