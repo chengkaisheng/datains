@@ -212,8 +212,8 @@ export default {
   },
   watch: {
     chart: function() {
-      console.log('this.chart.data----------！！！！！！', this.chart.data)
-      console.log('this.chart.data----------2222', this.chart)
+      // console.log('this.chart.data----------！！！！！！', this.chart.data)
+      // console.log('this.chart.data----------2222', this.chart)
 
       if (this.chart.data) {
         clearInterval(this.timer)

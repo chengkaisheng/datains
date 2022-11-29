@@ -1123,6 +1123,7 @@ export default {
     enum_value_can_not_null: '字段枚举值不能为空',
     table_config: '表格配置',
     pop_config: '弹窗配置',
+    table_row_width: '表格宽度',
     pop_open: '弹窗位置',
     pop_left: '弹窗左移动',
     pop_top: '弹窗上移动',

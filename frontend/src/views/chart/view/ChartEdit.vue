@@ -837,6 +837,17 @@
                       @onLabelChange="onLabelChange"
                     />
                   </el-collapse-item>
+                  <!-- <el-collapse-item
+                    v-show="view.render && view.render === 'antv' && view.type.includes('roll')"
+                    :title="$t('chart.table_row_width')"
+                  >
+                    <width-selector-ant-v 
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onSizeChange="onSizeChange"
+                    />
+                  </el-collapse-item> -->
                   <el-collapse-item
                     v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')&&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
                     name="label"
@@ -1394,6 +1405,7 @@ import YAxisSelectorAntV from '@/views/chart/components/component-style/YAxisSel
 import YAxisExtSelectorAntV from '@/views/chart/components/component-style/YAxisExtSelectorAntV'
 import SizeSelectorAntV from '@/views/chart/components/shape-attr/SizeSelectorAntV'
 import PopSelectorAntV from '@/views/chart/components/shape-attr/PopSelectorAntV'
+import WidthSelectorAntV from '@/views/chart/components/shape-attr/WidthSelectorAntV'
 import SplitSelectorAntV from '@/views/chart/components/component-style/SplitSelectorAntV'
 import CompareEdit from '@/views/chart/components/compare/CompareEdit'
 import { compareItem } from '@/views/chart/chart/compare'
@@ -1429,6 +1441,7 @@ export default {
     SplitSelectorAntV,
     SizeSelectorAntV,
     PopSelectorAntV,
+    WidthSelectorAntV,
     YAxisExtSelectorAntV,
     YAxisSelectorAntV,
     XAxisSelectorAntV,

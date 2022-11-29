@@ -77,17 +77,17 @@
         color: var(--TextActive, #409EFF);
       }
       &:focus {
-        background-color: var(--MenuActiveBG, #ecf5ff) !important;
+        background-color: var(--MenuActiveBG, #5f6277) !important;
         color: var(--TextActive, #409EFF);
       }
     }
     .submenu-title-noDropdown.is-active {
-        background-color: var(--MenuActiveBG, #ecf5ff) !important;
+        background-color: var(--MenuActiveBG, #5f6277) !important;
         color: var(--TextActive, #409EFF);
     }
 
     .is-active > .el-submenu__title {
-        background-color: var(--MenuActiveBG, #ecf5ff) !important;
+        background-color: var(--MenuActiveBG, #5f6277) !important;
         color: var(--TextActive, #409EFF);
     }
 

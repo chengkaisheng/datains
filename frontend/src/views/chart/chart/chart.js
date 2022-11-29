@@ -105,7 +105,9 @@ export const DEFAULT_SIZE = {
   liquidOutlineDistance: 8,
   liquidWaveLength: 128,
   liquidWaveCount: 3,
-  liquidShape: 'circle'
+  liquidShape: 'circle',
+
+  adaptWidth: true, // 自适应
 
 }
 export const DEFAULT_LABEL = {
