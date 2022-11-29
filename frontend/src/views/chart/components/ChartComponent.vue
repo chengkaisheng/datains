@@ -59,7 +59,8 @@ import {
   BASE_3DCOLUMN,
   BASE_3DSCATTER,
   BASE_CALENDAR_PIE,
-  BASE_BUBBLE_MAP
+  BASE_BUBBLE_MAP,
+  BASE_BUBBLE_BMAP
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -110,7 +111,8 @@ import {
 } from '../chart/pie/pie'
 import {
   baseMapOption,
-  baseMapColumnOption
+  baseMapColumnOption,
+  baseMapBubbleOption
 } from '../chart/map/map'
 import {
   baseContrastFunnelOption,
@@ -135,7 +137,7 @@ import {
   // clockcatterOption
 } from '../chart/scatter/scatter'
 import {
-  baseMapBubbleOption
+  baseBMapBubbleOption
 } from '../chart/map/bmap.js'
 import {
   baseTreemapOption
@@ -349,8 +351,8 @@ export default {
         chart_option = base3DScatterOption(JSON.parse(JSON.stringify(BASE_3DSCATTER)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'calendar') {
         chart_option = baseCalendarPieOption(JSON.parse(JSON.stringify(BASE_CALENDAR_PIE)), chart, this.$store.state.canvasStyleData)
-      } else if (chart.type === 'map_bubble') {
-        chart_option = baseMapBubbleOption(JSON.parse(JSON.stringify(BASE_BUBBLE_MAP)), chart)
+      } else if (chart.type === 'bmap_bubble') {
+        chart_option = baseBMapBubbleOption(JSON.parse(JSON.stringify(BASE_BUBBLE_BMAP)), chart)
       }
       // else if (chart.type === 'sankey') {
       //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)
@@ -409,6 +411,31 @@ export default {
         })
         return
       }
+      if (chart.type === 'map_bubble') {
+        const customAttr = JSON.parse(chart.customAttr)
+        if (!customAttr.areaCode) {
+          this.myChart.clear()
+          return
+        }
+
+        const cCode = this.dynamicAreaCode || customAttr.areaCode
+        console.log('选择区域，',cCode)
+        if (this.$store.getters.geoMap[cCode]) {
+          const json = this.$store.getters.geoMap[cCode]
+          this.initMapBubbleChart(json, chart)
+          return
+        }
+
+        geoJson(cCode).then(res => {
+          this.$store.dispatch('map/setGeo', {
+            key: cCode,
+            value: res
+          }).then(() => {
+            this.initMapBubbleChart(res, chart)
+          })
+        })
+        return
+      }
       this.myEcharts(chart_option)
     },
     registerDynamicMap(areaCode) {
@@ -455,6 +482,18 @@ export default {
       setTimeout(() => {
         this.mapColumnData(geoJson, chart)
       },1)
+    },
+    initMapBubbleChart(geoJson, chart) {
+      this.$echarts.registerMap('MAP_BUBBLE',geoJson)
+      const base_json = JSON.parse(JSON.stringify(BASE_BUBBLE_MAP))
+      const chart_option = baseMapBubbleOption(base_json, chart, geoJson)
+
+      this.myEcharts(chart_option)
+      const opt = this.myChart.getOption()
+      if (opt && opt.series) {
+        const center = opt.series[0].center
+        this.mapCenter = center
+      }
     },
     mapColumnData(geoJson, chart) {
       const base_json = JSON.parse(JSON.stringify(BASE_COLUMN_MAP))
@@ -561,11 +600,11 @@ export default {
       console.log('base_json',base_json)
       const chart_option = baseMapColumnOption(base_json, chart)
       this.myEcharts(chart_option)
-      const opt = this.myChart.getOption()
-      if (opt && opt.series) {
-        const center = opt.series[0].center
-        this.mapCenter = center
-      }
+      // const opt = this.myChart.getOption()
+      // if (opt && opt.series) {
+      //   const center = opt.series[0].center
+      //   this.mapCenter = center
+      // }
     },
     myEcharts(option) {
       // 指定图表的配置项和数据

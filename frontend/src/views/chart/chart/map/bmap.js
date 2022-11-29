@@ -1,8 +1,8 @@
 import { hexColorToRGBA } from '../util.js'
 import { componentStyle, seniorCfg } from '../common/common'
 
-export function baseMapBubbleOption(chart_option, chart) {
-  console.log('地图气泡',chart)
+export function baseBMapBubbleOption(chart_option, chart) {
+  console.log('百度地图气泡',chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {

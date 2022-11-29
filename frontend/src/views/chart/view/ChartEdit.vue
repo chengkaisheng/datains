@@ -257,7 +257,7 @@
                   />
                   <div v-else>
                     <!-- map -->
-                    <el-row v-if="view.type ==='map' || view.type === 'arc_map' || view.type === 'map_column'" class="padding-lr">
+                    <el-row v-if="view.type ==='map' || view.type === 'arc_map' || view.type === 'map_column' || view.type === 'map_bubble'" class="padding-lr">
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.map_range') }}</span>
                       </span>
@@ -856,7 +856,7 @@
                     v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')
                         &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' 
                         && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'
-                        && view.type !== 'map_bubble'"
+                        && view.type !== 'bmap_bubble'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -888,7 +888,7 @@
                       && !view.type.includes('progress') && !view.type.includes('text') 
                       && view.type !== 'liquid' && view.type !== 'gauge' 
                       && view.type !== 'label' && view.type !== 'calendar'
-                      && view.type !== 'map_bubble'"
+                      && view.type !== 'bmap_bubble'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
@@ -1063,7 +1063,7 @@
                       && (view.type !== 'treemap' || view.render === 'antv')
                       && view.type !== 'liquid' && view.type !== 'waterfall'
                       && view.type !== 'gauge' && view.type !== 'word-cloud' 
-                      && !view.type.includes('progress') && view.type !== 'map_bubble'
+                      && !view.type.includes('progress') && view.type !== 'bmap_bubble'
                       && view.type !== 'graph' && view.type !== 'candlestick'
                       && view.type !== '3dsurface' && view.type !== '3d-column'"
                     name="legend"
@@ -1642,7 +1642,7 @@ export default {
       this.fieldFilter(val)
     },
     'chartType': function(newVal, oldVal) {
-      if ((newVal === 'map' || newVal === 'buddle-map' || newVal === 'arc_map' || newVal === 'map_column') && newVal !== oldVal) {
+      if ((newVal === 'map' || newVal === 'buddle-map' || newVal === 'arc_map' || newVal === 'map_column' || newVal === 'map_bubble') && newVal !== oldVal) {
         this.initAreas()
       }
       this.$emit('typeChange', newVal)
@@ -1908,12 +1908,14 @@ export default {
         view.type === 'word-cloud' ||
         view.type === 'waterfall' ||
         view.type === 'contrast-funnel' ||
-        view.type === 'map_column') {
+        view.type === 'map_column' ||
+        view.type === 'map_bubble') {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
       }
-      if(view.type === '3d-column' || view.type === '3d-scatter' || view.type === 'map_bubble') {
+      if(view.type === '3d-column' || view.type === '3d-scatter' || view.type === 'bmap_bubble' ||
+        view.type === 'map_bubble') {
         if (view.yaxis.length > 3) {
           view.yaxis.splice(3,1)
         }
@@ -2759,7 +2761,11 @@ export default {
     resetDrill() {
       const length = this.drillClickDimensionList.length
       this.drillClickDimensionList = []
-      if (this.chart.type === 'map' || this.chart.type === 'buddle-map' || this.chart.type === 'arc_map' || this.chart.type === 'map_column') {
+      if (
+        this.chart.type === 'map' || this.chart.type === 'buddle-map' 
+        || this.chart.type === 'arc_map' || this.chart.type === 'map_column'
+        || this.chart.type === 'map_bubble'
+      ) {
         this.backToParent(0, length)
         this.currentAcreaNode = null
         const current = this.$refs.dynamicChart

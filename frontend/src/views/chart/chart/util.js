@@ -498,10 +498,17 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_space',
-    value: 'map_column',
-    title: 'chart.chart_map_column',
-    icon: 'map_column'
+    value: 'bmap_bubble',
+    title: 'chart.chart_bmap_bubble',
+    icon: 'bmap_bubble'
   },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_space',
+  //   value: 'map_column',
+  //   title: 'chart.chart_map_column',
+  //   icon: 'map_column'
+  // },
   {
     render: 'echarts',
     category: 'chart.chart_type_space',

@@ -228,7 +228,7 @@
         </el-form-item>
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('map_bubble')" ref="sizeFormLine" :model="sizeForm" label-width="80px" size="mini">
+      <el-form v-show="chart.type && chart.type.includes('bmap_bubble')" ref="sizeFormLine" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.bubble_symbol')" class="form-item">
           <el-select v-model="sizeForm.scatterSymbol" :placeholder="$t('chart.line_symbol')" @change="changeBarSizeCase">
             <el-option

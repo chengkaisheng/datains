@@ -168,3 +168,82 @@ export function baseMapColumnOption(chart_option, chart) {
   return chart_option
 }
 
+export function baseMapBubbleOption(chart_option, chart,geoJson) {
+  console.log('地图气泡图',chart,geoJson)
+  // 处理shape attr
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.color) {
+      chart_option.color = customAttr.color.colors
+    }
+    // tooltip
+    // if (customAttr.tooltip) {
+    //   const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+    //   const reg = new RegExp('\n', 'g')
+    //   const text = tooltip.formatter.replace(reg, '<br/>')
+    //   tooltip.formatter = function(params) {
+    //     const a = params.seriesName
+    //     const b = params.name
+    //     const c = params.value ? params.value : ''
+    //     return text.replace(new RegExp('{a}', 'g'), a).replace(new RegExp('{b}', 'g'), b).replace(new RegExp('{c}', 'g'), c)
+    //   }
+    //   chart_option.tooltip = tooltip
+    // }
+  }
+
+  let geoCoordMap = {}
+  if(geoJson.features.length) {
+    geoJson.features.map(item => {
+      if(item.properties.name) {
+        geoCoordMap[item.properties.name] = item.properties.center
+      }
+    })
+    console.log('geoCoordMap',geoCoordMap)
+  }
+
+  if(chart.data) {
+    let arr = []
+    if(chart.data.series.length) {
+      chart_option.series[0].name = chart.data.series[0].name
+      chart_option.series[1].name = chart.data.series[0].name
+      chart_option.series[2].name = chart.data.series[0].name
+
+      for(let i=0;i<chart.data.series.length;i++) {
+        let obj = chart.data.series[i]
+        if(obj.data.length) {
+          obj.data.map((item,index) => {
+            arr.push({
+              name: chart.data.x[index],
+              value: item.value
+            })
+          })
+        }
+      }
+      // console.log('arrrrrr',arr)
+    }
+    let convertData = []
+    if(arr.length) {
+      for(let i=0;i<arr.length;i++) {
+        let geoCoord = geoCoordMap[arr[i].name]
+        if(geoCoord) {
+          convertData.push({
+            name: arr[i].name,
+            value: geoCoord.concat(arr[i].value)
+          })
+        }
+      }
+    }
+
+    console.log('convertData',convertData)
+    chart_option.series[0].data = arr
+    chart_option.series[1].data = convertData
+    chart_option.series[2].data = convertData
+    
+  }
+
+  console.log('数据',chart_option);
+  componentStyle(chart_option, chart)
+  return chart_option
+}
+

@@ -1569,6 +1569,138 @@ export const BASE_BUBBLE_MAP = {
     }
   },
   tooltip: {
+    trigger: 'item',
+    // formatter: function (params) {
+    //   if(typeof (params.value)[2] === "undefined"){
+    //     return params.name + ' : ' + params.value;
+    //   }else{
+    //     return params.name + ' : ' + params.value[2];
+    //   }
+    // }
+  },
+  geo: {
+    map: 'MAP_BUBBLE',
+    show: true,
+    roam: true,
+    label: {
+    normal: {
+      show: false
+    },
+    emphasis: {
+      show: false,
+    }
+    },
+    itemStyle: {
+      normal: {
+        areaColor: '#3a7fd5',
+        borderColor: '#0a53e9',//线
+        shadowColor: '#092f8f',//外发光
+        shadowBlur: 20
+      },
+      emphasis: {
+        areaColor: '#0a2dae',//悬浮区背景
+      }
+    }
+  },
+  series: [
+    {
+      name: '',
+      type: 'map',
+      map: 'MAP_BUBBLE',
+      geoIndex: 0,
+      aspectScale: 0.75, //长宽比
+      showLegendSymbol: false, // 存在legend时显示
+      label: {
+        normal: {
+          show: false
+        },
+        emphasis: {
+          show: false,
+          textStyle: {
+            color: '#fff'
+          }
+        }
+      },
+      roam: true,
+      itemStyle: {
+        normal: {
+          areaColor: '#031525',
+          borderColor: '#FFFFFF',
+        },
+        emphasis: {
+          areaColor: '#2B91B7'
+        }
+      },
+      animation: false,
+      data: []
+    },
+    {
+      symbolSize: 5,
+      label: {
+        normal: {
+          formatter: '{b}',
+          position: 'right',
+          show: true
+        },
+        emphasis: {
+          show: true
+        }
+      },
+      itemStyle: {
+        normal: {
+          color: '#fff'
+        }
+      },
+      name: '',
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      data: [],
+    },
+    {
+      name: '',
+      type: 'scatter',
+      coordinateSystem: 'geo',
+      symbol: 'pin',
+      symbolSize: [50,50],
+      label: {
+        normal: {
+          show: true,
+          textStyle: {
+            color: '#fff',
+            fontSize: 9,
+          },
+          formatter: '{@[2]}'
+        }
+      },
+      itemStyle: {
+        normal: {
+          color: '#D8BC37', //标志颜色
+        }
+      },
+      tooltip: {
+        formatter: function(params) {
+          return params.value[2]
+        }
+      },
+      data: [],
+      showEffectOn: 'render',
+      rippleEffect: {
+        brushType: 'stroke'
+      },
+      hoverAnimation: true,
+      zlevel: 1
+    },
+  ]
+}
+
+export const BASE_BUBBLE_BMAP = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  tooltip: {
     trigger: 'item'
   },
   bmap: {
