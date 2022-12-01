@@ -281,7 +281,7 @@
                       </span>
                     </el-row>
                     <el-row
-                      v-if="view.type === 'map_lines'"
+                      v-if="view.type === 'map_lines' && view.customAttr.areaCode"
                       class="padding-lr"
                     >
                       <span style="width: 80px;text-align: right;">
@@ -289,7 +289,7 @@
                       </span>
                       <span class="tree-select-span">
                         <treeselect
-                          ref="mapSelector"
+                          ref="mapSelector1"
                           v-model="view.customAttr.gatherCode"
                           :options="places"
                           :placeholder="$t('chart.select_map_range')"
@@ -1680,6 +1680,9 @@ export default {
     },
     'view.type': function(newVal, oldVal) {
       this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
+    },
+    'view.customAttr.areaCode': function(newVal,oldVal) {
+      console.log('newVal',newVal)
     }
   },
   created() {

@@ -261,15 +261,22 @@ export function baseMapLinesOption(chart_option, chart, geoJson) {
   }
 
   console.log('gatherCode,,,',customAttr.gatherCode)
-
   let geoCoordMap = {}
+  let sArr = [] // 聚集城市
   if(geoJson.features.length) {
     geoJson.features.map(item => {
-      if(item.properties.name) {
-        geoCoordMap[item.properties.name] = item.properties.center
+      if(item.properties.adcode == customAttr.gatherCode) {
+        sArr.push({
+          name: item.properties.name,
+          value: item.properties.center
+        })
+      } else {
+        if(item.properties.name) {
+          geoCoordMap[item.properties.name] = item.properties.center
+        }
       }
     })
-    console.log('geoCoordMap',geoCoordMap)
+    // console.log('geoCoordMap',geoCoordMap,sArr)
   }
 
   if(chart.data) {
@@ -277,7 +284,6 @@ export function baseMapLinesOption(chart_option, chart, geoJson) {
     
     let arr = []
     let esArr = [] // 其它城市
-    let sArr = [] // 聚集城市
     let lineArr= [] // 线
     if(chart.data.series.length) {
       for(let i=0;i<chart.data.series.length;i++) {
@@ -291,7 +297,7 @@ export function baseMapLinesOption(chart_option, chart, geoJson) {
           })
         }
       }
-      console.log('arrrrrr',arr)
+      // console.log('arrrrrr',arr,sArr)
       for(let i=0;i<arr.length;i++) {
         let geoCoord = geoCoordMap[arr[i].name]
         if(geoCoord) {
@@ -300,8 +306,23 @@ export function baseMapLinesOption(chart_option, chart, geoJson) {
             value: geoCoord.concat(arr[i].value)
           })
         }
+
+        let dataItem = arr[i]
+        let formCoord = geoCoordMap[dataItem.name]
+        let toCoord = sArr[0].value
+        if(formCoord && toCoord) {
+          lineArr.push([
+            {
+              coord: formCoord,
+              value: dataItem.value
+            },
+            {
+              coord: toCoord
+            }
+          ])
+        }
       }
-      console.log('数据',esArr)
+      // console.log('数据',esArr,lineArr)
       chart_option.series[0] = {
         type: 'lines',
         zlevel: 2,
@@ -319,7 +340,7 @@ export function baseMapLinesOption(chart_option, chart, geoJson) {
 						curveness: .3 //尾迹线条曲直度
 					}
 				},
-        data: []
+        data: lineArr
       }
       chart_option.series[1] = {
         type: 'effectScatter',
@@ -384,10 +405,7 @@ export function baseMapLinesOption(chart_option, chart, geoJson) {
 				},
         symbol: 'pin',
 				symbolSize: 50,
-        data: [{
-          name: '北京市',
-          value: [116.4551, 40.2539,10]
-        }]
+        data: sArr
       }
     }
   }
