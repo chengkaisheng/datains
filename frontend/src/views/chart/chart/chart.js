@@ -1693,6 +1693,53 @@ export const BASE_BUBBLE_MAP = {
   ]
 }
 
+export const BASE_LINES_MAP = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  tooltip: {
+    type: 'item',
+  },
+  visualMap: { //图例值控制
+    min: 0,
+    max: 10,
+    calculable: true,
+    show: true,
+    color: ['#f44336', '#fc9700', '#ffde00', '#ffde00', '#00eaff'],
+    textStyle: {
+      color: '#fff'
+    }
+  },
+  geo: {
+    map: 'MAP_LINES',
+    zoom: 1.2,
+    label: {
+      emphasis: {
+        show: false
+      }
+    },
+    roam: true, // 允许缩放
+    itemStyle: {
+      normal: {
+        color: 'rgba(51, 69, 89, .5)', //地图背景色
+        borderColor: '#516a89', //省市边界线00fcff 516a89
+        borderWidth: 1
+      },
+      emphasis: {
+        color: 'rgba(37, 43, 61, .5)' //悬浮背景
+      }
+    }
+  },
+  series: [
+    {type: 'lines',data: []},
+    {type: 'effectScatter',data: []},
+    {type: 'scatter',data: []}
+  ]
+}
+
 export const BASE_BUBBLE_BMAP = {
   title: {
     text: '',

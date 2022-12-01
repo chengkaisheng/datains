@@ -930,6 +930,7 @@ export default {
     chart_map: '地图',
     chart_map_area: '区域地图',
     chart_map_bubble: '地图气泡图',
+    chart_map_lines: '地图线图',
     chart_bmap_bubble: '百度地图气泡图',
     chart_map_column: '柱状图地图',
     chart_3d_surface: '3D 曲面图',

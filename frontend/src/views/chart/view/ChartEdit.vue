@@ -257,7 +257,11 @@
                   />
                   <div v-else>
                     <!-- map -->
-                    <el-row v-if="view.type ==='map' || view.type === 'arc_map' || view.type === 'map_column' || view.type === 'map_bubble'" class="padding-lr">
+                    <el-row v-if="view.type ==='map' || view.type === 'arc_map' 
+                      || view.type === 'map_column' || view.type === 'map_bubble'
+                      || view.type === 'map_lines' " 
+                      class="padding-lr"
+                    >
                       <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.map_range') }}</span>
                       </span>
@@ -265,6 +269,28 @@
                         <treeselect
                           ref="mapSelector"
                           v-model="view.customAttr.areaCode"
+                          :options="places"
+                          :placeholder="$t('chart.select_map_range')"
+                          :normalizer="normalizer"
+                          :no-children-text="$t('commons.treeselect.no_children_text')"
+                          :no-options-text="$t('commons.treeselect.no_options_text')"
+                          :no-results-text="$t('commons.treeselect.no_results_text')"
+                          @input="calcData"
+                          @deselect="calcData"
+                        />
+                      </span>
+                    </el-row>
+                    <el-row
+                      v-if="view.type === 'map_lines'"
+                      class="padding-lr"
+                    >
+                      <span style="width: 80px;text-align: right;">
+                        <span>地图聚集省市</span>
+                      </span>
+                      <span class="tree-select-span">
+                        <treeselect
+                          ref="mapSelector"
+                          v-model="view.customAttr.gatherCode"
                           :options="places"
                           :placeholder="$t('chart.select_map_range')"
                           :normalizer="normalizer"
@@ -1642,7 +1668,12 @@ export default {
       this.fieldFilter(val)
     },
     'chartType': function(newVal, oldVal) {
-      if ((newVal === 'map' || newVal === 'buddle-map' || newVal === 'arc_map' || newVal === 'map_column' || newVal === 'map_bubble') && newVal !== oldVal) {
+      if (
+        (newVal === 'map' || newVal === 'buddle-map' || newVal === 'arc_map' 
+          || newVal === 'map_column' || newVal === 'map_bubble' || newVal === 'map_lines'
+        ) 
+        && newVal !== oldVal
+      ) {
         this.initAreas()
       }
       this.$emit('typeChange', newVal)
@@ -1909,13 +1940,13 @@ export default {
         view.type === 'waterfall' ||
         view.type === 'contrast-funnel' ||
         view.type === 'map_column' ||
-        view.type === 'map_bubble') {
+        view.type === 'map_bubble' ||
+        view.type === 'map_lines') {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
       }
-      if(view.type === '3d-column' || view.type === '3d-scatter' || view.type === 'bmap_bubble' ||
-        view.type === 'map_bubble') {
+      if(view.type === '3d-column' || view.type === '3d-scatter' || view.type === 'bmap_bubble') {
         if (view.yaxis.length > 3) {
           view.yaxis.splice(3,1)
         }
@@ -2764,7 +2795,7 @@ export default {
       if (
         this.chart.type === 'map' || this.chart.type === 'buddle-map' 
         || this.chart.type === 'arc_map' || this.chart.type === 'map_column'
-        || this.chart.type === 'map_bubble'
+        || this.chart.type === 'map_bubble' || this.chart.type === 'map_lines'
       ) {
         this.backToParent(0, length)
         this.currentAcreaNode = null

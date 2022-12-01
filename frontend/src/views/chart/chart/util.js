@@ -498,6 +498,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_space',
+    value: 'map_lines',
+    title: 'chart.chart_map_lines',
+    icon: 'map_lines'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_space',
     value: 'bmap_bubble',
     title: 'chart.chart_bmap_bubble',
     icon: 'bmap_bubble'

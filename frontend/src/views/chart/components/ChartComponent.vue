@@ -1,9 +1,3 @@
-、、、、、、、、、、、、、、
-添加 地图柱状图的代码，但是柱状图全部都在同一个地方，并不能满足要求
-
-
-
-
 <template>
   <div style="display: flex;position:relative">
     <view-track-bar
@@ -60,6 +54,7 @@ import {
   BASE_3DSCATTER,
   BASE_CALENDAR_PIE,
   BASE_BUBBLE_MAP,
+  BASE_LINES_MAP,
   BASE_BUBBLE_BMAP
 } from '../chart/chart'
 import {
@@ -112,7 +107,8 @@ import {
 import {
   baseMapOption,
   baseMapColumnOption,
-  baseMapBubbleOption
+  baseMapBubbleOption,
+  baseMapLinesOption
 } from '../chart/map/map'
 import {
   baseContrastFunnelOption,
@@ -417,9 +413,7 @@ export default {
           this.myChart.clear()
           return
         }
-
         const cCode = this.dynamicAreaCode || customAttr.areaCode
-        console.log('选择区域，',cCode)
         if (this.$store.getters.geoMap[cCode]) {
           const json = this.$store.getters.geoMap[cCode]
           this.initMapBubbleChart(json, chart)
@@ -432,6 +426,30 @@ export default {
             value: res
           }).then(() => {
             this.initMapBubbleChart(res, chart)
+          })
+        })
+        return
+      }
+
+      if (chart.type === 'map_lines') {
+        const customAttr = JSON.parse(chart.customAttr)
+        if (!customAttr.areaCode) {
+          this.myChart.clear()
+          return
+        }
+        const cCode = this.dynamicAreaCode || customAttr.areaCode
+        if (this.$store.getters.geoMap[cCode]) {
+          const json = this.$store.getters.geoMap[cCode]
+          this.initMapLinesChart(json, chart)
+          return
+        }
+
+        geoJson(cCode).then(res => {
+          this.$store.dispatch('map/setGeo', {
+            key: cCode,
+            value: res
+          }).then(() => {
+            this.initMapLinesChart(res, chart)
           })
         })
         return
@@ -489,11 +507,17 @@ export default {
       const chart_option = baseMapBubbleOption(base_json, chart, geoJson)
 
       this.myEcharts(chart_option)
-      const opt = this.myChart.getOption()
-      if (opt && opt.series) {
-        const center = opt.series[0].center
-        this.mapCenter = center
-      }
+      // const opt = this.myChart.getOption()
+      // if (opt && opt.series) {
+      //   const center = opt.series[0].center
+      //   this.mapCenter = center
+      // }
+    },
+    initMapLinesChart(geoJson, chart) {
+      this.$echarts.registerMap('MAP_LINES',geoJson)
+      const base_json = JSON.parse(JSON.stringify(BASE_LINES_MAP))
+      const chart_option = baseMapLinesOption(base_json, chart, geoJson)
+      this.myEcharts(chart_option)
     },
     mapColumnData(geoJson, chart) {
       const base_json = JSON.parse(JSON.stringify(BASE_COLUMN_MAP))
@@ -606,6 +630,7 @@ export default {
       //   this.mapCenter = center
       // }
     },
+
     myEcharts(option) {
       // 指定图表的配置项和数据
       const chart = this.myChart
