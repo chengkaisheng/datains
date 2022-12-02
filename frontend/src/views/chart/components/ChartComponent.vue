@@ -8,7 +8,7 @@
       @trackClick="trackClick"
     />
     <div :id="chartId" style="width: 100%;height: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius}" />
-    <div v-if="chart.type === 'map' || chart.type === 'map_column'" class="map-zoom-box">
+    <div v-if="chart.type === 'map'" class="map-zoom-box">
       <div style="margin-bottom: 0.5em;">
         <el-button size="mini" icon="el-icon-plus" circle @click="roamMap(true)" />
       </div>
@@ -430,7 +430,6 @@ export default {
         })
         return
       }
-
       if (chart.type === 'map_lines') {
         const customAttr = JSON.parse(chart.customAttr)
         if (!customAttr.areaCode) {
@@ -494,12 +493,16 @@ export default {
     initMapColumnChart(geoJson, chart) {
       console.log('获取的啥？？？？？？',geoJson,chart)
       this.$echarts.registerMap('MAP_COLUMN', geoJson)
-      if(BASE_COLUMN_MAP && typeof BASE_COLUMN_MAP === 'object') {
-        this.myChart.setOption(BASE_COLUMN_MAP)
-      }
-      setTimeout(() => {
-        this.mapColumnData(geoJson, chart)
-      },1)
+      const base_json = JSON.parse(JSON.stringify(BASE_COLUMN_MAP))
+      const chart_option = baseMapColumnOption(base_json, chart, geoJson, this.myChart)
+      this.myEcharts(chart_option)
+
+      // if(BASE_COLUMN_MAP && typeof BASE_COLUMN_MAP === 'object') {
+      //   this.myChart.setOption(BASE_COLUMN_MAP)
+      // }
+      // setTimeout(() => {
+      //   this.mapColumnData(geoJson, chart)
+      // },1)
     },
     initMapBubbleChart(geoJson, chart) {
       this.$echarts.registerMap('MAP_BUBBLE',geoJson)
@@ -521,11 +524,9 @@ export default {
     },
     mapColumnData(geoJson, chart) {
       const base_json = JSON.parse(JSON.stringify(BASE_COLUMN_MAP))
-      
       var geoCoordMap = {}
       if(geoJson.features.length) {
         let geos = JSON.parse(JSON.stringify(geoJson.features))
-        let arr = []
         geos.map((item,index) => {
           geoCoordMap[item.properties.name] = item.properties.center
         })
@@ -534,22 +535,29 @@ export default {
 
       if(chart.data) {
         let customAttr = JSON.parse(chart.customAttr)
-
+        base_json.title.text = chart.title
+        
         if (chart.data.series && chart.data.series.length > 0) {
-          const valueArr = chart.data.series[0].data
-          let arr = []
-          for (let i = 0; i < valueArr.length; i++) {
-            arr.push({
-              name: chart.data.x[i],
-              value: [valueArr[i].value]
-            })
+          let arr = [] // 柱
+          let larr = [] // 图例
+          for(let i=0;i<chart.data.series.length;i++) {
+            let obj = chart.data.series[i]
+            larr.push(obj.name)
+            if(obj.data.length) {
+              obj.data.map((item,index) => {
+                arr.push({
+                  name: chart.data.x[index],
+                  value: [item.value]
+                })
+              })
+            }
           }
           console.log('arrrrrrr',arr,chart)
 
           base_json.legend.push({
-            data : chart.data.series[0].name,
-            left:'70%',
-            top:'85%',
+            data : larr,
+            // left:'70%',
+            // top:'85%',
             itemWidth:25,
             itemHeight:15,
             textStyle:{
@@ -559,7 +567,9 @@ export default {
           })
 
           arr.map((item,index) => {
+            console.log('11111111',item)
             let geoCoord = geoCoordMap[item.name]
+            console.log('222222222',geoCoord)
             if(geoCoord === undefined) return
             let coord = this.myChart.convertToPixel('geo',geoCoord)
             console.log('coorddddddddd',coord)
@@ -568,6 +578,7 @@ export default {
             base_json.xAxis.push({
               id: index,
               gridId: index,
+              gridIndex: index,
               name: item.name,
               nameTextStyle : {
                 color : '#fff',
@@ -586,28 +597,26 @@ export default {
               },
               axisLine : {
                 show : false,
-                lineStyle : {
-                  color : '#bbb'
-                }
               },
               data: [item.name]
             })
             base_json.yAxis.push({
               id: index,
               gridId: index,
+              gridIndex: index,
               show: false
             })
             base_json.grid.push({
               id: index,
-              width: 50,
-              height: 40,
-              left: coord[0],
-              top: coord[1]
+              width: 100,
+              height: 90,
+              left: coord[0] - 15,
+              top: coord[1] -35
             })
           
-            for(let i=0;i<chart.data.series.length;i++) {
+            for(let i=0;i<larr.length;i++) {
               base_json.series.push({
-                name: chart.data.series[i].name,
+                name: larr[i],
                 type: 'bar',
                 xAxis: index,
                 yAxis: index,

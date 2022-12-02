@@ -1583,12 +1583,12 @@ export const BASE_BUBBLE_MAP = {
     show: true,
     roam: true,
     label: {
-    normal: {
-      show: false
-    },
-    emphasis: {
-      show: false,
-    }
+      normal: {
+        show: false
+      },
+      emphasis: {
+        show: false,
+      }
     },
     itemStyle: {
       normal: {
@@ -1803,41 +1803,30 @@ export const BASE_COLUMN_MAP = {
       fontWeight: 'normal'
     }
   },
-  backgroundColor:'#010b43',
-  top : '-40%',
-  bottom : '-40%',
   tooltip: {
-      trigger: 'axis'
+    trigger: 'axis'
   },
-  geo : {
+  geo: {
     type : 'map',
     map : 'MAP_COLUMN',
+    roam: true,
     label : {
       normal : {
-        textStyle : {
-          color : '#fff'
-        },
         show : false
       },
       emphasis : {
-        textStyle : {
-          color : '#C6A300'
-        },
         show : false
       }
     },
-    itemStyle : {
-      normal : {
-        areaColor : "rgba(0,0,0,0)",
-        borderColor : "#126cc4",
-        borderWidth : 1.3
-      },
-      emphasis : {
-        areaColor : "rgba(233,0,200,0.3)"
+    itemStyle: {
+      color: 'rgba(51, 69, 89, .5)', //地图背景色
+      borderColor: '#516a89', //省市边界线00fcff 516a89
+      borderWidth: 1,
+      emphasis: {
+        color: 'rgba(37, 43, 61, .5)' //悬浮背景
       }
     }
   },
-
   //   legend: {},
   legend:[],
   xAxis : [],
