@@ -139,6 +139,7 @@ export default {
         this.changeValue(this.value)
       }
     })
+    console.log('Deselect') // background/index.vue
   },
 
   methods: {

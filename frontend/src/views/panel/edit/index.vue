@@ -411,6 +411,7 @@ import { deepCopy, panelInit } from '@/components/canvas/utils/utils'
 import componentList, {
   BASE_MOBILE_STYLE,
   COMMON_BACKGROUND,
+  COMMON_SELECT_FRAME,
   HYPERLINKS
 } from '@/components/canvas/custom-component/component-list' // 左侧列表数据
 import { mapState } from 'vuex'
@@ -1092,6 +1093,11 @@ export default {
         this.currentFilterCom.mobileStyle = BASE_MOBILE_STYLE
         this.currentFilterCom.commonBackground = this.currentFilterCom.commonBackground || deepCopy(COMMON_BACKGROUND)
 
+        if(this.dragComponentInfo.component === 'de-select'){ // 文本下拉框背景数据
+          this.currentFilterCom.commonSelectFrame = this.currentFilterCom.commonSelectFrame || deepCopy(COMMON_SELECT_FRAME)
+        }
+        
+        console.log('视图信息,,,handleDrop',this.currentFilterCom)
         if (this.currentWidget.filterDialog) {
           this.show = false
           this.openFilterDialog(true)

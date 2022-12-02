@@ -132,6 +132,22 @@
         </el-row>
       </el-row>
 
+      <!-- <el-row style="" v-if="curComponent.component === 'de-select' && curComponent.type === 'custom'">
+        <el-row >
+          <el-col :span="3" style="padding-left: 10px;padding-top: 5px">
+            <el-checkbox v-model="curComponent.commonSelectFrame.enable">{{ $t('panel.selectBackground') }}</el-checkbox>
+          </el-col>
+          <el-col :span="21">
+            <span style="color: #909399; font-size: 8px;margin-left: 3px;line-height: 30px">
+              Tips:{{ $t('panel.choose_background_tips') }}
+            </span>
+          </el-col>
+        </el-row>
+        <el-row v-if="curComponent.commonSelectFrame.enable">
+
+        </el-row>
+      </el-row> -->
+
     </el-row>
     <el-row class="root-class">
       <el-col :span="24">
