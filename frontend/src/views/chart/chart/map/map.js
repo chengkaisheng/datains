@@ -97,49 +97,49 @@ export function baseMapColumnOption(chart_option, chart, geoJson, myChart) {
     }
   }
 
-  let geoCoordMap = {}
-  if(geoJson.features.length) {
-    geoJson.features.map(item => {
-      if(item.properties.name) {
-        geoCoordMap[item.properties.name] = item.properties.center
-      }
-    })
-    console.log('geoCoordMap',geoCoordMap)
-  }
+  // let geoCoordMap = {}
+  // if(geoJson.features.length) {
+  //   geoJson.features.map(item => {
+  //     if(item.properties.name) {
+  //       geoCoordMap[item.properties.name] = item.properties.center
+  //     }
+  //   })
+  //   console.log('geoCoordMap',geoCoordMap)
+  // }
 
-  if (chart.data) {
-    chart_option.title.text = chart.title
+  // if (chart.data) {
+  //   chart_option.title.text = chart.title
 
-    let arr = [] // 柱数据
-    let larr = [] // 图例
-    if(chart.data.series.length) {
-      for(let i=0;i<chart.data.series.length;i++) {
-        let obj = chart.data.series[i]
-        larr.push(obj.name)
-        if(obj.data.length) {
-          obj.data.map((item,index) => {
-            arr.push({
-              name: chart.data.x[index],
-              value:  geoCoordMap[chart.data.x[index]].concat([item.value])
-            })
-          })
-        }
-      }
-      console.log('arrrrrrrr',arr)
+  //   let arr = [] // 柱数据
+  //   let larr = [] // 图例
+  //   if(chart.data.series.length) {
+  //     for(let i=0;i<chart.data.series.length;i++) {
+  //       let obj = chart.data.series[i]
+  //       larr.push(obj.name)
+  //       if(obj.data.length) {
+  //         obj.data.map((item,index) => {
+  //           arr.push({
+  //             name: chart.data.x[index],
+  //             value:  geoCoordMap[chart.data.x[index]].concat([item.value])
+  //           })
+  //         })
+  //       }
+  //     }
+  //     console.log('arrrrrrrr',arr)
       
-      arr.map((item,idx) => {
-        chart_option.series.push({
-          type: 'bar',
-          name: larr[0],
-          coordinateSystem:  'geo',
-          itemStyle: {
-            color: hexColorToRGBA(customAttr.color.colors[idx % customAttr.color.colors.length], customAttr.color.alpha)
-          },
-          data: item.value
-        })
-      })
-    }
-  }
+  //     arr.map((item,idx) => {
+  //       chart_option.series.push({
+  //         type: 'bar',
+  //         name: larr[0],
+  //         coordinateSystem:  'geo',
+  //         itemStyle: {
+  //           color: hexColorToRGBA(customAttr.color.colors[idx % customAttr.color.colors.length], customAttr.color.alpha)
+  //         },
+  //         data: item.value
+  //       })
+  //     })
+  //   }
+  // }
   console.log('图表，，，',chart_option);
   componentStyle(chart_option, chart)
   return chart_option

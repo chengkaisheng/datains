@@ -55,7 +55,8 @@ import {
   BASE_CALENDAR_PIE,
   BASE_BUBBLE_MAP,
   BASE_LINES_MAP,
-  BASE_BUBBLE_BMAP
+  BASE_BUBBLE_BMAP,
+  BASE_PIE_BMAP
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -133,7 +134,8 @@ import {
   // clockcatterOption
 } from '../chart/scatter/scatter'
 import {
-  baseBMapBubbleOption
+  baseBMapBubbleOption,
+  baseBMapPieOption
 } from '../chart/map/bmap.js'
 import {
   baseTreemapOption
@@ -349,6 +351,8 @@ export default {
         chart_option = baseCalendarPieOption(JSON.parse(JSON.stringify(BASE_CALENDAR_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bmap_bubble') {
         chart_option = baseBMapBubbleOption(JSON.parse(JSON.stringify(BASE_BUBBLE_BMAP)), chart)
+      } else if (chart.type === 'bmap_pie') {
+        chart_option = baseBMapPieOption(JSON.parse(JSON.stringify(BASE_PIE_BMAP)), chart)
       }
       // else if (chart.type === 'sankey') {
       //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)
@@ -493,16 +497,16 @@ export default {
     initMapColumnChart(geoJson, chart) {
       console.log('获取的啥？？？？？？',geoJson,chart)
       this.$echarts.registerMap('MAP_COLUMN', geoJson)
-      const base_json = JSON.parse(JSON.stringify(BASE_COLUMN_MAP))
-      const chart_option = baseMapColumnOption(base_json, chart, geoJson, this.myChart)
-      this.myEcharts(chart_option)
+      // const base_json = JSON.parse(JSON.stringify(BASE_COLUMN_MAP))
+      // const chart_option = baseMapColumnOption(base_json, chart, geoJson, this.myChart)
+      // this.myEcharts(chart_option)
 
-      // if(BASE_COLUMN_MAP && typeof BASE_COLUMN_MAP === 'object') {
-      //   this.myChart.setOption(BASE_COLUMN_MAP)
-      // }
-      // setTimeout(() => {
-      //   this.mapColumnData(geoJson, chart)
-      // },1)
+      if(BASE_COLUMN_MAP && typeof BASE_COLUMN_MAP === 'object') {
+        this.myChart.setOption(BASE_COLUMN_MAP)
+      }
+      setTimeout(() => {
+        this.mapColumnData(geoJson, chart)
+      },1)
     },
     initMapBubbleChart(geoJson, chart) {
       this.$echarts.registerMap('MAP_BUBBLE',geoJson)

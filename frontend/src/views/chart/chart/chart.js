@@ -1751,7 +1751,7 @@ export const BASE_BUBBLE_BMAP = {
     trigger: 'item'
   },
   bmap: {
-    center: [104.114129, 37.550339],
+    center: [120.631007, 31.308762],
     zoom: 5,
     roam: true,
   },
@@ -1791,6 +1791,29 @@ export const BASE_BUBBLE_BMAP = {
       emphasis: {
         scale: true
       },
+      zlevel: 1
+    }
+  ]
+}
+
+export const BASE_PIE_BMAP = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  bmap: {
+    center: [120.631007, 31.308762],
+    zoom: 7,
+    roam: true,
+
+  },
+  series: [
+    {
+      type: 'pie',
+      coordinateSystem: 'bmap',
+      data: [],
       zlevel: 1
     }
   ]

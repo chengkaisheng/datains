@@ -516,6 +516,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_bmap_bubble',
     icon: 'bmap_bubble'
   },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_space',
+  //   value: 'bmap_pie',
+  //   title: 'chart.chart_bmap_pie',
+  //   icon: 'bmap_pie'
+  // },
   {
     render: 'echarts',
     category: 'chart.chart_type_space',
