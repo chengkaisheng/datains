@@ -6,7 +6,7 @@
         <el-table-column v-for="(item,index) in fields" :key="index" :prop="item.datainsName" :label="item.name" />
       </el-table> -->
       <div :class="adaptWidth? 'table_new_header': 'table_new_header_notadapt'" :style="table_header_class">
-        <div v-for="(item,index) in fields" :key="index" class="header_title" :style="{'width': widthData[index].value + 'px'}">{{ item.name }}</div>
+        <div v-for="(item,index) in fields" :key="index" class="header_title" :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">{{ item.name }}</div>
       </div>
       <div class="content">
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
@@ -38,7 +38,7 @@
             class="table_bode_li" 
             @click.stop="showDialogInfo(items,inde)"
           >
-            <div v-for="(item,index) in fields" :key="index" :class="adaptWidth?'body_info': ''" :style="{'width': widthData[index].value + 'px'}">
+            <div v-for="(item,index) in fields" :key="index" :class="adaptWidth?'body_info': ''" :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
               <!-- {{ inde }} -->
               {{ items[item.datainsName] }}
             </div>

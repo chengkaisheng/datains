@@ -14,7 +14,9 @@
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
+    :style="selectStyle"
   >
+    <!-- popper-class -->
     <el-option
       v-for="item in datas"
       :key="item[element.options.attrs.key]"
@@ -77,6 +79,21 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    selectStyle() {
+      let style =  {}
+      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        if(this.element.commonSelectFrame.backType === 'Image') {
+          if(this.element.commonSelectFrame.backImg !== '') {
+            style.backgroundImage = `url(${this.element.commonSelectFrame.backImg})`
+          }
+          style.backgroundRepeat = 'no-repeat'
+          style.backgroundSize = '100% 100%'
+        } else  {
+          style.backgroundColor = this.element.commonSelectFrame.color
+        }
+      }
+      return style
     }
   },
 
@@ -139,7 +156,7 @@ export default {
         this.changeValue(this.value)
       }
     })
-    console.log('Deselect') // background/index.vue
+    console.log('Deselect',this.element) // background/index.vue
   },
 
   methods: {
@@ -240,7 +257,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-// .deSelect ::v-deep .el-input__inner {
-//   background-color: transparent;
-// }
+.deSelect ::v-deep .el-input__inner {
+  background-color: transparent;
+}
+.sel_background {
+  background-color: transparent;
+  border-color: transparent;
+}
 </style>
