@@ -115,6 +115,8 @@ export const DEFAULT_SIZE = {
   caldTimelevel: -20,
   caldTimevertical: -20,
 
+  adaptWidth: true,
+  widthData: [],
 }
 export const DEFAULT_LABEL = {
   show: false,
