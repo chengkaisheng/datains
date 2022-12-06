@@ -181,6 +181,9 @@ export default {
         height: 100%;
         outline: none;
 
+        word-wrap:break-word;
+        word-break:break-all;
+        
     }
 
     .canEdit {
