@@ -87,14 +87,17 @@ export default {
       'componentData'
     ])
   },
-  mounted() {
-    console.log(this.curComponent)
+  created() {
     if (this.curComponent.options === undefined) {
       this.curComponent.options = {
         isPopVisible: false,
         popImgList: []
       }
     }
+  },
+  mounted() {
+    console.log('textPopSet',this.curComponent)
+    
     this.fileList = this.curComponent.options.popImgList
   },
   methods: {
