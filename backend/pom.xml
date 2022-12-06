@@ -102,6 +102,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+            <version>8.5.13</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -286,6 +287,21 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
+
+        <!-- 系统数据库改成达梦 -->
+        <dependency>
+            <groupId>com.dm</groupId>
+            <artifactId>DmJdbcDriver</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+
+        <!-- flyway 扩展支持达梦 -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-extend</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -501,6 +517,15 @@
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
             </snapshots>
+        </repository>
+
+        <repository>
+            <id>maven-releases</id>
+            <name>Local Nexus Repository</name>
+            <url>http://183.194.64.166:9092/repository/maven-releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
     </repositories>
 
