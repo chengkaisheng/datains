@@ -80,9 +80,9 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    user_id, dept_id, username, nick_name, gender, phone, email, `password`, is_admin, 
-    enabled, create_by, update_by, pwd_reset_time, create_time, update_time, `language`, 
-    `from`, sub
+    user_id, dept_id, username, nick_name, gender, phone, email, password, is_admin, 
+    enabled, create_by, update_by, pwd_reset_time, create_time, update_time, language, 
+    from, sub
   </sql>
   <select id="selectByExample" parameterType="io.datains.base.domain.SysUserExample" resultMap="BaseResultMap">
     select
@@ -117,10 +117,10 @@
   <insert id="insert" parameterType="io.datains.base.domain.SysUser">
     insert into sys_user (user_id, dept_id, username, 
       nick_name, gender, phone, 
-      email, `password`, is_admin, 
+      email, password, is_admin, 
       enabled, create_by, update_by, 
       pwd_reset_time, create_time, update_time, 
-      `language`, `from`, sub
+      language, from, sub
       )
     values (#{userId,jdbcType=BIGINT}, #{deptId,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, 
       #{nickName,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
@@ -155,7 +155,7 @@
         email,
       </if>
       <if test="password != null">
-        `password`,
+        password,
       </if>
       <if test="isAdmin != null">
         is_admin,
@@ -179,10 +179,10 @@
         update_time,
       </if>
       <if test="language != null">
-        `language`,
+        language,
       </if>
       <if test="from != null">
-        `from`,
+        from,
       </if>
       <if test="sub != null">
         sub,
@@ -276,7 +276,7 @@
         email = #{record.email,jdbcType=VARCHAR},
       </if>
       <if test="record.password != null">
-        `password` = #{record.password,jdbcType=VARCHAR},
+        password = #{record.password,jdbcType=VARCHAR},
       </if>
       <if test="record.isAdmin != null">
         is_admin = #{record.isAdmin,jdbcType=BIT},
@@ -300,10 +300,10 @@
         update_time = #{record.updateTime,jdbcType=BIGINT},
       </if>
       <if test="record.language != null">
-        `language` = #{record.language,jdbcType=VARCHAR},
+        language = #{record.language,jdbcType=VARCHAR},
       </if>
       <if test="record.from != null">
-        `from` = #{record.from,jdbcType=INTEGER},
+        from = #{record.from,jdbcType=INTEGER},
       </if>
       <if test="record.sub != null">
         sub = #{record.sub,jdbcType=VARCHAR},
@@ -322,7 +322,7 @@
       gender = #{record.gender,jdbcType=VARCHAR},
       phone = #{record.phone,jdbcType=VARCHAR},
       email = #{record.email,jdbcType=VARCHAR},
-      `password` = #{record.password,jdbcType=VARCHAR},
+      password = #{record.password,jdbcType=VARCHAR},
       is_admin = #{record.isAdmin,jdbcType=BIT},
       enabled = #{record.enabled,jdbcType=BIGINT},
       create_by = #{record.createBy,jdbcType=VARCHAR},
@@ -330,8 +330,8 @@
       pwd_reset_time = #{record.pwdResetTime,jdbcType=BIGINT},
       create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT},
-      `language` = #{record.language,jdbcType=VARCHAR},
-      `from` = #{record.from,jdbcType=INTEGER},
+      language = #{record.language,jdbcType=VARCHAR},
+      from = #{record.from,jdbcType=INTEGER},
       sub = #{record.sub,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -359,7 +359,7 @@
         email = #{email,jdbcType=VARCHAR},
       </if>
       <if test="password != null">
-        `password` = #{password,jdbcType=VARCHAR},
+        password = #{password,jdbcType=VARCHAR},
       </if>
       <if test="isAdmin != null">
         is_admin = #{isAdmin,jdbcType=BIT},
@@ -383,10 +383,10 @@
         update_time = #{updateTime,jdbcType=BIGINT},
       </if>
       <if test="language != null">
-        `language` = #{language,jdbcType=VARCHAR},
+        language = #{language,jdbcType=VARCHAR},
       </if>
       <if test="from != null">
-        `from` = #{from,jdbcType=INTEGER},
+        from = #{from,jdbcType=INTEGER},
       </if>
       <if test="sub != null">
         sub = #{sub,jdbcType=VARCHAR},
@@ -402,7 +402,7 @@
       gender = #{gender,jdbcType=VARCHAR},
       phone = #{phone,jdbcType=VARCHAR},
       email = #{email,jdbcType=VARCHAR},
-      `password` = #{password,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
       is_admin = #{isAdmin,jdbcType=BIT},
       enabled = #{enabled,jdbcType=BIGINT},
       create_by = #{createBy,jdbcType=VARCHAR},
@@ -410,8 +410,8 @@
       pwd_reset_time = #{pwdResetTime,jdbcType=BIGINT},
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
-      `language` = #{language,jdbcType=VARCHAR},
-      `from` = #{from,jdbcType=INTEGER},
+      language = #{language,jdbcType=VARCHAR},
+      from = #{from,jdbcType=INTEGER},
       sub = #{sub,jdbcType=VARCHAR}
     where user_id = #{userId,jdbcType=BIGINT}
   </update>

@@ -395,7 +395,7 @@ public class DatasetTableExample {
         }
 
         public Criteria andTypeEqualTo(String value) {
-            addCriterion("`type` =", value, "type");
+            addCriterion("type =", value, "type");
             return (Criteria) this;
         }
 

@@ -13,7 +13,7 @@
     </resultMap>
 
     <select id="findOneWithPrivileges" resultMap="BaseResultMapDTO">
-        select panel_group.*,panel_group.name as label , get_auths(panel_group.id,'panel',#{userId}) as `privileges` from panel_group where id =#{panelId}
+        select panel_group.*,panel_group.name as label , get_auths(panel_group.id,'panel',#{userId}) as privileges from panel_group where id =#{panelId}
     </select>
 
     <select id="panelGroupInit" resultMap="BaseResultMapDTO">
@@ -23,31 +23,31 @@
     <select id="panelGroupListDefault" resultMap="BaseResultMapDTO">
         SELECT
         panel_group.id,
-        panel_group.`name`,
+        panel_group.name,
         panel_group.pid,
-        panel_group.`level`,
+        panel_group.level,
         panel_group.node_type,
         panel_group.create_by,
         panel_group.create_time,
         panel_group.panel_type,
-        panel_group.`name` AS label,
-        panel_group.`source`,
-        panel_group.`panel_type`,
-        sourcePanelGroup.`mobile_layout`,
-        sourcePanelGroup.`name` as source_panel_name,
-        authInfo.privileges as `privileges`
+        panel_group.name AS label,
+        panel_group.source,
+        panel_group.panel_type,
+        sourcePanelGroup.mobile_layout,
+        sourcePanelGroup.name as source_panel_name,
+        authInfo.privileges as privileges
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'panel') cids) t,panel_group
         LEFT JOIN panel_group sourcePanelGroup
         on sourcePanelGroup.id=panel_group.source
         left join (
             SELECT
             auth_source,
-            group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
+            group_concat( DISTINCT sys_auth_detail.privilege_extend ) as privileges
             FROM
             (
-            `sys_auth`
-            LEFT JOIN `sys_auth_detail` ON ((
-            `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+            sys_auth
+            LEFT JOIN sys_auth_detail ON ((
+            sys_auth.id = sys_auth_detail.auth_id
             )))
             WHERE
             sys_auth_detail.privilege_value = 1
@@ -67,7 +67,7 @@
             )
             )
             GROUP BY
-            `sys_auth`.`auth_source`
+            sys_auth.auth_source
         ) authInfo
         on panel_group.id = authInfo.auth_source
         <where>
@@ -97,32 +97,32 @@
     <select id="panelGroupList" resultMap="BaseResultMapDTO">
         SELECT
         panel_group.id,
-        panel_group.`name`,
+        panel_group.name,
         panel_group.pid,
-        panel_group.`level`,
+        panel_group.level,
         panel_group.node_type,
         panel_group.create_by,
         panel_group.create_time,
         panel_group.panel_type,
-        panel_group.`name` AS label,
-        panel_group.`node_type`,
-        panel_group.`mobile_layout`,
+        panel_group.name AS label,
+        panel_group.node_type,
+        panel_group.mobile_layout,
         (case when ISNULL(defaultPanelGroup.id) then false else true end) is_default,
         defaultPanelGroup.id as default_panel_id,
-        defaultPanelGroup.`name` as default_panel_name,
-        authInfo.privileges as `privileges`
+        defaultPanelGroup.name as default_panel_name,
+        authInfo.privileges as privileges
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'panel') cids) t,panel_group
         LEFT JOIN panel_group defaultPanelGroup
         on defaultPanelGroup.source=panel_group.id and defaultPanelGroup.source is not null
         left join (
             SELECT
             auth_source,
-            group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
+            group_concat( DISTINCT sys_auth_detail.privilege_extend ) as privileges
             FROM
             (
-            `sys_auth`
-            LEFT JOIN `sys_auth_detail` ON ((
-            `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+            sys_auth
+            LEFT JOIN sys_auth_detail ON ((
+            sys_auth.id = sys_auth_detail.auth_id
             )))
             WHERE
             sys_auth_detail.privilege_value = 1
@@ -142,7 +142,7 @@
             )
             )
             GROUP BY
-            `sys_auth`.`auth_source`
+            sys_auth.auth_source
         ) authInfo
         on panel_group.id = authInfo.auth_source
         <where>

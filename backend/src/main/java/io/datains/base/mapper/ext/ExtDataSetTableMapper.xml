@@ -15,8 +15,8 @@
 
     <select id="searchOne" resultMap="BaseResultMapDTO">
         select
-        id, `name`, scene_id, data_source_id, `type`, `mode`,`info`, create_by, create_time,
-        get_auths(id,'dataset',#{userId}) as `privileges`
+        id, name, scene_id, data_source_id, type, mode,info, create_by, create_time,
+        get_auths(id,'dataset',#{userId}) as privileges
         from dataset_table
         <where>
             <if test="id != null">
@@ -42,18 +42,18 @@
 
     <select id="search" resultMap="BaseResultMapDTO">
         select
-        id, `name`, scene_id, data_source_id, `type`, `mode`,`info`, create_by, create_time,
-        authInfo.privileges as `privileges`
+        id, name, scene_id, data_source_id, type, mode,info, create_by, create_time,
+        authInfo.privileges as privileges
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'dataset') cids) t,dataset_table
         left join (
         SELECT
         auth_source,
-        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
+        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as privileges
         FROM
         (
-        `sys_auth`
-        LEFT JOIN `sys_auth_detail` ON ((
-        `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+        sys_auth
+        LEFT JOIN sys_auth_detail ON ((
+        sys_auth.id = sys_auth_detail.auth_id
         )))
         WHERE
         sys_auth_detail.privilege_value = 1
@@ -73,7 +73,7 @@
         )
         )
         GROUP BY
-        `sys_auth`.`auth_source`
+        sys_auth.auth_source
         ) authInfo
         on dataset_table.id = authInfo.auth_source
         <where>
@@ -97,14 +97,14 @@
                 </foreach>
             </if>
         </where>
-        ORDER BY CONVERT(`name` using gbk)
+        ORDER BY CONVERT(name using gbk)
     </select>
 
 
     <select id="searchDataSetTableWithPanelId" resultMap="BaseResultMapDTO">
         select
-        id, `name`, scene_id, data_source_id, `type`, `mode`,`info`, create_by, create_time,
-        get_auths(id,'dataset',#{userId}) as `privileges`
+        id, name, scene_id, data_source_id, type, mode,info, create_by, create_time,
+        get_auths(id,'dataset',#{userId}) as privileges
         from dataset_table
         where id in (
         SELECT

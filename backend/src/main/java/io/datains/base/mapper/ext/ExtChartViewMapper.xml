@@ -29,11 +29,11 @@
     <insert id="copyToCache">
         INSERT INTO chart_view_cache (
             id,
-            `name`,
+            name,
             title,
             scene_id,
             table_id,
-            `type`,
+            type,
             render,
             result_count,
             result_mode,
@@ -58,11 +58,11 @@
             data_from
             ) SELECT
             id,
-            `name`,
+            name,
             title,
             scene_id,
             table_id,
-            `type`,
+            type,
             render,
             result_count,
             result_mode,
@@ -92,11 +92,11 @@
     <insert id="copyCache">
         INSERT INTO chart_view_cache (
             id,
-            `name`,
+            name,
             title,
             scene_id,
             table_id,
-            `type`,
+            type,
             render,
             result_count,
             result_mode,
@@ -121,11 +121,11 @@
             data_from
             ) SELECT
             #{newViewId} as id,
-            `name`,
+            name,
             title,
             scene_id,
             table_id,
-            `type`,
+            type,
             render,
             result_count,
             result_mode,
@@ -154,7 +154,7 @@
 
     <!--    <select id="searchOne" resultMap="BaseResultMapDTO">-->
     <!--        select-->
-    <!--        id, `name`, scene_id, table_id, `type`, title, create_by, create_time, update_time,-->
+    <!--        id, name, scene_id, table_id, type, title, create_by, create_time, update_time,-->
     <!--        style_priority,x_axis, y_axis, custom_attr, custom_style, custom_filter, snapshot-->
     <!--        from chart_view-->
     <!--        <where>-->
@@ -172,19 +172,19 @@
 
     <select id="search" resultMap="BaseResultMapDTO">
         select
-        id, `name`, scene_id, table_id, `type`, title, create_by, create_time, update_time,
+        id, name, scene_id, table_id, type, title, create_by, create_time, update_time,
         style_priority,x_axis, y_axis, custom_attr, custom_style, custom_filter, snapshot,
-        authInfo.privileges as `privileges`
+        authInfo.privileges as privileges
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'chart') cids) t,chart_view
         left join (
         SELECT
         auth_source,
-        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
+        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as privileges
         FROM
         (
-        `sys_auth`
-        LEFT JOIN `sys_auth_detail` ON ((
-        `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+        sys_auth
+        LEFT JOIN sys_auth_detail ON ((
+        sys_auth.id = sys_auth_detail.auth_id
         )))
         WHERE
         sys_auth_detail.privilege_value = 1
@@ -204,7 +204,7 @@
         )
         )
         GROUP BY
-        `sys_auth`.`auth_source`
+        sys_auth.auth_source
         ) authInfo
         on chart_view.id = authInfo.auth_source
         <where>
@@ -216,67 +216,67 @@
                 and name like CONCAT('%', #{name},'%')
             </if>
         </where>
-        ORDER BY CONVERT(`name` using gbk)
+        ORDER BY CONVERT(name using gbk)
 
     </select>
 
     <insert id="chartCopy">
-        INSERT INTO chart_view (`id`,
-                                `name`,
-                                `scene_id`,
-                                `table_id`,
-                                `type`,
-                                `title`,
-                                `x_axis`,
-                                `x_axis_ext`,
-                                `y_axis`,
-                                `custom_attr`,
-                                `custom_style`,
-                                `custom_filter`,
-                                `drill_fields`,
-                                `create_by`,
-                                `create_time`,
-                                `update_time`,
-                                `snapshot`,
-                                `style_priority`,
-                                `ext_stack`,
-                                `ext_bubble`,
-                                `y_axis_ext`,
-                                `render`,
-                                `result_count`,
-                                `result_mode`,
-                                `chart_type`,
-                                `is_plugin`,
-                                `senior`,
-                                `data_from`)
+        INSERT INTO chart_view (id,
+                                name,
+                                scene_id,
+                                table_id,
+                                type,
+                                title,
+                                x_axis,
+                                x_axis_ext,
+                                y_axis,
+                                custom_attr,
+                                custom_style,
+                                custom_filter,
+                                drill_fields,
+                                create_by,
+                                create_time,
+                                update_time,
+                                snapshot,
+                                style_priority,
+                                ext_stack,
+                                ext_bubble,
+                                y_axis_ext,
+                                render,
+                                result_count,
+                                result_mode,
+                                chart_type,
+                                is_plugin,
+                                senior,
+                                data_from)
         SELECT #{newChartId},
-               GET_CHART_VIEW_COPY_NAME(#{oldChartId},#{panelId}) as `name`,
+               GET_CHART_VIEW_COPY_NAME(#{oldChartId},#{panelId}) as name,
                #{panelId},
-               `table_id`,
-               `type`,
-               GET_CHART_VIEW_COPY_NAME(#{oldChartId},#{panelId}) as `title`,
-               `x_axis`,
-               `x_axis_ext`,
-               `y_axis`,
-               `custom_attr`,
-               `custom_style`,
-               `custom_filter`,
-               `drill_fields`,
-               `create_by`,
-               unix_timestamp()*1000 as `create_time`,
-               unix_timestamp()*1000 as `update_time`,
-               `snapshot`,
-               `style_priority`,
-               `ext_stack`,
-               `ext_bubble`,
-               `y_axis_ext`,
-               `render`,
-               `result_count`,
-               `result_mode`,
+               table_id,
+               type,
+               GET_CHART_VIEW_COPY_NAME(#{oldChartId},#{panelId}) as title,
+               x_axis,
+               x_axis_ext,
+               y_axis,
+               custom_attr,
+               custom_style,
+               custom_filter,
+               drill_fields,
+               create_by,
+               unix_timestamp()*1000 as create_time,
+               unix_timestamp()*1000 as update_time,
+               snapshot,
+               style_priority,
+               ext_stack,
+               ext_bubble,
+               y_axis_ext,
+               render,
+               result_count,
+               result_mode,
                'private',
-               `is_plugin`,
-               `senior`,
-            `data_from`
+               is_plugin,
+               senior,
+            data_from
         FROM chart_view
         WHERE id = #{oldChartId}
     </insert>
@@ -301,11 +301,11 @@
 
     <insert id='chartCopyWithPanel'>
         INSERT INTO chart_view (id,
-                                `name`,
+                                name,
                                 title,
                                 scene_id,
                                 table_id,
-                                `type`,
+                                type,
                                 render,
                                 result_count,
                                 result_mode,
@@ -328,11 +328,11 @@
                                 SNAPSHOT,
             data_from)
         SELECT pv_copy.chart_view_id AS id,
-               `name`,
+               name,
                title,
                pv_copy.panel_id      AS scene_id,
                table_id,
-               `type`,
+               type,
                render,
                result_count,
                result_mode,
@@ -437,11 +437,11 @@
     <update id="copyCacheToView">
         UPDATE chart_view cv,
         chart_view_cache cve
-        SET cv.`name` = cve.`name`,
+        SET cv.name = cve.name,
         cv.title = cve.title,
         cv.scene_id = cve.scene_id,
         cv.table_id = cve.table_id,
-        cv.`type` = cve.`type`,
+        cv.type = cve.type,
         cv.render = cve.render,
         cv.result_count = cve.result_count,
         cv.result_mode = cve.result_mode,
@@ -473,11 +473,11 @@
     <update id="updateToCache">
         UPDATE chart_view_cache cv,
         chart_view cve
-        SET cv.`name` = cve.`name`,
+        SET cv.name = cve.name,
         cv.title = cve.title,
         cv.scene_id = cve.scene_id,
         cv.table_id = cve.table_id,
-        cv.`type` = cve.`type`,
+        cv.type = cve.type,
         cv.render = cve.render,
         cv.result_count = cve.result_count,
         cv.result_mode = cve.result_mode,

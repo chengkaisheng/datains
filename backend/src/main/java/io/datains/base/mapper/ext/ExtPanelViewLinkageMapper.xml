@@ -34,7 +34,7 @@
 
     <select id="getViewLinkageGather" resultMap="LinkageGatherMap">
         SELECT
-        chart_view_cache.`name` as 'targetViewName',
+        chart_view_cache.name as 'targetViewName',
         chart_view_cache.id as 'target_view_id',
         chart_view_cache.table_id,
         (case when panel_view_linkage.target_view_id is null then 0 else 1 end) as 'linkageActive',
@@ -57,7 +57,7 @@
        dataset_table_field.id,
        dataset_table_field.table_id,
        dataset_table_field.origin_name,
-       dataset_table_field.`name`,
+       dataset_table_field.name,
        dataset_table_field.de_type
     from dataset_table_field where table_id = #{table_id}
     </select>
@@ -67,7 +67,7 @@
        dataset_table_field.id,
        dataset_table_field.table_id,
        dataset_table_field.origin_name,
-       dataset_table_field.`name`,
+       dataset_table_field.name,
        dataset_table_field.de_type
         from dataset_table_field
 		left join chart_view on dataset_table_field.table_id= chart_view.table_id
@@ -93,7 +93,7 @@
     </delete>
 
     <insert id="savePluginMenu">
-        INSERT INTO `panel_view_linkage` ( menu_id, title, pid, sub_count, permission, hidden,i_frame ) VALUES
+        INSERT INTO panel_view_linkage ( menu_id, title, pid, sub_count, permission, hidden,i_frame ) VALUES
         <foreach collection="menuList" item="menu" index="index" separator=",">
             (#{menu.menuId},#{menu.title},#{menu.pid},#{menu.subCount},#{menu.permission},#{menu.hidden},ifnull(#{menu.hidden},0))
         </foreach>

@@ -76,7 +76,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, scene_id, data_source_id, `type`, `mode`, create_by, create_time, qrtz_instance, 
+    id, name, scene_id, data_source_id, type, mode, create_by, create_time, qrtz_instance, 
     sync_status, last_update_time
   </sql>
   <sql id="Blob_Column_List">
@@ -131,8 +131,8 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.datains.base.domain.DatasetTable">
-    insert into dataset_table (id, `name`, scene_id, 
-      data_source_id, `type`, `mode`, 
+    insert into dataset_table (id, name, scene_id, 
+      data_source_id, type, mode, 
       create_by, create_time, qrtz_instance, 
       sync_status, last_update_time, info
       )
@@ -149,7 +149,7 @@
         id,
       </if>
       <if test="name != null">
-        `name`,
+        name,
       </if>
       <if test="sceneId != null">
         scene_id,
@@ -158,10 +158,10 @@
         data_source_id,
       </if>
       <if test="type != null">
-        `type`,
+        type,
       </if>
       <if test="mode != null">
-        `mode`,
+        mode,
       </if>
       <if test="createBy != null">
         create_by,
@@ -234,7 +234,7 @@
         id = #{record.id,jdbcType=VARCHAR},
       </if>
       <if test="record.name != null">
-        `name` = #{record.name,jdbcType=VARCHAR},
+        name = #{record.name,jdbcType=VARCHAR},
       </if>
       <if test="record.sceneId != null">
         scene_id = #{record.sceneId,jdbcType=VARCHAR},
@@ -243,10 +243,10 @@
         data_source_id = #{record.dataSourceId,jdbcType=VARCHAR},
       </if>
       <if test="record.type != null">
-        `type` = #{record.type,jdbcType=VARCHAR},
+        type = #{record.type,jdbcType=VARCHAR},
       </if>
       <if test="record.mode != null">
-        `mode` = #{record.mode,jdbcType=INTEGER},
+        mode = #{record.mode,jdbcType=INTEGER},
       </if>
       <if test="record.createBy != null">
         create_by = #{record.createBy,jdbcType=VARCHAR},
@@ -274,11 +274,11 @@
   <update id="updateByExampleWithBLOBs" parameterType="map">
     update dataset_table
     set id = #{record.id,jdbcType=VARCHAR},
-      `name` = #{record.name,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
       scene_id = #{record.sceneId,jdbcType=VARCHAR},
       data_source_id = #{record.dataSourceId,jdbcType=VARCHAR},
-      `type` = #{record.type,jdbcType=VARCHAR},
-      `mode` = #{record.mode,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=VARCHAR},
+      mode = #{record.mode,jdbcType=INTEGER},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       qrtz_instance = #{record.qrtzInstance,jdbcType=VARCHAR},
@@ -292,11 +292,11 @@
   <update id="updateByExample" parameterType="map">
     update dataset_table
     set id = #{record.id,jdbcType=VARCHAR},
-      `name` = #{record.name,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
       scene_id = #{record.sceneId,jdbcType=VARCHAR},
       data_source_id = #{record.dataSourceId,jdbcType=VARCHAR},
-      `type` = #{record.type,jdbcType=VARCHAR},
-      `mode` = #{record.mode,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=VARCHAR},
+      mode = #{record.mode,jdbcType=INTEGER},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       qrtz_instance = #{record.qrtzInstance,jdbcType=VARCHAR},
@@ -310,7 +310,7 @@
     update dataset_table
     <set>
       <if test="name != null">
-        `name` = #{name,jdbcType=VARCHAR},
+        name = #{name,jdbcType=VARCHAR},
       </if>
       <if test="sceneId != null">
         scene_id = #{sceneId,jdbcType=VARCHAR},
@@ -319,10 +319,10 @@
         data_source_id = #{dataSourceId,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
-        `type` = #{type,jdbcType=VARCHAR},
+        type = #{type,jdbcType=VARCHAR},
       </if>
       <if test="mode != null">
-        `mode` = #{mode,jdbcType=INTEGER},
+        mode = #{mode,jdbcType=INTEGER},
       </if>
       <if test="createBy != null">
         create_by = #{createBy,jdbcType=VARCHAR},
@@ -347,11 +347,11 @@
   </update>
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.datains.base.domain.DatasetTable">
     update dataset_table
-    set `name` = #{name,jdbcType=VARCHAR},
+    set name = #{name,jdbcType=VARCHAR},
       scene_id = #{sceneId,jdbcType=VARCHAR},
       data_source_id = #{dataSourceId,jdbcType=VARCHAR},
-      `type` = #{type,jdbcType=VARCHAR},
-      `mode` = #{mode,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR},
+      mode = #{mode,jdbcType=INTEGER},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       qrtz_instance = #{qrtzInstance,jdbcType=VARCHAR},
@@ -362,11 +362,11 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="io.datains.base.domain.DatasetTable">
     update dataset_table
-    set `name` = #{name,jdbcType=VARCHAR},
+    set name = #{name,jdbcType=VARCHAR},
       scene_id = #{sceneId,jdbcType=VARCHAR},
       data_source_id = #{dataSourceId,jdbcType=VARCHAR},
-      `type` = #{type,jdbcType=VARCHAR},
-      `mode` = #{mode,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR},
+      mode = #{mode,jdbcType=INTEGER},
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       qrtz_instance = #{qrtzInstance,jdbcType=VARCHAR},

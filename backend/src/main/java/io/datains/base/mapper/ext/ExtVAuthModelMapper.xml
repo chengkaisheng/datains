@@ -21,19 +21,19 @@
         v_auth_model.level,
         v_auth_model.mode,
         v_auth_model.data_source_id,
-        authInfo.PRIVILEGES AS `privileges`
+        authInfo.PRIVILEGES AS privileges
         FROM
         ( SELECT GET_V_AUTH_MODEL_ID_P_USE ( #{record.userId}, #{record.modelType} ) cids ) t,
         v_auth_model
         LEFT JOIN (
         SELECT
         auth_source,
-        group_concat( DISTINCT sys_auth_detail.privilege_extend ) AS `privileges`
+        group_concat( DISTINCT sys_auth_detail.privilege_extend ) AS privileges
         FROM
         (
-        `sys_auth`
-        LEFT JOIN `sys_auth_detail` ON ((
-        `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+        sys_auth
+        LEFT JOIN sys_auth_detail ON ((
+        sys_auth.id = sys_auth_detail.auth_id
         )))
         WHERE
         sys_auth_detail.privilege_value = 1
@@ -53,7 +53,7 @@
         )
         )
         GROUP BY
-        `sys_auth`.`auth_source`
+        sys_auth.auth_source
         ) authInfo ON v_auth_model.id = authInfo.auth_source
         WHERE
         FIND_IN_SET( v_auth_model.id, cids )
@@ -79,14 +79,14 @@
             and v_auth_model.create_by = #{record.createBy,jdbcType=VARCHAR}
         </if>
         <if test="record.level != null">
-            and v_auth_model.`level` = #{record.level,jdbcType=BIGINT}
+            and v_auth_model.level = #{record.level,jdbcType=BIGINT}
         </if>
         <if test="record.mode != null">
             <if test="record.mode == 0">
-                and v_auth_model.`mode` = 0
+                and v_auth_model.mode = 0
             </if>
             <if test='record.mode == 1 and record.modelType != null and record.modelType == "dataset"'>
-                and (v_auth_model.`mode` = 1 or (v_auth_model.`model_inner_type` = 'group' and v_auth_model.model_type =
+                and (v_auth_model.mode = 1 or (v_auth_model.model_inner_type = 'group' and v_auth_model.model_type =
                 'dataset'))
             </if>
         </if>
@@ -94,10 +94,10 @@
             and v_auth_model.data_source_id = #{record.dataSourceId,jdbcType=VARCHAR}
         </if>
         <if test="record.name != null">
-            and v_auth_model.`name` = #{record.name,jdbcType=LONGVARCHAR}
+            and v_auth_model.name = #{record.name,jdbcType=LONGVARCHAR}
         </if>
         <if test="record.label != null">
-            and v_auth_model.`label` = #{record.label,jdbcType=LONGVARCHAR}
+            and v_auth_model.label = #{record.label,jdbcType=LONGVARCHAR}
         </if>
         <if test="record.modelInnerTypeArray != null and record.modelInnerTypeArray.size() > 0">
             and v_auth_model.model_inner_type in

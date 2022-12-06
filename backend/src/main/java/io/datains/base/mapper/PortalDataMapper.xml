@@ -15,11 +15,11 @@
     </select>
 
     <insert id="save" parameterType="io.datains.base.domain.PortalData">
-        INSERT INTO `portal_data`
+        INSERT INTO portal_data
 	(
-	`user_id`,
-	`user_name`,
-	`position_json`
+	user_id,
+	user_name,
+	position_json
 	)
 	VALUES
 	(

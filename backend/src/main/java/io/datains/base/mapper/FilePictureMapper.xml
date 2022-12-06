@@ -48,7 +48,7 @@
     </delete>
 
     <select id="getNull" resultType="io.datains.base.domain.FilePicture">
-        SELECT * FROM `file_picture` WHERE NAME IS NULL
+        SELECT * FROM file_picture WHERE NAME IS NULL
     </select>
 
     <update id="update" parameterType="io.datains.base.domain.FilePicture">
