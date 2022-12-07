@@ -16,7 +16,7 @@
     <select id="searchOne" resultMap="BaseResultMapDTO">
         select
         id, name, scene_id, data_source_id, type, mode,info, create_by, create_time,
-        get_auths(id,'dataset',#{userId}) as privileges
+        get_auths(id,'dataset',#{userId}) as "privileges"
         from dataset_table
         <where>
             <if test="id != null">
@@ -43,12 +43,15 @@
     <select id="search" resultMap="BaseResultMapDTO">
         select
         id, name, scene_id, data_source_id, type, mode,info, create_by, create_time,
-        authInfo.privileges as privileges
+        authInfo."privileges" as "privileges"
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'dataset') cids) t,dataset_table
         left join (
+            select auth_source,
+                   wm_concat("privileges") "privileges"
+                   from (
         SELECT
         auth_source,
-        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as privileges
+        sys_auth_detail.privilege_extend as "privileges"
         FROM
         (
         sys_auth
@@ -73,7 +76,7 @@
         )
         )
         GROUP BY
-        sys_auth.auth_source
+        sys_auth.auth_source, sys_auth_detail.privilege_extend ) dd group by auth_source
         ) authInfo
         on dataset_table.id = authInfo.auth_source
         <where>
@@ -104,7 +107,7 @@
     <select id="searchDataSetTableWithPanelId" resultMap="BaseResultMapDTO">
         select
         id, name, scene_id, data_source_id, type, mode,info, create_by, create_time,
-        get_auths(id,'dataset',#{userId}) as privileges
+        get_auths(id,'dataset',#{userId}) as "privileges"
         from dataset_table
         where id in (
         SELECT

@@ -721,10 +721,10 @@ CREATE VIEW "V_HISTORY_CHART_VIEW" ("ID","INNER_ID","NAME","LABEL","PID","MODEL_
 AS 
 select "CHART_GROUP"."ID" AS "ID","CHART_GROUP"."ID" AS "INNER_ID","CHART_GROUP"."NAME" AS "NAME","CHART_GROUP"."NAME" AS "LABEL","CHART_GROUP"."PID" AS "PID","CHART_GROUP"."TYPE" AS "MODEL_INNER_TYPE",'spine' AS "NODE_TYPE",'view' AS "MODEL_TYPE",1 AS "MODE" from "CHART_GROUP" union all select distinct "CHART_VIEW"."ID" AS "ID","CHART_VIEW"."ID" AS "INNER_ID","CHART_VIEW"."NAME" AS "NAME","CHART_VIEW"."NAME" AS "LABEL","CHART_VIEW"."SCENE_ID" AS "PID","CHART_VIEW"."TYPE" AS "MODEL_INNER_TYPE",'leaf' AS "NODE_TYPE",'view' AS "MODEL_TYPE",1 AS "MODE" from "CHART_VIEW" where ("CHART_VIEW"."CHART_TYPE" = 'public');
 
-CREATE VIEW "V_AUTH_MODEL" ("ID","NAME","LABEL","PID","NODE_TYPE","MODEL_TYPE","MODEL_INNER_TYPE","AUTH_TYPE","CREATE_BY","LEVEL","MODE","DATA_SOURCE_ID")  
- AS
+CREATE VIEW "V_AUTH_MODEL" ("ID", "NAME", "LABEL", "PID", "NODE_TYPE", "MODEL_TYPE", "MODEL_INNER_TYPE", "AUTH_TYPE", "CREATE_BY", "LEVEL", "MODE", "DATA_SOURCE_ID") AS
+
 SELECT
-    "SYS_USER"."USER_ID" AS "ID",
+    CAST("SYS_USER"."USER_ID" AS VARCHAR2) AS "ID",
     "SYS_USER"."USERNAME" AS "NAME",
     "SYS_USER"."USERNAME" AS "LABEL",
     '0' AS "PID",
@@ -742,7 +742,7 @@ WHERE
     ("SYS_USER"."IS_ADMIN" <> 1)
 UNION ALL
 SELECT
-    "SYS_ROLE"."ROLE_ID" AS "ID",
+    CAST("SYS_ROLE"."ROLE_ID" AS VARCHAR2) AS "ID",
     "SYS_ROLE"."NAME" AS "NAME",
     "SYS_ROLE"."NAME" AS "LABEL",
     '0' AS "PID",
@@ -758,10 +758,10 @@ FROM
     "SYS_ROLE"
 UNION ALL
 SELECT
-    "SYS_DEPT"."DEPT_ID" AS "ID",
+    CAST("SYS_DEPT"."DEPT_ID" AS VARCHAR2) AS "ID",
     "SYS_DEPT"."NAME" AS "NAME",
     "SYS_DEPT"."NAME" AS "LABLE",
-    "SYS_DEPT"."PID" AS "PID",
+    CAST("SYS_DEPT"."PID" AS varchar) AS "PID",
     case when "SYS_DEPT"."SUB_COUNT" = 0 then 'leaf' else 'spine' end AS "NODE_TYPE",
     'dept' AS "MODEL_TYPE",
     'dept' AS "MODEL_INNER_TYPE",
@@ -774,7 +774,7 @@ FROM
     "SYS_DEPT"
 UNION ALL
 SELECT
-    "DATASOURCE"."ID" AS "ID",
+    CAST("DATASOURCE"."ID" AS VARCHAR2) AS "ID",
     "DATASOURCE"."NAME" AS "NAME",
     "DATASOURCE"."NAME" AS "LABEL",
     '0' AS "PID",
@@ -790,7 +790,7 @@ FROM
     "DATASOURCE"
 UNION ALL
 SELECT
-    "DATASET_GROUP"."ID" AS "ID",
+    CAST("DATASET_GROUP"."ID" AS VARCHAR2) AS "ID",
     "DATASET_GROUP"."NAME" AS "NAME",
     "DATASET_GROUP"."NAME" AS "LABLE",
     NVL("DATASET_GROUP"."PID",'0') AS "PID",
@@ -806,7 +806,7 @@ FROM
     "DATASET_GROUP"
 UNION ALL
 SELECT
-    "DATASET_TABLE"."ID" AS "ID",
+    CAST("DATASET_TABLE"."ID" AS VARCHAR2) AS "ID",
     "DATASET_TABLE"."NAME" AS "NAME",
     "DATASET_TABLE"."NAME" AS "LABLE",
     "DATASET_TABLE"."SCENE_ID" AS "PID",
@@ -822,14 +822,14 @@ FROM
     "DATASET_TABLE"
 UNION ALL
 SELECT
-    "PANEL_GROUP"."ID" AS "ID",
+    CAST("PANEL_GROUP"."ID" AS VARCHAR2) AS "ID",
     "PANEL_GROUP"."NAME" AS "NAME",
     "PANEL_GROUP"."NAME" AS "LABEL",
     (CASE
         "PANEL_GROUP"."ID" WHEN 'panel_list' THEN '0'
-        WHEN 'default_panel' THEN '0'
-        ELSE "PANEL_GROUP"."PID"
-    END) AS "PID",
+                           WHEN 'default_panel' THEN '0'
+                           ELSE "PANEL_GROUP"."PID"
+        END) AS "PID",
     case when ("PANEL_GROUP"."NODE_TYPE" = 'folder') then 'spine' else 'leaf' end AS "NODE_TYPE",
     'panel' AS "MODEL_TYPE",
     "PANEL_GROUP"."PANEL_TYPE" AS "MODEL_INNER_TYPE",
@@ -842,17 +842,17 @@ FROM
     "PANEL_GROUP"
 UNION ALL
 SELECT
-    "SYS_MENU"."MENU_ID" AS "MENU_ID",
+    CAST("SYS_MENU"."MENU_ID" AS VARCHAR2) AS "MENU_ID",
     "SYS_MENU"."TITLE" AS "NAME",
     "SYS_MENU"."TITLE" AS "LABEL",
-    "SYS_MENU"."PID" AS "PID",
+    CAST("SYS_MENU"."PID" AS varchar) AS "PID",
     case when ("SYS_MENU"."SUB_COUNT" > 0) then 'spine' else 'leaf' end AS "NODE_TYPE",
     'menu' AS "MODEL_TYPE",
     (CASE
         "SYS_MENU"."TYPE" WHEN 0 THEN 'folder'
-        WHEN 1 THEN 'menu'
-        WHEN 2 THEN 'button'
-    END) AS "MODEL_INNER_TYPE",
+                          WHEN 1 THEN 'menu'
+                          WHEN 2 THEN 'button'
+        END) AS "MODEL_INNER_TYPE",
     'source' AS "AUTH_TYPE",
     "SYS_MENU"."CREATE_BY" AS "CREATE_BY",
     0 AS "LEVEL",
@@ -862,20 +862,20 @@ FROM
     "SYS_MENU"
 WHERE
     (("SYS_MENU"."I_FRAME" <> 1)
-    OR ISNULL("SYS_MENU"."I_FRAME"))
+        OR ISNULL("SYS_MENU"."I_FRAME"))
 UNION ALL
 SELECT
-    "PLUGIN_SYS_MENU"."MENU_ID" AS "MENU_ID",
+    CAST("PLUGIN_SYS_MENU"."MENU_ID" AS VARCHAR2) AS "MENU_ID",
     "PLUGIN_SYS_MENU"."TITLE" AS "NAME",
     "PLUGIN_SYS_MENU"."TITLE" AS "LABEL",
-    "PLUGIN_SYS_MENU"."PID" AS "PID",
-	case when ("PLUGIN_SYS_MENU"."SUB_COUNT" > 0) then 'spine' else 'leaf' end AS "NODE_TYPE",
+    CAST("PLUGIN_SYS_MENU"."PID" AS varchar) AS "PID",
+    case when ("PLUGIN_SYS_MENU"."SUB_COUNT" > 0) then 'spine' else 'leaf' end AS "NODE_TYPE",
     'menu' AS "MODEL_TYPE",
     (CASE
         "PLUGIN_SYS_MENU"."TYPE" WHEN 0 THEN 'folder'
-        WHEN 1 THEN 'menu'
-        WHEN 2 THEN 'button'
-    END) AS "MODEL_INNER_TYPE",
+                                 WHEN 1 THEN 'menu'
+                                 WHEN 2 THEN 'button'
+        END) AS "MODEL_INNER_TYPE",
     'source' AS "AUTH_TYPE",
     "PLUGIN_SYS_MENU"."CREATE_BY" AS "CREATE_BY",
     0 AS "LEVEL",
@@ -885,7 +885,8 @@ FROM
     "PLUGIN_SYS_MENU"
 WHERE
     (("PLUGIN_SYS_MENU"."I_FRAME" <> 1)
-    OR ISNULL("PLUGIN_SYS_MENU"."I_FRAME"));
+        OR ISNULL("PLUGIN_SYS_MENU"."I_FRAME"))
+;
 
 CREATE VIEW "V_AUTH_PRIVILEGE" ("AUTH_SOURCE","AUTH_SOURCE_TYPE","PRIVILEGES")  
  AS

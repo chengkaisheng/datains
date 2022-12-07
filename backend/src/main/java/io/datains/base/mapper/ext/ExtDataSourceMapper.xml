@@ -9,12 +9,12 @@
 
     <select id="query" parameterType="io.datains.base.mapper.ext.query.GridExample" resultMap="BaseResultMapDTO">
         select datasource.*,
-        authInfo.privileges as privileges
+        authInfo."privileges" as "privileges"
          from (select GET_V_AUTH_MODEL_ID_P_USE (#{extendCondition}, 'link') cids) t,datasource
         left join (
         SELECT
         auth_source,
-        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as privileges
+        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as "privileges"
         FROM
         (
         sys_auth
@@ -56,12 +56,16 @@
 
     <select id="queryUnion"  resultMap="BaseResultMapDTO">
         select datasource.*,
-        authInfo.privileges as privileges
+        authInfo."privileges" as "privileges"
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'link') cids) t,datasource
         left join (
+        select auth_source,
+        wm_concat("privileges") as "privileges"
+        from
+        (
         SELECT
         auth_source,
-        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as privileges
+        sys_auth_detail.privilege_extend as "privileges"
         FROM
         (
         sys_auth
@@ -86,7 +90,9 @@
         )
         )
         GROUP BY
-        sys_auth.auth_source
+        sys_auth.auth_source, sys_auth_detail.privilege_extend
+        ) dd
+            group by auth_source
         ) authInfo
         on datasource.id = authInfo.auth_source
         <where>

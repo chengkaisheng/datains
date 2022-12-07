@@ -21,14 +21,18 @@
         v_auth_model.level,
         v_auth_model.mode,
         v_auth_model.data_source_id,
-        authInfo."PRIVILEGES" AS "privileges"
+        authInfo."privileges" AS "privileges"
         FROM
         ( SELECT GET_V_AUTH_MODEL_ID_P_USE ( #{record.userId}, #{record.modelType} ) cids ) t,
         v_auth_model
         LEFT JOIN (
+            select auth_source,
+                   wm_concat("privileges") "privileges"
+            from
+            (
         SELECT
         auth_source,
-        group_concat( DISTINCT sys_auth_detail.privilege_extend ) AS "privileges"
+        sys_auth_detail.privilege_extend AS "privileges"
         FROM
         (
         sys_auth
@@ -53,7 +57,7 @@
         )
         )
         GROUP BY
-        sys_auth.auth_source
+        sys_auth.auth_source, sys_auth_detail.privilege_extend ) dd group by auth_source
         ) authInfo ON v_auth_model.id = authInfo.auth_source
         WHERE
         FIND_IN_SET( v_auth_model.id, cids )
@@ -105,7 +109,6 @@
                 #{item}
             </foreach>
         </if>
-        -- ORDER BY v_auth_model.node_type desc, CONVERT(v_auth_model.label using gbk) asc
         ORDER BY v_auth_model.node_type desc, v_auth_model.label asc
     </select>
 

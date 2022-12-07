@@ -146,7 +146,7 @@
         name,
       </if>
       <if test="desc != null">
-        desc,
+        "DESC",
       </if>
       <if test="type != null">
         type,
@@ -312,7 +312,7 @@
   <update id="updateByPrimaryKey" parameterType="io.datains.base.domain.Datasource">
     update datasource
     set name = #{name,jdbcType=VARCHAR},
-      desc = #{desc,jdbcType=VARCHAR},
+      "DESC" = #{desc,jdbcType=VARCHAR},
       type = #{type,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
