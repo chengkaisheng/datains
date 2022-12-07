@@ -64,6 +64,11 @@
           />
         </el-select>
       </div>
+      <div v-if="attrShow('autoWrap')" :title="$t('chart.text_wrap')" style="width: 60px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-checkbox v-model="styleInfo.autoWrap" @change="styleChange" border size="mini">
+          <svg-icon icon-class="wrap" ></svg-icon>
+        </el-checkbox>
+      </div>
 
       <el-tooltip v-if="attrShow('fontWeight')" :content="$t('panel.fontWeight')">
         <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-font-weight-bold" />
@@ -299,7 +304,8 @@ export default {
         'letterSpacing',
         'color',
         'hyperlinks',
-        'fontFamily'
+        'fontFamily',
+        'autoWrap'
       ],
       'de-video': [
         'opacity',

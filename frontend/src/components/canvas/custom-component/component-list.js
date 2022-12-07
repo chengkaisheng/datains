@@ -294,7 +294,8 @@ const list = [
       textAlign: 'center',
       color: '#000000',
       verticalAlign: 'middle',
-      fontFamily: ''
+      fontFamily: '',
+      autoWrap: false,
     },
     options: {
       isPopVisible: false,
