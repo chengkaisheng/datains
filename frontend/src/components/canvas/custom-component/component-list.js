@@ -31,6 +31,14 @@ export const COMMON_BACKGROUND = {
   fontSize: 16,
   fontColor: '#000000'
 }
+// select frame
+export const COMMON_SELECT_FRAME = {
+  enable: true,
+  backType: 'color',
+  color: '#ffffff',
+  backImg: null,
+  alpha: 100,
+}
 
 // 空组件仪表板样式
 export const COMMON_BACKGROUND_NONE = {

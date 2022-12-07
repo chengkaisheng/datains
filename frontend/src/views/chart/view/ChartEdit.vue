@@ -604,7 +604,7 @@
                     </el-row>
                     <!--extBubble-->
                     <el-row
-                      v-if="view.type && view.type.includes('scatter') && view.type !== '3d-scatter'"
+                      v-if="view.type && (view.type.includes('scatter')) && view.type !== '3d-scatter'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -842,9 +842,32 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
+                    v-show="view.render && view.render === 'antv' && view.type.includes('roll') "
+                    :title="$t('chart.table_width_set')"
+                  >
+                    <width-selector-ant-v 
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onSizeChange="onSizeChange"
+                    />
+                  </el-collapse-item>
+                  <!-- <el-collapse-item
+                    v-show="view.render && view.render === 'antv' && view.type.includes('roll')"
+                    :title="$t('chart.pop_config')"
+                  >
+                    <roll-selector 
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLabelChange="onLabelChange"
+                    />
+                  </el-collapse-item> -->
+                  <el-collapse-item
                     v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')
                         &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' 
-                        && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'"
+                        && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'
+                        && view.type !== 'map_bubble'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -875,7 +898,8 @@
                       &&!view.type.includes('dialog') && !view.type.includes('table') 
                       && !view.type.includes('progress') && !view.type.includes('text') 
                       && view.type !== 'liquid' && view.type !== 'gauge' 
-                      && view.type !== 'label' && view.type !== 'calendar'"
+                      && view.type !== 'label' && view.type !== 'calendar'
+                      && view.type !== 'map_bubble'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
@@ -1043,12 +1067,14 @@
                   </el-collapse-item>
                   <el-collapse-item
                     v-show="view.type && view.type !== 'map'
-                      && view.type !== 'arc_map' && !view.type.includes('table')&& !view.type.includes('vertical')&&!view.type.includes('dialog')
+                      && view.type !== 'arc_map' && !view.type.includes('table')
+                      && !view.type.includes('vertical')&&!view.type.includes('dialog')
                       && view.type !== '3dfunnel' && view.type !== '3dpyramid'
                       && !view.type.includes('text') && view.type !== 'label'
                       && (view.type !== 'treemap' || view.render === 'antv')
                       && view.type !== 'liquid' && view.type !== 'waterfall'
-                      && view.type !== 'gauge' && view.type !== 'word-cloud' && !view.type.includes('progress')
+                      && view.type !== 'gauge' && view.type !== 'word-cloud' 
+                      && !view.type.includes('progress') && view.type !== 'map_bubble'
                       && view.type !== 'graph' && view.type !== 'candlestick'
                       && view.type !== '3dsurface' && view.type !== '3d-column'"
                     name="legend"
@@ -1405,6 +1431,7 @@ import YAxisSelectorAntV from '@/views/chart/components/component-style/YAxisSel
 import YAxisExtSelectorAntV from '@/views/chart/components/component-style/YAxisExtSelectorAntV'
 import SizeSelectorAntV from '@/views/chart/components/shape-attr/SizeSelectorAntV'
 import PopSelectorAntV from '@/views/chart/components/shape-attr/PopSelectorAntV'
+import WidthSelectorAntV from '@/views/chart/components/shape-attr/WidthSelectorAntV.vue'
 import SplitSelectorAntV from '@/views/chart/components/component-style/SplitSelectorAntV'
 import CompareEdit from '@/views/chart/components/compare/CompareEdit'
 import { compareItem } from '@/views/chart/chart/compare'
@@ -1440,6 +1467,7 @@ export default {
     SplitSelectorAntV,
     SizeSelectorAntV,
     PopSelectorAntV,
+    WidthSelectorAntV,
     YAxisExtSelectorAntV,
     YAxisSelectorAntV,
     XAxisSelectorAntV,
@@ -1897,7 +1925,7 @@ export default {
           view.yaxis.splice(1, view.yaxis.length)
         }
       }
-      if(view.type === '3d-column' || view.type === '3d-scatter') {
+      if(view.type === '3d-column' || view.type === '3d-scatter' || view.type === 'map_bubble') {
         if (view.yaxis.length > 3) {
           view.yaxis.splice(3,1)
         }

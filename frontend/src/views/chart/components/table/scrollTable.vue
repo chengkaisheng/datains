@@ -5,8 +5,8 @@
       <!-- <el-table class="hidden-tbody" style="width: 100%;margina-top: 15px;">
         <el-table-column v-for="(item,index) in fields" :key="index" :prop="item.datainsName" :label="item.name" />
       </el-table> -->
-      <div class="table_new_header" :style="table_header_class">
-        <div v-for="(item,index) in fields" :key="index" class="header_title">{{ item.name }}</div>
+      <div :class="adaptWidth? 'table_new_header': 'table_new_header_notadapt'" :style="table_header_class">
+        <div v-for="(item,index) in fields" :key="index" class="header_title" :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">{{ item.name }}</div>
       </div>
       <div class="content">
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
@@ -33,8 +33,12 @@
             <div slot="reference" class="pop_position" :style="{left: popOpen.left,top: popOpen.top}" />
           </el-popover>
 
-          <li v-for="(items,inde) in dataInfo" v-show="inde<=tableRowsNumber-1" :key="inde" :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" class="table_bode_li" @click.stop="showDialogInfo(items,inde)">
-            <div v-for="(item,index) in fields" :key="index" class="body_info">
+          <li v-for="(items,inde) in dataInfo" v-show="inde<=tableRowsNumber-1" :key="inde" 
+            :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" 
+            class="table_bode_li" 
+            @click.stop="showDialogInfo(items,inde)"
+          >
+            <div v-for="(item,index) in fields" :key="index" :class="adaptWidth?'body_info': ''" :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
               <!-- {{ inde }} -->
               {{ items[item.datainsName] }}
             </div>
@@ -123,6 +127,7 @@ export default {
         background: '#ffffff',
         height: '36px'
       },
+      widthData: [],
       title_show: true,
       borderRadius: '0px',
       currentPage: {
@@ -208,7 +213,18 @@ export default {
         background: hexColorToRGBA('#ffffff', 0),
         borderRadius: this.borderRadius
       }
-    }
+    },
+    adaptWidth() {
+      if(this.chart.customAttr) {
+        const customAttr = JSON.parse(this.chart.customAttr)
+        if(customAttr.size.adaptWidth !== undefined) {
+          return customAttr.size.adaptWidth
+        } else {
+          return true
+        }
+      }
+      return true
+    },
   },
   watch: {
     chart: function() {
@@ -581,19 +597,22 @@ export default {
           this.highlight = customAttr.size.highlightNumber ? customAttr.size.highlightNumber : 2
           this.tableRowsNumber = customAttr.size.tableRowsNumber ? customAttr.size.tableRowsNumber : 5
           // this.scrollId.fontSize = (Math.ceil(+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth)) + 'px'
-          console.log('customAttr.size.heightLightFontSize', customAttr.size.heightLightFontSize, this.previewCanvasScale.scalePointWidth)
+          // console.log('customAttr.size.heightLightFontSize', customAttr.size.heightLightFontSize, this.previewCanvasScale.scalePointWidth)
           this.scrollId.fontSize = (+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
           this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
           this.setStyle.height = customAttr.size.tableItemHeight + 'px'
           this.rollingRate = customAttr.size.tableRollingRate
-          console.log('customAttr.size.tableItemHeight', customAttr.size.tableItemHeight)
+          // console.log('customAttr.size.tableItemHeight', customAttr.size.tableItemHeight)
           this.bodyHeight = customAttr.size.tableItemHeight
           this.scrollId.height = customAttr.size.tableItemHeight + 'px'
           this.table_item_class.textAlign = customAttr.size.tableItemAlign
           this.scrolleTime = customAttr.size.automaticTime
+
+          console.log('widthData',customAttr.size.widthData)
+          this.widthData = customAttr.size.widthData
         }
         if (customAttr.label) {
-          console.log('label数据，，，，，', customAttr.label)
+          // console.log('label数据，，，，，', customAttr.label)
           this.isPopShow = customAttr.label.popShow
           this.popOpen.position = customAttr.label.popOpen
           this.popOpen.left = customAttr.label.popLeft !== undefined ? customAttr.label.popLeft + 'px' : '0px'
@@ -626,7 +645,7 @@ export default {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
-      console.log('this.scrollId', this.scrollId, this.table_item_class)
+      // console.log('this.scrollId', this.scrollId, this.table_item_class)
       // 修改footer合计样式
       // const table = document.getElementsByClassName(this.chart.id)
       // for (let i = 0; i < table.length; i++) {
@@ -736,6 +755,10 @@ export default {
   .header_title{
     flex:1
   }
+}
+.table_new_header_notadapt {
+  display: flex;
+  align-items: center;
 }
 #scrollId{
   // background:#f99;

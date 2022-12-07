@@ -62,7 +62,7 @@
 <script>
 import {COLOR_PANEL, DEFAULT_LABEL } from '../../chart/chart'
 export default {
-  name: 'FocusSelector',
+  name: 'PopSelectorAntV',
   props: {
     param: {
       type: Object,

@@ -115,6 +115,8 @@ export const DEFAULT_SIZE = {
   caldTimelevel: -20,
   caldTimevertical: -20,
 
+  adaptWidth: true,
+  widthData: [],
 }
 export const DEFAULT_LABEL = {
   show: false,
@@ -244,7 +246,10 @@ export const DEFAULT_XAXIS_STYLE = {
     color: '#333333',
     fontSize: '12',
     rotate: 0,
-    formatter: '{value}'
+    formatter: '{value}',
+    width: 100,
+    overflow: 'none',
+    hideOverlap: false,
   },
   splitLine: {
     show: true,
@@ -318,7 +323,10 @@ export const DEFAULT_YAXIS_STYLE = {
     fontSize: '12',
     rotate: 0,
     formatter: '{value}',
-    fontFamily: ''
+    fontFamily: '',
+    width: 100,
+    overflow: 'none',
+    hideOverlap: false,
   },
   splitLine: {
     show: true,
@@ -1551,6 +1559,62 @@ export const BASE_MAP = {
       //     show: true
       //   },
       data: []
+    }
+  ]
+}
+
+export const BASE_BUBBLE_MAP = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  tooltip: {
+    trigger: 'item'
+  },
+  bmap: {
+    center: [104.114129, 37.550339],
+    zoom: 5,
+    roam: true,
+  },
+  series: [
+    {
+      name: '',
+      type: 'effectScatter',
+      coordinateSystem: 'bmap',
+      data: [
+        // {
+        //   "name": "招远",
+        //   "value": [
+        //     120.38,
+        //     37.35,
+        //     12
+        //   ]
+        // }
+      ],
+      symbol: 'circle',
+      symbolSize: 10,
+      encode: {
+        value: 2
+      },
+      showEffectOn: 'render',
+      rippleEffect: {
+        brushType: 'stroke'
+      },
+      label: {
+        formatter: '{b}',
+        position: 'right',
+        show: true
+      },
+      itemStyle: {
+        shadowBlur: 10,
+        shadowColor: '#333'
+      },
+      emphasis: {
+        scale: true
+      },
+      zlevel: 1
     }
   ]
 }

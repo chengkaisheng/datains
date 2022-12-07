@@ -40,7 +40,7 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_table',
     value: 'roll-elemnt',
     title: '滚动表格',
-    icon: 'table-normal'
+    icon: 'roll-elemnt'
   },
   // {
   //   render: 'antv',
@@ -207,7 +207,7 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_table',
     value: 'vertical-ele',
     title: '滚动表格',
-    icon: 'table-normal'
+    icon: 'vertical-ele'
   },
   {
     render: 'echarts',
@@ -256,8 +256,8 @@ export const TYPE_CONFIGS = [
     render: 'echarts',
     category: 'chart.chart_type_trend',
     value: 'line-polar',
-    title: '极坐标数值轴',
-    icon: 'line'
+    title: '极坐标折线图',
+    icon: 'line-polar'
   },
   {
     render: 'echarts',
@@ -307,21 +307,14 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_compare',
     value: 'bar-triangle',
     title: '三角柱状图',
-    icon: 'bar'
-  },
-  {
-    render: 'echarts',
-    category: 'chart.chart_type_compare',
-    value: 'bar-ranking',
-    title: '极坐标柱状图',
-    icon: 'bar'
+    icon: 'bar-triangle'
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
     value: 'bar-contrast',
     title: '对比柱状图',
-    icon: 'bar'
+    icon: 'bar-contrast'
   },
   // 暂时隐藏环形朱柱状图
   {
@@ -329,21 +322,21 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_compare',
     value: 'bar-annular',
     title: '环形柱状图',
-    icon: 'bar'
+    icon: 'bar-annular'
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
     value: 'bar-circular',
     title: '圆形柱状图',
-    icon: 'bar'
+    icon: 'bar-circular'
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
     value: 'bar-double',
     title: '双向柱状图',
-    icon: 'bar'
+    icon: 'bar-double'
   },
   // circular
   {
@@ -358,14 +351,21 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_compare',
     value: 'bar-stack-part',
     title: 'chart.chart_bar_stack_part',
-    icon: 'bar-stack'
+    icon: 'bar-stack-part'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-ranking',
+    title: '极坐标扇形图',
+    icon: 'bar-ranking'
   },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
     value: 'bar-polarStack',
-    title: '极坐标堆叠柱状图',
-    icon: 'bar-stack'
+    title: '极坐标堆叠扇形图',
+    icon: 'bar-polarStack'
   },
   {
     render: 'echarts',
@@ -385,7 +385,7 @@ export const TYPE_CONFIGS = [
     render: 'echarts',
     category: 'chart.chart_type_compare',
     value: 'pictorial-bar',
-    title: 'chart.chart_column',
+    title: 'chart.pictorial_bar',
     icon: 'pictorial-bar'
   },
   {
@@ -459,19 +459,19 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_funnel',
     icon: 'funnel'
   },
-  {
-    render: 'echarts',
-    category: 'chart.chart_type_relation',
-    value: 'contrast-funnel',
-    title: 'chart.chart_contrast_funnel',
-    icon: 'contrast-funnel'
-  },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_relation',
+  //   value: 'contrast-funnel',
+  //   title: 'chart.chart_contrast_funnel',
+  //   icon: 'contrast-funnel'
+  // },
   {
     render: 'echarts',
     category: 'chart.chart_type_distribute',
     value: 'clock-pie',
     title: '凸块饼图',
-    icon: 'pie'
+    icon: 'clock-pie'
   },
 
   {
@@ -481,27 +481,50 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_map',
     icon: 'map'
   },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_space',
+  //   value: 'map_area',
+  //   title: 'chart.chart_map_area',
+  //   icon: 'map_area'
+  // },
   {
     render: 'echarts',
     category: 'chart.chart_type_space',
-    value: '3dsurface',
-    title: 'chart.chart_3d_surface',
-    icon: '3dsurface'
+    value: 'map_bubble',
+    title: 'chart.chart_bmap_bubble',
+    icon: 'map_bubble'
   },
-  {
-    render: 'echarts',
-    category: 'chart.chart_type_space',
-    value: '3d-column',
-    title: 'chart.chart_3d_column',
-    icon: '3d-column'
-  },
-  {
-    render: 'echarts',
-    category: 'chart.chart_type_space',
-    value: '3d-scatter',
-    title: 'chart.chart_3dscatter',
-    icon: '3d-scatter'
-  },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_space',
+  //   value: 'map_column',
+  //   title: 'chart.chart_map_column',
+  //   icon: 'map_column'
+  // },
+
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_space',
+  //   value: '3dsurface',
+  //   title: 'chart.chart_3d_surface',
+  //   icon: '3dsurface'
+  // },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_space',
+  //   value: '3d-column',
+  //   title: 'chart.chart_3d_column',
+  //   icon: '3d-column'
+  // },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_space',
+  //   value: '3d-scatter',
+  //   title: 'chart.chart_3dscatter',
+  //   icon: '3d-scatter'
+  // },
+
   // {
   //   render: 'echarts',
   //   category: 'chart.chart_type_space',
@@ -530,13 +553,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_graph',
     icon: 'graph'
   },
-  {
-    render: 'echarts',
-    category: 'chart.chart_type_distribute',
-    value: 'calendar',
-    title: 'chart.chart_calendar_pie',
-    icon: 'calendar'
-  },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_distribute',
+  //   value: 'calendar',
+  //   title: 'chart.chart_calendar_pie',
+  //   icon: 'calendar'
+  // },
   
   // {
   //   render: 'echarts',
@@ -566,7 +589,7 @@ export const TYPE_CONFIGS = [
     render: 'highcharts',
     category: 'chart.chart_type_compare',
     value: '3dcolumn',
-    title: 'chart.chart_column',
+    title: 'chart.chart_3d_column',
     icon: '3dcolumn'
   },
   {
