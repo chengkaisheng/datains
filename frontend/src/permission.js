@@ -124,15 +124,16 @@ export const loadMenus = (next, to) => {
 
     // Add Router start: hard code - add portal
     const portalRouter = {
-      children: [{
-        component: () => import('@/views/portal/list'),
-        isPlugin: false,
-        name: 'portal-list',
-        noLayout: null,
-        path: 'list',
-        type: 1,
-        permission: null
-      }
+      children: [
+        {
+          component: () => import('@/views/portal/list'),
+          isPlugin: false,
+          name: 'portal-list',
+          noLayout: null,
+          path: 'list',
+          type: 1,
+          permission: null
+        }
       // {
       //   // tipsPage
       //   component: () => import('@/views/portal/tipsPage'),
@@ -159,6 +160,23 @@ export const loadMenus = (next, to) => {
       redirect: '/portal/list'
     }
     asyncRouter.splice(4, 0, portalRouter)
+
+    // const fillingRouter = {
+    //   component: () => import('@/views/system/filling/index.vue'),
+    //   hidden:false,
+    //   meta: {
+    //     icon: 'el-icon-tickets',
+    //     title: '数据填报',
+    //     name: 'filling',
+    //     noLayout: null,
+    //     pid: 0,
+    //     path: '/filling/index',
+    //     permission: null
+    //   },
+    //   children: []
+    // }
+    // asyncRouter.splice(5,0, fillingRouter)
+
     console.log('asyncRouter', asyncRouter)
     // Add Router end
 

@@ -30,6 +30,7 @@ export default {
     ]),
     routes() {
       // return this.$router.options.routes
+      console.log('路由配置数据',this.$store.state.permission.currentRoutes.children)
       return this.$store.state.permission.currentRoutes.children
     },
     activeMenu() {
