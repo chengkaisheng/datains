@@ -38,7 +38,7 @@
             class="table_bode_li" 
             @click.stop="showDialogInfo(items,inde)"
           >
-            <div v-for="(item,index) in fields" :key="index" :class="adaptWidth?'body_info': ''" :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
+            <div v-for="(item,index) in fields" :key="index" :class="adaptWidth?'body_info': 'body_info1'" :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
               <!-- {{ inde }} -->
               {{ items[item.datainsName] }}
             </div>
@@ -759,6 +759,12 @@ export default {
 .table_new_header_notadapt {
   display: flex;
   align-items: center;
+
+  .header_title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 }
 #scrollId{
   // background:#f99;
@@ -843,6 +849,11 @@ export default {
   // .child{
 
 	// }
+}
+.body_info1 {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
  .hidden-tbody.el-table {
     height: 34px;
