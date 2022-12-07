@@ -84,6 +84,8 @@ export default {
     ]),
     textStyle() {
       const style = {}
+      console.log('textStyle，，，',this.canvasStyleData)
+      // style.whiteSpace = 'pre-line'  // 可自定义设置这个就可以自动换行
       style.fontFamily = this.canvasStyleData.fontFamily
       return style
     }
@@ -181,6 +183,9 @@ export default {
         height: 100%;
         outline: none;
 
+        // word-wrap:break-word;
+        // word-break:break-all;
+        
     }
 
     .canEdit {

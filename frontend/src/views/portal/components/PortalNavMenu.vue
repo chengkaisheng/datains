@@ -249,6 +249,7 @@ export default {
   },
 
   mounted() {
+    console.log('PortalNavMenu，，，')
     const that = this
     function getTreedDataFirstTrendId(treeData) {
       for (let i = 0; i < treeData.length; i++) {

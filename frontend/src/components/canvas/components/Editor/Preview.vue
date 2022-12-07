@@ -339,6 +339,7 @@ export default {
     }
   },
   mounted() {
+    console.log('Preview')
     this._isMobile()
     this.onsizeKey = this.inScreen
     const _this = this

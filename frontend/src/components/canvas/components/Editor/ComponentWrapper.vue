@@ -46,6 +46,7 @@
         :element="config"
         :search-count="searchCount"
         :h="config.style.height"
+        :in-screen="inScreen"
         :edit-mode="'preview'"
         :filters="filters"
         :terminal="terminal"
