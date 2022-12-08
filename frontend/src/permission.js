@@ -122,7 +122,7 @@ export const loadMenus = (next, to) => {
       hidden: true
     })
 
-    // Add Router start: hard code - add portal
+    // Add Router start: hard code - add portal  加顶部导航栏菜单
     const portalRouter = {
       children: [
         {
