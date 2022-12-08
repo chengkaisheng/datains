@@ -202,6 +202,8 @@ export default {
         return 'MySQL'
       } else if (type === 'sqlServer') {
         return 'SQL Server'
+      } else if (type === 'dm8') {
+        return 'DM8'
       } else if (type === 'oracle') {
         return 'Oracle'
       } else if (type === 'pg') {
