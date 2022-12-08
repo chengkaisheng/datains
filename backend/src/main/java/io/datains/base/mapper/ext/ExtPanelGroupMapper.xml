@@ -192,7 +192,7 @@
 
     <insert id="copyPanelView">
     INSERT INTO panel_view ( id, panel_id, chart_view_id ) SELECT
-    uuid(),
+    newid(),
     #{panelId},
     chart_view_id
     FROM

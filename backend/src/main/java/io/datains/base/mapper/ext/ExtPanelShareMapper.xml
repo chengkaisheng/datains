@@ -47,9 +47,7 @@
             #{roleId}
         </foreach>
         and s.type = 1 )
-        <if test="orderByClause == null">
-            order by s.create_time desc
-        </if>
+
 
     </select>
 
@@ -58,8 +56,6 @@
         from panel_share s
         left join panel_group g on g.id = s.panel_group_id
         where ( s.granter is not null and s.granter = #{userName} ) or ( s.granter is null and g.create_by = #{userName} )
-        order by s.create_time desc
-
     </select>
 
     <select id="queryWithResource" parameterType="io.datains.controller.request.panel.PanelShareSearchRequest" resultMap="io.datains.base.mapper.PanelShareMapper.BaseResultMap">

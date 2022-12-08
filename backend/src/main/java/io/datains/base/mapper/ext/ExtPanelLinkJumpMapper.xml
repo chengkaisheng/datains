@@ -28,8 +28,8 @@
 
     <select id="getLinkJumpInfo" resultMap="LinkJumpInfoMap">
         SELECT
-            dataset_table_field.id AS 'source_field_id',
-            dataset_table_field.NAME AS 'source_field_name',
+            dataset_table_field.id AS source_field_id,
+            dataset_table_field.NAME AS source_field_name,
             panel_link_jump_info.id,
             panel_link_jump_info.link_jump_id,
             panel_link_jump_info.link_type,
@@ -59,7 +59,7 @@
         SELECT
             chart_view.id AS source_view_id,
             panel_link_jump.id,
-            #{panelId} as 'source_panel_id',
+            #{panelId} as source_panel_id,
             panel_link_jump.link_jump_info,
             ifnull( panel_link_jump.checked, 0 ) AS checked
         FROM
@@ -74,7 +74,7 @@
        SELECT
             chart_view.id AS source_view_id,
             panel_link_jump.id,
-            #{panelId} as 'source_panel_id',
+            #{panelId} as source_panel_id,
             panel_link_jump.link_jump_info,
             ifnull( panel_link_jump.checked, 0 ) AS checked
         FROM
@@ -121,29 +121,29 @@
 
 
     <delete id="deleteJumpTargetViewInfoWithPanel" >
-       DELETE ljtv
-        FROM
-            panel_link_jump_target_view_info ljtv,
-            panel_link_jump_info lji,
-            panel_link_jump lj
-        WHERE
-            ljtv.link_jump_info_id = lji.id
-            AND lji.link_jump_id = lj.id
-            AND (lj.source_panel_id = #{panelId} or lji.target_panel_id = #{panelId})
+        delete from panel_link_jump_target_view_info
+        where link_jump_info_id in (select ljtv.link_jump_info_id
+                                    from panel_link_jump_target_view_info ljtv
+                                             inner join panel_link_jump_info lji
+                                                        on ljtv.link_jump_info_id = lji.id
+                                             inner join panel_link_jump lj
+                                                        on lji.link_jump_id = lj.id
+                                    where (lj.source_panel_id = #{panelId} or lji.target_panel_id = #{panelId}))
 	</delete>
 
     <delete id="deleteJumpInfoWithPanel" >
-        DELETE lji
-        FROM
-            panel_link_jump_info lji,
-            panel_link_jump lj
-        WHERE
-            lji.link_jump_id = lj.id
-            AND (lj.source_panel_id = #{panelId} or  lji.target_panel_id = #{panelId})
+        DELETE from panel_link_jump_info
+        where link_jump_id in (
+            select lji.link_jump_id
+            from panel_link_jump_info lji
+                     inner join panel_link_jump lj
+                                on lji.link_jump_id = lj.id
+            where (lj.source_panel_id = #{panelId} or  lji.target_panel_id = #{panelId})
+        )
 	</delete>
 
     <delete id="deleteJumpWithPanel" >
-        DELETE lj
+        DELETE
         FROM
             panel_link_jump lj
         WHERE
@@ -152,8 +152,8 @@
 
     <select id="getTargetPanelJumpInfo" resultMap="AllJumpMap">
       SELECT DISTINCT
-            concat( lj.source_view_id, '#', lji.source_field_id ) AS 'sourceInfo',
-            concat( jtvi.target_view_id, '#', jtvi.target_field_id ) AS 'targetInfo'
+            concat( lj.source_view_id, '#', lji.source_field_id ) AS sourceInfo,
+            concat( jtvi.target_view_id, '#', jtvi.target_field_id ) AS targetInfo
         FROM
             panel_link_jump_target_view_info jtvi
             LEFT JOIN panel_link_jump_info lji ON jtvi.link_jump_info_id = lji.id
@@ -168,7 +168,7 @@
     <insert id="copyLinkJump" >
         insert into panel_link_jump (id, source_panel_id, source_view_id, link_jump_info, checked, copy_from, copy_id)
             select
-            UUID() as id,
+            newid() as id,
             panel_view_copy.t_panel_id as source_panel_id,
             panel_view_copy.t_chart_view_id as source_view_id,
             panel_link_jump.link_jump_info,
@@ -203,7 +203,7 @@
             copy_from,
             copy_id
         ) SELECT
-        uuid() AS id,
+        newid() AS id,
         plj_copy.t_id,
         link_type,
         jump_type,
@@ -236,7 +236,7 @@
             copy_from,
             copy_id
         ) SELECT
-        uuid() AS id,
+        newid() AS id,
         plji_copy.t_id AS link_jump_info_id,
         target_view_id,
         target_field_id,

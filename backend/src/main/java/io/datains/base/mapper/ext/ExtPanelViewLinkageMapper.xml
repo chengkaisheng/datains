@@ -102,8 +102,8 @@
     <select id="getPanelAllLinkageInfo" resultMap="AllLinkageMap">
       SELECT
         distinct
-        CONCAT( panel_view_linkage.source_view_id, '#', panel_view_linkage_field.source_field ) AS 'sourceInfo',
-        CONCAT( panel_view_linkage.target_view_id, '#', panel_view_linkage_field.target_field ) AS 'targetInfo'
+        CONCAT( panel_view_linkage.source_view_id, '#', panel_view_linkage_field.source_field ) AS sourceInfo,
+        CONCAT( panel_view_linkage.target_view_id, '#', panel_view_linkage_field.target_field ) AS targetInfo
         FROM
             panel_view_linkage
             LEFT JOIN panel_view_linkage_field ON panel_view_linkage.id = panel_view_linkage_field.linkage_id
@@ -124,7 +124,7 @@
                 copy_from,
                 copy_id
             ) SELECT
-            UUID() AS id,
+            newid() AS id,
             pv_source_copy.t_panel_id AS panel_id,
             pv_source_copy.t_chart_view_id AS source_view_id,
             pv_target_copy.t_chart_view_id target_view_id,
@@ -175,7 +175,7 @@
             copy_from,
             copy_id
         ) SELECT
-        uuid() AS id,
+        newid() AS id,
         pvlf_copy.t_id,
         source_field,
         target_field,
