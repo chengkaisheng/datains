@@ -89,6 +89,18 @@ export default {
               arr.push({value: 100})
             })
           }
+
+          let avg = 100;
+          if(this.curComponent && this.curComponent.style &&this.curComponent.style.width) {
+            avg = parseFloat(this.curComponent.style.width / arr.length).toFixed(2)
+            console.log('avgggggggggggg',avg)
+          }
+          arr.map(item => {
+            item.value = avg
+          })
+
+          console.log('arrrrrrrrr',arr)
+
           if(this.widthForm.widthData === undefined || this.widthForm.widthData.length === 0) {
             this.widthForm.widthData = arr
           } else {
@@ -99,10 +111,13 @@ export default {
                 if(index < w.length) {
                   arr1.push(w[index])
                 } else {
-                  arr1.push({value: 100})
+                  arr1.push({value: avg})
                 }
               })
+              console.log('arr11111111111111',arr1)
               this.widthForm.widthData = arr1
+
+              this.changeBarSizeCase()
             }
           }
         }
