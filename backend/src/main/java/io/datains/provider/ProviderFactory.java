@@ -34,6 +34,8 @@ public class ProviderFactory implements ApplicationContextAware {
     public static QueryProvider getQueryProvider(String type) {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
         switch (datasourceType) {
+            case dm8:
+            	 return context.getBean("dm8Query", QueryProvider.class);
             case mysql:
             case mariadb:
             case ds_doris:

@@ -127,7 +127,7 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.datains.base.domain.Datasource">
-    insert into datasource (id, name, desc, 
+    insert into datasource (id, name, "DESC",
       type, create_time, update_time, 
       create_by, status, configuration
       )
@@ -213,7 +213,7 @@
         name = #{record.name,jdbcType=VARCHAR},
       </if>
       <if test="record.desc != null">
-        desc = #{record.desc,jdbcType=VARCHAR},
+        "DESC" = #{record.desc,jdbcType=VARCHAR},
       </if>
       <if test="record.type != null">
         type = #{record.type,jdbcType=VARCHAR},
@@ -242,7 +242,7 @@
     update datasource
     set id = #{record.id,jdbcType=VARCHAR},
       name = #{record.name,jdbcType=VARCHAR},
-      desc = #{record.desc,jdbcType=VARCHAR},
+      "DESC" = #{record.desc,jdbcType=VARCHAR},
       type = #{record.type,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT},
@@ -257,7 +257,7 @@
     update datasource
     set id = #{record.id,jdbcType=VARCHAR},
       name = #{record.name,jdbcType=VARCHAR},
-      desc = #{record.desc,jdbcType=VARCHAR},
+      "DESC" = #{record.desc,jdbcType=VARCHAR},
       type = #{record.type,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT},
@@ -274,7 +274,7 @@
         name = #{name,jdbcType=VARCHAR},
       </if>
       <if test="desc != null">
-        desc = #{desc,jdbcType=VARCHAR},
+        "DESC" = #{desc,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
         type = #{type,jdbcType=VARCHAR},
@@ -300,7 +300,7 @@
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.datains.base.domain.Datasource">
     update datasource
     set name = #{name,jdbcType=VARCHAR},
-      desc = #{desc,jdbcType=VARCHAR},
+      "DESC" = #{desc,jdbcType=VARCHAR},
       type = #{type,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
