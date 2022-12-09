@@ -61,7 +61,7 @@ public class DatasourceService {
     private CommonThreadPool commonThreadPool;
     @Resource
     private SysAuthService sysAuthService;
-    private static List<String> dsTypes = Arrays.asList("TiDB", "StarRocks", "excel", "mysql", "hive", "impala", "mariadb", "ds_doris", "pg", "sqlServer", "oracle", "mongo", "ck", "db2", "es", "redshift", "api");
+    private static List<String> dsTypes = Arrays.asList("TiDB", "StarRocks", "excel", "mysql", "hive", "impala", "mariadb", "ds_doris", "pg", "sqlServer", "oracle", "mongo", "ck", "db2", "es", "redshift", "api", "dm8");
 
     @DeCleaner(DePermissionType.DATASOURCE)
     public Datasource addDatasource(Datasource datasource) throws Exception{

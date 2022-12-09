@@ -296,6 +296,13 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
+
+        <!-- 支持达梦8数据源 -->
+        <dependency>
+            <groupId>com.dm</groupId>
+            <artifactId>DmJdbcDriver</artifactId>
+            <version>1.8.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -474,7 +481,8 @@
                                         </copy>
 
 
-                                        <copy file="../mobile/dist/index.html" tofile="src/main/resources/templates/app.html" />
+                                        <copy file="../mobile/dist/index.html"
+                                              tofile="src/main/resources/templates/app.html"/>
 
 
                                     </target>
@@ -511,6 +519,15 @@
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
             </snapshots>
+        </repository>
+
+        <repository>
+            <id>maven-releases</id>
+            <name>Local Nexus Repository</name>
+            <url>http://183.194.64.166:9092/repository/maven-releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
     </repositories>
 
