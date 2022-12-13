@@ -30,7 +30,7 @@ export default {
     ]),
     routes() {
       // return this.$router.options.routes
-      console.log('路由配置数据',this.$store.state.permission)
+      console.log('路由配置数据',this.$store.state.permission.currentRoutes)
       // if(this.$store.state.permission.currentPath === "/system/user" ) {
       //   this.$store.state.permission.currentRoutes.children.push({
       //     name: 'filling',
