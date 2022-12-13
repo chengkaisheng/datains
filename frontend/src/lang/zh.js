@@ -753,6 +753,8 @@ export default {
     wordMax: '字体最大值',
     wordShape: '词云形状',
     dragEnable: '拖动启用',
+    graphLayout: '气泡布局',
+    rotateLabel: '标签旋转',
     nodalRepulsion: '节点斥力',
     nodeSpacing: '节点间距',
     centripetalGravitation: '向心引力',

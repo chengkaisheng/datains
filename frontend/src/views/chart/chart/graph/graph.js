@@ -34,9 +34,11 @@ export function baseGraphOption(chart_option, chart,cstyle = {}) {
           chart_option.series[0].label.labelLine = {show: false}
 
           chart_option.series[0].roam = customAttr.label.dragEnable !== undefined? customAttr.label.dragEnable : false
+          chart_option.series[0].layout = customAttr.label.layoutType !== undefined? customAttr.label.layoutType : 'force'
           chart_option.series[0].force.repulsion = customAttr.label.repulsion? customAttr.label.repulsion : 100
           chart_option.series[0].force.edgeLength = customAttr.label.edgeLength? customAttr.label.edgeLength : 30
           chart_option.series[0].force.gravity = customAttr.label.gravity? customAttr.label.gravity : 0.1
+          chart_option.series[0].circular.rotateLabel = customAttr.label.rotateLabel !==undefined? customAttr.label.rotateLabel : false
 
           chart_option.series[0].scaleLimit.max = customAttr.label.scaleLimitMax? customAttr.label.scaleLimitMax : 0
           chart_option.series[0].scaleLimit.min = customAttr.label.scaleLimitMin? customAttr.label.scaleLimitMin : 0

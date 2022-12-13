@@ -5,15 +5,29 @@
         <el-form-item :label="$t('chart.dragEnable')" class="form-item">
           <el-checkbox v-model="focusForm.dragEnable" @change="changeFocusCase">启用</el-checkbox>
         </el-form-item>
-        <el-form-item :label="$t('chart.nodalRepulsion')" class="form-item">
-          <el-slider v-model="focusForm.repulsion" show-input :show-input-controls="false" input-size="mini" :min="50" :max="1000" @change="changeFocusCase" />
+        <el-form-item :label="$t('chart.graphLayout')" class="form-item">
+          <el-select v-model="focusForm.layoutType" @change="changeFocusCase">
+            <el-option label="环形布局" value="circular"></el-option>
+            <el-option label="力引导布局" value="force"></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.nodeSpacing')" class="form-item">
-          <el-slider v-model="focusForm.edgeLength" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeFocusCase" />
-        </el-form-item>
-        <el-form-item :label="$t('chart.centripetalGravitation')" class="form-item">
-          <el-slider v-model="focusForm.gravity" show-input :show-input-controls="false" input-size="mini" :min="0" :step="0.1" :max="1" @change="changeFocusCase" />
-        </el-form-item>
+        <div v-if="focusForm.layoutType === 'force'">
+          <el-form-item :label="$t('chart.nodalRepulsion')" class="form-item">
+            <el-slider v-model="focusForm.repulsion" show-input :show-input-controls="false" input-size="mini" :min="50" :max="1000" @change="changeFocusCase" />
+          </el-form-item>
+          <el-form-item :label="$t('chart.nodeSpacing')" class="form-item">
+            <el-slider v-model="focusForm.edgeLength" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeFocusCase" />
+          </el-form-item>
+          <el-form-item :label="$t('chart.centripetalGravitation')" class="form-item">
+            <el-slider v-model="focusForm.gravity" show-input :show-input-controls="false" input-size="mini" :min="0" :step="0.1" :max="1" @change="changeFocusCase" />
+          </el-form-item>
+        </div>
+        <div v-if="focusForm.layoutType === 'circular'">
+          <el-form-item :label="$t('chart.rotateLabel')" class="form-item">
+            <el-checkbox v-model="focusForm.rotateLabel" @change="changeFocusCase">启用</el-checkbox>
+          </el-form-item>
+        </div>
+
         <el-form-item :label="$t('chart.reductionRate')" class="form-item">
           <el-slider v-model="focusForm.reductionRate" show-input :show-input-controls="false" input-size="mini" :min="5" :step="5" :max="100" @change="changeFocusCase" />
         </el-form-item>

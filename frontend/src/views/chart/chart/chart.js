@@ -136,6 +136,8 @@ export const DEFAULT_LABEL = {
   progressColor: '#409EFF',
 
   dragEnable: false,
+  layoutType: 'force',
+  rotateLabel: false,
   repulsion: 100,
   edgeLength: 10,
   gravity: 0.1,
@@ -1821,6 +1823,9 @@ export const BASE_GRAPH = {
         repulsion: 100,
         edgeLength: 10,
         gravity: 0.1
+      },
+      circular: {
+        rotateLabel: false,
       },
       scaleLimit: {
         max: null,
