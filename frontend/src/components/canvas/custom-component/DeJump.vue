@@ -77,6 +77,7 @@ export default {
       } else {
         style.backgroundColor = this.element.options.jumpBgColor
       }
+      style.color = this.element.options.fontColor
       // console.log('options',this.element.options,style)
       style.marginTop = (this.element.style.height - 36) + 'px'
       // style.lineHeight = this.element.style.height + 'px'
@@ -140,18 +141,30 @@ export default {
 .jump_sel /deep/ .el-input--medium .el-input__inner {
   background-color: transparent;
   border-color: transparent;
-  color: white;
+  color: inherit;
 }
 .jump_sel /deep/ .el-input__inner::placeholder{
-  color: white;
+  color: inherit;
 }
 
-/deep/ .el-select__caret::before {
-  color: white;
+// .el-select-dropdown {
+//   background-color: transparent;
+// }
+
+.jump_sel ::v-deep .el-input__suffix {
+  color: inherit;
 }
-/deep/ .el-select-dropdown {
-  background-color: transparent !important;
-  border-color: transparent !important;
+.jump_sel ::v-deep .el-input__suffix-inner {
+  color: inherit;
 }
+/deep/ .el-select .el-input .el-select__caret {
+  color: inherit;
+}
+
+
+// /deep/ .el-select-dropdown {
+//   background-color: transparent !important;
+//   border-color: transparent !important;
+// }
 
 </style>

@@ -38,6 +38,11 @@ export const COMMON_SELECT_FRAME = {
   color: '#ffffff',
   backImg: null,
   alpha: 100,
+  fontColor: '#000000',
+  checkBgType: 'color',
+  checkColor: '#000000',
+  checkBgColor: '#FFFFFF',
+  checkBgImg: null,
 }
 
 // 空组件仪表板样式
@@ -633,6 +638,7 @@ const list = [
       nameBgColor: '#EEEEEE',
       nameBgImg: '',
       bgType: 'color',
+      fontColor: '#000000',
       jumpBgColor: '#EEEEEE',
       jumpBgImg: '',
       placeholder: '',

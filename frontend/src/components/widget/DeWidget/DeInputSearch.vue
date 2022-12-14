@@ -3,12 +3,14 @@
   <el-input
     v-if="element.options!== null && element.options.attrs!==null"
     v-model="value"
+    class="input-search"
     resize="vertical"
     :placeholder="$t(element.options.attrs.placeholder)"
     :size="size"
     @input="valueChange"
     @keypress.enter.native="search"
     @dblclick="setEdit"
+    :style="inputStyle"
   >
 
     <el-button slot="append" icon="el-icon-search" @click="search" />
@@ -49,6 +51,24 @@ export default {
     },
     manualModify() {
       return !!this.element.options.manualModify
+    },
+    inputStyle() {
+      const style = {}
+      console.log('inputstyle',this.element)
+      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        if(this.element.commonSelectFrame.backType === 'Image') {
+          if(this.element.commonSelectFrame.backImg !== '') {
+            style.backgroundImage = `url(${this.element.commonSelectFrame.backImg})`
+          }
+          style.backgroundRepeat = 'no-repeat'
+          style.backgroundSize = '100% 100%'
+        } else  {
+          style.backgroundColor = this.element.commonSelectFrame.color
+        }
+        style.color = this.element.commonSelectFrame.fontColor
+      }
+      
+      return style
     }
   },
   watch: {
@@ -112,5 +132,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.input-search ::v-deep .el-input__inner {
+  background-color: transparent;
+  color: inherit;
+}
+.input-search ::v-deep .el-input__inner::placeholder {
+  color: inherit;
+}
+.input-search ::v-deep .el-input-group__append, .el-input-group__prepend {
+  background-color: transparent;
+  color: inherit;
+}
+//  .el-button .el-button--default .el-button--medium 
 </style>

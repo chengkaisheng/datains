@@ -20,7 +20,7 @@
     <el-option
       v-for="item in datas"
       :key="item[element.options.attrs.key]"
-      :style="{width:selectOptionWidth}"
+      :style="optionStyle"
       :label="item[element.options.attrs.label]"
       :value="item[element.options.attrs.value]"
     >
@@ -92,7 +92,25 @@ export default {
         } else  {
           style.backgroundColor = this.element.commonSelectFrame.color
         }
+        style.color = this.element.commonSelectFrame.fontColor
       }
+      return style
+    },
+    optionStyle() {
+      const style = {}
+      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable){
+        if(this.element.commonSelectFrame.checkBgType === 'Image') {
+          if(this.element.commonSelectFrame.checkBgImg !== '' && this.element.commonSelectFrame.checkBgImg !== null) {
+            style.backgroundImage = `url(${this.element.commonSelectFrame.checkBgImg})`
+          }
+          style.backgroundRepeat = 'no-repeat'
+          style.backgroundSize = '100% 100%'
+        } else {
+          style.backgroundColor = this.element.commonSelectFrame.checkBgColor
+        }
+        style.color = this.element.commonSelectFrame.checkColor
+      }
+      console.log('optionstyle,,,',style)
       return style
     }
   },
@@ -259,9 +277,20 @@ export default {
 <style lang="scss" scoped>
 .deSelect ::v-deep .el-input__inner {
   background-color: transparent;
+  color: inherit;
+}
+.deSelect ::v-deep .el-input__inner::placeholder {
+  color: inherit;
 }
 .sel_background {
   background-color: transparent;
   border-color: transparent;
 }
+.deSelect ::v-deep .el-input__suffix {
+  color: inherit;
+}
+.deSelect ::v-deep .el-input__suffix-inner {
+  color: inherit;
+}
+
 </style>

@@ -3,118 +3,127 @@
     <p style="font-size: 18px;">跳转设置</p>
     <div style="margin-top: 10px;">
       <el-row class="jump_row">
-        <el-col :span="12">
-          <el-col :span="6" class="jump_col_4">
-            名称颜色:
-          </el-col>
-          <el-col :span="18">
-            <el-color-picker v-model="curComponent.options.color" class="color-picker-style" :predefine="predefineColors" />
-          </el-col>
-        </el-col>
         <el-col :span="12" style="margin-bottom: 10px;">
-          <el-col :span="6" class="jump_col_4">
-            展示内容:
+          <el-col class="col_bottom">
+            <el-col :span="6" class="jump_col_4">
+              展示内容:
+            </el-col>
+            <el-col :span="18">
+              <el-input v-model="curComponent.options.placeholder" size="small"></el-input>
+            </el-col>
           </el-col>
-          <el-col :span="18">
-            <el-input v-model="curComponent.options.placeholder" size="small"></el-input>
+          <el-col class="col_bottom">
+            <el-col :span="6" class="jump_col_4">
+              展示字体:
+            </el-col>
+            <el-col :span="18">
+              <el-color-picker v-model="curComponent.options.fontColor" class="color-picker-style" :predefine="predefineColors" />
+            </el-col>
+          </el-col>
+          <el-col >
+            <el-col :span="6" class="jump_col_4">
+              框背景:
+            </el-col>
+            <el-col :span="18">
+              <el-row>
+                <el-radio-group v-model="curComponent.options.bgType" style="width:100%;">
+                  <el-col :span="10">
+                    <el-radio label="color">颜色</el-radio>
+                  </el-col>
+                  <el-col :span="14">
+                    <el-radio label="back">图片</el-radio>
+                  </el-col>
+                </el-radio-group>
+              </el-row>
+              <el-row style="margin-top: 10px;">
+                <el-col :span="10">
+                  <el-color-picker v-model="curComponent.options.jumpBgColor" class="color-picker-style" :predefine="predefineColors" />
+                </el-col>
+                <el-col :span="14" v-if="updataUrl === ''">
+                  <el-upload
+                    action=""
+                    accept=".jpeg,.jpg,.png,.gif,.svg"
+                    class="avatar-uploader"
+                    list-type="picture-card"
+                    :class="{disabled:uploadDisabled}"
+                    :on-preview="handlePictureCardPreview"
+                    :on-remove="handleRemove"
+                    :http-request="upload"
+                    :file-list="fileList"
+                    :on-change="onChange"
+                    :limit="1"
+                  >
+                    <i class="el-icon-plus" />
+                  </el-upload>
+                  <span>
+                    <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+                  </span>
+                </el-col>
+                <el-col :span="12" v-else>
+                  <div style="width: 100%;overflow-y:scroll;position: relative;">
+                    <img :src="updataUrl" alt="" style="width: 100%"/>
+                    <i class="el-icon-delete del_img" @click="handleRemove"></i>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
           </el-col>
         </el-col>
         <el-col :span="12">
-          <el-col :span="6" class="jump_col_4">
-            名称背景:
+          <el-col class="col_bottom">
+            <el-col :span="6" class="jump_col_4">
+              选项字体:
+            </el-col>
+            <el-col :span="18">
+              <el-color-picker v-model="curComponent.options.color" class="color-picker-style" :predefine="predefineColors" />
+            </el-col>
           </el-col>
-          <el-col :span="18">
-            <el-row>
-              <el-radio-group v-model="curComponent.options.nameType" style="width:100%;">
-                <el-col :span="11">
-                  <el-radio label="color">颜色</el-radio>
+          <el-col>
+            <el-col :span="6" class="jump_col_4">
+              选项背景:
+            </el-col>
+            <el-col :span="18">
+              <el-row>
+                <el-radio-group v-model="curComponent.options.nameType" style="width:100%;">
+                  <el-col :span="8">
+                    <el-radio label="color">颜色</el-radio>
+                  </el-col>
+                  <el-col :span="16">
+                    <el-radio label="back">图片</el-radio>
+                  </el-col>
+                </el-radio-group>
+              </el-row>
+              <el-row style="margin-top: 10px;">
+                <el-col :span="8">
+                  <el-color-picker v-model="curComponent.options.nameBgColor" class="color-picker-style" :predefine="predefineColors" />
                 </el-col>
-                <el-col :span="13">
-                  <el-radio label="back">图片</el-radio>
+                <el-col :span="16" v-if="nameUrl === ''">
+                  <el-upload
+                    action=""
+                    accept=".jpeg,.jpg,.png,.gif,.svg"
+                    class="avatar-uploader"
+                    list-type="picture-card"
+                    :http-request="upload"
+                    :file-list="nameList"
+                    :on-change="onNameChange"
+                    :limit="1"
+                  >
+                    <i class="el-icon-plus" />
+                  </el-upload>
+                  <span>
+                    <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+                  </span>
                 </el-col>
-              </el-radio-group>
-            </el-row>
-            <el-row style="margin-top: 10px;">
-              <el-col :span="11">
-                <el-color-picker v-model="curComponent.options.nameBgColor" class="color-picker-style" :predefine="predefineColors" />
-              </el-col>
-              <el-col :span="13" v-if="nameUrl === ''">
-                <el-upload
-                  action=""
-                  accept=".jpeg,.jpg,.png,.gif,.svg"
-                  class="avatar-uploader"
-                  list-type="picture-card"
-                  :http-request="upload"
-                  :file-list="nameList"
-                  :on-change="onNameChange"
-                  :limit="1"
-                >
-                  <i class="el-icon-plus" />
-                </el-upload>
-                <span>
-                  <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
-                </span>
-              </el-col>
-              <el-col :span="12" v-else>
-                <div style="width: 100%;overflow-y:scroll;position: relative;">
-                  <img :src="nameUrl" alt="" style="width: 100%"/>
-                  <i class="el-icon-delete del_img" @click="handleNameRemove"></i>
-                </div>
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-col>
-        <el-col :span="12">
-          <el-col :span="6" class="jump_col_4">
-            背景:
-          </el-col>
-          <el-col :span="18">
-            <el-row>
-              <el-radio-group v-model="curComponent.options.bgType" style="width:100%;">
-                <el-col :span="12">
-                  <el-radio label="color">颜色</el-radio>
+                <el-col :span="12" v-else>
+                  <div style="width: 100%;overflow-y:scroll;position: relative;">
+                    <img :src="nameUrl" alt="" style="width: 100%"/>
+                    <i class="el-icon-delete del_img" @click="handleNameRemove"></i>
+                  </div>
                 </el-col>
-                <el-col :span="12">
-                  <el-radio label="back">图片</el-radio>
-                </el-col>
-              </el-radio-group>
-            </el-row>
-            <el-row style="margin-top: 10px;">
-              <el-col :span="12">
-                <el-color-picker v-model="curComponent.options.jumpBgColor" class="color-picker-style" :predefine="predefineColors" />
-              </el-col>
-              <el-col :span="12" v-if="updataUrl === ''">
-                <el-upload
-                  action=""
-                  accept=".jpeg,.jpg,.png,.gif,.svg"
-                  class="avatar-uploader"
-                  list-type="picture-card"
-                  :class="{disabled:uploadDisabled}"
-                  :on-preview="handlePictureCardPreview"
-                  :on-remove="handleRemove"
-                  :http-request="upload"
-                  :file-list="fileList"
-                  :on-change="onChange"
-                  :limit="1"
-                >
-                  <i class="el-icon-plus" />
-                </el-upload>
-                <span>
-                  <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
-                </span>
-              </el-col>
-              <el-col :span="12" v-else>
-                <div style="width: 100%;overflow-y:scroll;position: relative;">
-                  <img :src="updataUrl" alt="" style="width: 100%"/>
-                  <i class="el-icon-delete del_img" @click="handleRemove"></i>
-                </div>
-              </el-col>
-            </el-row>
+              </el-row>
+            </el-col>
           </el-col>
         </el-col>
-        
-        
-        
       </el-row>
       <el-row>
         <el-col>
@@ -264,6 +273,10 @@ export default {
 .root-class {
   margin: 15px 0px 5px;
   text-align: center;
+}
+
+.col_bottom {
+  margin-bottom: 10px;
 }
 
 .jump_row {

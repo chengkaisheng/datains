@@ -1093,7 +1093,10 @@ export default {
         this.currentFilterCom.mobileStyle = BASE_MOBILE_STYLE
         this.currentFilterCom.commonBackground = this.currentFilterCom.commonBackground || deepCopy(COMMON_BACKGROUND)
 
-        if(this.dragComponentInfo.component === 'de-select'){ // 文本下拉框背景数据
+        if(
+          this.dragComponentInfo.component === 'de-select'
+          || this.dragComponentInfo.component === 'de-input-search'
+        ){ // 文本下拉框背景数据
           this.currentFilterCom.commonSelectFrame = this.currentFilterCom.commonSelectFrame || deepCopy(COMMON_SELECT_FRAME)
         }
         
