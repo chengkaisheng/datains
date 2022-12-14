@@ -269,11 +269,13 @@ export default {
       this.curComponent.commonBackground.fontSize = this.backgroundOrigin.fontSize
       this.curComponent.commonBackground.fontColor = this.backgroundOrigin.fontColor
 
-      this.curComponent.commonSelectFrame.enable = this.selectOrigin.enable
-      this.curComponent.commonSelectFrame.backType = this.selectOrigin.backType
-      this.curComponent.commonSelectFrame.color = this.selectOrigin.color
-      this.curComponent.commonSelectFrame.backImg = this.selectOrigin.backImg
-      this.curComponent.commonSelectFrame.alpha = this.selectOrigin.alpha
+      if(this.curComponent.component === 'de-select') {
+        this.curComponent.commonSelectFrame.enable = this.selectOrigin.enable
+        this.curComponent.commonSelectFrame.backType = this.selectOrigin.backType
+        this.curComponent.commonSelectFrame.color = this.selectOrigin.color
+        this.curComponent.commonSelectFrame.backImg = this.selectOrigin.backImg
+        this.curComponent.commonSelectFrame.alpha = this.selectOrigin.alpha
+      }
 
       console.log('this.curComponent.commonBackground=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')

@@ -14,10 +14,12 @@
         <el-form-item v-show="chart.type==='bar'" :label="'柱圆角'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barBorderRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="50" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type==='bar'" :label="'柱边框'" class="form-item form-item-slider">
+        <el-form-item v-show="chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar'" :label="'柱边框'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barBorderValue" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type === 'bar'" :label="'边框类型'" class="form-item">
+        <el-form-item v-show="chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar'" 
+          :label="'边框类型'" class="form-item"
+        >
           <el-select v-model="sizeForm.borderType" @change="changeBarSizeCase">
             <el-option label="实线" value="solid"></el-option>
             <el-option label="虚线" value="dashed"></el-option>

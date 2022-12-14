@@ -124,7 +124,7 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
           customStyle.yAxis.paddingLeft !== undefined? customStyle.yAxis.paddingLeft : 0,
         ]
       }
-      console.log('common,yAixs,',customStyle.yAxis)
+      // console.log('common,yAixs,',customStyle.yAxis)
 
       chart_option.yAxis.axisLabel.showMaxLabel = true
       chart_option.yAxis.axisLabel.showMinLabel = true
@@ -322,5 +322,5 @@ export function seniorCfg(chart_option, chart) {
       }
     }
   }
-  console.log('seniorCfg.....',chart_option)
+  // console.log('seniorCfg.....',chart_option)
 }
