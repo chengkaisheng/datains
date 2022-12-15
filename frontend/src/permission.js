@@ -161,33 +161,6 @@ export const loadMenus = (next, to) => {
     }
     asyncRouter.splice(4, 0, portalRouter)
 
-    const fillingRouter = {
-      component: () => import('@/layout/index.vue'),
-      hidden:false,
-      meta: {
-        icon: 'el-icon-tickets',
-        title: '数据填报',
-      },
-      name: 'filling',
-      noLayout: null,
-      pid: 0,
-      path: '/filling',
-      permission: null,
-      redirect: '/filling/list',
-      children: [
-        {
-          component: () => import('@/views/system/filling/list'),
-          isPlugin: false,
-          name: 'filling-list',
-          noLayout: null,
-          path: 'list',
-          type: 1,
-          permission: null
-        }
-      ]
-    }
-    asyncRouter.push(fillingRouter)
-
     console.log('asyncRouter', asyncRouter)
     // Add Router end
 

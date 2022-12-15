@@ -30,23 +30,7 @@ export default {
     ]),
     routes() {
       // return this.$router.options.routes
-      console.log('路由配置数据',this.$store.state.permission.currentRoutes)
-      // if(this.$store.state.permission.currentPath === "/system/user" ) {
-      //   this.$store.state.permission.currentRoutes.children.push({
-      //     name: 'filling',
-      //     noLayout: null,
-      //     path: 'filling/list',
-      //     permission: 'filling:read',
-      //     component: () => import('@/views/system/filling/list'),
-      //     hidden: false,
-      //     isPlugin: false,
-      //     menuSort: 9999,
-      //     meta: {
-      //       title: '数据填报',
-      //       icon: 'el-icon-tickets'
-      //     },
-      //   })
-      // }
+      console.log('菜单数据',this.$store.state.permission.currentRoutes)
       return this.$store.state.permission.currentRoutes.children
     },
     activeMenu() {
