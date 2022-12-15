@@ -413,7 +413,23 @@ export default {
   padding: 10px 15px;
   height: 100%;
   overflow-y: auto;
+  background-color: #151d55;
+  color: #ffffff;
 }
+
+  ::v-deep .block .el-tree {
+    background: #151d55;
+    color: #ffffff;
+  }
+  ::v-deep .block .el-tree-node__content:hover {
+    background-color: #5f6277;
+  }
+  ::v-deep .block .el-tree-node:focus > .el-tree-node__content {
+    background: #5f6277
+  }
+  ::v-deep .block .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+    background-color: #5f6277;
+  }
 
 .msg-node-class {
   color: red;

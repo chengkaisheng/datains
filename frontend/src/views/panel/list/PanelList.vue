@@ -830,11 +830,23 @@ export default {
   .header-title {
     font-size: 14px;
     flex: 1;
-    color: var(--TextPrimary, #606266);
+    // color: var(--TextPrimary, #606266);
+    color: #ffffff;
     font-weight: bold;
     display: block;
     height: 100%;
     /*line-height: 36px;*/
+  }
+
+  ::v-deep .block .el-tree {
+    background: #151d55;
+    color: #ffffff;
+  }
+  ::v-deep .block .el-tree-node__content:hover {
+    background-color: #5f6277;
+  }
+  ::v-deep .block .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+    background-color: #5f6277;
   }
 
   .custom-tree-node {

@@ -31,7 +31,7 @@
       <el-dropdown
         ref="my-drop"
         class="top-dropdown"
-        style="display: flex;align-items: center; width:100px;"
+        style="display: flex;align-items: center; width:100px;color: #ffffff;"
         trigger="click"
       >
         <div class="el-dropdown-link" style="display: flex;color: var(--TopTextColor);font-size: 14px; width:100%;">
@@ -338,7 +338,8 @@ export default {
 <style lang="scss" scoped>
   .el-dropdown-link {
     cursor: pointer;
-    color: #1e212a;
+    // color: #1e212a;
+    color: #ffffff;
   }
 
   .el-icon-arrow-down {
