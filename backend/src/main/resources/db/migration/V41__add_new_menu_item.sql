@@ -1,0 +1,2 @@
+INSERT INTO `sys_menu` VALUES (101, 1, 0, 1, '数据填报', 'filling', 'system/filling/list', 7, 'fill', 'filling', b'0', b'0', b'0', 'filling:read', 'liuhaiyong', 'liuhaiyong', 1671097549000, 1671097549000);
+INSERT INTO `sys_menu` VALUES (102, 1, 0, 1, '自助取数', 'assit', 'system/assist/index', 8, 'assist', 'assist', b'0', b'0', b'0', 'assist:read', 'liuhaiyong', 'liuhaiyong', 1671097549000, 1671097549000);
