@@ -13,6 +13,7 @@
           trigger="hover"
           popper-class="float_pop"
           v-model="isVisible"
+          :append-to-body="inScreen"
         > 
           <div class="nav_calss">
             <div v-for="(item,index) in navList" :key="index" class="nav_info" :style="boxStyle1">
@@ -61,7 +62,12 @@ export default {
       type: Object,
       default: () => {},
       require: true
-    }
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
   },
 
   data() {
@@ -468,7 +474,7 @@ export default {
       }
     },
     popOver() {
-      console.log('over')
+      console.log('over',this.inScreen)
       this.isVisible = true
     },
     popOut() {

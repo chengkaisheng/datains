@@ -17,7 +17,13 @@ export function getStyle(style, filter = []) {
   const result = {}
   Object.keys(style).forEach(key => {
     if (!filter.includes(key)) {
-      if (key !== 'rotate') {
+      if( key === 'autoWrap') { // 自动换行
+        if(style[key]) {
+          result['whiteSpace'] = 'pre-line'
+        } else {
+          result['whiteSpace'] = 'nowrap'
+        }
+      } else if (key !== 'rotate') {
         result[key] = style[key]
         if (key) {
           if (key === 'backgroundColor') {

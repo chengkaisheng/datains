@@ -132,6 +132,59 @@
         </el-row>
       </el-row>
 
+      <el-row style="" v-if="curComponent.component === 'de-select' && curComponent.type === 'custom'">
+        <el-row >
+          <el-col :span="4" style="padding-left: 10px;padding-top: 5px">
+            <el-checkbox v-model="curComponent.commonSelectFrame.enable">{{ $t('panel.selectBackground') }}</el-checkbox>
+          </el-col>
+          <el-col :span="20">
+            <span style="color: #909399; font-size: 8px;margin-left: 3px;line-height: 30px">
+              Tips:{{ $t('panel.choose_background_tips') }}
+            </span>
+          </el-col>
+        </el-row>
+        <el-row v-if="curComponent.commonSelectFrame.enable">
+          <el-row style="height: 40px;overflow: hidden">
+            <el-col :span="3" style="padding-left: 10px;padding-top: 5px">
+              <el-radio v-model="curComponent.commonSelectFrame.backType" label="color" @change="onChangeType">颜色</el-radio>
+            </el-col>
+            <el-col :span="1" style="padding-top: 5px">
+              <el-color-picker v-model="curComponent.commonSelectFrame.color" size="mini" class="color-picker-style" :predefine="predefineColors" />
+            </el-col>
+            <el-col :span="3">
+              <span class="params-title-small">不透明度：</span>
+            </el-col>
+            <el-col :span="11">
+              <el-slider v-model="curComponent.commonSelectFrame.alpha" show-input :show-input-controls="false" input-size="mini" />
+            </el-col>
+          </el-row>
+          <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+            <el-col :span="3" style="padding-left: 10px">
+              <el-radio v-model="curComponent.commonSelectFrame.backType" label="Image" @change="onChangeType">{{ $t('panel.photo') }}</el-radio>
+            </el-col>
+            <el-col style="width: 130px!important;">
+              <el-upload
+                action=""
+                accept=".jpeg,.jpg,.png,.gif,.svg"
+                class="avatar-uploader"
+                list-type="picture-card"
+                :class="{disabled:uploadSelDisabled}"
+                :on-preview="handleSelectPreview"
+                :on-remove="handleSelRemove"
+                :http-request="upload"
+                :file-list="fileSelList"
+                :on-change="onSelChange"
+              >
+                <i class="el-icon-plus" />
+              </el-upload>
+              <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogSelVisible">
+                <img width="100%" :src="dialogSelImageUrl" alt="">
+              </el-dialog>
+            </el-col>
+          </el-row>
+        </el-row>
+      </el-row>
+
     </el-row>
     <el-row class="root-class">
       <el-col :span="24">
@@ -162,6 +215,11 @@ export default {
       dialogImageUrl: '',
       dialogVisible: false,
       uploadDisabled: false,
+      selectOrigin: {},
+      fileSelList: [],
+      dialogSelImageUrl: '',
+      dialogSelVisible: false,
+      uploadSelDisabled: false,
       panel: null,
       predefineColors: COLOR_PANEL
     }
@@ -184,7 +242,12 @@ export default {
       if (this.curComponent && this.curComponent.commonBackground && this.curComponent.commonBackground.outerImage && typeof (this.curComponent.commonBackground.outerImage) === 'string') {
         this.fileList.push({ url: this.curComponent.commonBackground.outerImage })
       }
+
+      if(this.curComponent && this.curComponent.commonSelectFrame && this.curComponent.commonSelectFrame.backImg && typeof (this.curComponent.commonSelectFrame.backImg) === 'string') {
+        this.fileSelList.push({url: this.curComponent.commonSelectFrame.backImg})
+      }
       this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
+      this.selectOrigin =deepCopy(this.curComponent.commonSelectFrame)
       this.queryBackground()
     },
     queryBackground() {
@@ -205,6 +268,13 @@ export default {
       this.curComponent.commonBackground.boxHeight = Math.floor(this.backgroundOrigin.boxHeight)
       this.curComponent.commonBackground.fontSize = this.backgroundOrigin.fontSize
       this.curComponent.commonBackground.fontColor = this.backgroundOrigin.fontColor
+
+      this.curComponent.commonSelectFrame.enable = this.selectOrigin.enable
+      this.curComponent.commonSelectFrame.backType = this.selectOrigin.backType
+      this.curComponent.commonSelectFrame.color = this.selectOrigin.color
+      this.curComponent.commonSelectFrame.backImg = this.selectOrigin.backImg
+      this.curComponent.commonSelectFrame.alpha = this.selectOrigin.alpha
+
       console.log('this.curComponent.commonBackground=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },
@@ -228,9 +298,18 @@ export default {
       this.fileList = []
       this.commitStyle()
     },
+    handleSelRemove(file,fileList) {
+      this.uploadSelDisabled = false,
+      this.fileSelList = []
+      this.commitStyle()
+    },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
+    },
+    handleSelectPreview(file) {
+      this.dialogSelImageUrl = file.url
+      this.dialogSelVisible = true
     },
     onChange(file, fileList) {
       console.log('file', file)
@@ -244,6 +323,20 @@ export default {
       const reader = new FileReader()
       reader.onload = function() {
         _this.curComponent.commonBackground.outerImage = reader.result
+      }
+      reader.readAsDataURL(file.raw)
+    },
+    onSelChange(file,fileList) {
+      if (file.size / 1024 / 1024 > 10) {
+        this.$message.error('上传的文件大小不能超过 10MB!')
+        this.fileSelList = []
+        return
+      }
+      var _this = this
+      _this.uploadSelDisabled = true
+      const reader = new FileReader()
+      reader.onload = function() {
+        _this.curComponent.commonSelectFrame.backImg = reader.result
       }
       reader.readAsDataURL(file.raw)
     },
