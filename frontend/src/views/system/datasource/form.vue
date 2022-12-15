@@ -413,6 +413,7 @@ export default {
         {name: 'redshift', label: 'AWS Redshift', type: 'jdbc'},
         {name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: 'rebuildschema=true&authSource=admin'},
         {name: 'db2', label: 'Db2', type: 'jdbc', extraParams: ''},
+        {name: 'dm8', label: 'DM8', type: 'jdbc', extraParams: ''},
         {name: 'api', label: 'API', type: 'api', extraParams: ''}
       ],
       schemas: [],

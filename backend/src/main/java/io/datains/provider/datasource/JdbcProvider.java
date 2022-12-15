@@ -70,8 +70,13 @@ public class JdbcProvider extends DatasourceProvider {
      */
     @Override
     public List<String[]> getData(DatasourceRequest dsr) throws Exception {
+    	
         List<String[]> list = new LinkedList<>();
-        try (Connection connection = getConnectionFromPool(dsr); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(dsr.getQuery()))) {
+        try (
+        		Connection connection = getConnectionFromPool(dsr);
+        	    Statement stat = connection.createStatement(); 
+        		ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(dsr.getQuery()))) {
+        	    
 
             list = fetchResult(rs);
 
@@ -89,7 +94,9 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     public void exec(DatasourceRequest datasourceRequest) throws Exception {
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement()) {
+        try (
+        		Connection connection = getConnectionFromPool(datasourceRequest); 
+        		Statement stat = connection.createStatement()) {
             Boolean result = stat.execute(datasourceRequest.getQuery());
         } catch (SQLException e) {
             DataInsException.throwException(e);
@@ -100,7 +107,10 @@ public class JdbcProvider extends DatasourceProvider {
 
     @Override
     public List<String[]> fetchResult(DatasourceRequest datasourceRequest) throws Exception {
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
+        try (
+        		Connection connection = getConnectionFromPool(datasourceRequest); 
+        		Statement stat = connection.createStatement(); 
+        		ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
             return fetchResult(rs);
         } catch (SQLException e) {
             DataInsException.throwException(e);
@@ -225,6 +235,9 @@ public class JdbcProvider extends DatasourceProvider {
     private String getDatabase(DatasourceRequest datasourceRequest) {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
+            case dm8:
+            	Dm8Configuration dm8Configuration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), Dm8Configuration.class);
+                return dm8Configuration.getDataBase();
             case mysql:
             case engine_doris:
             case ds_doris:
@@ -247,7 +260,10 @@ public class JdbcProvider extends DatasourceProvider {
 
     @Override
     public List<TableField> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
+        try (
+        		Connection connection = getConnectionFromPool(datasourceRequest); 
+        		Statement stat = connection.createStatement(); 
+        		ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
             return fetchResultField(rs, datasourceRequest);
         } catch (SQLException e) {
             DataInsException.throwException(e);
@@ -263,12 +279,15 @@ public class JdbcProvider extends DatasourceProvider {
         Map<String, List> result = new HashMap<>();
         List<String[]> dataList;
         List<TableField> fieldList;
-        try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
-            fieldList = fetchResultField(rs, datasourceRequest);
-            result.put("fieldList", fieldList);
-            dataList = fetchResult(rs);
-            result.put("dataList", dataList);
-            return result;
+        try (
+        		Connection connection = getConnectionFromPool(datasourceRequest);
+        		Statement stat = connection.createStatement(); 
+        		ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(datasourceRequest.getQuery()))) {
+		            fieldList = fetchResultField(rs, datasourceRequest);
+		            result.put("fieldList", fieldList);
+		            dataList = fetchResult(rs);
+		            result.put("dataList", dataList);
+		            return result;
         } catch (SQLException e) {
             DataInsException.throwException(e);
         } catch (Exception e) {
@@ -367,7 +386,10 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         String queryStr = getTablesSql(datasourceRequest);
-        try (Connection con = getConnection(datasourceRequest); Statement statement = con.createStatement(); ResultSet resultSet = statement.executeQuery(queryStr)) {
+        try (
+        		Connection con = getConnection(datasourceRequest); 
+        		Statement statement = con.createStatement(); 
+        		ResultSet resultSet = statement.executeQuery(queryStr)) {
         } catch (Exception e) {
             DataInsException.throwException(e.getMessage());
         }
@@ -406,13 +428,16 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     private Connection getConnectionFromPool(DatasourceRequest datasourceRequest) throws Exception {
-        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mongo.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())){
+        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mongo.name()) 
+        		|| datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())){
             return getConnection(datasourceRequest);
         }
+        
         DruidDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
         if (dataSource == null) {
             handleDatasource(datasourceRequest, "add");
         }
+        
         dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
         Connection co = dataSource.getConnection();
         return co;
@@ -426,6 +451,13 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         Properties props = new Properties();
         switch (datasourceType) {
+            case dm8:
+            	Dm8Configuration dm8Configuration = new  Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), Dm8Configuration.class);
+                username = dm8Configuration.getUsername();
+                password = dm8Configuration.getPassword();
+                driver = dm8Configuration.getDriver();
+                jdbcurl = dm8Configuration.getJdbc();
+                break;
             case mysql:
             case mariadb:
             case engine_doris:
@@ -436,7 +468,7 @@ public class JdbcProvider extends DatasourceProvider {
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 username = mysqlConfiguration.getUsername();
                 password = mysqlConfiguration.getPassword();
-                driver = "com.mysql.jdbc.Driver";
+                driver = mysqlConfiguration.getDriver();
                 jdbcurl = mysqlConfiguration.getJdbc();
                 break;
             case sqlServer:
@@ -540,6 +572,13 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         JdbcConfiguration jdbcConfiguration = new JdbcConfiguration();
         switch (datasourceType) {
+            case dm8:
+            	Dm8Configuration dm8Configuration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), Dm8Configuration.class);
+                dataSource.setUrl(dm8Configuration.getJdbc());
+                dataSource.setDriverClassName(dm8Configuration.getDriver());
+                dataSource.setValidationQuery("select 1");
+                jdbcConfiguration = dm8Configuration;
+                break;
             case mysql:
             case mariadb:
             case engine_mysql:
@@ -623,9 +662,18 @@ public class JdbcProvider extends DatasourceProvider {
         return jdbcConfiguration;
     }
 
+    /***
+     * 
+     * @param datasourceRequest
+     * @return
+     * @throws Exception
+     */
     private String getTablesSql(DatasourceRequest datasourceRequest) throws Exception {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
+            case dm8:
+            	//TODO 
+            	return String.format("select TABLE_NAME  from user_tables;");
             case mysql:
             case engine_mysql:
             case mariadb:
@@ -681,6 +729,8 @@ public class JdbcProvider extends DatasourceProvider {
     private String getViewSql(DatasourceRequest datasourceRequest) throws Exception {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
+            case dm8:
+            	return String.format("select view_name from user_views;");
             case mysql:
             case mariadb:
             case engine_doris:
@@ -733,6 +783,8 @@ public class JdbcProvider extends DatasourceProvider {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         Db2Configuration db2Configuration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), Db2Configuration.class);
         switch (datasourceType) {
+            case dm8:
+            	return "select distinct  object_name from user_objects where object_type='SCH'";
             case oracle:
                 return "select * from all_users";
             case sqlServer:
