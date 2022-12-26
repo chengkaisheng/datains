@@ -460,6 +460,10 @@ export default {
         if (this.bannerLinkageKey === true) {
           this.setCondition(keyValue)
         }
+        setTimeout(() => {
+          this.getDetailsInfo(this.dataInfo)
+        },500)
+        
       }, this.scrolleTime) // 滚动速度
     },
     setCondition(key) {
@@ -469,6 +473,25 @@ export default {
         operator: 'eq'
       }
       this.$store.commit('addViewFilter', param)
+    },
+    getDetailsInfo(data) { // 设置详情信息
+      let arr = []
+      data.map((item,index) => {
+        if(index === (this.highlight-1)) {
+         this.fields.map(obj => {
+          arr.push({
+            name: obj.name,
+            value: item[obj.datainsName]
+          })
+         })
+        }
+      })
+      // console.log('arrrrrrrrr',arr,this.chart)
+      let objs = {
+        id: this.chart.id,
+        data: arr
+      }
+      this.$store.commit('setDetailsViews',objs)
     },
     prossData() {
       this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))

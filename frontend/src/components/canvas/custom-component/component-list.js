@@ -276,7 +276,15 @@ export const otherList = [
     label: '下拉跳转',
     icon: 'iconfont icon-iframe',
     defaultClass: 'text-filter'
-  }
+  },
+  {
+    id: '30005',
+    component: 'de-text-info',
+    type: 'de-text-info',
+    label: '详情信息',
+    icon: 'iconfont icon-text',
+    defaultClass: 'text-filter'
+  },
 ]
 
 // 编辑器左侧组件列表
@@ -654,6 +662,28 @@ const list = [
     y: 1,
     sizex: 10,
     sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '30005',
+    component: 'de-text-info',
+    type: 'de-text-info',
+    label: '详情信息',
+    icon: 'iconfont icon-text',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 300,
+      height: 200,
+    },
+    options: {
+      viewId: '',
+    },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 10,
     miniSizex: 1,
     miniSizey: 1
   },

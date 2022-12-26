@@ -786,7 +786,7 @@ export default {
         //       }
         //     }
         //   })
-        console.log('data--------', requestInfo)
+        // console.log('data--------', requestInfo)
         console.log('data--------', id, this.panelInfo, requestInfo)
         method(id, this.panelInfo.id, requestInfo)
           .then((response) => {

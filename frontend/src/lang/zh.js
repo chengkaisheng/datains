@@ -1984,6 +1984,10 @@ export default {
     label: '文本搜索',
     placeholder: '请输入关键字'
   },
+  detextinfo: {
+    label: '文本详情',
+    placeholder: '请选择',
+  },
   detextselect: {
     label: '文本下拉',
     placeholder: '请选择'

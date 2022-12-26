@@ -102,6 +102,8 @@ const data = {
     mobileLayoutStatus: false,
     // 公共链接状态(当前是否是公共链接打开)
     publicLinkStatus: false,
+    // 详情信息联动
+    detailsViews: [],
     pcMatrixCount: {
       x: 36,
       y: 18
@@ -179,6 +181,24 @@ const data = {
       state.styleChangeTimes = 0
       state.curComponent = component
       state.curComponentIndex = index
+    },
+
+    
+    setDetailsViews(state, data) {
+      let arr = state.detailsViews.map(item => {return item.id})
+      // console.log('已有哪些',arr,data)
+      if(arr.indexOf(data.id) !== -1) {
+        for(let i=0;i<state.detailsViews.length;i++) {
+          const el = state.detailsViews[i]
+          if(el.id === data.id) {
+            state.detailsViews[i] = data
+            // console.log('11111111',state.detailsViews[i])
+          }
+        }
+      } else {
+        state.detailsViews.push(data)
+      }
+      // console.log('这值，，',state.detailsViews)
     },
 
     setCurCanvasScale(state, curCanvasScale) {

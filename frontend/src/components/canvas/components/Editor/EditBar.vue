@@ -53,6 +53,9 @@
       <span :title="'跳转配置'">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-jump'" class="icon iconfont icon-genghuan" @click.stop="setJump" />
       </span>
+      <span :title="'关联配置'">
+        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-text-info'" class="icon iconfont icon-genghuan" @click.stop="setTextInfo" />
+      </span>
       <span :title="$t('panel.text_pop_set')">
         <i v-if="activeModel==='edit' && curComponent && curComponent.type === 'v-text'" class="icon iconfont icon-genghuan" @click.stop="setText"></i>
       </span>
@@ -354,6 +357,9 @@ export default {
     },
     setJump() {
       this.$emit('setJump')
+    },
+    setTextInfo() {
+      this.$emit('setTextInfo')
     },
     setText() {
       this.$emit('setText')

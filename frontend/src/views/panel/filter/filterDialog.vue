@@ -309,6 +309,7 @@ export default {
     }
   },
   created() {
+    // console.log('这是？',this.widgetInfo)
     this.widget = this.widgetInfo
     this.currentElement = JSON.parse(JSON.stringify(this.element))
     this.myAttrs = this.currentElement.options.attrs
@@ -509,7 +510,8 @@ export default {
     loadField(tableId) {
       fieldListWithPermission(tableId).then(res => {
         let datas = res.data
-        if (this.widget && this.widget.filterFieldMethod) {
+        // console.log('表格字段数据',datas,this.widget)
+        if (this.widget && this.widget.filterFieldMethod && this.widget.name !== 'textInfoWidget') {
           datas = this.widget.filterFieldMethod(datas)
         }
         this.fieldDatas = datas

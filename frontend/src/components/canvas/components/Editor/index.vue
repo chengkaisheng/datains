@@ -70,6 +70,7 @@
       @setCustom="setCustomBtn(item)"
       @setWeather="setWeather(item)"
       @setJump="setJump(item)"
+      @setTextInfo="setTextInfo(item)"
       @setText="setText(item)"
       @elementMouseDown="containerMouseDown"
       @amRemoveItem="removeItem(item._dragId)"
@@ -332,6 +333,19 @@
     >
       <textPopSet v-if="textVisible" :element="textElement" @backgroundSetClose="textSetClose" />
     </el-dialog>
+
+    <!-- 详情组件关联设置 -->
+    <el-dialog
+      :visible.sync="textInfoVisible"
+      width="500px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <textInfoSet v-if="textInfoVisible" :element="textInfoElement" @backgroundSetClose="textInfoSetClose" />
+    </el-dialog>
   </div>
 </template>
 
@@ -371,6 +385,7 @@ import weatherSet from '@/views/background/weatherSet'
 import setCustom from '@/views/background/setCustom'
 import jumpSet from '@/views/background/jumpSet'
 import textPopSet from '@/views/background/textPopSet'
+import textInfoSet from '@/views/background/textInfoSet'
 
 
 import { events } from '../../../DeDrag/option.js'
@@ -942,7 +957,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, tabSet, pictureSet, setCustom, weatherSet, jumpSet, textPopSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, tabSet, pictureSet, setCustom, weatherSet, jumpSet, textPopSet,textInfoSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -1020,6 +1035,7 @@ export default {
       pictureElement: {},
       weatherElement: {},
       jumpElement: {},
+      textInfoElement: {},
       textElement: {},
       customElement: {},
       boardSetVisible: false,
@@ -1031,6 +1047,7 @@ export default {
       customVisible: false,
       weatherVisible: false,
       jumpVisible: false,
+      textInfoVisible: false,
       textVisible: false,
       psDebug: false, // 定位调试模式
       editorX: 0,
@@ -1344,6 +1361,9 @@ export default {
     textSetClose() {
       this.textVisible = false
     },
+    textInfoSetClose() {
+      this.textInfoVisible = false
+    },
     setCustomClose() {
       this.customVisible = false
     },
@@ -1394,6 +1414,11 @@ export default {
       this.jumpVisible = true
       this.jumpElement = item
       console.log('下拉跳转设置')
+    },
+    setTextInfo(item) {
+      this.textInfoVisible = true
+      this.textInfoElement = item
+      console.log('详情联动')
     },
     setText(item) {
       this.textVisible = true

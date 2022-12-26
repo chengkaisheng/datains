@@ -132,7 +132,7 @@
         </el-row>
       </el-row>
 
-      <el-row style="" v-if="(curComponent.component === 'de-select' || curComponent.component === 'de-input-search') 
+      <el-row v-if="(curComponent.component === 'de-select' || curComponent.component === 'de-input-search') 
         && curComponent.type === 'custom'">
         <el-row >
           <el-col :span="4" style="padding-left: 10px;padding-top: 5px">
@@ -241,6 +241,15 @@
         </el-row>
       </el-row>
 
+      <el-row v-if="curComponent.component === 'de-text-info'">
+        <el-row>
+          <el-col :span="3" style="text-align:center;">字体颜色</el-col>
+          <el-col :span="1">
+            <el-color-picker v-model="curComponent.commonSelectFrame.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+          </el-col>
+        </el-row>
+      </el-row>
+
     </el-row>
     <el-row class="root-class">
       <el-col :span="24">
@@ -339,7 +348,9 @@ export default {
       this.curComponent.commonBackground.fontSize = this.backgroundOrigin.fontSize
       this.curComponent.commonBackground.fontColor = this.backgroundOrigin.fontColor
 
-      if(this.curComponent.component === 'de-select' || this.curComponent.component === 'de-input-search') {
+      if(this.curComponent.component === 'de-select' 
+        || this.curComponent.component === 'de-input-search'
+      ) {
         this.curComponent.commonSelectFrame.enable = this.selectOrigin.enable
         this.curComponent.commonSelectFrame.backType = this.selectOrigin.backType
         this.curComponent.commonSelectFrame.color = this.selectOrigin.color

@@ -56,7 +56,8 @@ export default {
           'textSelectWidget',
           'textSelectGridWidget',
           'textInputWidget',
-          'textRotation'
+          'textRotation',
+          // 'textInfoWidget'
         ],
         '数字过滤组件': [
           'numberSelectWidget',

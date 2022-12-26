@@ -100,6 +100,7 @@ export default {
   },
 
   created() {
+    // console.log('filtercontrol,,,',this.childViews);
     this.attrs = this.controlAttrs
   },
   methods: {

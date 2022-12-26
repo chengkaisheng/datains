@@ -83,6 +83,7 @@ export default {
     }
   },
   created() {
+    console.log('deinputsearch',this.element)
     if (this.element.options.value) {
       this.value = this.fillValueDerfault()
       this.search()
