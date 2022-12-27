@@ -6,7 +6,7 @@
           <el-checkbox v-model="tooltipForm.show" @change="changeTooltipAttr">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="tooltipForm.show">
-          <el-form-item :label="$t('chart.trigger_position')" class="form-item">
+          <el-form-item :label="$t('chart.trigger_position')" class="form-item" v-if="!chart.type.includes('funnel') && chart.type !== '3dsurface' && chart.type !== '3d-scatter'">
             <el-radio-group v-model="tooltipForm.trigger" size="mini" @change="changeTooltipAttr">
               <el-radio-button label="item">{{ $t('chart.tooltip_item') }}</el-radio-button>
               <el-radio-button label="axis">{{ $t('chart.tooltip_axis') }}</el-radio-button>

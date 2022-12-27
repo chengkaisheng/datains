@@ -343,7 +343,7 @@ export default {
       } else if (chart.type === 'map_bubble') {
         chart_option = baseMapBubbleOption(JSON.parse(JSON.stringify(BASE_BUBBLE_MAP)), chart)
       }
-      // else if (chart.type === 'sankey') {
+      // else if (chart.type === 'sankey') { // 没有
       //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)
       //   // chart_option = BASE_SANKEY
       // } else if (chart.type === '3dearth') {

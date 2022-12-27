@@ -6,6 +6,7 @@ import img2 from '../../../../assets/Funnel2.png'
 import img3 from '../../../../assets/Funnel3.png'
 
 export function baseBarOption(chart_option, chart, cstyle = {}) {
+  console.log('chart,,,,',chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {

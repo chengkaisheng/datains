@@ -547,9 +547,10 @@ export default {
         if (isChange(val1, val2) && !this.isFirstLoad) {
           console.log('触发点-------------------------5')
           console.log('this.element', this.element, this.chart)
-          if (this.chart.type !== 'roll-elemnt') {
-            this.getData(this.element.propValue.viewId)
-          }
+          // if (this.chart.type !== 'roll-elemnt') {  //阻止滚动表格文本搜索
+          //   this.getData(this.element.propValue.viewId)
+          // }
+          this.getData(this.element.propValue.viewId)
         }
       },
       deep: true

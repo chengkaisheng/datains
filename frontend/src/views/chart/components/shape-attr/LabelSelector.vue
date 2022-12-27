@@ -182,7 +182,7 @@ export default {
     initOptions() {
       const type = this.chart.type
       if (type) {
-        if (type.includes('horizontal') || type === 'funnel') {
+        if (type.includes('horizontal') || type.includes('funnel')) {
           this.labelPosition = this.labelPositionH
         } else if (type.includes('pie')) {
           this.labelPosition = this.labelPositionPie

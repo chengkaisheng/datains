@@ -273,23 +273,23 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_mix',
     icon: 'chart-mix'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_trend',
+    value: 'candlestick',
+    title: 'chart.chart_candlestick',
+    icon: 'candlestick'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_trend',
+    value: 'boxplot',
+    title: 'chart.chart_boxplot',
+    icon: 'boxplot'
+  },
   // {
   //   render: 'echarts',
-  //   category: 'chart.chart_type_trend',
-  //   value: 'candlestick',
-  //   title: 'chart.chart_candlestick',
-  //   icon: 'candlestick'
-  // },
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_trend',
-  //   value: 'boxplot',
-  //   title: 'chart.chart_boxplot',
-  //   icon: 'boxplot'
-  // },
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_trend',
+  //   category: 'chart.chart_type_trend', // 没有
   //   value: 'sankey',
   //   title: 'chart.chart_sankey',
   //   icon: 'sankey'
@@ -459,13 +459,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_funnel',
     icon: 'funnel'
   },
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_relation',
-  //   value: 'contrast-funnel',
-  //   title: 'chart.chart_contrast_funnel',
-  //   icon: 'contrast-funnel'
-  // },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_relation',
+    value: 'contrast-funnel',
+    title: 'chart.chart_contrast_funnel',
+    icon: 'contrast-funnel'
+  },
   {
     render: 'echarts',
     category: 'chart.chart_type_distribute',
@@ -485,7 +485,7 @@ export const TYPE_CONFIGS = [
   //   render: 'echarts',
   //   category: 'chart.chart_type_space',
   //   value: 'map_area',
-  //   title: 'chart.chart_map_area',
+  //   title: 'chart.chart_map_area',// 没有此图
   //   icon: 'map_area'
   // },
   {
@@ -499,31 +499,31 @@ export const TYPE_CONFIGS = [
   //   render: 'echarts',
   //   category: 'chart.chart_type_space',
   //   value: 'map_column',
-  //   title: 'chart.chart_map_column',
+  //   title: 'chart.chart_map_column', // 没有
   //   icon: 'map_column'
   // },
 
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_space',
-  //   value: '3dsurface',
-  //   title: 'chart.chart_3d_surface',
-  //   icon: '3dsurface'
-  // },
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_space',
-  //   value: '3d-column',
-  //   title: 'chart.chart_3d_column',
-  //   icon: '3d-column'
-  // },
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_space',
-  //   value: '3d-scatter',
-  //   title: 'chart.chart_3dscatter',
-  //   icon: '3d-scatter'
-  // },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_space',
+    value: '3dsurface',
+    title: 'chart.chart_3d_surface',
+    icon: '3dsurface'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_space',
+    value: '3d-column',
+    title: 'chart.chart_3d_column',
+    icon: '3d-column'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_space',
+    value: '3d-scatter',
+    title: 'chart.chart_3dscatter',
+    icon: '3d-scatter'
+  },
 
   // {
   //   render: 'echarts',
@@ -553,13 +553,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_graph',
     icon: 'graph'
   },
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_distribute',
-  //   value: 'calendar',
-  //   title: 'chart.chart_calendar_pie',
-  //   icon: 'calendar'
-  // },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'calendar',
+    title: 'chart.chart_calendar_pie',
+    icon: 'calendar'
+  },
   
   // {
   //   render: 'echarts',

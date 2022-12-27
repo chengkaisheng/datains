@@ -6,16 +6,16 @@ export function baseBoxPlotOption (chart_option, chart,cstyle = {}) {
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
-    // if (customAttr.color) {
-    //   chart_option.color = customAttr.color.colors
-    // }
+    if (customAttr.color) {
+      chart_option.color = customAttr.color.colors
+    }
     // tooltip
-    // if (customAttr.tooltip) {
-    //   const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
-    //   const reg = new RegExp('\n', 'g')
-    //   tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
-    //   chart_option.tooltip = tooltip
-    // }
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      chart_option.tooltip = tooltip
+    }
     // chart_option.grid.left = customAttr.size.spaceleft
     // chart_option.grid.right = customAttr.size.spaceRight
     // chart_option.grid.top = customAttr.size.spaceTop

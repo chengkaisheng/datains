@@ -781,7 +781,7 @@
                     v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick' 
                         && view.type !== 'contrast-funnel' && view.type !== 'map' 
                         && !view.type.includes('progress') && view.type !== 'waterfall' 
-                        && view.type !== 'graph' && view.type !== '3d-column'
+                        && view.type !== 'graph' && view.type !== '3d-column' && view.type !== 'boxplot'
                         && view.type !== '3dsurface' && view.type !== '3d-scatter'"
                     name="size"
                     :title="$t('chart.size')"
@@ -867,7 +867,7 @@
                     v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')
                         &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' 
                         && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'
-                        && view.type !== 'map_bubble'"
+                        && view.type !== 'map_bubble' && view.type !== 'boxplot'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -938,8 +938,9 @@
                   <el-collapse-item
                     v-show="view.type
                       && (view.type.includes('bar') || view.type.includes('line')
-                      || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
-                      || view.type === '3dcolumn' || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
+                      || view.type.includes('scatter') || view.type === 'chart-mix' 
+                      || view.type === 'waterfall' || view.type === '3dcolumn' 
+                      || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
                     name="xAxis"
                     :title="$t('chart.xAxis')"
                   >
@@ -968,8 +969,9 @@
                   <el-collapse-item
                     v-show="view.type
                       && (view.type.includes('bar') || view.type.includes('line')
-                      || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
-                      || view.type === '3dcolumn' || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
+                      || view.type.includes('scatter') || view.type === 'chart-mix' 
+                      || view.type === 'waterfall' || view.type === '3dcolumn' 
+                      || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
                     name="yAxis"
                     :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')"
                   >
@@ -1076,7 +1078,8 @@
                       && view.type !== 'gauge' && view.type !== 'word-cloud' 
                       && !view.type.includes('progress') && view.type !== 'map_bubble'
                       && view.type !== 'graph' && view.type !== 'candlestick'
-                      && view.type !== '3dsurface' && view.type !== '3d-column'"
+                      && view.type !== '3dsurface' && view.type !== '3d-column'
+                      && view.type !== 'boxplot'"
                     name="legend"
                     :title="$t('chart.legend')"
                   >

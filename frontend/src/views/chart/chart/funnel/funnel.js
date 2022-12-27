@@ -53,7 +53,7 @@ export function baseFunnelOption(chart_option, chart, cstyle = {}) {
 }
 
 export function baseContrastFunnelOption(chart_option, chart, cstyle = {}) {
-  console.log('对比',chart)
+  console.log('对比漏斗',chart)
 
   let customAttr = {}
   if (chart.customAttr) {
@@ -69,10 +69,10 @@ export function baseContrastFunnelOption(chart_option, chart, cstyle = {}) {
       chart_option.tooltip = tooltip
     }
 
-    chart_option.grid.left = customAttr.size.spaceleft
-    chart_option.grid.right = customAttr.size.spaceRight
-    chart_option.grid.top = customAttr.size.spaceTop
-    chart_option.grid.bottom = customAttr.size.spaceBottom
+    // chart_option.grid.left = customAttr.size.spaceleft
+    // chart_option.grid.right = customAttr.size.spaceRight
+    // chart_option.grid.top = customAttr.size.spaceTop
+    // chart_option.grid.bottom = customAttr.size.spaceBottom
   }
 
   // 处理data
