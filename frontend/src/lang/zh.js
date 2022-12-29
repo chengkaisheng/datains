@@ -923,6 +923,7 @@ export default {
     chart_pie: '饼图',
     chart_3Dpie: '3D饼图',
     chart_arcgis_map: '地图',
+    chart_text_popup: '详情弹窗',
     chart_pie_rose: '玫瑰图',
     chart_pie_rose_gradient: '玫瑰环图',
     chart_funnel: '漏斗图',

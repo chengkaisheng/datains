@@ -124,6 +124,15 @@
       :element="element"
       :show-summary="chart.type === 'roll-elemnt'"
       :chart="chart"
+      :in-screen="inScreen"
+      class="table-class"
+    />
+    <textPopup 
+      v-else-if="textPopupFlag"
+      :ref="element.propValue.id"
+      :element="element"
+      :show-summary="chart.type === 'text_popup'"
+      :chart="chart"
       class="table-class"
     />
     <dialogTable
@@ -161,6 +170,7 @@ import scrollTable from '@/views/chart/components/table/scrollTable'
 import dialogTable from '@/views/chart/components/table/dialogTable'
 import progressBar from '@/views/chart/components/progress/progressBar'
 import progressLoop from '@/views/chart/components/progress/progressLoop'
+import textPopup from '@/views/chart/components/popup/textPopup'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
@@ -203,7 +213,8 @@ export default {
     scrollTable,
     dialogTable,
     progressBar,
-    progressLoop
+    progressLoop,
+    textPopup
   },
   props: {
     element: {
@@ -249,7 +260,12 @@ export default {
     filters: {
       type: Array,
       default: () => []
-    }
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
   },
   data() {
     return {
@@ -346,6 +362,7 @@ export default {
       return (
         this.httpRequest.status &&
         this.chart.type &&
+        this.chart.type === 'arc_map' &&
         this.renderComponent() === 'other'
       )
     },
@@ -403,6 +420,14 @@ export default {
         this.chart.type &&
         this.chart.type === 'progress-loop' &&
         this.renderComponent() === 'echarts'
+      )
+    },
+    textPopupFlag() {
+      return (
+        this.httpRequest.status &&
+        this.chart.type &&
+        this.chart.type === 'text_popup' &&
+        this.renderComponent() === 'other'
       )
     },
     labelShowFlag() {
@@ -1014,6 +1039,20 @@ export default {
 
                           response.data.data.x = arr
                         }
+
+                        const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
+                        console.log('xaisList,,,,,,,',xaisList)
+                        if(xaisList[0].sort === 'asc') { // 升序
+                          const datas = JSON.parse(JSON.stringify(response.data.data))
+                          // datas.tableRow.map(item => {
+
+                          // })
+
+                        } else if (xaisList[0].sort === 'desc') { // 降序
+
+                        }
+                        
+
                       }
                     }
                     this.chart = response.data

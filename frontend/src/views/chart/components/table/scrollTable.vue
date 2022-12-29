@@ -19,6 +19,7 @@
             popper-class="scroll_pop"
             @show="popShow"
             @hide="popHide"
+            :append-to-body="inScreen"
           >
             <p :style="pop_title" style="margin: 0px;position: relative;">
               <span>详情</span>
@@ -84,7 +85,12 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    }
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
   },
   data() {
     return {
@@ -242,9 +248,10 @@ export default {
     }
   },
   mounted() {
-    console.log('this.fields', this.fields)
-    console.log('获取边框数据', this.element)
-    console.log('this.chart---', this.chart)
+    // console.log('this.fields', this.fields)
+    // console.log('获取边框数据', this.element)
+    // console.log('this.chart---', this.chart)
+    // console.log('滚动表格',this.inScreen)
     this.oldData = JSON.parse(JSON.stringify(this.chart))
     if (this.chart.data) {
       this.prossData()

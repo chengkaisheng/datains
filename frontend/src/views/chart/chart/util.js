@@ -634,5 +634,12 @@ export const TYPE_CONFIGS = [
     value: 'arc_map',
     title: 'chart.chart_arcgis_map',
     icon: 'arc_map'
-  }
+  },
+  // {
+  //   render: 'other',
+  //   category: 'chart.chart_type_distribute',
+  //   value: 'text_popup',
+  //   title: 'chart.chart_text_popup',
+  //   icon: 'text_popup'
+  // }
 ]
