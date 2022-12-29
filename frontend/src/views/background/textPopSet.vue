@@ -46,7 +46,7 @@
               <i class="el-icon-plus" />
             </el-upload>
             <span>
-              <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+              <i class="el-icon-warning" /> <span>上传的文件大小不能超过1MB!</span>
             </span>
           </el-col>
           
@@ -124,8 +124,8 @@ export default {
     },
     onChange(file, fileList) {
       console.log('change', fileList,this.fileList)
-      if (file.size / 1024 / 1024 > 10) {
-        this.$message.error('上传的文件大小不能超过 10MB!')
+      if (file.size / 1024 / 1024 > 1) {
+        this.$message.error('上传的文件大小不能超过 1MB!')
         return
       }
       var _this = this
