@@ -14,7 +14,7 @@
               <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop" />
             </p>
             <div>
-
+              
             </div>
           </div>
           <div slot="reference">

@@ -955,6 +955,70 @@ export default {
                           console.log('这个。。。',arr)
                           response.data.data.datas = arr
                         }
+
+                        const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
+                        console.log('antv,xaisList,,,,',xaisList)
+                        if(xaisList.length) {
+                          if(xaisList[0].sort === 'asc') {
+                            const datas = deepCopy(response.data.data.datas)
+                            let objs = {
+                              '第一季度': [],
+                              '第二季度': [],
+                              '第三季度': [],
+                              '第四季度': [],
+                            }
+                            datas.map(item => {
+                              if(item.field === '第一季度') {
+                                objs['第一季度'].push({...item})
+                              } else if (item.field === '第二季度') {
+                                objs['第二季度'].push({...item})
+                              } else if (item.field === '第三季度') {
+                                objs['第三季度'].push({...item})
+                              } else if (item.field === '第四季度') {
+                                objs['第四季度'].push({...item})
+                              } 
+                            })
+
+                            let arr = ['第一季度','第二季度','第三季度','第四季度']
+                            let arr1 = []
+                            for(let i=0;i<arr.length;i++) {
+                              let a = objs[arr[i]]
+                              a.map(obj => {
+                                arr1.push(obj)
+                              })
+                            }
+                            response.data.data.datas = arr1
+                          } else if (xaisList[0].sort === 'desc') {
+                            const datas = deepCopy(response.data.data.datas)
+                            let objs = {
+                              '第一季度': [],
+                              '第二季度': [],
+                              '第三季度': [],
+                              '第四季度': [],
+                            }
+                            datas.map(item => {
+                              if(item.field === '第一季度') {
+                                objs['第一季度'].push({...item})
+                              } else if (item.field === '第二季度') {
+                                objs['第二季度'].push({...item})
+                              } else if (item.field === '第三季度') {
+                                objs['第三季度'].push({...item})
+                              } else if (item.field === '第四季度') {
+                                objs['第四季度'].push({...item})
+                              } 
+                            })
+
+                            let arr = ['第四季度','第三季度','第二季度','第一季度']
+                            let arr1 = []
+                            for(let i=0;i<arr.length;i++) {
+                              let a = objs[arr[i]]
+                              a.map(obj => {
+                                arr1.push(obj)
+                              })
+                            }
+                            response.data.data.datas = arr1
+                          }
+                        }
                       }
                     }
                     this.chart = response.data
@@ -1041,18 +1105,97 @@ export default {
                         }
 
                         const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
-                        console.log('xaisList,,,,,,,',xaisList)
-                        if(xaisList[0].sort === 'asc') { // 升序
-                          const datas = JSON.parse(JSON.stringify(response.data.data))
-                          // datas.tableRow.map(item => {
+                        console.log('echarts,xaisList',xaisList)
+                        if(xaisList.length) {
+                          if(xaisList[0].sort === 'asc') { // 升序
+                            const datas = JSON.parse(JSON.stringify(response.data.data))
+                            let arr = []
+                            let x = JSON.parse(JSON.stringify(datas.x))
+                            x.map((item,index) => {
+                              if(item === '第一季度') {
+                                arr.push({
+                                  name: item,
+                                  oldNum: index,
+                                  newNum: 1,
+                                })
+                              } else if (item === '第二季度') {
+                                arr.push({
+                                  name: item,
+                                  oldNum: index,
+                                  newNum: 2,
+                                })
+                              } else if (item === '第三季度') {
+                                arr.push({
+                                  name: item,
+                                  oldNum: index,
+                                  newNum: 3,
+                                })
+                              } else if (item === '第四季度') {
+                                arr.push({
+                                  name: item,
+                                  oldNum: index,
+                                  newNum: 4,
+                                })
+                              }
+                            })
+                            let arr1 = arr.sort((a,b) => a.newNum - b.newNum)
 
-                          // })
+                            for(let i=0;i<datas.series.length;i++) {
+                              const obj = JSON.parse(JSON.stringify(datas.series[i]))
+                              let arr2 = []
+                              arr1.map(item => {
+                                arr2.push(obj.data[item.oldNum])
+                              })
+                              datas.series[i].data = arr2
+                            }
+                            datas.x = ['第一季度','第二季度','第三季度','第四季度']
+                            response.data.data = datas
+                          } else if (xaisList[0].sort === 'desc') { // 降序
+                            const datas = JSON.parse(JSON.stringify(response.data.data))
+                            let arr = []
+                            let x = JSON.parse(JSON.stringify(datas.x))
+                            x.map((item,index) => {
+                              if(item === '第一季度') {
+                                arr.push({
+                                  name: item,
+                                  oldNum: index,
+                                  newNum: 1,
+                                })
+                              } else if (item === '第二季度') {
+                                arr.push({
+                                  name: item,
+                                  oldNum: index,
+                                  newNum: 2,
+                                })
+                              } else if (item === '第三季度') {
+                                arr.push({
+                                  name: item,
+                                  oldNum: index,
+                                  newNum: 3,
+                                })
+                              } else if (item === '第四季度') {
+                                arr.push({
+                                  name: item,
+                                  oldNum: index,
+                                  newNum: 4,
+                                })
+                              }
+                            })
+                            let arr1 = arr.sort((a,b) => b.newNum - a.newNum)
 
-                        } else if (xaisList[0].sort === 'desc') { // 降序
-
+                            for(let i=0;i<datas.series.length;i++) {
+                              const obj = JSON.parse(JSON.stringify(datas.series[i]))
+                              let arr2 = []
+                              arr1.map(item => {
+                                arr2.push(obj.data[item.oldNum])
+                              })
+                              datas.series[i].data = arr2
+                            }
+                            datas.x = ['第四季度','第三季度','第二季度','第一季度']
+                            response.data.data = datas
+                          }
                         }
                         
-
                       }
                     }
                     this.chart = response.data
@@ -1272,6 +1415,70 @@ export default {
                               console.log('这个。。。',arr)
                               response.data.data.datas = arr
                             }
+
+                            const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
+                            console.log('antv,xaisList,,,,',xaisList)
+                            if(xaisList.length) {
+                              if(xaisList[0].sort === 'asc') {
+                                const datas = deepCopy(response.data.data.datas)
+                                let objs = {
+                                  '第一季度': [],
+                                  '第二季度': [],
+                                  '第三季度': [],
+                                  '第四季度': [],
+                                }
+                                datas.map(item => {
+                                  if(item.field === '第一季度') {
+                                    objs['第一季度'].push({...item})
+                                  } else if (item.field === '第二季度') {
+                                    objs['第二季度'].push({...item})
+                                  } else if (item.field === '第三季度') {
+                                    objs['第三季度'].push({...item})
+                                  } else if (item.field === '第四季度') {
+                                    objs['第四季度'].push({...item})
+                                  } 
+                                })
+
+                                let arr = ['第一季度','第二季度','第三季度','第四季度']
+                                let arr1 = []
+                                for(let i=0;i<arr.length;i++) {
+                                  let a = objs[arr[i]]
+                                  a.map(obj => {
+                                    arr1.push(obj)
+                                  })
+                                }
+                                response.data.data.datas = arr1
+                              } else if (xaisList[0].sort === 'desc') {
+                                const datas = deepCopy(response.data.data.datas)
+                                let objs = {
+                                  '第一季度': [],
+                                  '第二季度': [],
+                                  '第三季度': [],
+                                  '第四季度': [],
+                                }
+                                datas.map(item => {
+                                  if(item.field === '第一季度') {
+                                    objs['第一季度'].push({...item})
+                                  } else if (item.field === '第二季度') {
+                                    objs['第二季度'].push({...item})
+                                  } else if (item.field === '第三季度') {
+                                    objs['第三季度'].push({...item})
+                                  } else if (item.field === '第四季度') {
+                                    objs['第四季度'].push({...item})
+                                  } 
+                                })
+
+                                let arr = ['第四季度','第三季度','第二季度','第一季度']
+                                let arr1 = []
+                                for(let i=0;i<arr.length;i++) {
+                                  let a = objs[arr[i]]
+                                  a.map(obj => {
+                                    arr1.push(obj)
+                                  })
+                                }
+                                response.data.data.datas = arr1
+                              }
+                            }
                           }
                         }
                         this.chart = response.data
@@ -1355,6 +1562,98 @@ export default {
                               console.log('ec,,,,',arr)
 
                               response.data.data.x = arr
+                            }
+
+                            const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
+                            console.log('echarts,xaisList',xaisList)
+                            if(xaisList.length) {
+                              if(xaisList[0].sort === 'asc') { // 升序
+                                const datas = JSON.parse(JSON.stringify(response.data.data))
+                                let arr = []
+                                let x = JSON.parse(JSON.stringify(datas.x))
+                                x.map((item,index) => {
+                                  if(item === '第一季度') {
+                                    arr.push({
+                                      name: item,
+                                      oldNum: index,
+                                      newNum: 1,
+                                    })
+                                  } else if (item === '第二季度') {
+                                    arr.push({
+                                      name: item,
+                                      oldNum: index,
+                                      newNum: 2,
+                                    })
+                                  } else if (item === '第三季度') {
+                                    arr.push({
+                                      name: item,
+                                      oldNum: index,
+                                      newNum: 3,
+                                    })
+                                  } else if (item === '第四季度') {
+                                    arr.push({
+                                      name: item,
+                                      oldNum: index,
+                                      newNum: 4,
+                                    })
+                                  }
+                                })
+                                let arr1 = arr.sort((a,b) => a.newNum - b.newNum)
+
+                                for(let i=0;i<datas.series.length;i++) {
+                                  const obj = JSON.parse(JSON.stringify(datas.series[i]))
+                                  let arr2 = []
+                                  arr1.map(item => {
+                                    arr2.push(obj.data[item.oldNum])
+                                  })
+                                  datas.series[i].data = arr2
+                                }
+                                datas.x = ['第一季度','第二季度','第三季度','第四季度']
+                                response.data.data = datas
+                              } else if (xaisList[0].sort === 'desc') { // 降序
+                                const datas = JSON.parse(JSON.stringify(response.data.data))
+                                let arr = []
+                                let x = JSON.parse(JSON.stringify(datas.x))
+                                x.map((item,index) => {
+                                  if(item === '第一季度') {
+                                    arr.push({
+                                      name: item,
+                                      oldNum: index,
+                                      newNum: 1,
+                                    })
+                                  } else if (item === '第二季度') {
+                                    arr.push({
+                                      name: item,
+                                      oldNum: index,
+                                      newNum: 2,
+                                    })
+                                  } else if (item === '第三季度') {
+                                    arr.push({
+                                      name: item,
+                                      oldNum: index,
+                                      newNum: 3,
+                                    })
+                                  } else if (item === '第四季度') {
+                                    arr.push({
+                                      name: item,
+                                      oldNum: index,
+                                      newNum: 4,
+                                    })
+                                  }
+                                })
+                                let arr1 = arr.sort((a,b) => b.newNum - a.newNum)
+
+                                for(let i=0;i<datas.series.length;i++) {
+                                  const obj = JSON.parse(JSON.stringify(datas.series[i]))
+                                  let arr2 = []
+                                  arr1.map(item => {
+                                    arr2.push(obj.data[item.oldNum])
+                                  })
+                                  datas.series[i].data = arr2
+                                }
+                                datas.x = ['第四季度','第三季度','第二季度','第一季度']
+                                response.data.data = datas
+                              }
                             }
                           }
                         }
