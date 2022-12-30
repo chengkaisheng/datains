@@ -104,6 +104,10 @@ const data = {
     publicLinkStatus: false,
     // 详情信息联动
     detailsViews: [],
+    // 滚动弹窗设置
+    scrollVisible: false,
+    // 滚动详情弹窗联动
+    scrollViews: [],
     pcMatrixCount: {
       x: 36,
       y: 18
@@ -199,6 +203,14 @@ const data = {
         state.detailsViews.push(data)
       }
       // console.log('这值，，',state.detailsViews)
+    },
+
+    setScrollViews(state, data) {
+      console.log('设置联动弹窗',data)
+      state.scrollViews = data
+    },
+    setScrollVisible(state, status) {
+      state.scrollVisible = status
     },
 
     setCurCanvasScale(state, curCanvasScale) {
@@ -488,6 +500,7 @@ const data = {
       state.isUniformity = status
     },
     setNowPanelTrackInfo(state, trackInfo) {
+      console.log('联动信息，，',trackInfo)
       state.nowPanelTrackInfo = trackInfo
     },
     setNowPanelJumpInfo(state, jumpInfo) {

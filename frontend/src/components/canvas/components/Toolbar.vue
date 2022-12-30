@@ -871,6 +871,7 @@ export default {
       this.close()
     },
     saveLinkage() {
+      console.log('saveLinkage')
       // 字段检查
       for (const key in this.targetLinkageInfo) {
         let subCheckCount = 0
@@ -898,6 +899,7 @@ export default {
         sourceViewId: this.curLinkageView.propValue.viewId,
         linkageInfo: this.targetLinkageInfo
       }
+
       saveLinkage(request).then(rsp => {
         // 刷新联动信息
         getPanelAllLinkageInfo(this.$store.state.panel.panelInfo.id).then(rsp => {

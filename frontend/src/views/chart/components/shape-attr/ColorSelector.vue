@@ -152,6 +152,13 @@
             <el-color-picker v-model="colorForm.dimensionColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
 
+          <el-form-item v-show="chart.type && chart.type === 'text_popup'" label="背景颜色" class="form-item">
+            <el-color-picker v-model="colorForm.textPopBackColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && chart.type === 'text_popup'" label="弹窗背景" class="form-item">
+            <el-color-picker v-model="colorForm.popupBackColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
+
           <el-form-item v-show="chart.type && chart.type === 'pie-rose-gradient'" :label="$t('chart.inner_ring_color')" class="form-item">
             <el-color-picker v-model="colorForm.innerRing" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>

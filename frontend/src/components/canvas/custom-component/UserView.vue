@@ -127,12 +127,16 @@
       :in-screen="inScreen"
       class="table-class"
     />
+    <!-- 
+      :filter="filter"
+      :is-edit="isEdit" -->
     <textPopup 
       v-else-if="textPopupFlag"
       :ref="element.propValue.id"
       :element="element"
       :show-summary="chart.type === 'text_popup'"
       :chart="chart"
+      :in-screen="inScreen"
       class="table-class"
     />
     <dialogTable
@@ -471,6 +475,7 @@ export default {
     },
     linkageFilters() {
       // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
+      console.log('这里赋值？',this.element)
       if (!this.element.linkageFilters) return []
       return JSON.parse(JSON.stringify(this.element.linkageFilters))
     },
@@ -583,7 +588,7 @@ export default {
     linkageFilters: {
       handler(newVal, oldVal) {
         if (isChange(newVal, oldVal)) {
-          console.log('触发点-------------------------6')
+          console.log('触发点-------------------------6',newVal,this.element)
           this.getData(this.element.propValue.viewId)
         }
       },

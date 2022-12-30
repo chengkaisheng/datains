@@ -19,6 +19,8 @@ export const DEFAULT_COLOR_CASE = {
   tableStripe: true,
   dimensionColor: '#000000',
   quotaColor: '#000000',
+  textPopBackColor: '#0c4f96',
+  popupBackColor: '#1b2642',
   tableBorderColor: '#cfdaf4',
 
   innerRing: '#eeeeee',

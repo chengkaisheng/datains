@@ -10,6 +10,7 @@ import { ApplicationContext } from '@/utils/ApplicationContext'
  */
 export const isChange = (conditions1, conditions2) => {
   // 两个都null
+  console.log('这里搞啥？',conditions1,conditions2)
   if (!conditions1 && !conditions2) return false
   if (!conditions1 || !conditions2) return true
   // 数组长度不一样 肯定发生了改变

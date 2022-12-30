@@ -890,7 +890,7 @@ export default {
     },
     // 元素按下
     elementDown(e) {
-      console.log('元素按下')
+      console.log('元素按下',e)
       if (e instanceof MouseEvent && e.which !== 1) {
         return
       }

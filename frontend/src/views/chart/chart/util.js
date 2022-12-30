@@ -635,11 +635,11 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_arcgis_map',
     icon: 'arc_map'
   },
-  // {
-  //   render: 'other',
-  //   category: 'chart.chart_type_distribute',
-  //   value: 'text_popup',
-  //   title: 'chart.chart_text_popup',
-  //   icon: 'text_popup'
-  // }
+  {
+    render: 'other',
+    category: 'chart.chart_type_distribute',
+    value: 'text_popup',
+    title: 'chart.chart_text_popup',
+    icon: 'text_popup'
+  }
 ]

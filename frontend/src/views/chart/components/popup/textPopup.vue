@@ -7,14 +7,25 @@
           width="400"
           trigger="manual"
           v-model="visible"
+          :append-to-body="inScreen"
         >
           <div>
-            <p style="margin: 0px;position: relative;">
+            <!-- <p style="margin: 0px;position: relative;">
               <span>详情</span>
               <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop" />
-            </p>
+            </p> -->
             <div>
-              
+              <el-row :style="{backgroundColor: box_style.popupBackColor,padding: '10px'}">
+                <el-col v-for="(item,index) in infoData" :key="index" :style="{
+                  backgroundColor: box_style.backgroundColor,
+                  marginBottom: index<(infoData.length-1)? '10px': ''
+                }">
+                  <el-col v-for="(obj,ind) in item" :key="ind">
+                    <el-col :span="6" class="box_auto" :style="{color: box_style.nameColor,textAlign: 'center'}">{{obj.name}}:</el-col>
+                    <el-col :span="18" class="box_auto" :style="{color: box_style.valColor}">{{obj.value}}</el-col>
+                  </el-col>
+                </el-col>
+              </el-row>
             </div>
           </div>
           <div slot="reference">
@@ -52,7 +63,12 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    }
+    },
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
   },
   data() {
     return {
@@ -67,9 +83,15 @@ export default {
         fontStyle: 'normal',
         fontWeight: 'normal'
       },
+      box_style: {
+        valColor: '#ffffff',
+        nameColor: '#ffffff',
+        backgroundColor: '#0c4f96',
+        popupBackColor: '#1b2642'
+      },
       borderRadius: '0px',
       infoData: [],
-      
+      fields: []
     }
   },
   computed: {
@@ -77,7 +99,9 @@ export default {
       'curComponent',
       'componentData',
       'canvasStyleData',
-      'previewCanvasScale'
+      'previewCanvasScale',
+      'scrollViews',
+      'scrollVisible'
     ]),
     bg_class() {
       return {
@@ -92,7 +116,7 @@ export default {
         style.height = this.element.style.height  + 'px'
       }
       return style
-    }
+    },
   },
   mounted() {
     console.log('弹窗显示数据，，',this.chart,this.element)
@@ -104,17 +128,64 @@ export default {
     chart: function() {
       if (this.chart.data) {
         this.initData()
+      } else {
+        this.fields = []
+        this.infoData = []
+      }
+    },
+    scrollVisible: {
+      handler(val1,val2) {
+        console.log('val11111111111',val1)
+        
+        if(this.chart.data && this.chart.data.sourceFields) {
+          this.chart.data.sourceFields.forEach(item => {
+            const sourceInfo = this.chart.id + '#' + item.id
+            this.scrollViews.forEach(el => {
+              if(sourceInfo === el) {
+                this.visible = this.scrollVisible
+              }
+            })
+          })
+        }
       }
     }
   },
   methods: {
     initData() {
+      let fields = this.chart.data.fields
+      let data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+      let d = []
+      for(let i=0;i<data.length;i++) {
+        const obj = data[i]
+        let arr = []
+        for(let k in obj) {
+          const a = k
+          fields.map(item => {
+            if(a === item.datainsName) {
+              arr.push({
+                name: item.name,
+                value: obj[a]
+              })
+            }
+          })
+        }
+        d.push(arr)
+      }
+      console.log('数据，，，',d)
+      this.infoData = d
+
       this.initStyle()
     },
     initStyle() {
       if(this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
 
+        if(customAttr.color) {
+          this.box_style.valColor = customAttr.color.quotaColor
+          this.box_style.nameColor = customAttr.color.dimensionColor
+          this.box_style.backgroundColor = customAttr.color.textPopBackColor
+          this.box_style.popupBackColor = customAttr.color.popupBackColor
+        }
       }
 
       if(this.chart.customStyle) {
@@ -145,7 +216,7 @@ export default {
     },
     clickPop() {
       console.log('点击，，，',this.chart)
-      this.visible = true
+      // this.visible = true
     },
     closePop() {
       this.visible = false
@@ -155,5 +226,8 @@ export default {
 </script>
 
 <style lang="scss">
-
+.box_auto {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>

@@ -13,10 +13,10 @@
             <el-radio-button label="right">{{$t('chart.text_pos_right')}}</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="$t('chart.pop_left')">
+        <el-form-item :label="$t('chart.pop_left')" class="form-item">
           <el-slider v-model="popForm.popLeft" show-input :show-input-controls="false" input-size="mini" :min="-1000" :step="1" :max="1000" @change="changePopCase" />
         </el-form-item>
-        <el-form-item :label="$t('chart.pop_top')">
+        <el-form-item :label="$t('chart.pop_top')" class="form-item">
           <el-slider v-model="popForm.popTop" show-input :show-input-controls="false" input-size="mini" :min="-1000" :step="1" :max="1000" @change="changePopCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.pop_title_color')" class="form-item">

@@ -81,6 +81,11 @@ export default {
         return {}
       }
     },
+    isEdit: {
+      type: Boolean,
+      require: false,
+      default: true
+    },
     showSummary: {
       type: Boolean,
       required: false,
@@ -194,7 +199,8 @@ export default {
       'curComponent',
       'componentData',
       'canvasStyleData',
-      'previewCanvasScale'
+      'previewCanvasScale',
+      'nowPanelTrackInfo'
     ]),
     newHeight() {
       const style = {}
@@ -249,8 +255,8 @@ export default {
   },
   mounted() {
     // console.log('this.fields', this.fields)
-    // console.log('获取边框数据', this.element)
-    // console.log('this.chart---', this.chart)
+    console.log('获取边框数据', this.element)
+    console.log('this.chart---', this.chart)
     // console.log('滚动表格',this.inScreen)
     this.oldData = JSON.parse(JSON.stringify(this.chart))
     if (this.chart.data) {
@@ -302,10 +308,10 @@ export default {
       if (!this.isPopShow) {
         return
       }
-      console.log(num)
+      // console.log(num)
       this.numberLine = num
       this.newData = JSON.parse(JSON.stringify(this.chart))
-      console.log('newdata', this.newData)
+      // console.log('newdata', this.newData)
       let drillList = []
       if (typeof this.newData.drillFields === 'object') {
         drillList = JSON.parse(JSON.stringify(this.newData.drillFields))
@@ -318,11 +324,25 @@ export default {
       } else if (typeof this.newData.xaxis === 'string') {
         xaxisList = JSON.parse(this.newData.xaxis)
       }
+      let yaxisList = []
+      if (typeof this.newData.yaxis === 'object') {
+        yaxisList = JSON.parse(JSON.stringify(this.newData.yaxis))
+      } else if (typeof this.newData.yaxis === 'string') {
+        yaxisList = JSON.parse(this.newData.yaxis)
+      }
+      
       drillList.map(item => {
         xaxisList.push(item)
+        // if(item.groupType === 'd') {
+        //   xaxisList.push(item)
+        // }
+        // if(item.groupType === 'q') {
+        //   yaxisList.push(item)
+        // }
       })
-      console.log(xaxisList)
+      // console.log('轴字段',xaxisList,yaxisList)
       this.newData.xaxis = JSON.stringify(xaxisList)
+      // this.newData.yaxis = JSON.stringify(yaxisList)
       this.newData.drillFields = '[]'
       this.newData.drillFilters = '[]'
       delete this.newData.data
@@ -340,7 +360,7 @@ export default {
       // 缓存对组件的数据维度进行处理的操作为了之后查询的数据
       save2Cache(this.newData.sceneId, this.newData).then(() => {
         viewData(this.newData.id, this.newData.sceneId, obj).then(res => {
-          console.log('response', res)
+          // console.log('response', res)
           const data = res.data.data
           const fields = data.fields
           const tableRow = []
@@ -371,7 +391,7 @@ export default {
               }
             })
           }
-          console.log(arr)
+          // console.log(arr)
           const hash = {}
           const arr1 = arr.reduceRight((item, next) => {
             hash[next.name] ? '' : hash[next.name] = true && item.push(next)
@@ -380,13 +400,27 @@ export default {
           this.infoForm = arr1.sort((a, b) => {
             return a.num - b.num
           })
-          console.log(this.infoForm)
+          // console.log(this.infoForm)
 
           this.isVisible = true
           // this.dialogVisible = true
           // this.popShow()
         })
       })
+      
+      let sarr = []
+      if(this.chart.data && this.chart.data.sourceFields) {
+        this.chart.data.sourceFields.forEach(item => {
+          const sourceInfo = this.chart.id + '#' + item.id
+          if(this.nowPanelTrackInfo[sourceInfo]) {
+            sarr = this.nowPanelTrackInfo[sourceInfo]
+          }
+        })
+
+        this.$store.commit('setScrollViews',sarr)
+        this.$store.commit('setScrollVisible',true)
+      }
+      
 
       // console.log('行----信息', info, this.fields)
       // // this.dialogVisible = true
@@ -408,6 +442,7 @@ export default {
     },
     closePop() {
       this.isVisible = false
+      this.$store.commit('setScrollVisible',false)
     },
     scorllEvent() {
       var isScroll = true // 也可以定义到data里
