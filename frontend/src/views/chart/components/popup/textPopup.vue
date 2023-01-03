@@ -8,6 +8,7 @@
           trigger="manual"
           v-model="visible"
           :append-to-body="inScreen"
+          popper-class="pop_box"
         >
           <div>
             <!-- <p style="margin: 0px;position: relative;">
@@ -261,5 +262,8 @@ export default {
 .box_auto {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.el-popover {  // 这里可能会有样式冲突，popover
+  padding: 0px;
 }
 </style>
