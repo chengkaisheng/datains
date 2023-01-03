@@ -405,23 +405,10 @@ export default {
           this.isVisible = true
           // this.dialogVisible = true
           // this.popShow()
+
+          this.setLinkViews()
         })
       })
-      
-      let sarr = []
-      if(this.chart.data && this.chart.data.sourceFields) {
-        this.chart.data.sourceFields.forEach(item => {
-          const sourceInfo = this.chart.id + '#' + item.id
-          if(this.nowPanelTrackInfo[sourceInfo]) {
-            sarr = this.nowPanelTrackInfo[sourceInfo]
-          }
-        })
-
-        this.$store.commit('setScrollViews',sarr)
-        this.$store.commit('setScrollVisible',true)
-      }
-      
-
       // console.log('行----信息', info, this.fields)
       // // this.dialogVisible = true
       // let arr = []
@@ -439,6 +426,20 @@ export default {
       // console.log('arr...',arr)
 
       // this.infoForm = arr
+    },
+    setLinkViews() {
+      let sarr = []
+      if(this.chart.data && this.chart.data.sourceFields) {
+        this.chart.data.sourceFields.forEach(item => {
+          const sourceInfo = this.chart.id + '#' + item.id
+          if(this.nowPanelTrackInfo[sourceInfo]) {
+            sarr = this.nowPanelTrackInfo[sourceInfo]
+          }
+        })
+
+        this.$store.commit('setScrollViews',sarr)
+        this.$store.commit('setScrollVisible',true)
+      }
     },
     closePop() {
       this.isVisible = false
