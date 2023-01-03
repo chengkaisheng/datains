@@ -104,10 +104,12 @@ const data = {
     publicLinkStatus: false,
     // 详情信息联动
     detailsViews: [],
-    // 滚动弹窗设置
+    // 滚动弹窗展示设置
     scrollVisible: false,
-    // 滚动详情弹窗联动
+    // 滚动详情弹窗联动字段
     scrollViews: [],
+    //  滚动点击的联动字段值
+    scrollFilters: [],
     pcMatrixCount: {
       x: 36,
       y: 18
@@ -206,11 +208,15 @@ const data = {
     },
 
     setScrollViews(state, data) {
-      console.log('设置联动弹窗',data)
+      // console.log('设置联动弹窗',data)
       state.scrollViews = data
     },
     setScrollVisible(state, status) {
       state.scrollVisible = status
+    },
+
+    setScrollFilters(state,data) {
+      state.scrollFilters = data
     },
 
     setCurCanvasScale(state, curCanvasScale) {

@@ -73,6 +73,7 @@ export default {
   data() {
     return {
       visible: false,
+      associateFiled: '',
       title_show: true,
       title_class: {
         margin: '0 0',
@@ -101,7 +102,8 @@ export default {
       'canvasStyleData',
       'previewCanvasScale',
       'scrollViews',
-      'scrollVisible'
+      'scrollVisible',
+      'scrollFilters'
     ]),
     bg_class() {
       return {
@@ -119,7 +121,7 @@ export default {
     },
   },
   mounted() {
-    console.log('弹窗显示数据，，',this.chart,this.element)
+    console.log('element,chart',this.chart,this.element)
     if (this.chart.data) {
       this.initData()
     }
@@ -133,7 +135,7 @@ export default {
         this.infoData = []
       }
     },
-    scrollVisible: {
+    scrollVisible: { // 展示弹窗用
       handler(val1,val2) {
         console.log('val11111111111',val1)
         
@@ -143,6 +145,10 @@ export default {
             this.scrollViews.forEach(el => {
               if(sourceInfo === el) {
                 this.visible = this.scrollVisible
+                this.associateFiled = item.datainsName
+                if(this.visible) {
+                  this.setData()
+                }
               }
             })
           })
@@ -205,6 +211,32 @@ export default {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
+    },
+    setData() { // 点击滚动表格，获取到联动点击的值过滤
+      let fields = this.chart.data.fields
+      let data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+      // console.log(fields,data,this.associateFiled,this.scrollFilters)
+      let d = []
+      for(let i=0;i<data.length;i++) {
+        const obj = data[i]
+        let arr = []
+        for(let k in obj) {
+          const a = k
+          fields.map(item => {
+            if(a === item.datainsName) {
+              arr.push({
+                name: item.name,
+                value: obj[a]
+              })
+            }
+          })
+        }
+        if(obj[this.associateFiled] === this.scrollFilters[0]) {
+          d.push(arr)
+        }
+      }
+      // console.log('ddddddddddd',d)
+      this.infoData = d
     },
     chartResize() {
       // 指定图表的配置项和数据

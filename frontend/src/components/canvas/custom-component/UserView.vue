@@ -587,6 +587,7 @@ export default {
     },
     linkageFilters: {
       handler(newVal, oldVal) {
+        console.log('触发，linkage',newVal,oldVal)
         if (isChange(newVal, oldVal)) {
           console.log('触发点-------------------------6',newVal,this.element)
           this.getData(this.element.propValue.viewId)

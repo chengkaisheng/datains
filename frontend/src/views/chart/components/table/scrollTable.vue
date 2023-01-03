@@ -59,6 +59,7 @@ import eventBus from '@/components/canvas/utils/eventBus'
 
 import { save2Cache } from '@/api/chart/chart'
 import { viewData } from '@/api/panel/panel'
+import { getViewLinkageGather } from '@/api/panel/linkage'
 
 export default {
   name: 'TableNormal',
@@ -263,6 +264,8 @@ export default {
       this.prossData()
       // this.tableScroll()
     }
+
+    this.linkageSetting()
   },
   destroyed() {
     clearInterval(this.timer)
@@ -304,7 +307,6 @@ export default {
       }
 
       //
-
       if (!this.isPopShow) {
         return
       }
@@ -406,7 +408,7 @@ export default {
           // this.dialogVisible = true
           // this.popShow()
 
-          this.setLinkViews()
+          this.setLinkViews(info)
         })
       })
       // console.log('行----信息', info, this.fields)
@@ -427,18 +429,22 @@ export default {
 
       // this.infoForm = arr
     },
-    setLinkViews() {
+    setLinkViews(info) { // 设置联动的弹窗展示出来
+      console.log('点击的数据',info)
       let sarr = []
+      let arrVal = []
       if(this.chart.data && this.chart.data.sourceFields) {
         this.chart.data.sourceFields.forEach(item => {
           const sourceInfo = this.chart.id + '#' + item.id
           if(this.nowPanelTrackInfo[sourceInfo]) {
             sarr = this.nowPanelTrackInfo[sourceInfo]
+            arrVal.push(info[item.datainsName]) 
           }
         })
-
-        this.$store.commit('setScrollViews',sarr)
-        this.$store.commit('setScrollVisible',true)
+        
+        this.$store.commit('setScrollViews',sarr)  // 联动的组件id和字段id
+        this.$store.commit('setScrollVisible',true) // 展示弹窗
+        this.$store.commit('setScrollFilters',arrVal) // 过滤弹窗展示的数据
       }
     },
     closePop() {
@@ -553,6 +559,22 @@ export default {
 
       this.$nextTick(() => {
         this.initStyle()
+      })
+    },
+    linkageSetting() {
+      // sourceViewId 也加入查询
+      const targetViewIds = this.componentData.filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
+        .map(item => item.propValue.viewId)
+
+      // 获取当前仪表板当前视图联动信息
+      const requestInfo = {
+        'panelId': this.$store.state.panel.panelInfo.id,
+        'sourceViewId': this.element.propValue.viewId,
+        'targetViewIds': targetViewIds
+      }
+      // console.log('联动设置',requestInfo)
+      getViewLinkageGather(requestInfo).then(rsp => {
+        console.log('联动数据', rsp)
       })
     },
     changeColumnWidth({ column, columnIndex }) {
