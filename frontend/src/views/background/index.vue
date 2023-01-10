@@ -132,7 +132,7 @@
         </el-row>
       </el-row>
 
-      <el-row v-if="(curComponent.component === 'de-select' || curComponent.component === 'de-input-search') 
+      <el-row v-if="(curComponent.component === 'de-select' || curComponent.component === 'de-input-search' || curComponent.component === 'de-select-grid') 
         && curComponent.type === 'custom'">
         <el-row >
           <el-col :span="4" style="padding-left: 10px;padding-top: 5px">
@@ -151,12 +151,6 @@
             </el-col>
             <el-col :span="1" style="padding-top: 5px">
               <el-color-picker v-model="curComponent.commonSelectFrame.color" size="mini" class="color-picker-style" :predefine="predefineColors" />
-            </el-col>
-            <el-col :span="3">
-              <span class="params-title-small">不透明度：</span>
-            </el-col>
-            <el-col :span="11">
-              <el-slider v-model="curComponent.commonSelectFrame.alpha" show-input :show-input-controls="false" input-size="mini" />
             </el-col>
           </el-row>
           <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
@@ -184,21 +178,29 @@
             </el-col>
           </el-row>
           <el-row>
-            <el-col :span="3" style="text-align:center;">字体颜色</el-col>
+            <el-col :span="4">
+              <span class="params-title-small">不透明度：</span>
+            </el-col>
+            <el-col :span="11">
+              <el-slider v-model="curComponent.commonSelectFrame.alpha" show-input :show-input-controls="false" input-size="mini" />
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="4" ><span class="params-title-small">框字体颜色：</span></el-col>
             <el-col :span="1">
               <el-color-picker v-model="curComponent.commonSelectFrame.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
             </el-col>
           </el-row>
           <el-row v-if="curComponent.component === 'de-select'" style="margin-top: 10px;">
             <el-col style="margin-bottom: 10px;">
-              <el-col :span="3" style="text-align:center;">选项字体</el-col>
+              <el-col :span="4" ><span class="params-title-small">选项字体颜色：</span></el-col>
               <el-col :span="1">
                 <el-color-picker v-model="curComponent.commonSelectFrame.checkColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
               </el-col>
             </el-col>
             <el-col>
-              <el-col :span="3" style="text-align:center;">选项背景</el-col>
-              <el-col :span="21">
+              <el-col :span="4" ><span class="params-title-small">选项背景设置：</span></el-col>
+              <el-col :span="20">
                 <el-col style="margin-bottom: 10px;">
                   <el-radio-group v-model="curComponent.commonSelectFrame.checkBgType" style="width: 100%;">
                     <el-col :span="10">
@@ -235,6 +237,20 @@
                     </el-col>
                   </el-col>
                 </el-col>
+              </el-col>
+            </el-col>
+          </el-row>
+          <el-row v-if="curComponent.component === 'de-select-grid'" style="margin-top: 10px;">
+            <el-col style="margin-bottom: 10px;">
+              <el-col :span="4" ><span class="params-title-small">列表字体颜色：</span></el-col>
+              <el-col :span="1">
+                <el-color-picker v-model="curComponent.commonSelectFrame.panelColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+              </el-col>
+            </el-col>
+            <el-col>
+              <el-col :span="4" ><span class="params-title-small">列表背景颜色：</span></el-col>
+              <el-col :span="1">
+                <el-color-picker v-model="curComponent.commonSelectFrame.panelBgColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
               </el-col>
             </el-col>
           </el-row>

@@ -257,8 +257,8 @@ export default {
   }
 
   .first-element-grid-contaner {
-    background: #fff;
-    border: 1px solid #d7dae2;
+    // background: #fff;
+    // border: 1px solid #d7dae2;
     top: 5px;
   }
 

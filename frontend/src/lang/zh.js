@@ -1543,7 +1543,7 @@ export default {
     box_fontSize: '字体大小',
     box_fontColor: '字体颜色',
     background: '背景',
-    selectBackground: '下拉框背景',
+    selectBackground: '框背景设置',
     component_style: '组件样式',
     rotate_pictures: '轮播图片',
     Number_of_rotation_shows: '轮播展示数量',

@@ -1094,9 +1094,10 @@ export default {
         this.currentFilterCom.commonBackground = this.currentFilterCom.commonBackground || deepCopy(COMMON_BACKGROUND)
 
         if(
-          this.dragComponentInfo.component === 'de-select'
-          || this.dragComponentInfo.component === 'de-input-search'
-        ){ // 文本下拉框背景数据
+          this.dragComponentInfo.component === 'de-select' // 文本下拉框背景数据
+          || this.dragComponentInfo.component === 'de-input-search' // 文本搜索框背景数据
+          || this.dragComponentInfo.component === 'de-select-grid' // 文本列表
+        ){ 
           this.currentFilterCom.commonSelectFrame = this.currentFilterCom.commonSelectFrame || deepCopy(COMMON_SELECT_FRAME)
         }
         

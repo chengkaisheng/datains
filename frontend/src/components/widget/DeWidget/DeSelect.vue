@@ -10,12 +10,13 @@
     :multiple="element.options.attrs.multiple"
     :placeholder="$t(element.options.attrs.placeholder)"
     :popper-append-to-body="inScreen"
-    :size="size"
+    size="mini"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
     :style="selectStyle"
   >
+  <!-- :size="size" -->
     <!-- popper-class -->
     <el-option
       v-for="item in datas"

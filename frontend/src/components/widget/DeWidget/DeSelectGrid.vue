@@ -3,21 +3,26 @@
   <div v-if="element.options!== null && element.options.attrs!==null && show" class="de-select-grid-class">
     <div class="de-select-grid-search">
       <el-input
+        class="input-search"
         v-model="keyWord"
         :placeholder="$t('deinputsearch.placeholder')"
         :size="size"
         prefix-icon="el-icon-search"
         clearable
+        :style="inputStyle"
       />
     </div>
-    <div class="list">
+    <div class="list" :style="panelStyle">
 
       <div v-if="element.options.attrs.multiple" class="checkbox-group-container">
-        <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
-          {{ $t('commons.all') }}</el-checkbox>
+        <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange" >
+          <span :style="panelCheck">{{ $t('commons.all') }}</span>
+        </el-checkbox>
 
         <el-checkbox-group v-model="value" @change="handleCheckedChange">
-          <el-checkbox v-for="item in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))" :key="item.id" :label="item.id">{{ item.id }}</el-checkbox>
+          <el-checkbox v-for="item in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))" :key="item.id" :label="item.id" >
+            <span :style="panelCheck">{{ item.id }}</span>
+          </el-checkbox>
         </el-checkbox-group>
       </div>
 
@@ -96,6 +101,39 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    inputStyle() {
+      const style = {}
+      console.log('inputstyle11111',this.element)
+      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        if(this.element.commonSelectFrame.backType === 'Image') {
+          if(this.element.commonSelectFrame.backImg !== '') {
+            style.backgroundImage = `url(${this.element.commonSelectFrame.backImg})`
+          }
+          style.backgroundRepeat = 'no-repeat'
+          style.backgroundSize = '100% 100%'
+        } else  {
+          style.backgroundColor = this.element.commonSelectFrame.color
+        }
+        style.color = this.element.commonSelectFrame.fontColor
+      }
+      
+      return style
+    },
+    panelStyle() {
+      const style = {}
+      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        // style.color = this.element.commonSelectFrame.panelColor
+        style.backgroundColor = this.element.commonSelectFrame.panelBgColor
+      }
+      return style
+    },
+    panelCheck() {
+      const style = {}
+      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        style.color = this.element.commonSelectFrame.panelColor
+      }
+      return style
     }
   },
   watch: {
@@ -263,6 +301,9 @@ export default {
 
 <style lang="scss" scoped>
   .de-select-grid-search {
+    background-color: transparent;
+  }
+  .de-select-grid-search {
     >>>input {
       border-radius: 0px;
 
@@ -292,6 +333,7 @@ export default {
   }
 
   .checkbox-group-container {
+    background-color: transparent;
     label.el-checkbox {
       display: block !important;
       margin: 10px !important;
@@ -303,5 +345,17 @@ export default {
     }
 
   }
+
+.input-search ::v-deep .el-input__inner {
+  background-color: transparent;
+  color: inherit;
+}
+.input-search ::v-deep .el-input__inner::placeholder {
+  color: inherit;
+}
+.input-search ::v-deep .el-input-group__append, .el-input-group__prepend {
+  background-color: transparent;
+  color: inherit;
+}
 
 </style>
