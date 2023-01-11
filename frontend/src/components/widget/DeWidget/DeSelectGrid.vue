@@ -44,6 +44,7 @@
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import { getLinkToken, getToken } from '@/utils/auth'
 import bus from '@/utils/bus'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 export default {
 
   props: {
@@ -104,7 +105,7 @@ export default {
     },
     inputStyle() {
       const style = {}
-      console.log('inputstyle11111',this.element)
+      // console.log('inputstyle11111',this.element)
       if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
         if(this.element.commonSelectFrame.backType === 'Image') {
           if(this.element.commonSelectFrame.backImg !== '') {

@@ -20,6 +20,7 @@
 
 <script>
 import bus from '@/utils/bus'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 export default {
 
   props: {
@@ -64,6 +65,7 @@ export default {
           style.backgroundSize = '100% 100%'
         } else  {
           style.backgroundColor = this.element.commonSelectFrame.color
+          // style.backgroundColor = this.hexColorToRGBA(this.element.commonSelectFrame.color,this.element.commonSelectFrame.alpha)
         }
         style.color = this.element.commonSelectFrame.fontColor
       }

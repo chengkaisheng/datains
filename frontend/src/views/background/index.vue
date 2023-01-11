@@ -177,14 +177,14 @@
               </el-dialog>
             </el-col>
           </el-row>
-          <el-row>
+          <!-- <el-row>
             <el-col :span="4">
               <span class="params-title-small">不透明度：</span>
             </el-col>
             <el-col :span="11">
               <el-slider v-model="curComponent.commonSelectFrame.alpha" show-input :show-input-controls="false" input-size="mini" />
             </el-col>
-          </el-row>
+          </el-row> -->
           <el-row>
             <el-col :span="4" ><span class="params-title-small">框字体颜色：</span></el-col>
             <el-col :span="1">
@@ -264,6 +264,17 @@
             <el-color-picker v-model="curComponent.commonSelectFrame.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
           </el-col>
         </el-row>
+      </el-row>
+
+      <el-row v-if="curComponent.component === 'Picture'">
+        <el-row>
+            <el-col :span="4">
+              <span class="params-title-small">图片不透明度：</span>
+            </el-col>
+            <el-col :span="11">
+              <el-slider v-model="curComponent.commonSelectFrame.alpha" show-input :show-input-controls="false" input-size="mini" />
+            </el-col>
+          </el-row>
       </el-row>
 
     </el-row>
@@ -366,6 +377,7 @@ export default {
 
       if(this.curComponent.component === 'de-select' 
         || this.curComponent.component === 'de-input-search'
+        || this.curComponent.component === 'de-select-grid'
       ) {
         this.curComponent.commonSelectFrame.enable = this.selectOrigin.enable
         this.curComponent.commonSelectFrame.backType = this.selectOrigin.backType
@@ -373,6 +385,16 @@ export default {
         this.curComponent.commonSelectFrame.backImg = this.selectOrigin.backImg
         this.curComponent.commonSelectFrame.alpha = this.selectOrigin.alpha
         this.curComponent.commonSelectFrame.fontColor = this.selectOrigin.fontColor
+        this.curComponent.commonSelectFrame.checkBgType = this.selectOrigin.checkBgType
+        this.curComponent.commonSelectFrame.checkColor = this.selectOrigin.checkColor
+        this.curComponent.commonSelectFrame.checkBgColor = this.selectOrigin.checkBgColor
+        this.curComponent.commonSelectFrame.checkBgImg = this.selectOrigin.checkBgImg
+        this.curComponent.commonSelectFrame.panelBgColor = this.selectOrigin.panelBgColor
+        this.curComponent.commonSelectFrame.panelColor = this.selectOrigin.panelColor
+      }
+
+      if(this.curComponent.component === 'Picture') {
+        this.curComponent.commonSelectFrame.alpha = this.selectOrigin.alpha
       }
 
       console.log('this.curComponent.commonBackground=====', this.curComponent.commonBackground)

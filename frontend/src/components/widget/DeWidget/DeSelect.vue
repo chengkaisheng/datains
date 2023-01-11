@@ -35,6 +35,7 @@
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { getLinkToken, getToken } from '@/utils/auth'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 export default {
 
   props: {
