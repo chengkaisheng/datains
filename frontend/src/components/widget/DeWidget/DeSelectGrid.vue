@@ -29,7 +29,7 @@
       <div v-else class="radio-group-container">
         <el-radio-group v-model="value" @change="changeRadioBox">
           <el-radio v-for="(item, index) in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))" :key="index" :label="item.id" @click.native.prevent="testChange(item)">
-            <span>{{ item.id }}</span>
+            <span :style="panelCheck">{{ item.id }}</span>
           </el-radio>
         </el-radio-group>
       </div>
@@ -325,6 +325,10 @@ export default {
       height: calc(100% - 40px);
       text-align: left;
     }
+  }
+
+  .radio-group-container {
+    background-color: transparent;
   }
 
   .radio-group-container>.el-radio-group>label {
