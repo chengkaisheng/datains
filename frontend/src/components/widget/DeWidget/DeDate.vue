@@ -16,6 +16,7 @@
     @change="dateChange"
     @focus="toFocus"
     @blur="onBlur"
+    :style="dateStyle"
   />
 </template>
 
@@ -68,6 +69,12 @@ export default {
     },
     manualModify() {
       return !!this.element.options.manualModify
+    },
+    dateStyle() {
+      const style = {}
+      // console.log('日期颜色。',this.element)
+      style.color = this.element.commonSelectFrame.fontColor
+      return style
     }
   },
   watch: {
@@ -206,6 +213,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .deDate {
+    background-color: transparent;
+  }
   .deDate ::v-deep .el-input__inner {
     background-color: transparent;
   }
@@ -216,5 +226,16 @@ export default {
 
   .deDate ::v-deep .el-range-editor .el-range-input {
     background-color: transparent;
+  }
+  
+  .deDate ::v-deep .el-range-input {
+    background-color: transparent;
+    color: inherit;
+  }
+  .deDate ::v-deep .el-range-separator {
+    color: inherit;
+  }
+  .deDate ::v-deep .el-range__icon {
+    color: inherit;
   }
 </style>
