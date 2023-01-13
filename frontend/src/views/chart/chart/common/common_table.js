@@ -83,6 +83,7 @@ export function getCustomTheme(chart, fontFamily) {
     dataCell: {
       cell: {
         backgroundColor: itemColor,
+        crossBackgroundColor: itemColor,
         horizontalBorderColor: borderColor,
         verticalBorderColor: borderColor
         // fontFamily: fontFamily
@@ -109,9 +110,9 @@ export function getCustomTheme(chart, fontFamily) {
     // color
     if (customAttr.color) {
       const c = JSON.parse(JSON.stringify(customAttr.color))
-      const h_c = hexColorToRGBA(c.tableHeaderBgColor, c.alpha)
-      const i_c = hexColorToRGBA(c.tableItemBgColor, c.alpha)
-      const b_c = c.tableBorderColor ? hexColorToRGBA(c.tableBorderColor, c.alpha) : hexColorToRGBA(DEFAULT_COLOR_CASE.tableBorderColor, c.alpha)
+      const h_c = hexColorToRGBA(c.tableHeaderBgColor, c.alpha) // 表头背景
+      const i_c = hexColorToRGBA(c.tableItemBgColor, c.alpha) // 表格背景
+      const b_c = c.tableBorderColor ? hexColorToRGBA(c.tableBorderColor, c.alpha) : hexColorToRGBA(DEFAULT_COLOR_CASE.tableBorderColor, c.alpha) // 边框颜色
       theme.splitLine.horizontalBorderColor = b_c
       theme.splitLine.verticalBorderColor = b_c
 
@@ -134,6 +135,7 @@ export function getCustomTheme(chart, fontFamily) {
       theme.colCell.text.fill = c.tableFontColor
 
       theme.dataCell.cell.backgroundColor = i_c
+      theme.dataCell.cell.crossBackgroundColor = i_c
       theme.dataCell.cell.horizontalBorderColor = b_c
       theme.dataCell.cell.verticalBorderColor = b_c
       theme.dataCell.bolderText.fill = c.tableFontColor

@@ -59,7 +59,7 @@ export default {
           }
         })
         this.setInfo = arr
-        // console.log('ar,rrrrrrrr,,,,,',arr)
+        // console.log('详情信息，，',arr)
       },500)
     }
   }
