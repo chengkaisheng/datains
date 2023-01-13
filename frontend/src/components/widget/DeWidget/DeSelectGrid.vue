@@ -20,18 +20,26 @@
         </el-checkbox>
 
         <el-checkbox-group v-model="value" @change="handleCheckedChange">
-          <el-checkbox v-for="item in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))" :key="item.id" :label="item.id" >
+          <el-checkbox v-for="item in datas" :key="item.id" :label="item.id" >
             <span :style="panelCheck">{{ item.id }}</span>
           </el-checkbox>
         </el-checkbox-group>
+        <p v-if="fieldNumber !== fieldDatas.length && (fieldNumber !== fieldDatas.filter(node => !keyWord || (node.id && node.id.includes(keyWord))).length)" 
+          class="loading_css" @click="loadDataMore">
+          <span :style="panelCheck">点击加载更多</span>
+        </p>
       </div>
 
       <div v-else class="radio-group-container">
         <el-radio-group v-model="value" @change="changeRadioBox">
-          <el-radio v-for="(item, index) in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))" :key="index" :label="item.id" @click.native.prevent="testChange(item)">
+          <el-radio v-for="(item, index) in datas" :key="index" :label="item.id" @click.native.prevent="testChange(item)">
             <span :style="panelCheck">{{ item.id }}</span>
           </el-radio>
         </el-radio-group>
+        <p v-if="fieldNumber !== fieldDatas.length && (fieldNumber !== fieldDatas.filter(node => !keyWord || (node.id && node.id.includes(keyWord))).length)" 
+          class="loading_css" @click="loadDataMore">
+          <span :style="panelCheck">点击加载更多</span>
+        </p>
       </div>
 
     </div>
@@ -82,7 +90,9 @@ export default {
       show: true,
       datas: [],
       isIndeterminate: false,
-      checkAll: false
+      checkAll: false,
+      fieldNumber: 100,
+      fieldDatas: [], // 所有数据
     }
   },
   computed: {
@@ -138,6 +148,38 @@ export default {
     }
   },
   watch: {
+    keyWord: {
+      handler(val1,val2) {
+        this.fieldNumber = 100
+        let data = this.fieldDatas.filter(node => !val1 || (node.id && node.id.includes(val1)))
+        if(val1 !== '') {
+          if(data.length) {
+            if(this.fieldNumber > data.length) {
+              this.fieldNumber = data.length
+              this.datas = data
+            } else {
+              let arr = []
+              for(let i=0;i<this.fieldNumber;i++) {
+                arr.push(data[i])
+              }
+              this.datas = arr
+            }
+          }else {
+            this.fieldNumber = 0
+            this.datas = []
+          }
+          
+        } else {
+          let arr = []
+          for(let i=0;i<this.fieldNumber;i++) {
+            arr.push(this.fieldDatas[i])
+          }
+          this.datas = arr
+        }
+        
+        // console.log('2222222',this.datas)
+      }
+    },
     'viewIds': function(value, old) {
       if (typeof value === 'undefined' || value === old) return
       this.setCondition()
@@ -218,7 +260,15 @@ export default {
           method = linkMultFieldValues
         }
         method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
-          this.datas = this.optionDatas(res.data)
+          this.fieldDatas = this.optionDatas(res.data)
+          if(this.fieldNumber > this.fieldDatas.length) {
+            this.fieldNumber = this.fieldDatas.length
+          }
+          let arr = [] 
+          for(let i=0;i<this.fieldNumber;i++) {
+            arr.push(this.fieldDatas[i])
+          }
+          this.datas = arr
           if (this.element.options.attrs.multiple) {
             this.checkAll = this.value.length === this.datas.length
             this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
@@ -228,6 +278,22 @@ export default {
       if (this.element.options.value) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
+      }
+    },
+    loadDataMore() {
+      this.fieldNumber += 100
+      if(this.fieldNumber > this.fieldDatas.length) {
+        this.fieldNumber = this.fieldDatas.length
+      }
+      console.log(this.fieldNumber)
+      let arr = [] 
+      for(let i=0;i<this.fieldNumber;i++) {
+        arr.push(this.fieldDatas[i])
+      }
+      this.datas = arr
+      if (this.element.options.attrs.multiple) {
+        this.checkAll = this.value.length === this.datas.length
+        this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
       }
     },
     changeValue(value) {
@@ -301,6 +367,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .loading_css {
+    text-align: center;
+    cursor: pointer;
+  }
   .de-select-grid-search {
     background-color: transparent;
   }

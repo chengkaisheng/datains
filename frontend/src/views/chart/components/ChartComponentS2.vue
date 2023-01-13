@@ -138,7 +138,7 @@ export default {
     }
   },
   mounted() {
-    console.log('11111', this.canvasStyleData)
+    // console.log('11111', this.canvasStyleData)
     this.preDraw()
   },
   beforeDestroy() {

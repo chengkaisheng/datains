@@ -827,7 +827,7 @@ export default {
     },
     handleScroll() {
       // console.log('21312321321')
-      console.log('this. console.log()----------', this.curCanvasScale)
+      // console.log('this. console.log()----------', this.curCanvasScale)
       this.curCanvasScale.scaleRule = this.scaleRule
       const screensRect = document
         .querySelector('#ruleBox')
@@ -850,7 +850,7 @@ export default {
     },
     // 控制缩放值
     handleWheel(e) {
-      console.log('是否触发-----', e)
+      // console.log('是否触发-----', e)
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault()
         const nextScale = parseFloat(
