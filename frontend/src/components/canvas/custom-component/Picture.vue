@@ -27,7 +27,10 @@ export default {
     backStyle() {
       const style = {}
       // console.log('图片里',this.element)
-      style.opacity = parseInt(this.element.commonSelectFrame.alpha)/100
+      if(this.element.commonSelectFrame && this.element.commonSelectFrame.alpha !== undefined) {
+        style.opacity =  parseInt(this.element.commonSelectFrame.alpha)/100
+      }
+      
       return style
     }
   }
