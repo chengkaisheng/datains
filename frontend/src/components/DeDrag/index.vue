@@ -406,7 +406,7 @@ export default {
   },
   computed: {
     boxWidth() {
-      console.log('修改触发=====0001boxWidth2222222222222222', this.element)
+      // console.log('修改触发=====0001boxWidth2222222222222222', this.element)
       return this.element.commonBackground && this.element.commonBackground.boxWidth || 0
     },
     boxHeight() {

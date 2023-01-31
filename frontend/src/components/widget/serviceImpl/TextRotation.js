@@ -35,7 +35,8 @@ const dialogPanel = {
     pattern: 'default', // 滚动和默认
     scrollPage: 2,
     autoplay: true,
-    autoTime: 1
+    autoTime: 1,
+    
   },
   defaultClass: 'text-filter',
   component: 'de-rotation',

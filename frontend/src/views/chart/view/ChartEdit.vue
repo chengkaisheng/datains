@@ -1917,7 +1917,7 @@ export default {
       }
       if (view.type.startsWith('pie') ||
         view.type.startsWith('funnel') ||
-        view.type.startsWith('text') ||
+        (view.type.startsWith('text') && view.type !== 'text_popup') ||
         view.type.startsWith('gauge') ||
         view.type === 'treemap' ||
         view.type === 'liquid' ||

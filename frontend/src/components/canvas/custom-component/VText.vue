@@ -71,7 +71,7 @@ export default {
       return this.editMode === 'edit' && !this.mobileLayoutStatus
     },
     textInfo() {
-      console.log('text.........',this.element,this.canvasStyleData)
+      // console.log('text.........',this.element,this.canvasStyleData)
       if (this.element && this.element.hyperlinks && this.element.hyperlinks.enable) {
         return "<a title='" + this.element.hyperlinks.content + "' target='" + this.element.hyperlinks.openMode + "' href='" + this.element.hyperlinks.content + "'>" + this.element.propValue + '</a>'
       } else {
