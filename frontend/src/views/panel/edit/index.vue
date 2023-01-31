@@ -741,6 +741,11 @@ export default {
     },
     mobileLayoutStatus() {
       this.restore()
+    },
+    previewVisible: {
+      handler(val1,val2) {
+        console.log('全屏状态改变', val1)
+      }
     }
   },
   created() {

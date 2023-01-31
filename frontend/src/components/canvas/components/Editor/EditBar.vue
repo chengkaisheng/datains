@@ -23,7 +23,7 @@
       <!-- <span :title="$t('panel.suspension')">
         <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
       </span> -->
-      <span :title="$t('panel.details')">
+      <span v-if="screenStatus" :title="$t('panel.details')">
         <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
       </span>
       <span :title="$t('panel.cancel_linkage')">
@@ -193,7 +193,8 @@ export default {
       'checkboxStatus',
       'targetLinkageInfo',
       'curLinkageView',
-      'curCanvasScale'
+      'curCanvasScale',
+      'screenStatus'
     ])
   },
   beforeDestroy() {

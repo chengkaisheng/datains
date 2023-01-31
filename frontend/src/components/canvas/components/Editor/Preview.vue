@@ -353,6 +353,8 @@ export default {
 
     // }
 
+    this.$store.commit('setScreenStatus',this.inScreen)
+
     setTimeout(() => {
       _this.restore()
     })

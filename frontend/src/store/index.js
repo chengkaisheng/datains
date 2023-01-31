@@ -126,7 +126,9 @@ const data = {
     // 视图是否编辑记录
     panelViewEditInfo: {},
     // 仪表板视图明细
-    panelViewDetailsInfo: {}
+    panelViewDetailsInfo: {},
+    // 全屏状态
+    screenStatus: false,
   },
   mutations: {
     ...animation.mutations,
@@ -157,6 +159,10 @@ const data = {
       }
 
       state.canvasStyleData = style
+    },
+
+    setScreenStatus(state,status) {
+      state.screenStatus = status
     },
 
     setPanelStatus(state,status) {
