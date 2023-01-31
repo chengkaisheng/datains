@@ -17,7 +17,8 @@ const dialogPanel = {
       label: 'text',
       value: 'id',
       fieldId: '',
-      dragItems: []
+      dragItems: [],
+      filterItems: [],
     },
     value: '',
     manualModify: false

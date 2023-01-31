@@ -112,7 +112,7 @@ export default {
         }
         style.color = this.element.commonSelectFrame.checkColor
       }
-      console.log('optionstyle,,,',style)
+      // console.log('optionstyle,,,',style)
       return style
     }
   },
@@ -183,7 +183,7 @@ export default {
     onBlur() {
       this.onFocus = false
     },
-    initLoad() {
+    async initLoad() {
       this.value = this.fillValueDerfault()
       this.datas = []
       if (this.element.options.attrs.fieldId) {
@@ -193,6 +193,24 @@ export default {
         if (!token && linkToken) {
           method = linkMultFieldValues
         }
+
+        let objs = []
+        if(this.element.options && this.element.options.attrs) {
+          let arr = this.element.options.attrs.dragItems
+          arr.forEach(item => {
+            if(item.originName === 'row_num') {
+              objs.push({
+                ...item,
+                filter: [{
+                  fieldId: item.id,
+                  term: 'lt',
+                  value: '1000'
+                }]
+              })
+            }
+          })
+        }
+        console.log('这个row_num',objs)
         method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
           this.datas = this.optionDatas(res.data)
         })

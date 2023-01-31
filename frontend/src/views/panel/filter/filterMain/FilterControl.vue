@@ -14,7 +14,8 @@
     <el-col :span="16">
       <div class="filter-options-right">
         <span style="padding-right: 10px;">
-          <el-checkbox v-model="attrs.showTitle" @change="showTitleChange">{{ $t('panel.show_title') }}
+          <el-checkbox v-model="attrs.showTitle" @change="showTitleChange">
+            {{ $t('panel.show_title') }}
           </el-checkbox>
           <el-popover v-model="titlePopovervisible" placement="bottom-end" :disabled="!attrs.showTitle" width="200">
             <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
@@ -60,6 +61,38 @@
             />
           </el-popover>
         </span>
+        <!-- <span style="padding-left: 10px;" v-if="element.component === 'de-select'">
+          <el-checkbox v-model="attrs.showFilter" @change="showFilterChange">
+            <span>{{$t('panel.custom_filter')}}</span>
+          </el-checkbox>
+          <el-popover v-model="filterVisible" placement="bottom-end" :disabled="!attrs.showFilter" width="200">
+            <div style="width:100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
+              <draggable
+                v-model="attrs.filterItems"
+                group="drag"
+                animation="300"
+                :move="onMove"
+                class="theme-drag"
+                style="padding:2px 0 0 0;width:100%;min-height: 32px;overflow-x: auto;display: flex;align-items: center;"
+                @add="addCustomFilter"
+              >
+                <transition-group class="draggable-group">
+                  <filter-item
+                    v-for="(item,index) in attrs.filterItems"
+                    :key="item.id"
+                    :param="param"
+                    :index="index"
+                    :item="item"
+                    :dimension-data="dimension"
+                    :quota-data="quota"
+                    @onFilterItemRemove="filterItemRemove"
+                    @editItemFilter="showEditFilter"
+                  />
+                </transition-group>
+              </draggable>
+            </div>
+          </el-popover>
+        </span> -->
       </div>
 
     </el-col>
@@ -68,6 +101,7 @@
 
 <script>
 import {mapState} from "vuex";
+import FilterItem from '@/views/chart/components/drag-item/FilterItem.vue'
 
 export default {
   name: 'FilterControl',
@@ -90,12 +124,16 @@ export default {
       default: null
     }
   },
+  components: { FilterItem },
   data() {
     return {
       attrs: null,
       titlePopovervisible: false,
-      popovervisible: false
-
+      popovervisible: false,
+      filterVisible: false,
+      param: {
+        type: 'filter'
+      }
     }
   },
 
@@ -123,8 +161,21 @@ export default {
       }
       this.fillAttrs2Filter()
     },
+    showFilterChange(value) {
+      if (!value) {
+        this.attrs.filterItems = []
+      }
+    },
 
-    fillAttrs2Filter() {}
+    fillAttrs2Filter() {},
+
+    addCustomFilter(e) {
+      this.dragMoveDuplicate(this.attrs.filterItems,e)
+    },
+    dragMoveDuplicate(list,e,mode) {
+      console.log('dragMove:::::',list,e,mode)
+    }
+
   }
 }
 
@@ -181,6 +232,16 @@ export default {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+  }
+
+  .blackTheme .theme-drag {
+    background-color: var(--MainBG, #fff);
+  }
+
+  .draggable-group {
+    display: block;
+    width: 100%;
+    height: calc(100% - 6px);
   }
 
 </style>

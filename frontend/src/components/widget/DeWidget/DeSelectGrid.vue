@@ -250,7 +250,7 @@ export default {
   },
 
   methods: {
-    initLoad() {
+    async initLoad() {
       this.value = this.element.options.attrs.multiple ? [] : null
       if (this.element.options.attrs.fieldId) {
         let method = multFieldValues
