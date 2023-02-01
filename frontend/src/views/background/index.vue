@@ -409,6 +409,10 @@ export default {
       if(this.curComponent.component === 'de-date') {
         this.curComponent.commonSelectFrame.fontSize === this.selectOrigin.fontSize
       }
+      if(this.curComponent.component === 'de-text-info') {
+        this.curComponent.commonSelectFrame.fontColor === this.selectOrigin.fontColor
+      }
+
 
       console.log('this.curComponent.commonBackground=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')

@@ -258,8 +258,8 @@ export default {
     },
     floatPosition() {
       const style = {}
-      style.left = (this.element.options.floatLevel? this.element.options.floatLevel : 0) + 'px'
-      style.top = (this.element.options.floatVertical? this.element.options.floatVertical : 0) + 'px'
+      style.left = (this.element.options.floatLevel? parseInt(this.element.options.floatLevel) : 0) + 'px'
+      style.top = (this.element.options.floatVertical? parseInt(this.element.options.floatVertical) : 0) + 'px'
       console.log('修改后会进吗？',this.element.options)
       return style
     },

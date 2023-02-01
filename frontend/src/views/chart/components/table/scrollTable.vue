@@ -59,6 +59,8 @@ import eventBus from '@/components/canvas/utils/eventBus'
 
 import { save2Cache } from '@/api/chart/chart'
 import { viewData } from '@/api/panel/panel'
+import { viewInfo } from '@/api/link'
+import { getToken, getLinkToken } from '@/utils/auth'
 import { getViewLinkageGather } from '@/api/panel/linkage'
 
 export default {
@@ -361,7 +363,15 @@ export default {
       }
       // 缓存对组件的数据维度进行处理的操作为了之后查询的数据
       save2Cache(this.newData.sceneId, this.newData).then(() => {
-        viewData(this.newData.id, this.newData.sceneId, obj).then(res => {
+        
+        let method = viewData
+        const token = this.$store.getters.token || getToken()
+        const linkToken = this.$store.getters.linkToken || getLinkToken()
+        if (!token && linkToken) {
+          method = viewInfo
+        }
+
+        method(this.newData.id, this.newData.sceneId, obj).then(res => {
           // console.log('response', res)
           const data = res.data.data
           const fields = data.fields
@@ -573,9 +583,9 @@ export default {
         'targetViewIds': targetViewIds
       }
       // console.log('联动设置',requestInfo)
-      getViewLinkageGather(requestInfo).then(rsp => {
-        console.log('联动数据', rsp)
-      })
+      // getViewLinkageGather(requestInfo).then(rsp => {
+      //   console.log('联动数据', rsp)
+      // })
     },
     changeColumnWidth({ column, columnIndex }) {
       console.log('23123213213231232132121', column, columnIndex)

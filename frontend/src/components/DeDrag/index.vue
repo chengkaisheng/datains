@@ -1991,7 +1991,7 @@ export default {
     setJump() {
       this.$emit('setJump')
     },
-    // 文本详情
+    // 滚动文本详情
     setTextInfo() {
       this.$emit('setTextInfo')
     },

@@ -84,10 +84,11 @@ export default {
               sceneId: res.data.sceneId
             })
           }
+
+          if(this.componentList.length) {
+            this.viewValue = this.curComponent.options.viewId
+          }
         })
-      }
-      if(this.componentList.length) {
-        this.viewValue = this.curComponent.options.viewId
       }
     },
     save() {
