@@ -105,6 +105,26 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
+          <el-dropdown-item divided v-if="viewType === 'roll-elemnt'">
+            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="relationShow">
+              <span class="el-dropdown-link inner-dropdown-menu">
+                <span>
+                  <i class="el-icon-view" />
+                  <span>{{$t('chart.relation')}}</span>
+                  <span class="summary-span-item">
+                    (
+                    <span v-if="item.relation">展示</span>
+                    <span v-else>隐藏</span>
+                    )
+                  </span>
+                </span>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="beforeRelation(true)">展示</el-dropdown-item>
+                <el-dropdown-item :command="beforeRelation(false)">隐藏</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
         </el-dropdown-menu>
       </span>
     </el-dropdown>
@@ -159,7 +179,11 @@ export default {
   },
   mounted() {
     console.log('维度拖拽字段')
-    console.log(this.viewType)
+    if(this.viewType === 'roll-elemnt') {
+      if(this.item.relation === undefined) {
+        this.item.relation = true
+      }
+    }
   },
   methods: {
     clickItem(param) {
@@ -212,6 +236,15 @@ export default {
       this.$emit('onDimensionItemChange',this.item)
     },
     beforeDisplay(type) {
+      return {
+        type: type
+      }
+    },
+    relationShow(param) {
+      this.item.relation = param.type
+      this.$emit('onDimensionItemChange',this.item)
+    },
+    beforeRelation(type) {
       return {
         type: type
       }

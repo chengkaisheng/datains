@@ -1799,6 +1799,9 @@ export default {
         if (!ele.filter) {
           ele.filter = []
         }
+        if (ele.relation === undefined) {
+          ele.relation = true
+        }
       })
       if (view.type === 'table-pivot') {
         view.xaxisExt.forEach(function(ele) {
@@ -1838,6 +1841,9 @@ export default {
         }
         if (!ele.compareCalc) {
           ele.compareCalc = compareItem
+        }
+        if (ele.relation === undefined) {
+          ele.relation = true
         }
       })
       if (view.type === 'chart-mix') {

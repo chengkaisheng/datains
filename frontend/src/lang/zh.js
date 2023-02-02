@@ -734,6 +734,7 @@ export default {
     quick_calc: '快速计算',
     show_name_set: '显示名设置',
     display: '字段展示',
+    relation: '关联展示',
     color: '颜色',
     color_variety_check: '是否渐变',
     color_case: '配色方案',

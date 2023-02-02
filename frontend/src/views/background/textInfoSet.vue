@@ -53,7 +53,7 @@ export default {
     },
   },
   mounted() {
-    console.log('textinfoset',this.detailsViews)
+    console.log('textinfoset')
     this.init()
   },
   methods: {
@@ -65,7 +65,7 @@ export default {
           arr.push(item.propValue.viewId)
         }
       })
-      console.log('获取到的滚动表格视图id',arr)
+      // console.log('获取到的滚动表格视图id',arr)
       this.searchData(arr)
     },
     searchData(data) {

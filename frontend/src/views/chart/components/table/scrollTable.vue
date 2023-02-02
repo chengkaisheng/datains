@@ -96,7 +96,8 @@ export default {
   },
   data() {
     return {
-      fields: [],
+      fields: [], // data中的字段信息
+      axisList: [], // 维度和指标中的字段信息
       bannerLinkageKey: false,
       timer: null,
       info: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -429,6 +430,7 @@ export default {
           this.setCondition(keyValue)
         }
         setTimeout(() => {
+          // console.log('字段是？',this.fields)
           this.getDetailsInfo(this.dataInfo)
         },500)
         
@@ -446,12 +448,14 @@ export default {
       let arr = []
       data.map((item,index) => {
         if(index === (this.highlight-1)) {
-         this.fields.map(obj => {
-          arr.push({
-            name: obj.name,
-            value: item[obj.datainsName]
+          this.axisList.map(obj => {
+            if(obj.relation) {
+              arr.push({
+                name: obj.name,
+                value: item[obj.datainsName]
+              })
+            }
           })
-         })
         }
       })
       // console.log('arrrrrrrrr',arr,this.chart)
@@ -463,6 +467,16 @@ export default {
     },
     prossData() {
       this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
+      
+      let axis = []
+      JSON.parse(this.chart.xaxis).forEach(item => {
+        axis.push(item)
+      })
+      JSON.parse(this.chart.yaxis).forEach(item => {
+        axis.push(item)
+      })
+      // console.log('维度和指标的字段：：：',axis)
+      this.axisList = axis
 
       const arr = []
       this.chart.data.tableRow.map((item, index) => {

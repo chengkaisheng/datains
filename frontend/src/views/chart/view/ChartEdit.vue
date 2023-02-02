@@ -649,6 +649,7 @@
                         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                       </div>
                     </el-row>
+                    <!-- resultFilter -->
                     <el-row class="padding-lr" style="margin-top: 6px;">
                       <span>{{ $t('chart.result_filter') }}</span>
                       <!--                    <el-button :disabled="!hasDataPermission('manage',param.privileges)" size="mini" class="filter-btn-class" @click="showResultFilter">-->
@@ -1826,6 +1827,9 @@ export default {
         if (!ele.filter) {
           ele.filter = []
         }
+        if (ele.relation === undefined) {
+          ele.relation = true
+        }
       })
       if (view.type === 'table-pivot') {
         view.xaxisExt.forEach(function(ele) {
@@ -1865,6 +1869,9 @@ export default {
         }
         if (!ele.compareCalc) {
           ele.compareCalc = compareItem
+        }
+        if (ele.relation === undefined) {
+          ele.relation = true
         }
       })
       if (view.type === 'chart-mix') {
