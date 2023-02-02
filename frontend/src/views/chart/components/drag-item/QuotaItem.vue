@@ -105,6 +105,26 @@
           <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
             <span>{{ $t('chart.delete') }}</span>
           </el-dropdown-item>
+          <el-dropdown-item divided v-if="viewType === 'roll-elemnt'">
+            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="checkeShow">
+              <span class="el-dropdown-link inner-dropdown-menu">
+                <span>
+                  <i class="el-icon-view" />
+                  <span>{{$t('chart.display')}}</span>
+                  <span class="summary-span-item">
+                    (
+                    <span v-if="item.checked">展示</span>
+                    <span v-else>隐藏</span>
+                    )
+                  </span>
+                </span>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="beforeDisplay(true)">展示</el-dropdown-item>
+                <el-dropdown-item :command="beforeDisplay(false)">隐藏</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
         </el-dropdown-menu>
       </span>
     </el-dropdown>
@@ -143,6 +163,10 @@ export default {
     quotaData: {
       type: Array,
       required: true
+    },
+    viewType: {
+      type: String,
+      required: true
     }
   },
   data() {
@@ -164,6 +188,8 @@ export default {
     }
   },
   mounted() {
+    console.log('指标拖拽字段')
+    console.log(this.viewType)
     this.init()
     this.isEnableCompare()
   },
@@ -220,6 +246,17 @@ export default {
       this.$emit('onQuotaItemChange', this.item)
     },
     beforeSummary(type) {
+      return {
+        type: type
+      }
+    },
+
+    checkeShow(param) {
+      console.log('字段展示',param)
+      this.item.checked = param.type
+      this.$emit('onQuotaItemChange',this.item)
+    },
+    beforeDisplay(type) {
       return {
         type: type
       }

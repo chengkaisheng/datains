@@ -25,6 +25,8 @@
 <script>
 import { mapState } from 'vuex'
 import { viewData } from '@/api/panel/panel'
+import { viewInfo } from '@/api/link'
+import { getToken, getLinkToken } from '@/utils/auth'
 
 export default {
   name: 'textInfoSet',
@@ -43,27 +45,37 @@ export default {
   computed: {
     ...mapState([
       'curComponent',
-      'componentData'
+      'componentData',
+      'detailsViews',
     ]),
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
   },
   mounted() {
+    console.log('textinfoset',this.detailsViews)
     this.init()
   },
   methods: {
     init() {
+      let tabIds = this.detailsViews.map(item => {return item.id}) // 仪表板存在的滚动表格id
       let arr = []
       this.componentData.map(item => {
-        if(item.component === 'user-view') {
+        if(item.component === 'user-view' && tabIds.indexOf(item.propValue.viewId) !== -1) {
           arr.push(item.propValue.viewId)
         }
       })
+      console.log('获取到的滚动表格视图id',arr)
       this.searchData(arr)
     },
     searchData(data) {
+      // console.log('视图数据',data)
       let method = viewData
+      const token = this.$store.getters.token || getToken()
+      const linkToken = this.$store.getters.linkToken || getLinkToken()
+      if (!token && linkToken) {
+        method = viewInfo
+      }
       let reqInfo = {
         cache: false,
         drill: [],
@@ -85,7 +97,7 @@ export default {
             })
           }
 
-          if(this.componentList.length) {
+          if(this.componentList.length && this.componentList.length === data.length) {
             this.viewValue = this.curComponent.options.viewId
           }
         })

@@ -6,7 +6,7 @@
         <el-table-column v-for="(item,index) in fields" :key="index" :prop="item.datainsName" :label="item.name" />
       </el-table> -->
       <div :class="adaptWidth? 'table_new_header': 'table_new_header_notadapt'" :style="table_header_class">
-        <div v-for="(item,index) in fields" :key="index" class="header_title" :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">{{ item.name }}</div>
+        <div v-for="(item,index) in fields" v-show="item.checked" :key="index" class="header_title" :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">{{ item.name }}</div>
       </div>
       <div class="content">
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
@@ -39,7 +39,7 @@
             class="table_bode_li" 
             @click.stop="showDialogInfo(items,inde)"
           >
-            <div v-for="(item,index) in fields" :key="index" :class="adaptWidth?'body_info': 'body_info1'" :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
+            <div v-for="(item,index) in fields" v-show="item.checked" :key="index" :class="adaptWidth?'body_info': 'body_info1'" :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
               <!-- {{ inde }} -->
               {{ items[item.datainsName] }}
             </div>
@@ -56,12 +56,6 @@ import { hexColorToRGBA } from '../../chart/util'
 import { mapState } from 'vuex'
 import vueSeamlessScroll from 'vue-seamless-scroll'
 import eventBus from '@/components/canvas/utils/eventBus'
-
-import { save2Cache } from '@/api/chart/chart'
-import { viewData } from '@/api/panel/panel'
-import { viewInfo } from '@/api/link'
-import { getToken, getLinkToken } from '@/utils/auth'
-import { getViewLinkageGather } from '@/api/panel/linkage'
 
 export default {
   name: 'TableNormal',
@@ -288,18 +282,13 @@ export default {
       }
       this.numberLine = ''
       this.tableScroll()
-      const datas = JSON.parse(JSON.stringify(this.oldData))
-      datas.drillFields = JSON.stringify(datas.drillFields)
-      datas.drillFilters = JSON.stringify(datas.drillFilters)
-      delete datas.data
-      save2Cache(this.newData.sceneId, datas)
     },
     handleClose() {
       this.dialogVisible = false
       this.popHide()
     },
     showDialogInfo(info, num) {
-      console.log('-----', 1111, info, num)
+      console.log('点击表格', info, num)
       //
       const keyObj = this.dataInfo[num]
       const keyValue = []
@@ -307,120 +296,40 @@ export default {
       if (this.bannerLinkageKey === true) {
         this.setCondition(keyValue)
       }
-
-      //
+      // 未设置可弹窗
       if (!this.isPopShow) {
         return
       }
       // console.log(num)
       this.numberLine = num
-      this.newData = JSON.parse(JSON.stringify(this.chart))
-      // console.log('newdata', this.newData)
-      let drillList = []
-      if (typeof this.newData.drillFields === 'object') {
-        drillList = JSON.parse(JSON.stringify(this.newData.drillFields))
-      } else if (typeof this.newData.drillFields === 'string') {
-        drillList = JSON.parse(this.newData.drillFields)
-      }
-      let xaxisList = []
-      if (typeof this.newData.xaxis === 'object') {
-        xaxisList = JSON.parse(JSON.stringify(this.newData.xaxis))
-      } else if (typeof this.newData.xaxis === 'string') {
-        xaxisList = JSON.parse(this.newData.xaxis)
-      }
-      let yaxisList = []
-      if (typeof this.newData.yaxis === 'object') {
-        yaxisList = JSON.parse(JSON.stringify(this.newData.yaxis))
-      } else if (typeof this.newData.yaxis === 'string') {
-        yaxisList = JSON.parse(this.newData.yaxis)
-      }
-      
-      drillList.map(item => {
-        xaxisList.push(item)
-        // if(item.groupType === 'd') {
-        //   xaxisList.push(item)
-        // }
-        // if(item.groupType === 'q') {
-        //   yaxisList.push(item)
-        // }
-      })
-      // console.log('轴字段',xaxisList,yaxisList)
-      this.newData.xaxis = JSON.stringify(xaxisList)
-      // this.newData.yaxis = JSON.stringify(yaxisList)
-      this.newData.drillFields = '[]'
-      this.newData.drillFilters = '[]'
-      delete this.newData.data
-      console.log(this.newData)
-      const obj = {
-        cache: false,
-        drill: [],
-        filter: [],
-        linkageFilter: [],
-        outerParamsFilters: undefined,
-        queryFrom: 'panel_edit',
-        resultCount: 1000,
-        resultMode: 'all'
-      }
-      // 缓存对组件的数据维度进行处理的操作为了之后查询的数据
-      save2Cache(this.newData.sceneId, this.newData).then(() => {
-        
-        let method = viewData
-        const token = this.$store.getters.token || getToken()
-        const linkToken = this.$store.getters.linkToken || getLinkToken()
-        if (!token && linkToken) {
-          method = viewInfo
-        }
 
-        method(this.newData.id, this.newData.sceneId, obj).then(res => {
-          // console.log('response', res)
-          const data = res.data.data
-          const fields = data.fields
-          const tableRow = []
-          data.tableRow.map((item, index) => {
-            tableRow.push({
-              ...item,
-              isClick: index
-            })
-          })
-          // console.log(info,fields,tableRow)
-          let obj = {}
-          tableRow.map(item => {
-            if (item.isClick === info.isClick) {
-              obj = item
-            }
-          })
-          // console.log(obj)
-          const arr = []
-          for (const k in obj) {
-            const a = k
-            fields.map((item, index) => {
-              if (a === item.datainsName) {
-                arr.push({
-                  name: item.name,
-                  value: obj[a],
-                  num: index
-                })
-              }
+      const arr = []
+      for(const k in info) {
+        const a = k
+        this.fields.map((item,index) => {
+          if(a === item.datainsName) {
+            arr.push({
+              name: item.name,
+              value: info[a],
+              num: index
             })
           }
-          // console.log(arr)
-          const hash = {}
-          const arr1 = arr.reduceRight((item, next) => {
-            hash[next.name] ? '' : hash[next.name] = true && item.push(next)
-            return item
-          }, [])
-          this.infoForm = arr1.sort((a, b) => {
-            return a.num - b.num
-          })
-          // console.log(this.infoForm)
-
-          this.isVisible = true
-          // this.dialogVisible = true
-          // this.popShow()
-
-          this.setLinkViews(info)
         })
+      }
+      this.infoForm = arr.sort((a, b) => {
+        return a.num - b.num
       })
+      console.log(this.infoForm)
+      this.isVisible = true
+
+      this.setLinkViews(info)
+
+      // const hash = {}
+      // const arr1 = arr.reduceRight((item, next) => {
+      //   hash[next.name] ? '' : hash[next.name] = true && item.push(next)
+      //   return item
+      // }, [])
+
       // console.log('行----信息', info, this.fields)
       // // this.dialogVisible = true
       // let arr = []

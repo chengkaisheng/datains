@@ -405,6 +405,7 @@
                             :index="index"
                             :item="item"
                             :dimension-data="dimension"
+                            :view-type="view.type"
                             :quota-data="quota"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
@@ -481,6 +482,7 @@
                             :chart="chart"
                             :dimension-data="dimension"
                             :quota-data="quota"
+                            :view-type="view.type"
                             @onQuotaItemChange="quotaItemChange"
                             @onQuotaItemRemove="quotaItemRemove"
                             @editItemFilter="showQuotaEditFilter"
@@ -685,17 +687,15 @@
                       v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') 
                         && !view.type.includes('text') && !view.type.includes('gauge') 
                         && view.type !== 'liquid' && view.type !== 'word-cloud' 
-                        && view.type !== 'table-pivot' && view.type !=='label'"
+                        && view.type !== 'table-pivot' && view.type !=='label'
+                        && view.type !== 'roll-elemnt'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
-                      <span style="width: 80px;text-align: right;" v-if="view.type && !this.view.type.includes('roll')">
+                      <span style="width: 80px;text-align: right;">
                         <span>{{ $t('chart.drill') }}</span>
                         /
                         <span>{{ $t('chart.dimension') }}</span>
-                      </span>
-                      <span style="width: 80px;text-align: right;" v-if="view.type && this.view.type.includes('roll')">
-                        <span>{{$t('chart.detail')}}</span>
                       </span>
                       <draggable
                         v-model="view.drillFields"
@@ -2725,10 +2725,11 @@ export default {
       this.calcData(true)
     },
     addDrill(e) {
-      console.log('drill,,',this.view.drillFields,this.view.type)
-      if(!this.view.type.includes('roll')) {
-        this.dragCheckType(this.view.drillFields, 'd')
-      }
+      // console.log('drill,,',this.view.drillFields,this.view.type)
+      // if(!this.view.type.includes('roll')) {
+      //   this.dragCheckType(this.view.drillFields, 'd')
+      // }
+      this.dragCheckType(this.view.drillFields, 'd')
       this.dragMoveDuplicate(this.view.drillFields, e)
       this.calcData(true)
     },
