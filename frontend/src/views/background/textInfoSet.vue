@@ -3,13 +3,39 @@
     <p style="font-size: 18px;">关联设置</p>
     <div style="margin-top: 10px;">
       <el-row>
-        <el-col>
-          <el-col :span="6">关联视图</el-col>
-          <el-col :span="18">
-            <el-select v-model="viewValue">
+        <el-col style="margin-bottom: 10px;">
+          <el-col :span="4">关联视图</el-col>
+          <el-col :span="10">
+            <el-select v-model="viewValue" size="small">
               <el-option v-for="(item,index) in componentList" 
                 :key="index" :label="item.name" :value="item.id"></el-option>
             </el-select>
+          </el-col>
+        </el-col>
+        <el-col style="margin-bottom: 10px;">
+          <el-col :span="4">字体颜色</el-col>
+          <el-col :span="2">
+            <el-color-picker v-model="curComponent.options.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+          </el-col>
+        </el-col>
+        <el-col style="margin-bottom: 10px;">
+          <el-col :span="4">字体大小</el-col>
+          <el-col :span="10">
+            <el-select v-model="curComponent.options.fontSize" :placeholder="$t('chart.text_fontsize')" size="small">
+              <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-col>
+        </el-col>
+        <el-col style="margin-bottom: 10px;">
+          <el-col :span="4">名称宽度(%)</el-col>
+          <el-col :span="18">
+            <el-input-number v-model="curComponent.options.nameWidth" :min="1" :max="100" size="mini" style="width: 100px;margin-right: 10px;"></el-input-number>
+          </el-col>
+        </el-col>
+        <el-col style="margin-bottom: 10px;">
+          <el-col :span="4">内容宽度(%)</el-col>
+          <el-col :span="18">
+            <el-input-number v-model="curComponent.options.valueWidth" :min="1" :max="100" size="mini" style="width: 100px;margin-right: 10px;"></el-input-number>
           </el-col>
         </el-col>
       </el-row>
@@ -27,6 +53,7 @@ import { mapState } from 'vuex'
 import { viewData } from '@/api/panel/panel'
 import { viewInfo } from '@/api/link'
 import { getToken, getLinkToken } from '@/utils/auth'
+import { COLOR_PANEL } from '@/views/chart/chart/chart'
 
 export default {
   name: 'textInfoSet',
@@ -40,6 +67,8 @@ export default {
     return {
       componentList: [],
       viewValue: '',
+      predefineColors: COLOR_PANEL,
+      fontSize: []
     }
   },
   computed: {
@@ -55,8 +84,19 @@ export default {
   mounted() {
     console.log('textinfoset')
     this.init()
+    this.setfont()
   },
   methods: {
+    setfont() {
+      const arr = []
+      for (let i = 10; i <= 40; i = i + 2) {
+        arr.push({
+          name: i + '',
+          value: i + ''
+        })
+      }
+      this.fontSize = arr
+    },
     init() {
       let tabIds = this.detailsViews.map(item => {return item.id}) // 仪表板存在的滚动表格id
       let arr = []

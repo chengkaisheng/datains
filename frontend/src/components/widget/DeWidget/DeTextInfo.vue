@@ -2,10 +2,8 @@
   <div>
     <el-row style="padding:10px" :style="textStyle">
       <el-col v-for="(item,index) in setInfo" :key="index" style="margin-bottom: 10px;">
-        <el-col :span="6">
-          {{item.name}}:
-        </el-col>
-        <el-col :span="18">
+        <el-col :style="nameStyle">{{item.name}}:</el-col>
+        <el-col :style="valueStyle" class="value_box">
           {{item.value}}
         </el-col>
       </el-col>
@@ -14,11 +12,6 @@
 </template>
 <script>
 import { mapState } from 'vuex'
-
-import { save2Cache } from '@/api/chart/chart'
-import { viewData } from '@/api/panel/panel'
-import { viewInfo } from '@/api/link'
-import { getToken, getLinkToken } from '@/utils/auth'
 
 export default {
   props: {
@@ -47,8 +40,26 @@ export default {
     ]),
     textStyle() {
       let style = {}
-      if(this.element.commonSelectFrame) {
-        style.color = this.element.commonSelectFrame.fontColor
+      // if(this.element.commonSelectFrame) {
+      //   style.color = this.element.commonSelectFrame.fontColor
+      // }
+      if(this.element.options) {
+        style.color = this.element.options.fontColor? this.element.options.fontColor : '#000000'
+        style.fontSize = this.element.options.fontSize? this.element.options.fontSize + 'px' : '14px'
+      }
+      return style
+    },
+    nameStyle() {
+      let style = {}
+      if(this.element.options) {
+        style.width = this.element.options.nameWidth? this.element.options.nameWidth + '%': '30%'
+      }
+      return style
+    },
+    valueStyle() {
+      let style = {}
+      if(this.element.options) {
+        style.width = this.element.options.valueWidth? this.element.options.valueWidth + '%': '70%'
       }
       return style
     },
@@ -82,15 +93,17 @@ export default {
         })
         this.setInfo = arr
         // console.log('详情信息，，',arr)
-        this.setViews()
       },100)
     },
-    setViews() {
-      
-    }
   }
 }
 </script>
 <style scoped>
-
+.value_box {
+  padding-left: 5px;
+  overflow: auto
+}
+.value_box ::-webkit-scrollbar {
+  width: 2px;
+}
 </style>

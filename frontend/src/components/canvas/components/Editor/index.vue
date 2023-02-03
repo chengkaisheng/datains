@@ -337,7 +337,7 @@
     <!-- 详情组件关联设置 -->
     <el-dialog
       :visible.sync="textInfoVisible"
-      width="500px"
+      width="750px"
       class="dialog-css"
       :close-on-click-modal="false"
       :show-close="false"

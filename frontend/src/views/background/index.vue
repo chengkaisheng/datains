@@ -257,14 +257,14 @@
         </el-row>
       </el-row>
 
-      <el-row v-if="curComponent.component === 'de-text-info'">
+      <!-- <el-row v-if="curComponent.component === 'de-text-info'">
         <el-row>
           <el-col :span="3" style="text-align:center;">字体颜色</el-col>
           <el-col :span="1">
             <el-color-picker v-model="curComponent.commonSelectFrame.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
           </el-col>
         </el-row>
-      </el-row>
+      </el-row> -->
 
       <el-row v-if="curComponent.component === 'Picture'">
         <el-row>
@@ -409,9 +409,9 @@ export default {
       if(this.curComponent.component === 'de-date') {
         this.curComponent.commonSelectFrame.fontSize === this.selectOrigin.fontSize
       }
-      if(this.curComponent.component === 'de-text-info') {
-        this.curComponent.commonSelectFrame.fontColor === this.selectOrigin.fontColor
-      }
+      // if(this.curComponent.component === 'de-text-info') {
+      //   this.curComponent.commonSelectFrame.fontColor === this.selectOrigin.fontColor
+      // }
 
 
       console.log('this.curComponent.commonBackground=====', this.curComponent.commonBackground)

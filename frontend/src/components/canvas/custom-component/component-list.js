@@ -681,6 +681,10 @@ const list = [
     },
     options: {
       viewId: '',
+      fontColor: '#000000',
+      nameWidth: '30',
+      valueWidth: '70',
+      fontSize: '14',
     },
     x: 1,
     y: 1,
