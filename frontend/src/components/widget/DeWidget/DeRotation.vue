@@ -2,16 +2,19 @@
   <div>
     <div class="block">
       <div class="scroll_box" :style="big_box">
-        <span class="left_btn" @click.stop="scrollBtn('lt')">
+        <span class="left_btn" @click.stop="scrollBtn('lt')" :style="iconStyle">
           <i class="el-icon-arrow-left" />
         </span>
-        <span class="right_btn" @click.stop="scrollBtn('rt')">
+        <span class="right_btn" @click.stop="scrollBtn('rt')" :style="iconStyle">
           <i class="el-icon-arrow-right" />
         </span>
         <div class="scroll_nav_calss" :style="box_width">
           <div v-for="(item,index) in datas" :key="index" :style="boxStyle">
             <div :style="setStyle(item)">
-              <span class="title_class" :style="{color:heightlight(item)}" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.text }}</span>
+              <span class="title_class" :style="{color:heightlight(item)}" 
+                @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">
+                {{ item.text }}
+              </span>
             </div>
           </div>
         </div>
@@ -140,6 +143,10 @@ export default {
       style.height = this.element.style.height + 'px'
       style.fontWeight = this.element.style.fontWeight
       style.fontSize = this.element.style.fontSize + 'px'
+      if(this.element.options.arrowSpacing) {
+        style.paddingLeft = this.element.options.arrowSpacing + 'px'
+        style.paddingRight = this.element.options.arrowSpacing + 'px'
+      }
       return style
     },
     defaultValueStr() {
@@ -165,9 +172,24 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     boxWidth() {
-      const b_width = (this.element.style.width - 12) / this.element.options.scrollPage
+      // const b_width = (this.element.style.width - 12) / this.element.options.scrollPage
+      let b_width = 0
+      if(this.element.options.arrowSpacing) {
+        console.log('b_width111111111111111')
+        b_width = (this.element.style.width - this.element.options.arrowSpacing) / this.element.options.scrollPage
+      } else {
+        console.log('b_width12222222222221')
+        b_width = (this.element.style.width - 12) / this.element.options.scrollPage
+      }
       console.log('b_width', b_width)
       return Math.floor(b_width)
+    },
+    iconStyle() {
+      const style = {}
+      if(this.element.options.arrowColor) {
+        style.color = this.element.options.arrowColor
+      }
+      return style
     },
     box_width() {
       const style = {}
@@ -251,7 +273,7 @@ export default {
   },
   created() {
     this.initLoad()
-    console.log(':size="size"', this.size)
+    console.log('derotation', this.element)
   },
   mounted() {
     bus.$on('reset-default-value', id => {

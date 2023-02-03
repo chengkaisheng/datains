@@ -71,6 +71,20 @@
       </el-row>
       <el-row>
         <el-col :span="4">
+          <span class="params-title">箭头图标颜色</span>
+        </el-col>
+        <el-col :span="8">
+          <el-color-picker v-model="curComponent.options.arrowColor"></el-color-picker>
+        </el-col>
+        <el-col :span="4">
+          <span class="params-title">箭头间隔</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input-number v-model="curComponent.options.arrowSpacing" :min="1" :max="100"></el-input-number>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="4">
           <span class="params-title">{{ '高亮字体颜色' }}</span>
         </el-col>
         <el-col :span="8">
@@ -337,6 +351,13 @@ export default {
     }
     if (this.curComponent.options.defaultBg) {
       this.navBgImg = this.curComponent.options.defaultBg
+    }
+
+    if (this.curComponent.options.arrowColor === undefined) {
+      this.curComponent.options.arrowColor = '#000000'
+    }
+    if (this.curComponent.options.arrowSpacing === undefined) {
+      this.curComponent.options.arrowSpacing = 10
     }
     // this.curComponent.options.defaultBg = this.navBgImg
   },

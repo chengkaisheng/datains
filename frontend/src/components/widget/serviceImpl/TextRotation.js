@@ -36,7 +36,8 @@ const dialogPanel = {
     scrollPage: 2,
     autoplay: true,
     autoTime: 1,
-    
+    arrowColor: '#000000',  // 箭头颜色
+    arrowSpacing: 10, // 箭头间隔
   },
   defaultClass: 'text-filter',
   component: 'de-rotation',
