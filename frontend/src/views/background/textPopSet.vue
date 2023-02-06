@@ -20,6 +20,38 @@
       </el-row>
       <el-row class="text_row">
         <el-col :span="4" class="text_col_4">
+          <span>标题颜色</span>
+        </el-col>
+        <el-col :span="8">
+          <el-color-picker v-model="curComponent.options.popTitleColor" class="color-picker-style" :predefine="predefineColors"/>
+        </el-col>
+      </el-row>
+      <!-- <el-row class="text_row">
+        <el-col :span="4" class="text_col_4">
+          <span>弹窗颜色</span>
+        </el-col>
+        <el-col :span="8">
+          <el-color-picker v-model="curComponent.options.popPanelColor" class="color-picker-style" :predefine="predefineColors"/>
+        </el-col>
+      </el-row> -->
+      <el-row class="text_row">
+        <el-col :span="4" class="text_col_4">
+          <span>弹窗高度(px)</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input-number v-model="curComponent.options.popHeight" size="small" :min="1" :max="1000"></el-input-number>
+        </el-col>
+      </el-row>
+      <el-row class="text_row">
+        <el-col :span="4" class="text_col_4">
+          <span>图片宽度(%)</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input-number v-model="curComponent.options.popImgWidth" size="small" :min="1" :max="100"></el-input-number>
+        </el-col>
+      </el-row>
+      <el-row class="text_row">
+        <el-col :span="4" class="text_col_4">
           <span>展示图片</span>
         </el-col>
         <el-col style="margin-top: 10px;padding-left: 20px;">
@@ -91,9 +123,26 @@ export default {
     if (this.curComponent.options === undefined) {
       this.curComponent.options = {
         isPopVisible: false,
-        popImgList: []
+        popImgList: [],
+        popTitle: '',
+        popTitleColor: '#000000', 
+        // popPanelColor: '#ffffff', 
+        popHeight: 300,
+        popImgWidth: 38,
       }
     }
+    if(this.curComponent.options.popHeight === undefined) {
+      this.curComponent.options.popHeight = 300
+    }
+    if(this.curComponent.options.popImgWidth === undefined) {
+      this.curComponent.options.popImgWidth = 38
+    }
+    if(this.curComponent.options.popTitleColor === undefined) {
+      this.curComponent.options.popTitleColor = '#000000'
+    }
+    // if(this.curComponent.options.popPanelColor === undefined) {
+    //   this.curComponent.options.popPanelColor = '#ffffff'
+    // }
   },
   mounted() {
     console.log('textPopSet',this.curComponent)

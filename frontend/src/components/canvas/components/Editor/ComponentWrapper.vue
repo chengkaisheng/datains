@@ -57,11 +57,12 @@
   <el-dialog
     :title="textTitle"
     :visible.sync="showVisible"
-    width="38%"
+    :width="boxStyle"
     class="dialog-css"
     :close-on-click-modal="false"
     :append-to-body="inScreen"
     :destroy-on-close="true"
+    :style="popStyle"
   >
     <textPopShow :element="textElement" />
   </el-dialog>
@@ -164,6 +165,24 @@ export default {
       } else {
         return ''
       }
+    },
+    boxStyle() {
+      if(this.textElement && this.textElement.options && this.textElement.options.popImgWidth) {
+        return this.textElement.options.popImgWidth + '%'
+      } else {
+        return '38%'
+      }
+    },
+    popStyle() {
+      let style = {}
+      if(this.textElement && this.textElement.options && this.textElement.options.popTitleColor) {
+        style.color = this.textElement.options.popTitleColor
+      }
+      // if(this.textElement && this.textElement.options && this.textElement.options.popPanelColor) {
+      //   style.backgroundColor = this.textElement.options.popPanelColor
+      // }
+
+      return style
     },
     ...mapState([
       'mobileLayoutStatus',
@@ -276,6 +295,19 @@ export default {
 }
 .dialog-css >>> .el-dialog__body {
   padding: 10px 20px 20px;
+}
+
+.dialog-css ::v-deep .el-dialog__title {
+  color: inherit;
+}
+.dialog-css ::v-deep .el-dialog__headerbtn {
+  color: inherit;
+}
+.dialog-css ::v-deep .el-dialog__headerbtn .el-dialog__close {
+  color: inherit;
+}
+.dialog-css ::v-deep .el-dialog__body {
+  padding: 10px;
 }
 
   .component {
