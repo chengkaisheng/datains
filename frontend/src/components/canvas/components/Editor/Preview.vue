@@ -352,8 +352,12 @@ export default {
     // if (!this.inScreen) {
 
     // }
-
-    this.$store.commit('setScreenStatus',this.inScreen)
+    // console.log('token有没有',this.$store.getters.token,this.inScreen)
+    if(!this.$store.getters.token) {
+      this.$store.commit('setScreenStatus',false)
+    } else {
+      this.$store.commit('setScreenStatus',this.inScreen)
+    }
 
     setTimeout(() => {
       _this.restore()
