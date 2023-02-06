@@ -17,7 +17,9 @@
             <!-- <el-progress :text-inside="progStyle.inside" :color="customColor" :stroke-width="progStyle.strokeWidth" :percentage="progressData.value"></el-progress> -->
           </el-col>
           <el-col :span="progStyle.position === 'top'? 24 : 18">
-            <el-progress :text-inside="progStyle.inside" :color="customColor" :stroke-width="progStyle.strokeWidth" :percentage="progressData.value"></el-progress>
+            <el-progress :text-inside="progStyle.inside" :color="customColor" 
+              :stroke-width="progStyle.strokeWidth" :percentage="progressData.value" :style="labelStyle">
+            </el-progress>
           </el-col>
       </el-row>
     </div>
@@ -103,6 +105,9 @@ export default {
         inside: true,
         strokeWidth: 20,
         position: 'top'
+      },
+      labelStyle: {
+        color: '#000000',
       }
     }
   },
@@ -226,6 +231,7 @@ export default {
         this.progStyle.strokeWidth = customAttr.label.strokeWidth !== undefined? customAttr.label.strokeWidth : 20
         this.progStyle.position = customAttr.label.progressPosition !== undefined? customAttr.label.progressPosition : 'top'
         this.customColor = customAttr.color.colors[0]
+        this.labelStyle.color = customAttr.color.progressLabelColor? customAttr.color.progressLabelColor : '#000000'
       }
     },
 
@@ -256,5 +262,12 @@ export default {
   height: 100%;
   padding-top: 5px;
   // overflow: hidden;
+}
+
+.prog_box ::v-deep .el-progress__text {
+  color: inherit !important;
+}
+.prog_box ::v-deep .el-progress-bar__innerText {
+  color: inherit !important;
 }
 </style>

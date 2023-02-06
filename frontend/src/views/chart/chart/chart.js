@@ -22,6 +22,7 @@ export const DEFAULT_COLOR_CASE = {
   textPopBackColor: '#0c4f96',
   popupBackColor: '#1b2642',
   tableBorderColor: '#cfdaf4',
+  progressLabelColor: '#000000',
 
   innerRing: '#eeeeee',
   outerRing: '#eeeeee'

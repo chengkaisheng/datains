@@ -152,6 +152,10 @@
             <el-color-picker v-model="colorForm.dimensionColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
 
+          <el-form-item v-show="chart.type && chart.type.includes('progress')" label="数值颜色" class="form-item">
+            <el-color-picker v-model="colorForm.progressLabelColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
+
           <el-form-item v-show="chart.type && chart.type === 'text_popup'" label="背景颜色" class="form-item">
             <el-color-picker v-model="colorForm.textPopBackColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>

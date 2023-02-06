@@ -49,7 +49,7 @@
         <el-form-item :label="$t('chart.text_color')" class="form-item">
           <el-color-picker v-model="labelForm.progressFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
         </el-form-item>
-        <el-form-item :label="$t('chart.text_position')" class="form-item">
+        <el-form-item v-show="chart.type && chart.type === 'progress'" :label="$t('chart.text_position')" class="form-item">
           <el-radio-group v-model="labelForm.progressPosition" size="small" @change="changeLabelAttr">
             <el-radio-button label="top">上方</el-radio-button>
             <el-radio-button label="parallel">平行</el-radio-button>

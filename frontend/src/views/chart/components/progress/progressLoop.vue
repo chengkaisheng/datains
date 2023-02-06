@@ -14,7 +14,9 @@
     <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius,'height': title_show? 'calc(100% - 30px);' : '100%;'}">
       <el-row class="prog_box"><!-- :style="{'padding-top': mgHeight}" -->
         <el-col :ref="`circle${chartId}`" style="height: 100%;padding-top: 5%;text-align:center;">
-          <el-progress :width="cleWidth" :stroke-width="progStyle.strokeWidth" type="circle" :color="customColor" :percentage="progressData.value"></el-progress>
+          <el-progress :width="cleWidth" :stroke-width="progStyle.strokeWidth" 
+            type="circle" :color="customColor" :percentage="progressData.value" :style="labelStyle">
+          </el-progress>
           <p style="text-align: center;" :style="progStyle">{{progressData.name}}</p>
         </el-col>
       </el-row>
@@ -99,6 +101,9 @@ export default {
         color: '#000000',
         fontFamily: '',
         strokeWidth: 20,
+      },
+      labelStyle: {
+        color: '#000000',
       }
     }
   },
@@ -232,6 +237,7 @@ export default {
         this.progStyle.fontFamily =  this.canvasStyleData.fontFamily
         this.progStyle.strokeWidth = customAttr.label.strokeWidth !== undefined? customAttr.label.strokeWidth : 20
         this.customColor = customAttr.color.colors[0]
+        this.labelStyle.color = customAttr.color.progressLabelColor? customAttr.color.progressLabelColor : '#000000'
       }
     },
 
@@ -277,5 +283,9 @@ export default {
   width: 100%;
   height: 100%;
   overflow: hidden;
+}
+
+.prog_box ::v-deep .el-progress__text {
+  color: inherit !important;
 }
 </style>
