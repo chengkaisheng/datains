@@ -1889,19 +1889,17 @@ export default {
           }
         }
       })
-      if (view.type === 'label') {
+      if (view.type === 'label' || view.type.includes('progress')) {
         if (view.xaxis.length > 1) {
           view.xaxis.splice(1, view.xaxis.length)
         }
       }
-      if (view.type.startsWith('pie') ||
-        view.type.startsWith('funnel') ||
-        view.type.startsWith('text') ||
-        view.type.startsWith('gauge') ||
-        view.type === 'treemap' ||
-        view.type === 'liquid' ||
-        view.type === 'word-cloud' ||
-        view.type === 'waterfall') {
+      if (view.type.startsWith('pie') || view.type.startsWith('funnel') ||
+        view.type.startsWith('text') || view.type.startsWith('gauge') ||
+        view.type === 'treemap' || view.type === 'liquid' ||
+        view.type === 'word-cloud' || view.type === 'waterfall' ||
+        view.type.includes('progress')
+      ) {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }

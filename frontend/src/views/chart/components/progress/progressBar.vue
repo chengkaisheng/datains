@@ -12,15 +12,25 @@
     </span>
     <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius,'height': title_show? 'calc(100% - 30px);' : '100%;'}">
       <el-row class="prog_box" :style="{width:progStyle.inside? '100%' : '97%'}">
+        <el-col v-for="item in progressData" :key="item.value" style="margin-bottom: 10px;">
           <el-col :span="progStyle.position === 'top'? 24 : 6" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
+            <p style="text-align: center;" >{{item.name}}</p>
+          </el-col>
+          <el-col :span="progStyle.position === 'top'? 24 : 18">
+            <el-progress :text-inside="progStyle.inside" :color="item.color" 
+              :stroke-width="progStyle.strokeWidth" :percentage="item.value" :style="labelStyle">
+            </el-progress>
+          </el-col>
+        </el-col>
+          <!-- <el-progress :text-inside="progStyle.inside" :color="customColor" :stroke-width="progStyle.strokeWidth" :percentage="progressData.value"></el-progress> -->
+          <!-- <el-col :span="progStyle.position === 'top'? 24 : 6" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
             <p style="text-align: center;" >{{progressData.name}}</p>
-            <!-- <el-progress :text-inside="progStyle.inside" :color="customColor" :stroke-width="progStyle.strokeWidth" :percentage="progressData.value"></el-progress> -->
           </el-col>
           <el-col :span="progStyle.position === 'top'? 24 : 18">
             <el-progress :text-inside="progStyle.inside" :color="customColor" 
               :stroke-width="progStyle.strokeWidth" :percentage="progressData.value" :style="labelStyle">
             </el-progress>
-          </el-col>
+          </el-col> -->
       </el-row>
     </div>
   </div>
@@ -93,10 +103,11 @@ export default {
       },
       chartHeight: '100%',
       show_Prog: false,
-      progressData: {
-        name: '',
-        value: '',
-      },
+      // progressData: {
+      //   name: '',
+      //   value: '',
+      // },
+      progressData: [],
       customColor: '#409eff',
       progStyle: {
         fontSize: '14px',
@@ -188,9 +199,22 @@ export default {
         }
         if(chart.data.series) {
           const data = chart.data.series[0].data
-          this.progressData.name = data[0].dimensionList[0].value
-          this.progressData.value = data[0].value
-          console.log(this.progressData)
+          const customAttr = JSON.parse(chart.customAttr)
+          let arr = []
+          for(let i=0;i<data.length;i++) {
+            let obj = data[i]
+            arr.push({
+              name: obj.dimensionList[0].value,
+              value: obj.value,
+              color: customAttr.color.colors[i]
+            })
+          }
+          this.progressData = arr
+
+          // const data = chart.data.series[0].data
+          // this.progressData.name = data[0].dimensionList[0].value
+          // this.progressData.value = data[0].value
+          // console.log(this.progressData)
         }
       }
     },
