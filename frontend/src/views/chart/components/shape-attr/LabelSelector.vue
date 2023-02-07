@@ -46,6 +46,11 @@
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
         </el-form-item>
+        <el-form-item v-show="chart.type && chart.type === 'progress-loop'" label="数值大小" class="form-item">
+          <el-select v-model="labelForm.progressValueSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
+              <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+        </el-form-item>
         <el-form-item :label="$t('chart.text_color')" class="form-item">
           <el-color-picker v-model="labelForm.progressFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
         </el-form-item>
@@ -165,7 +170,7 @@ export default {
     },
     init() {
       const arr = []
-      for (let i = 10; i <= 40; i = i + 2) {
+      for (let i = 10; i <= 50; i = i + 2) {
         arr.push({
           name: i + '',
           value: i + ''
