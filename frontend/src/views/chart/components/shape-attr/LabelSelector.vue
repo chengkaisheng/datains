@@ -51,6 +51,11 @@
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
         </el-form-item>
+        <el-form-item v-show="chart.type && chart.type === 'progress-loop'" label="数值粗细" class="form-item">
+          <el-select v-model="labelForm.progressValueWeight" size="mini" @change="changeLabelAttr">
+              <el-option v-for="option in fontWeight" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+        </el-form-item>
         <el-form-item :label="$t('chart.text_color')" class="form-item">
           <el-color-picker v-model="labelForm.progressFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
         </el-form-item>
@@ -134,7 +139,18 @@ export default {
         { name: this.$t('chart.center'), value: 'inside' },
         { name: this.$t('chart.text_pos_bottom'), value: 'bottom' }
       ],
-      predefineColors: COLOR_PANEL
+      predefineColors: COLOR_PANEL,
+      fontWeight: [
+        {name: '100',value: '100'},
+        {name: '200',value: '200'},
+        {name: '300',value: '300'},
+        {name: '400',value: '400'},
+        {name: '500',value: '500'},
+        {name: '600',value: '600'},
+        {name: '700',value: '700'},
+        {name: '800',value: '800'},
+        {name: '900',value: '900'},
+      ]
     }
   },
   watch: {

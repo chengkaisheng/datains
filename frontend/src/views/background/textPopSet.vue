@@ -26,14 +26,14 @@
           <el-color-picker v-model="curComponent.options.popTitleColor" class="color-picker-style" :predefine="predefineColors"/>
         </el-col>
       </el-row>
-      <!-- <el-row class="text_row">
+      <el-row class="text_row">
         <el-col :span="4" class="text_col_4">
           <span>弹窗颜色</span>
         </el-col>
         <el-col :span="8">
           <el-color-picker v-model="curComponent.options.popPanelColor" class="color-picker-style" :predefine="predefineColors"/>
         </el-col>
-      </el-row> -->
+      </el-row>
       <el-row class="text_row">
         <el-col :span="4" class="text_col_4">
           <span>弹窗高度(px)</span>
@@ -126,7 +126,7 @@ export default {
         popImgList: [],
         popTitle: '',
         popTitleColor: '#000000', 
-        // popPanelColor: '#ffffff', 
+        popPanelColor: '#ffffff', 
         popHeight: 300,
         popImgWidth: 38,
       }
@@ -140,9 +140,9 @@ export default {
     if(this.curComponent.options.popTitleColor === undefined) {
       this.curComponent.options.popTitleColor = '#000000'
     }
-    // if(this.curComponent.options.popPanelColor === undefined) {
-    //   this.curComponent.options.popPanelColor = '#ffffff'
-    // }
+    if(this.curComponent.options.popPanelColor === undefined) {
+      this.curComponent.options.popPanelColor = '#ffffff'
+    }
   },
   mounted() {
     console.log('textPopSet',this.curComponent)

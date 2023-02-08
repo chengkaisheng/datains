@@ -240,6 +240,7 @@ export default {
         this.customColor = customAttr.color.colors[0]
         this.labelStyle.color = customAttr.color.progressLabelColor? customAttr.color.progressLabelColor : '#000000'
         this.labelStyle.fontSize = customAttr.label.progressValueSize? customAttr.label.progressValueSize + 'px' : '14px'
+        this.labelStyle.fontWeight = customAttr.label.progressValueWeight? customAttr.label.progressValueWeight : '400'
       }
     },
 
@@ -290,5 +291,6 @@ export default {
 .prog_box ::v-deep .el-progress__text {
   color: inherit !important;
   font-size: inherit !important;
+  font-weight: inherit !important;
 }
 </style>

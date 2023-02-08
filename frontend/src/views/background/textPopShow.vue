@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div>
+    <div style="padding: 20px;" :style="backStyle">
       <el-carousel trigger="click" :interval="3000" :height="popHeight">
         <el-carousel-item v-for="(item,ind) in fileList" :key="ind">
-          <div style="width: 100%: 100%;overflow-y: scroll;margin: 0 auto;">
+          <div style="width: 100%: 100%;">
             <img :src="item.url" alt="" style="width: 100%;" :style="imgStyle">
           </div>
         </el-carousel-item>
@@ -40,8 +40,15 @@ export default {
       'curComponent',
       'componentData'
     ]),
+    backStyle() {
+      let style = {}
+      if(this.element && this.element.options && this.element.options.popPanelColor) {
+        style.backgroundColor = this.element.options.popPanelColor
+      }
+      return style
+    },
     popHeight() {
-      if(this.element.options.popHeight) {
+      if(this.element && this.element.options && this.element.options.popHeight) {
         return this.element.options.popHeight + 'px'
       } else {
         return '340px'
@@ -50,7 +57,7 @@ export default {
     imgStyle() {
       let style = {}
       if(this.element.options.popHeight) {
-        style.height = (this.element.options.popHeight-10) + 'px'
+        style.height = (this.element.options.popHeight) + 'px'
       }
       return style
     }

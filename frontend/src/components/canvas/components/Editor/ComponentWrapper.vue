@@ -54,8 +54,8 @@
       />
     </div>
   </div>
+  <!-- :title="textTitle" -->
   <el-dialog
-    :title="textTitle"
     :visible.sync="showVisible"
     :width="boxStyle"
     class="dialog-css"
@@ -63,8 +63,13 @@
     :append-to-body="inScreen"
     :destroy-on-close="true"
     :style="popStyle"
-  >
-    <textPopShow :element="textElement" />
+  > 
+    <div slot="title">
+      <p style="padding:10px;margin-bottom: 0px;" :style="backStyle">{{textTitle}}</p>
+    </div>
+    <div>
+      <textPopShow :element="textElement" />
+    </div>
   </el-dialog>
 </div>
 </template>
@@ -178,10 +183,13 @@ export default {
       if(this.textElement && this.textElement.options && this.textElement.options.popTitleColor) {
         style.color = this.textElement.options.popTitleColor
       }
-      // if(this.textElement && this.textElement.options && this.textElement.options.popPanelColor) {
-      //   style.backgroundColor = this.textElement.options.popPanelColor
-      // }
-
+      return style
+    },
+    backStyle() {
+      let style = {}
+      if(this.textElement && this.textElement.options && this.textElement.options.popPanelColor) {
+        style.backgroundColor = this.textElement.options.popPanelColor
+      }
       return style
     },
     ...mapState([
@@ -290,8 +298,8 @@ export default {
 .dialog-css>>>.el-dialog__title {
   font-size: 14px;
 }
-.dialog-css >>> .el-dialog__header {
-  padding: 20px 20px 0;
+.dialog-css ::v-deep .el-dialog__header {
+  padding: 0px;
 }
 .dialog-css >>> .el-dialog__body {
   padding: 10px 20px 20px;
@@ -302,13 +310,17 @@ export default {
 }
 .dialog-css ::v-deep .el-dialog__headerbtn {
   color: inherit;
+  top: 10px;
 }
 .dialog-css ::v-deep .el-dialog__headerbtn .el-dialog__close {
   color: inherit;
 }
 .dialog-css ::v-deep .el-dialog__body {
-  padding: 10px;
+  padding: 0px;
 }
+// .dialog-css ::v-deep .el-dialog {
+//   background: inherit;
+// }
 
   .component {
     position: absolute;

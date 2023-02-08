@@ -133,6 +133,7 @@ export const DEFAULT_LABEL = {
   },
   progressFontSize: '14',
   progressValueSize: '14', // 进度环数值字体大小
+  progressValueWeight: '500', // 数值粗细
   progressFontColor: '#000000',
   progressPosition: 'top',
   progressInside: true,

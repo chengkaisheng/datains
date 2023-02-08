@@ -316,7 +316,7 @@ const list = [
       isPopVisible: false,
       popTitle: '', // 文本弹窗标题
       popTitleColor: '#000000', // 标题颜色
-      // popPanelColor: '#ffffff', // 弹窗颜色
+      popPanelColor: '#ffffff', // 弹窗颜色
       popHeight: 200, // 文本弹窗图片轮播器的高度/图片高度
       popImgWidth: 100, // 图片宽度设置
       popImgList: [],
