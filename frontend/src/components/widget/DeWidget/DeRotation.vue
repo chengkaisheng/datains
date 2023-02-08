@@ -8,7 +8,7 @@
         <span class="right_btn" @click.stop="scrollBtn('rt')" :style="iconStyle">
           <i class="el-icon-arrow-right" />
         </span>
-        <div class="scroll_nav_calss" :style="box_width">
+        <!-- <div class="scroll_nav_calss" :style="box_width">
           <div v-for="(item,index) in datas" :key="index" :style="boxStyle">
             <div :style="setStyle(item)">
               <span class="title_class" :style="{color:heightlight(item)}" 
@@ -17,6 +17,19 @@
               </span>
             </div>
           </div>
+        </div> -->
+        <div>
+          <el-row :style="row_width">
+            <el-col v-for="(item,index) of datas" :key="index" :style="boxStyle">
+              <div :style="setStyle(item)">
+                <span class="title_class" :style="{color: heightlight(item)}"
+                  @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)"
+                >
+                  {{item.text}}
+                </span>
+              </div>
+            </el-col>
+          </el-row>
         </div>
       </div>
     </div>
@@ -175,11 +188,9 @@ export default {
       // const b_width = (this.element.style.width - 12) / this.element.options.scrollPage
       let b_width = 0
       if(this.element.options.arrowSpacing) {
-        console.log('b_width111111111111111')
-        b_width = (this.element.style.width - this.element.options.arrowSpacing) / this.element.options.scrollPage
+        b_width = (this.element.style.width - this.element.options.arrowSpacing*2) / this.element.options.scrollPage
       } else {
-        console.log('b_width12222222222221')
-        b_width = (this.element.style.width - 12) / this.element.options.scrollPage
+        b_width = (this.element.style.width) / this.element.options.scrollPage
       }
       console.log('b_width', b_width)
       return Math.floor(b_width)
@@ -194,6 +205,11 @@ export default {
     box_width() {
       const style = {}
       style.width = (this.boxWidth * this.datas.length) + 'px'
+      return style
+    },
+    row_width() {
+      const style = {}
+      style.width = (this.element.style.width - (this.element.options.arrowSpacing*2)) + 'px'
       return style
     },
     bannerStyle() {
