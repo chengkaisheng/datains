@@ -44,7 +44,7 @@
       </el-row>
       <el-row class="text_row">
         <el-col :span="4" class="text_col_4">
-          <span>图片宽度(%)</span>
+          <span>弹窗宽度(%)</span>
         </el-col>
         <el-col :span="8">
           <el-input-number v-model="curComponent.options.popImgWidth" size="small" :min="1" :max="100"></el-input-number>
