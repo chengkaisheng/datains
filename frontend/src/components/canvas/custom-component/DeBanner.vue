@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="recommendPage swiper-no-swiping">
-      <swiper v-if="isShow&&bannerImgList.length>0" ref="mySwiper" :options="swiperOption" class="swiper-wrapper" :style="bannerStyle">
+      <swiper v-if="isShow&&bannerImgList.length>0" ref="mySwiper" 
+        :options="swiperOption" class="swiper-wrapper" :style="bannerStyle">
         <swiper-slide v-for="(item,index) in bannerImgList" :key="index">
           <div style="width: 100%;height: 100%;">
             <div style="width: 100%;height: 70%;">
@@ -12,6 +13,7 @@
               :style="{
                 'background-color': item.imgBackgroundColor && item.imgOpacity? hexToRgba(item.imgBackgroundColor,item.imgOpacity) : 'none',
                 'fontFamily': canvasStyleData.fontFamily ? canvasStyleData.fontFamily : '',
+                'padding-top': textImgSpace? textImgSpace + 'px': '0px',
               }"
             >
               <div
@@ -67,7 +69,7 @@ export default {
         coverflowEffect: {
           rotate: 0, // 滑动时旋转角度
           stretch: 0, // 聚合宽度
-          depth: 10, // 深
+          depth: 60, // 深
           modifier: 2, // 覆盖叠加层数
           slideShadows: true // 开启slide阴影。默认 true。
         }
@@ -116,43 +118,62 @@ export default {
     rotationTime() {
       return this.element.options.rotationTime
     },
+    textImgSpace() {
+      return this.element.options.textImgSpace
+    },
     slidesPerView() {
       return this.element.options.slidesPerView
     },
     pictureGap() {
       return this.element.options.pictureGap
+    },
+    coverflowEffect() {
+      let obj = {}
+      obj.rotate = this.element.options.slideRotate !== undefined? this.element.options.slideRotate : 0
+      obj.stretch = this.element.options.slideStretch !== undefined? this.element.options.slideStretch : 0
+      obj.depth = this.element.options.slideDepth !== undefined? this.element.options.slideDepth : 60
+      obj.modifier = this.element.options.slideModifier !== undefined? this.element.options.slideModifier : 2, // 覆盖叠加层数
+      obj.slideShadows = this.element.options.slideShadow !== undefined? this.element.options.slideShadow : true // 开启slide阴影。默认 true。
+      return obj
     }
   },
   watch: {
-    slidesPerView: {
-      handler: function(val1, val2) {
-        console.log('监听视图层变化=============slidesPerView', val1, val2)
+    element: {
+      handler: function(val1,val2) {
+        console.log('监听视图设置========element',val1,val2)
         this.changeSlidesPerView()
       },
       deep: true
+    },
+    // slidesPerView: {
+    //   handler: function(val1, val2) {
+    //     console.log('监听视图层变化=============slidesPerView', val1, val2)
+    //     this.changeSlidesPerView()
+    //   },
+    //   deep: true
 
-    },
-    rotationTime: {
-      handler: function(val1, val2) {
-        console.log('轮播时间控制----------------------', val1, val2)
-        this.changeSlidesPerView()
-      },
-      deep: true
-    },
-    pictureGap: {
-      handler: function(val1, val2) {
-        console.log('设置图片间隔----------------------', val1, val2)
-        this.changeSlidesPerView()
-      },
-      deep: true
-    },
-    bannerImgList: {
-      handler: function(val1, val2) {
-        console.log('设置图片数量----------------------', val1, val2)
-        this.changeSlidesPerView()
-      },
-      deep: true
-    }
+    // },
+    // rotationTime: {
+    //   handler: function(val1, val2) {
+    //     console.log('轮播时间控制----------------------', val1, val2)
+    //     this.changeSlidesPerView()
+    //   },
+    //   deep: true
+    // },
+    // pictureGap: {
+    //   handler: function(val1, val2) {
+    //     console.log('设置图片间隔----------------------', val1, val2)
+    //     this.changeSlidesPerView()
+    //   },
+    //   deep: true
+    // },
+    // bannerImgList: {
+    //   handler: function(val1, val2) {
+    //     console.log('设置图片数量----------------------', val1, val2)
+    //     this.changeSlidesPerView()
+    //   },
+    //   deep: true
+    // }
   },
   created() {
     // console.log('轮播图片组件', this.element)
@@ -177,6 +198,9 @@ export default {
       this.swiperOption.autoplay = {
         delay: this.element.options.rotationTime * 1000, disableOnInteraction: false
       }
+
+      this.swiperOption.coverflowEffect = this.coverflowEffect 
+
       this.isShow = false
       this.$nextTick(() => {
         this.isShow = true

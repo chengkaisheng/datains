@@ -14,8 +14,6 @@
         <el-col :span="8">
           <el-input-number v-model="curComponent.options.slidesPerView" :min="1" :max="10" />
         </el-col>
-      </el-row>
-      <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
         <el-col :span="4">
           <span class="params-title">{{ $t('panel.pictureGap') }}</span>
         </el-col>
@@ -23,15 +21,63 @@
           <el-input-number v-model="curComponent.options.pictureGap" :min="0" :max="100" />
         </el-col>
       </el-row>
-      <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
+      <el-row style="height: 50px;overflow: hidden;margin-top:10px;">
         <el-col :span="4">
           <span class="params-title">{{ $t('panel.Rotation_interval') }}</span>
         </el-col>
         <el-col :span="7">
           <el-input-number v-model="curComponent.options.rotationTime" :min="1" :max="100" />
         </el-col>
-        <el-col :span="2">
+        <el-col :span="1">
           <span class="params-title">{{ $t('panel.second') }}</span>
+        </el-col>
+        <el-col :span="4">
+          <span class="params-title">{{ $t('panel.text_image_space') }}</span>
+        </el-col>
+        <el-col :span="7">
+          <el-input-number v-model="curComponent.options.textImgSpace" :min="0" :max="100" />
+        </el-col>
+        <el-col :span="1">
+          <span class="params-title">px</span>
+        </el-col>
+      </el-row>
+      <el-row style="height: 50px;overflow: hidden;margin-top:10px;">
+        <el-col :span="4">
+          <span class="params-title">{{ $t('panel.coverflow_rotate') }}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input-number v-model="curComponent.options.slideRotate" :min="-180" :max="180" />
+        </el-col>
+        <el-col :span="4">
+          <span class="params-title">{{ $t('panel.converflow_stretch') }}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input-number v-model="curComponent.options.slideStretch" :min="-50" :max="50" />
+        </el-col>
+      </el-row>
+      <el-row style="height: 50px;overflow: hidden;margin-top:10px;">
+        <el-col :span="4">
+          <span class="params-title">{{ $t('panel.converflow_depth') }}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input-number v-model="curComponent.options.slideDepth" :min="0" :max="500" />
+        </el-col>
+        <el-col :span="4">
+          <span class="params-title">{{ $t('panel.converflow_modefier') }}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input-number v-model="curComponent.options.slideModifier" :min="0" :max="10" />
+        </el-col>
+      </el-row>
+      <el-row style="height: 50px;overflow: hidden;margin-top:10px;">
+        <el-col :span="4">
+          <span class="params-title">{{ $t('panel.converflow_shadow') }}</span>
+        </el-col>
+        <el-col :span="8" style="line-hieght: 40px;">
+          <el-radio-group v-model="curComponent.options.slideShadow">
+            <el-radio :label="true">显示</el-radio>
+            <el-radio :label="false">隐藏</el-radio>
+          </el-radio-group>
         </el-col>
       </el-row>
       <!-- 轮播的图片 -->

@@ -485,7 +485,13 @@ const list = [
       }],
       slidesPerView: 3,
       rotationTime: 1,
+      textImgSpace: 1,
       pictureGap: 10,
+      slideRotate: 0,
+      slideStretch: 0,
+      slideDepth: 60,
+      slideModifier: 2,
+      slideShadow: true,
       bannerImgList: []
       // autoplay: { delay: 1000, disableOnInteraction: false }
     },
