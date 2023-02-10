@@ -37,6 +37,14 @@
         <el-form-item :label="$t('chart.text_color')" class="form-item">
           <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
         </el-form-item>
+        <el-form-item class="form-item">
+          <span slot="label">
+            <span class="span-box">
+              <span>{{ $t('chart.content_formatter') }}</span>
+            </span>
+          </span>
+          <el-input v-model="labelForm.gaugeFormatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeLabelAttr" />
+        </el-form-item>
       </el-form>
     </el-col>
   </div>

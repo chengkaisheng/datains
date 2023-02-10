@@ -158,9 +158,9 @@ export default {
       } else if (chart.type === 'scatter') {
         this.myChart = baseScatterOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData)
       } else if (chart.type === 'radar') {
-        this.myChart = baseRadarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.state.canvasStyleData)
+        this.myChart = baseRadarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData)
       } else if (chart.type === 'gauge') {
-        this.myChart = baseGaugeOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.state.canvasStyleData)
+        this.myChart = baseGaugeOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData)
       } else if (chart.type === 'pie') {
         this.myChart = basePieOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'pie-rose') {
