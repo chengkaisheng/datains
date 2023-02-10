@@ -177,7 +177,7 @@ export default {
       this.$emit('close-grant', 0)
     },
     authNodeClick (val) {
-      console.log('authNodeClick')
+      console.log('authNodeClick2222222')
       this.authCondition = val
     },
     clickAuth (auth) {

@@ -13,7 +13,7 @@
               </el-breadcrumb-item>
             </el-breadcrumb>
           </div>
-          <div class="component-result-content filter-common">
+          <div class="filter-common">
             <el-col>
               <el-row>
                 <el-form>
@@ -28,8 +28,8 @@
                   </el-form-item>
                 </el-form>
               </el-row>
-              <el-row>
-                <el-tree
+              <el-row class="component-result-content">
+                <!-- <el-tree
                   v-if="showDomType === 'tree'"
                   :default-expanded-keys="expandedArray"
                   node-key="id"
@@ -38,15 +38,34 @@
                   lazy
                   :load="loadTree"
                   @node-click="handleNodeClick"
+                  懒加载方式获取有权限问题注释掉
+                > -->
+                <el-tree
+                  v-if="showDomType === 'tree'"
+                  ref="datasetTreeRef"
+                  :default-expanded-keys="expandedArray"
+                  node-key="id"
+                  :data="datas"
+                  :filter-node-method="filterNode"
+                  @node-click="handleAllNodeClick"
                 >
                   <div slot-scope="{ node, data }" class="custom-tree-node">
-                    <span>
+                    <!-- <span>
                       <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
                       <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
                       <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
                       <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
                       <svg-icon v-if="data.type === 'union'" icon-class="ds-union" class="ds-icon-union" />
                       <svg-icon v-if="data.type === 'api'" icon-class="ds-api" class="ds-icon-api" />
+                      懒加载方式获取有权限问题注释掉
+                    </span> -->
+                    <span>
+                      <svg-icon v-if="data.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
+                      <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+                      <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+                      <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                      <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
+                      <svg-icon v-if="data.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
                     </span>
                     <el-tooltip class="item" effect="dark" placement="top">
                       <div slot="content">{{ node.label }}</div>
@@ -93,7 +112,7 @@
             </el-breadcrumb>
           </div>
 
-          <div class="component-result-content filter-common">
+          <div class="filter-common">
 
             <el-col>
               <el-row>
@@ -109,7 +128,7 @@
                   </el-form-item>
                 </el-form>
               </el-row>
-              <el-row>
+              <el-row class="component-result-content">
                 <el-table
                   v-if="comShowDomType === 'view'"
                   class="de-filter-data-table"
@@ -179,6 +198,7 @@ import draggable from 'vuedraggable'
 import FilterHead from './filterMain/FilterHead'
 import FilterControl from './filterMain/FilterControl'
 import FilterFoot from './filterMain/FilterFoot'
+import { queryAuthModel } from '@/api/authModel/authModel'
 import bus from '@/utils/bus'
 import {
   mapState
@@ -313,7 +333,8 @@ export default {
     this.widget = this.widgetInfo
     this.currentElement = JSON.parse(JSON.stringify(this.element))
     this.myAttrs = this.currentElement.options.attrs
-    this.treeNode(this.groupForm)
+    // this.treeNode(this.groupForm)
+    this.findTree(true)
 
     if (this.myAttrs && this.myAttrs.dragItems) {
       this.enableSureButton()
@@ -341,13 +362,15 @@ export default {
       }
     },
     getTreeData(val) {
-      if (val) {
-        this.isTreeSearch = true
-        this.searchTree(val)
-      } else {
-        this.isTreeSearch = false
-        this.treeNode(this.groupForm)
-      }
+      // if (val) {
+      //   this.isTreeSearch = true
+      //   this.searchTree(val)
+      // } else {
+      //   this.isTreeSearch = false
+      //   this.treeNode(this.groupForm)
+      // }
+
+      this.$refs.datasetTreeRef.filter(val)
     },
     searchTree(val) {
       this.expandedArray = []
@@ -415,11 +438,24 @@ export default {
       })
     },
     handleNodeClick(data) {
+      console.log('点击数据11111======》',data)
       if (data.type !== 'group') {
         this.showFieldDatas(data)
       }
     },
+    handleAllNodeClick(data) {
+      console.log('点击数据222====》',data)
+      if(data.nodeType !== "spine") {
+        this.showAllFieldDatas(data)
+      }
+    },
+    filterNode(value,data) {
+      // console.log('过滤====》',value,data)
+      if(!value) return true
+      return data.label.indexOf(value) !== -1
+    },
     loadTree(node, resolve) {
+      console.log('lazyLoad==========>',node)
       if (!this.isTreeSearch) {
         if (node.level > 0) {
           if (node.data.id) {
@@ -435,8 +471,23 @@ export default {
         node.data.children && resolve(node.data.children)
       }
     },
-    treeNode(group) {
+    treeNode(group) { // 查询部分数据集数据
       post('/dataset/group/treeNode', group).then(res => {
+        this.defaultDatas = res.data
+        this.datas = res.data
+      })
+    },
+    findTree(cache) { // 查询所有的数据集数据
+      const modelInfo = localStorage.getItem('dataset-tree')
+      const userCache = (modelInfo && cache)
+      if(userCache) {
+        this.defaultDatas = JSON.parse(modelInfo)
+        this.datas = JSON.parse(modelInfo)
+      }
+
+      queryAuthModel({modelType: 'dataset'}).then(res => {
+        // console.log('树数据====》',res.data)
+        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
         this.defaultDatas = res.data
         this.datas = res.data
       })
@@ -454,6 +505,11 @@ export default {
       tail.type = node.type
       tail.link = true
     },
+    setAllTailLink(node) {
+      const tail = this.dataSetBreads[this.dataSetBreads.length -1]
+      tail.type = node.modelInnerType
+      tail.link = true
+    },
     comSetTailLink(node) {
       const tail = this.componentSetBreads[this.componentSetBreads.length - 1]
       tail.type = node.type
@@ -464,6 +520,14 @@ export default {
         link: false,
         label: node.label || node.name,
         type: node.type
+      }
+      this.dataSetBreads.push(tail)
+    },
+    addAllTail(node) {
+      const tail = {
+        link: false,
+        label: node.label || node.name,
+        type: node.modelInnerType
       }
       this.dataSetBreads.push(tail)
     },
@@ -531,6 +595,14 @@ export default {
       this.showDomType = 'field'
       this.setTailLink(row)
       this.addTail(row)
+      this.fieldsParent = row
+      this.loadField(row.id)
+    },
+    showAllFieldDatas(row) {
+      this.keyWord = ''
+      this.showDomType = 'field'
+      this.setAllTailLink(row)
+      this.addAllTail(row)
       this.fieldsParent = row
       this.loadField(row.id)
     },
@@ -646,7 +718,7 @@ export default {
   }
 
   .component-result-content {
-    height: calc(50vh - 150px);
+    height: calc(50vh - 190px);
     overflow-y: auto;
   }
 
