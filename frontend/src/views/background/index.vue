@@ -539,6 +539,11 @@ export default {
   .disabled>>>.el-upload--picture-card {
     display: none;
   }
+
+  .avatar-uploader>>>.el-upload-list__item.is-success .el-upload-list__item-status-label {
+    display: none;
+  }
+
   .shape-item{
     padding: 6px;
     border: none;

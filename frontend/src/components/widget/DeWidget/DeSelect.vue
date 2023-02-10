@@ -280,6 +280,7 @@ export default {
 .deSelect ::v-deep .el-input__inner {
   background-color: transparent;
   color: inherit;
+  border: none;
 }
 .deSelect ::v-deep .el-input__inner::placeholder {
   color: inherit;

@@ -1556,7 +1556,7 @@ export default {
     coverflow_rotate: '滑块旋转角度',
     converflow_stretch: '滑块紧密度',
     converflow_depth: '滑块深度',
-    converflow_modefier: '滑块层叠数',
+    converflow_modefier: '滑块调节倍率',
     converflow_shadow: '滑块阴影',
     web_set_tips: '部分网站可能设置不允许嵌入而无法显示',
     repeat_params: '存在名称重复的参数',
