@@ -5,6 +5,7 @@ import { DEFAULT_SIZE } from '@/views/chart/chart/chart'
 export function baseLiquid(plot, container, chart, cstyle = {}) {
   let value = 0
   const colors = []
+  const gColors = []
   let max, radius, bgColor, shape, labelContent, title
   if (chart.data) {
     if (chart.data.series.length > 0) {
@@ -44,6 +45,25 @@ export function baseLiquid(plot, container, chart, cstyle = {}) {
       }
     }
   }
+
+  if(chart.data && chart.data.fields && chart.data.fields.length) {
+    let fields = chart.data.fields
+    let arr = []
+    for (let i = 0; i < fields.length; i++) {
+        if(fields[i].chartType) {
+          arr.push(fields[i])
+        }
+    }
+    for (let i = 0; i < arr.length; i++) {
+      if(customAttr.color && customAttr.color.variety) {
+        // 定义柱状图渐变色
+        let a = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        let b = hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+        gColors.push(`l(270) 0:${a} 1:${b}`)
+      }
+    }
+  }
+
   let customStyle
   if (chart.customStyle) {
     customStyle = JSON.parse(chart.customStyle)
@@ -67,18 +87,18 @@ export function baseLiquid(plot, container, chart, cstyle = {}) {
       }
     }
   }
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Liquid(container, {
+
+  const options = {
     theme: {
       styleSheet: {
         brandColor: colors[0],
-        paletteQualitative10: colors,
-        paletteQualitative20: colors,
+        paletteQualitative10: customAttr.color.variety? gColors : colors,
+        paletteQualitative20: customAttr.color.variety? gColors : colors,
         backgroundColor: bgColor
       }
+    },
+    liquidStyle: { // 设置渐变色
+      fill: customAttr.color.variety? gColors[0] : colors[0]
     },
     percent: (parseFloat(value) / parseFloat(max)),
     radius: radius,
@@ -87,6 +107,12 @@ export function baseLiquid(plot, container, chart, cstyle = {}) {
       // title: title,
       content: labelContent
     }
-  })
+  }
+  console.log('antv_水波图',options)
+  // 开始渲染
+  if (plot) {
+    plot.destroy()
+  }
+  plot = new Liquid(container, options)
   return plot
 }

@@ -11,8 +11,9 @@
               ) 
               || 
               (chart.render === 'antv' && 
-                (chart.type === 'bar' || chart.type === 'bar-horizontal') ||
-                chart.type ==='line-stack' || chart.type.includes('3dcolumn') 
+                (chart.type === 'bar' || chart.type === 'bar-horizontal' ||
+                chart.type ==='line-stack' || chart.type.includes('3dcolumn') ||
+                chart.type === 'liquid')
               )  
             )" 
             :label="$t('chart.color_variety_check')" class="form-item">
@@ -73,7 +74,8 @@
                 || 
                 (chart.render === 'antv' &&
                   (chart.type === 'bar' || chart.type === 'bar-horizontal' ||
-                  chart.type ==='line-stack' || chart.type.includes('3dcolumn'))
+                  chart.type ==='line-stack' || chart.type.includes('3dcolumn') ||
+                  chart.type === 'liquid')
                 ) 
               )" 
             :label="$t('chart.variety_color')" class="form-item">

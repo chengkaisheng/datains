@@ -2,7 +2,7 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
 
 export function baseLiquidOption(chart_option, chart, cstyle = {}) {
-  console.log('水波图1',chart_option,chart)
+  // console.log('水波图1',chart_option,chart)
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
@@ -59,7 +59,7 @@ export function baseLiquidOption(chart_option, chart, cstyle = {}) {
     }
   }
 
-  console.log('liquidFill,,,,', chart_option)
+  // console.log('liquidFill,,,,', chart_option)
   componentStyle(chart_option, chart, cstyle)
   return chart_option
 }
