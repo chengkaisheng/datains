@@ -4,13 +4,25 @@
       <el-form ref="colorForm" :model="colorForm" label-width="90px" size="mini">
         <div v-if="sourceType==='view' || sourceType==='panelEchart'">
           <el-form-item v-show="chart.type && 
-              ((chart.render === 'echarts' && (chart.type.includes('bar') || chart.type === 'graph' || chart.type === 'pie-rose-gradient')) || 
-              (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) || 
-              chart.type ==='line-stack' || chart.type.includes('3dcolumn'))" 
+            (
+              (chart.render === 'echarts' && 
+                (chart.type.includes('bar') || chart.type === 'graph' || 
+                chart.type === 'pie-rose-gradient' || chart.type === 'liquid')
+              ) 
+              || 
+              (chart.render === 'antv' && 
+                (chart.type === 'bar' || chart.type === 'bar-horizontal') ||
+                chart.type ==='line-stack' || chart.type.includes('3dcolumn') 
+              )  
+            )" 
             :label="$t('chart.color_variety_check')" class="form-item">
             <el-checkbox v-model="colorForm.variety" @change="changeColorCase"></el-checkbox>
           </el-form-item>
-          <el-form-item v-show="chart.type && !chart.type.includes('table')&&!chart.type.includes('vertical')&&!chart.type.includes('dialog') && !chart.type.includes('roll')&&!chart.type.includes('dialog') && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.color_case')" class="form-item">
+          <el-form-item v-show="chart.type && !chart.type.includes('table')
+            &&!chart.type.includes('vertical')&&!chart.type.includes('dialog') 
+            && !chart.type.includes('roll')&&!chart.type.includes('dialog') 
+            && !chart.type.includes('text') && chart.type !== 'label'" 
+          :label="$t('chart.color_case')" class="form-item">
             <el-popover
               placement="bottom"
               width="400"
@@ -51,10 +63,19 @@
               </div>
             </el-popover>
           </el-form-item>
+          <!-- 渐变色 -->
           <el-form-item v-show="colorForm.variety && chart.type && 
-              ((chart.render === 'echarts' && (chart.type.includes('bar') || chart.type === 'graph' || chart.type === 'pie-rose-gradient')) || 
-              (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) || 
-              chart.type ==='line-stack' || chart.type.includes('3dcolumn'))" 
+              (
+                (chart.render === 'echarts' &&
+                  (chart.type.includes('bar') || chart.type === 'graph' ||
+                  chart.type === 'pie-rose-gradient' || chart.type === 'liquid')
+                ) 
+                || 
+                (chart.render === 'antv' &&
+                  (chart.type === 'bar' || chart.type === 'bar-horizontal' ||
+                  chart.type ==='line-stack' || chart.type.includes('3dcolumn'))
+                ) 
+              )" 
             :label="$t('chart.variety_color')" class="form-item">
             <el-popover
               placement="bottom"

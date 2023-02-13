@@ -35,7 +35,7 @@ export const COMMON_BACKGROUND = {
 export const COMMON_SELECT_FRAME = {
   enable: true,
   backType: 'color', // 框样式设置类型
-  color: '#ffffff', // 框颜色
+  color: '#999999', // 框颜色
   backImg: null, // 框背景图
   alpha: 100, // 颜色透明度
   fontColor: '#000000', // 框字体颜色

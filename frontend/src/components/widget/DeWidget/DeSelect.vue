@@ -96,6 +96,7 @@ export default {
         }
         style.color = this.element.commonSelectFrame.fontColor
       }
+      style.borderRadius = '4px'
       return style
     },
     optionStyle() {

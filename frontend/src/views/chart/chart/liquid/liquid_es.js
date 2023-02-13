@@ -34,10 +34,29 @@ export function baseLiquidOption(chart_option, chart, cstyle = {}) {
     }
     chart_option.series[0].type = 'liquidFill'
     chart_option.series[0].data = chart.data.series[0].data
-    chart_option.series[0].itemStyle = {
-      color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha),
+    if (customAttr.color.variety) {
+      chart_option.series[0].itemStyle = {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 1,
+          x2: 0,
+          y2: 0,
+          colorStops: [{
+            offset: 0, // 0% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors[0 % customAttr.color.colors.length], customAttr.color.alpha)
+          }, {
+            offset: 1, // 100% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors1[0 % customAttr.color.colors1.length], customAttr.color.alpha)
+          }],
+          global: false // 缺省为 false
+        },
+      }
+    } else {
+      chart_option.series[0].itemStyle = {
+        color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha),
+      }
     }
-    
   }
 
   console.log('liquidFill,,,,', chart_option)

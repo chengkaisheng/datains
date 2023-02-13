@@ -1896,7 +1896,12 @@ export const BASE_LIQUID = {
         textStyle: {
           fontSize: 14,
           color: '#909399',
-        }
+        },
+        // formatter: function(a,b,c) {
+        //   return '{a}\n{b}\nValue:{c}'
+        //   // formatter: '{a}\n{b}\nValue: {c}',
+        //   // a 代表 series.name , b 代表 series.data中第一个元素定义的name, c 代表 series.data中第一个元素定义的value;
+        // }
       },
       outline: {
         show: false,

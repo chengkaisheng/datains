@@ -1,11 +1,13 @@
 <template>
   <div>
-    <el-row style="padding:10px" :style="textStyle">
+    <el-row class="row_box" style="padding:10px;overflow:auto;" :style="textStyle">
       <el-col v-for="(item,index) in setInfo" :key="index" style="margin-bottom: 10px;">
-        <el-col :style="nameStyle">{{item.name}}:</el-col>
-        <el-col :style="valueStyle" class="value_box">
-          {{item.value}}
-        </el-col>
+        <el-row>
+          <el-col :style="nameStyle">{{item.name}}:</el-col>
+          <el-col :style="valueStyle" class="value_box">
+            {{item.value}}
+          </el-col>
+        </el-row>
       </el-col>
     </el-row>
   </div>
@@ -46,6 +48,7 @@ export default {
       if(this.element.options) {
         style.color = this.element.options.fontColor? this.element.options.fontColor : '#000000'
         style.fontSize = this.element.options.fontSize? this.element.options.fontSize + 'px' : '14px'
+        style.height = this.element.style.height + 'px'
       }
       return style
     },
@@ -101,9 +104,8 @@ export default {
 <style scoped>
 .value_box {
   padding-left: 5px;
-  overflow: auto
-}
-.value_box ::-webkit-scrollbar {
-  width: 2px;
+  word-break: break-all;
+  word-wrap: break-word;
+  white-space: normal;
 }
 </style>
