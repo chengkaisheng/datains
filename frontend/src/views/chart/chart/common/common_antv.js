@@ -133,6 +133,12 @@ export function getLabel(chart) {
     // label
     if (customAttr.label) {
       const l = JSON.parse(JSON.stringify(customAttr.label))
+      let fn = ""
+      if(l.antvFormatter !== '') {
+        fn = "`"+((l.antvFormatter.replace(/{a}/g,"${text.field}")).replace(/{b}/g,"${text.value}"))+"`"
+      }
+      // console.log('内容格式',fn)
+
       if (l.show) {
         if (chart.type === 'pie') {
           label = {
@@ -152,6 +158,11 @@ export function getLabel(chart) {
         label.style = {
           fill: l.color,
           fontSize: parseInt(l.fontSize)
+        }
+
+        // formatter
+        label.formatter = function(text){
+          return fn?eval("("+fn+")") : text.value
         }
       } else {
         label = false

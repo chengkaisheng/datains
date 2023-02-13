@@ -22,6 +22,20 @@
               <el-option v-for="option in labelPosition" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
+          <el-form-item v-show="chart.type && chart.type !== 'liquid'" class="form-item">
+            <span slot="label">
+              <span class="span-box">
+                <span>{{ $t('chart.content_formatter') }}</span>
+                <el-tooltip class="item" effect="dark" placement="bottom">
+                  <div slot="content">
+                    字符串模板 模板变量有：<br>{a}：数据名。<br>{b}：数据值。
+                  </div>
+                  <i class="el-icon-info" style="cursor: pointer;" />
+                </el-tooltip>
+              </span>
+            </span>
+            <el-input v-model="labelForm.antvFormatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeLabelAttr" />
+          </el-form-item>
         </div>
       </el-form>
 

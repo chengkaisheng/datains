@@ -127,6 +127,7 @@ export const DEFAULT_LABEL = {
   color: '#909399',
   fontSize: '10',
   formatter: '{c}',
+  antvFormatter:'{b}',
   gaugeFormatter: '{value}',
   labelLine: {
     show: true
@@ -175,7 +176,8 @@ export const DEFAULT_TOOLTIP = {
     fontSize: '10',
     color: '#909399'
   },
-  formatter: ''
+  formatter: '',
+  antvFormatter: '',
 }
 export const DEFAULT_TOTAL = {
   row: {
