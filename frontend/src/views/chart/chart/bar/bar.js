@@ -1622,6 +1622,7 @@ export function horizontalStackBarOption(chart_option, chart, cstyle = {}) {
   return chart_option
 }
 
+// 立体柱状图
 export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
   console.log('测试1', chart_option, chart)
   // 处理shape attr
@@ -1682,14 +1683,15 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
     }
     // label
 	  if (customAttr.label) {
+      console.log('标签的数据：',customAttr.label)
       // y.label = customAttr.label
       y.label = {
-        show: false,
+        show: customAttr.label.show,
         position: [customAttr.size.barWidth / 2, -(customAttr.size.barWidth + 20)],
-        color: '#ffffff',
-        fontSize: 14,
-        fontStyle: 'bold',
-        align: 'center'
+        color: customAttr.label.color,
+        fontSize: customAttr.label.fontSize,
+        position: customAttr.label.position,
+        formatter: customAttr.label.formatter
       }
     }
     y.type = 'bar'

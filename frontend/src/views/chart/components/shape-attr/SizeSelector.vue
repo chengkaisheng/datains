@@ -204,14 +204,21 @@
         <el-form-item v-show="chart.type" :label="$t('chart.dimension_show')" class="form-item">
           <el-checkbox v-model="sizeForm.dimensionShow" @change="changeBarSizeCase">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
-        <el-form-item v-show="chart.type" :label="$t('chart.dimension_font_size')" class="form-item">
-          <el-select v-model="sizeForm.dimensionFontSize" :placeholder="$t('chart.dimension_font_size')" @change="changeBarSizeCase">
-            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item v-show="chart.type" :label="$t('chart.space_split')" class="form-item">
-          <el-input-number v-model="sizeForm.spaceSplit" :min="0" size="mini" @change="changeBarSizeCase" />
-        </el-form-item>
+        <div v-show="sizeForm.dimensionShow">
+          <el-form-item v-show="chart.type === 'text'" label="排列格式" class="form-item">
+            <el-select v-model="sizeForm.quotaArrayStatus" placeholder="请选择" @change="changeBarSizeCase">
+              <el-option v-for="item in quotaArrays" :key="item.value" :label="item.name" :value="item.value"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item v-show="chart.type" :label="$t('chart.dimension_font_size')" class="form-item">
+            <el-select v-model="sizeForm.dimensionFontSize" :placeholder="$t('chart.dimension_font_size')" @change="changeBarSizeCase">
+              <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-show="chart.type" :label="$t('chart.space_split')" class="form-item">
+            <el-input-number v-model="sizeForm.spaceSplit" :min="0" size="mini" @change="changeBarSizeCase" />
+          </el-form-item>
+        </div>
       </el-form>
 
       <el-form v-show="chart.type && chart.type.includes('scatter')" ref="sizeFormLine" :model="sizeForm" label-width="80px" size="mini">
@@ -439,7 +446,13 @@ export default {
         { name: '100' + this.$t('chart.table_page_size_unit'), value: '100' }
       ],
       fontSize: [],
-      predefineColors: COLOR_PANEL
+      predefineColors: COLOR_PANEL,
+      quotaArrays: [
+        {name: '上下排序,值在上',value: 'column'},
+        {name: '上下排序,值在下',value: 'column-reverse'},
+        {name: '左右排序,值在左',value: 'row'},
+        {name: '左右排序,值在右',value: 'row-reverse'},
+      ]
     }
   },
   watch: {

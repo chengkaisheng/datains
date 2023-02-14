@@ -92,6 +92,7 @@ export const DEFAULT_SIZE = {
   gaugeStartAngle: 225,
   gaugeEndAngle: -45,
   dimensionFontSize: 18,
+  quotaArrayStatus: 'column',
   quotaFontSize: 18,
   spaceSplit: 10,
   dimensionShow: true,

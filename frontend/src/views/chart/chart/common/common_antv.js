@@ -162,7 +162,7 @@ export function getLabel(chart) {
 
         // formatter
         label.formatter = function(text){
-          return fn?eval("("+fn+")") : text.value
+          return fn?eval("("+fn+")") : ''
         }
       } else {
         label = false
