@@ -134,7 +134,7 @@ export function getLabel(chart) {
     if (customAttr.label) {
       const l = JSON.parse(JSON.stringify(customAttr.label))
       let fn = ""
-      if(l.antvFormatter !== '') {
+      if(t.antvFormatter !== undefined && l.antvFormatter !== '') {
         fn = "`"+((l.antvFormatter.replace(/{a}/g,"${text.field}")).replace(/{b}/g,"${text.value}"))+"`"
       }
       // console.log('内容格式',fn)
@@ -180,8 +180,41 @@ export function getTooltip(chart) {
     // tooltip
     if (customAttr.tooltip) {
       const t = JSON.parse(JSON.stringify(customAttr.tooltip))
+      // console.log('浮窗数据',t)
       if (t.show) {
-        tooltip = {}
+        if(t.antvFormatter !== undefined && t.antvFormatter === '') {
+          tooltip = {}
+        } else {
+          tooltip = {
+            customContent: (title,items) => {
+              // title是当前移入是对应的x轴数据；items是[{...}]形式的，
+              // console.log(title,items)
+              let str = ""
+              str += `<div style="padding: 5px;color:${t.textStyle.color};font-size:${t.textStyle.fontSize}">`
+
+              if(t.antvFormatter.indexOf('{b}') !== -1) {
+                str += `<div style="margin-bottom: 10px;">${title}</div>`
+              }
+              items.forEach(obj => {
+                str += '<div style="margin-bottom:10px;">'
+                if(t.antvFormatter.indexOf('{a}') !== -1) {
+                  str += `<span>${obj.name}</span>&nbsp;&nbsp;`
+                }
+                if(t.antvFormatter.indexOf('{a}') !== -1 && t.antvFormatter.indexOf('{c}') !== -1){
+                  str +=': '
+                }
+                if(t.antvFormatter.indexOf('{c}') !== -1) {
+                  str += `<span>${obj.value}</span>`
+                }
+                str +='</div>'
+              })
+              str +='</div>'
+              console.log('展示情况：',str)
+              return str
+            }
+          }
+        }
+        
       } else {
         tooltip = false
       }

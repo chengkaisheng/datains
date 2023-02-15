@@ -14,28 +14,20 @@
           <el-form-item :label="$t('chart.text_color')" class="form-item">
             <el-color-picker v-model="tooltipForm.textStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeTooltipAttr" />
           </el-form-item>
-          <!-- <el-form-item class="form-item">
+          <el-form-item class="form-item">
             <span slot="label">
               <span class="span-box">
                 <span>{{ $t('chart.content_formatter') }}</span>
                 <el-tooltip class="item" effect="dark" placement="bottom">
                   <div slot="content">
-                    模板变量有 {a}, {b}，{c}，{d}，分别表示系列名，数据名，数据值等。
-                    <br>
-                    在 触发位置 为 '坐标轴' 的时候，会有多个系列的数据，此时可以通过 {a0}, {a1}, {a2} 这种后面加索引的方式表示系列的索引。
-                    <br>
-                    不同图表类型下的 {a}，{b}，{c}，{d} 含义不一样。 其中变量{a}, {b}, {c}, {d}在不同图表类型下代表数据含义为：
-                    <br><br>
-                    折线（区域）图、柱状（条形）图、仪表盘 : {a}（系列名称），{b}（类目值），{c}（数值）
-                    <br>
-                    饼图、漏斗图: {a}（系列名称），{b}（数据项名称），{c}（数值）, {d}（百分比）
+                    字符串模板 模板变量有：<br>{a}：系列名。<br>{b}：数据名。<br>{c}：数据值。
                   </div>
                   <i class="el-icon-info" style="cursor: pointer;" />
                 </el-tooltip>
               </span>
             </span>
             <el-input v-model="tooltipForm.antvFormatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" :placeholder="$t('chart.formatter_plc')" @blur="changeTooltipAttr" />
-          </el-form-item> -->
+          </el-form-item>
         </div>
       </el-form>
     </el-col>
