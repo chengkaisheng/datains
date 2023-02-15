@@ -209,7 +209,7 @@ export function getTooltip(chart) {
                 str +='</div>'
               })
               str +='</div>'
-              console.log('展示情况：',str)
+              // console.log('展示情况：',str)
               return str
             }
           }
