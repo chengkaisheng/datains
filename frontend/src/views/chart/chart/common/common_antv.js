@@ -134,7 +134,7 @@ export function getLabel(chart) {
     if (customAttr.label) {
       const l = JSON.parse(JSON.stringify(customAttr.label))
       let fn = ""
-      if(t.antvFormatter !== undefined && l.antvFormatter !== '') {
+      if(l.antvFormatter !== undefined && l.antvFormatter !== '') {
         fn = "`"+((l.antvFormatter.replace(/{a}/g,"${text.field}")).replace(/{b}/g,"${text.value}"))+"`"
       }
       // console.log('内容格式',fn)
