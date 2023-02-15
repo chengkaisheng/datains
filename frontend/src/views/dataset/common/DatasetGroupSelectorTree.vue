@@ -409,6 +409,10 @@ export default {
 .tree-style {
   padding: 10px;
   height: 100%;
-  overflow-y: auto;
+  /* overflow-y: auto; */
+}
+.custom-tree-container {
+  height: calc(50vh - 100px);
+  overflow: auto;
 }
 </style>
