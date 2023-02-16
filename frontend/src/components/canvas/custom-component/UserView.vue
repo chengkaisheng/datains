@@ -2308,8 +2308,8 @@ export default {
   justify-content: center;
 }
 
-.active {
-}
+// .active {
+// }
 
 .active > .icon-fangda {
   z-index: 2;
