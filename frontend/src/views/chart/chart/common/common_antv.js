@@ -161,8 +161,10 @@ export function getLabel(chart) {
         }
 
         // formatter
-        label.formatter = function(text){
-          return fn?eval("("+fn+")") : ''
+        if(l.antvFormatter !== undefined && l.antvFormatter !== '') {
+          label.formatter = function(text){
+            return fn?eval("("+fn+")") : ''
+          }
         }
       } else {
         label = false
@@ -182,37 +184,41 @@ export function getTooltip(chart) {
       const t = JSON.parse(JSON.stringify(customAttr.tooltip))
       // console.log('浮窗数据',t)
       if (t.show) {
-        if(t.antvFormatter !== undefined && t.antvFormatter === '') {
-          tooltip = {}
-        } else {
-          tooltip = {
-            customContent: (title,items) => {
-              // title是当前移入是对应的x轴数据；items是[{...}]形式的，
-              // console.log(title,items)
-              let str = ""
-              str += `<div style="padding: 5px;color:${t.textStyle.color};font-size:${t.textStyle.fontSize}">`
-
-              if(t.antvFormatter.indexOf('{b}') !== -1) {
-                str += `<div style="margin-bottom: 10px;">${title}</div>`
-              }
-              items.forEach(obj => {
-                str += '<div style="margin-bottom:10px;">'
-                if(t.antvFormatter.indexOf('{a}') !== -1) {
-                  str += `<span>${obj.name}</span>&nbsp;&nbsp;`
+        if (t.antvFormatter !== undefined){
+          if(t.antvFormatter === '') {
+            tooltip = {}
+          } else {
+            tooltip = {
+              customContent: (title,items) => {
+                // title是当前移入是对应的x轴数据；items是[{...}]形式的，
+                // console.log(title,items)
+                let str = ""
+                str += `<div style="padding: 5px;color:${t.textStyle.color};font-size:${t.textStyle.fontSize}">`
+  
+                if(t.antvFormatter.indexOf('{b}') !== -1) {
+                  str += `<div style="margin-bottom: 10px;">${title}</div>`
                 }
-                if(t.antvFormatter.indexOf('{a}') !== -1 && t.antvFormatter.indexOf('{c}') !== -1){
-                  str +=': '
-                }
-                if(t.antvFormatter.indexOf('{c}') !== -1) {
-                  str += `<span>${obj.value}</span>`
-                }
+                items.forEach(obj => {
+                  str += '<div style="margin-bottom:10px;">'
+                  if(t.antvFormatter.indexOf('{a}') !== -1) {
+                    str += `<span>${obj.name}</span>&nbsp;&nbsp;`
+                  }
+                  if(t.antvFormatter.indexOf('{a}') !== -1 && t.antvFormatter.indexOf('{c}') !== -1){
+                    str +=': '
+                  }
+                  if(t.antvFormatter.indexOf('{c}') !== -1) {
+                    str += `<span>${obj.value}</span>`
+                  }
+                  str +='</div>'
+                })
                 str +='</div>'
-              })
-              str +='</div>'
-              // console.log('展示情况：',str)
-              return str
+                // console.log('展示情况：',str)
+                return str
+              }
             }
           }
+        } else {
+          tooltip = {}
         }
         
       } else {
