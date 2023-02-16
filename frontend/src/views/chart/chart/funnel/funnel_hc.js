@@ -127,7 +127,7 @@ export const DEFAULT_COLOR_CASE = {
         formatter = formatter.replace('{a}', '{series.name}')
         formatter = formatter.replace('{b}', '{point.name}')
         formatter = formatter.replace('{c}', '{point.y}')
-        formatter = formatter.replace('{d', '{point.percentage')
+        formatter = formatter.replace('{d}', '{point.percentage:.2f}%')
         chart_option.tooltip.formatter = formatter
       }
   
@@ -142,7 +142,7 @@ export const DEFAULT_COLOR_CASE = {
         formatter = formatter.replace('{a}', '{series.name}')
         formatter = formatter.replace('{b}', '{point.name}')
         formatter = formatter.replace('{c}', '{point.y}')
-        formatter = formatter.replace('{d', '{point.percentage')
+        formatter = formatter.replace('{d}', '{point.percentage:.2f}%')
         dataLabels.format = formatter
         
         // 系列数据标签的选项，显示在每个数据点旁边
