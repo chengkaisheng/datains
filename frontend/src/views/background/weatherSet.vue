@@ -6,8 +6,19 @@
       </el-col>
     </el-row>
     <el-row class="main-content">
-
-      <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
+      <el-row style="margin-top: 10px;">
+        <el-col :span="4">
+          <span class="params-title">{{'省市编码'}}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input v-model="curComponent.weatherStyle.proCityCode" placeholder="请输入省市编码"></el-input>
+        </el-col>
+        <el-col :span="12" style="font-size: 13px;color: #888888;padding-left:10px;">
+          注意：省市编码为6位数<br/>
+          例如： '北京市':'110100','朝阳区':'110105'
+        </el-col>
+      </el-row>
+      <el-row style="height: 50px;overflow: hidden;margin-top:10px;">
         <el-col :span="4">
           <span class="params-title">{{ '字体颜色' }}</span>
         </el-col>
@@ -198,7 +209,7 @@ export default {
       // console.log('this.fileList', this.fileList)
 
       // console.log('this.imgUrlList', this.imgUrlList)
-      // this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
     },
     commitStyle() {
