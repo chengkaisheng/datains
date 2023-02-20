@@ -335,7 +335,7 @@ export default {
     }
   },
   created() {
-    console.log('轮播图片组件', this.element)
+    console.log('tab导航组件', this.element,this.canvasStyleData)
   }, 
   mounted() {
     this.oldName = this.element.options.heightTabs
@@ -394,9 +394,10 @@ export default {
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
     },
-    toggleNav(key) {
+    toggleNav(key) { // tab点击的值
       // 切换导航
-      console.log('点击key',key)
+      const _that = this
+      console.log('点击key',key,this.element)
       if (this.canvasStyleData.showArr) {
         const newArr = this.canvasStyleData.showArr
         newArr.forEach((keys, index) => {
@@ -406,14 +407,14 @@ export default {
             // delete keys
           }
         })
-        console.log('newArrnewArrnewArrnewArrnewArrnewArrnewArr', this.oldName, 'this.oldName', newArr)
+        console.log('newArr', this.oldName, 'this.oldName', newArr)
         this.canvasStyleData.showArr = newArr
       }
 
       // console.log('previewCanvasScale', this.previewCanvasScale)
       // console.log('切换导航------ ', this.componentData, this.canvasStyleData)
       const iframeArr = []
-      if (this.element.options.vertical !== 'elementKey') {
+      if (this.element.options.vertical !== 'elementKey') { // 点击的导航的级别不是元素级
         // this.canvasStyleData.navModel = 'defult'
         this.canvasStyleData.navShowKey = key.name
       } else {
@@ -441,7 +442,6 @@ export default {
       if (this.element.options.vertical !== 'elementKey') {
         let chengkey = true
         this.componentData.forEach(res => {
-          console.log('res', res)
           if (res.showName === key.name) {
             console.warn(res)
             // res.options.heightTabs = res.options.navTabList[0].name
@@ -453,9 +453,23 @@ export default {
         if (chengkey) {
           this.canvasStyleData.showArr = []
         }
+      } else {
+        if(!this.inScreen) {
+          let compData = JSON.parse(JSON.stringify(this.componentData))
+          compData.forEach(item => {
+            if(item.component === 'de-nav') {
+              let a = JSON.parse(JSON.stringify(item.options.navTabList)).find(val => val.name === this.element.showName)
+              if(a !== undefined) {
+                item.options.heightTabs = key.name
+              }
+            }
+          })
+          // console.log('componentData',compData)
+          this.$store.commit('setComponentData',compData)
+          
+        }
       }
-
-      console.warn('--end---')
+      console.warn('--end---',this.canvasStyleData)
       // --end
 
       this.commitStyle()

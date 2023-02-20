@@ -145,7 +145,8 @@ export default {
       terminal: 'pc',
       offsetWidth: 1100,
       scaleSize: 1,
-      onsizeKey: false
+      onsizeKey: false,
+      comShow: true,
     }
   },
   created() {
@@ -291,7 +292,7 @@ export default {
     },
     // 此处单独计算componentData的值 不放入全局mapState中
     componentDataInfo() {
-      // console.log('this.componentDataShow', this.componentDataShow)
+      console.log('this.componentDataShow', this.componentDataShow)
       // const style = this.componentDataShow.map(res => {
       //   console.log('res==', res)
       //   Object.keys(res.style).forEach(key => {
