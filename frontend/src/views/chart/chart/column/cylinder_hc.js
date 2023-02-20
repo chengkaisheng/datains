@@ -98,7 +98,15 @@ export const DEFAULT_COLOR_CASE = {
       }
     },
   
-    tooltip: {},
+    tooltip: {
+      shared: true,
+      useHTML: true,
+      headerFormat: '<small>{point.key}</small><table>',
+      pointFormat: '<tr><td>{series.name}: </td>' +
+        '<td style="text-align: right"><b>{point.y}</b></td></tr>',
+      footerFormat: '</table>',
+      valueDecimals: 2
+    },
     xAxis: {
       categories: [],
       title: {
@@ -159,7 +167,13 @@ export const DEFAULT_COLOR_CASE = {
         tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
   
         chart_option.tooltip.enabled = tooltip.show
-        chart_option.tooltip.style = { fontSize: tooltip.textStyle.fontSize, color: tooltip.textStyle.color }
+        chart_option.tooltip.style = { 
+          fontSize: tooltip.textStyle.fontSize, 
+          color: tooltip.textStyle.color 
+        }
+        chart_option.tooltip.headerFormat =  `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small><table>`
+        chart_option.tooltip.pointFormat = `<tr><td style="font-size:${tooltip.textStyle.fontSize}px;">{series.name}: </td>` +
+          `<td style="text-align: right;font-size:${tooltip.textStyle.fontSize}px;"><b>{point.y}</b></td></tr>`
         let formatter = tooltip.formatter
         formatter = formatter.replace('{a}', '{series.name}')
         formatter = formatter.replace('{b}', '{point.name}')
