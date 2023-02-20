@@ -868,7 +868,7 @@
                     v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')
                         &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' 
                         && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'
-                        && view.type !== 'map_bubble' && view.type !== 'boxplot'"
+                        && view.type !== 'map_bubble' && view.type !== 'boxplot' && !view.type.includes('roll')"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -895,7 +895,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type &&!view.type.includes('vertical')
+                    v-show="view.type &&!view.type.includes('vertical') && !view.type.includes('roll')
                       &&!view.type.includes('dialog') && !view.type.includes('table') 
                       && !view.type.includes('progress') && !view.type.includes('text') 
                       && view.type !== 'liquid' && view.type !== 'gauge' 
@@ -1080,7 +1080,7 @@
                       && !view.type.includes('progress') && view.type !== 'map_bubble'
                       && view.type !== 'graph' && view.type !== 'candlestick'
                       && view.type !== '3dsurface' && view.type !== '3d-column'
-                      && view.type !== 'boxplot'"
+                      && view.type !== 'boxplot' && !view.type.includes('roll')"
                     name="legend"
                     :title="$t('chart.legend')"
                   >

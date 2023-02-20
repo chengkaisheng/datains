@@ -184,7 +184,7 @@
         <el-form-item :label="$t('chart.table_item_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableItemHeight" :min="20" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item :label="$t('chart.table_column_width_config')" class="form-item" v-if="!chart.type.includes('roll')">
+        <el-form-item :label="$t('chart.table_column_width_config')" class="form-item" v-if="chart.type && !chart.type.includes('roll')">
           <el-radio-group v-model="sizeForm.tableColumnMode" @change="changeBarSizeCase">
             <el-radio label="adapt"><span>{{ $t('chart.table_column_adapt') }}</span></el-radio>
             <el-radio label="custom">

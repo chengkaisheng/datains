@@ -526,7 +526,7 @@ export default {
     this.navInfoLis.forEach(ele => {
       console.log('ele::::', ele)
       this.componentData.forEach(res => {
-        if (res.showName === ele.name) {
+        if (res.showName === ele.name) {  // 这个地方判断
           // res.showName = ''
           ele.relation.push(res.id)
           delete res.showName

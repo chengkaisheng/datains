@@ -336,7 +336,7 @@ export default {
   },
   created() {
     console.log('轮播图片组件', this.element)
-  },
+  }, 
   mounted() {
     this.oldName = this.element.options.heightTabs
     if (this.element.options.pattern === 'scroll' && this.element.options.vertical === 'elementKey') {
@@ -396,6 +396,7 @@ export default {
     },
     toggleNav(key) {
       // 切换导航
+      console.log('点击key',key)
       if (this.canvasStyleData.showArr) {
         const newArr = this.canvasStyleData.showArr
         newArr.forEach((keys, index) => {

@@ -6,7 +6,10 @@
         <el-table-column v-for="(item,index) in fields" :key="index" :prop="item.datainsName" :label="item.name" />
       </el-table> -->
       <div :class="adaptWidth? 'table_new_header': 'table_new_header_notadapt'" :style="table_header_class">
-        <div v-for="(item,index) in fields" v-show="item.checked" :key="index" class="header_title" :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">{{ item.name }}</div>
+        <div v-for="(item,index) in fields" v-show="item.checked" :key="index" class="header_title" 
+          :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
+          {{ item.name }}
+        </div>
       </div>
       <div class="content">
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
@@ -39,7 +42,9 @@
             class="table_bode_li" 
             @click.stop="showDialogInfo(items,inde)"
           >
-            <div v-for="(item,index) in fields" v-show="item.checked" :key="index" :class="adaptWidth?'body_info': 'body_info1'" :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
+            <div v-for="(item,index) in fields" v-show="item.checked" :key="index" 
+              :class="adaptWidth?'body_info': 'body_info1'" 
+              :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
               <!-- {{ inde }} -->
               {{ items[item.datainsName] }}
             </div>
@@ -189,7 +194,9 @@ export default {
         borderBottomStyle: 'dashed',
         borderBottomWidth: '1px',
         borderBottomColor: '#ffffff'
-      }
+      },
+
+      adaptWidth: true,
     }
   },
   computed: {
@@ -224,17 +231,17 @@ export default {
         borderRadius: this.borderRadius
       }
     },
-    adaptWidth() {
-      if(this.chart.customAttr) {
-        const customAttr = JSON.parse(this.chart.customAttr)
-        if(customAttr.size.adaptWidth !== undefined) {
-          return customAttr.size.adaptWidth
-        } else {
-          return true
-        }
-      }
-      return true
-    },
+    // adaptWidth() {
+    //   if(this.chart.customAttr) {
+    //     const customAttr = JSON.parse(this.chart.customAttr)
+    //     if(customAttr.size.adaptWidth !== undefined) {
+    //       return customAttr.size.adaptWidth
+    //     } else {
+    //       return true
+    //     }
+    //   }
+    //   return true
+    // },
   },
   watch: {
     chart: function() {
@@ -410,10 +417,10 @@ export default {
         const data = this.dataInfo[0]
         setTimeout(() => {
           this.dataInfo.splice(0, 1)
-        }, 500)
+        }, 100) // 时间调短测试
         setTimeout(() => {
           this.dataInfo.push(data)
-        }, 500)
+        }, 101)
         // console.log('存储数据', this.dataInfo[3])
         const keyObj = this.dataInfo[this.highlight]
         // const objArr = []
@@ -432,7 +439,7 @@ export default {
         setTimeout(() => {
           // console.log('字段是？',this.fields)
           this.getDetailsInfo(this.dataInfo)
-        },500)
+        },102)
         
       }, this.scrolleTime) // 滚动速度
     },
@@ -631,6 +638,7 @@ export default {
 
           console.log('widthData',customAttr.size.widthData)
           this.widthData = customAttr.size.widthData
+          this.adaptWidth = customAttr.size.adaptWidth !== undefined? customAttr.size.adaptWidth : true
         }
         if (customAttr.label) {
           // console.log('label数据，，，，，', customAttr.label)
@@ -650,7 +658,10 @@ export default {
           this.pop_content.borderBottomColor = customAttr.label.popContentBorderBottomColor
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
-        this.tableScroll()
+        // 页面mounted()时候调用一次
+        this.getDetailsInfo(this.dataInfo)
+
+        this.tableScroll()// 表格滚动
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
