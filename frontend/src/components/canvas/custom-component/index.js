@@ -1,5 +1,19 @@
 import Vue from 'vue'
 
+// export default {
+//     install(Vue) {
+//         // 使用webpack的方法
+//         // require.context(文件路径, 是否深层次查找, 正则表达式)
+//         const requireComponent = require.context('./', true, /\.vue$/)
+//         // requireComponent.keys() 会找到各个组件文件的路径 包含在一个数组里面
+//         requireComponent.keys().forEach((ele) => {
+//           // requireComponent(ele).default 会得到组件对象 需要给组件设置name
+//           const moduleObj = requireComponent(ele).default
+//           Vue.component(moduleObj.name, moduleObj)
+//         })
+//       }
+// }
+
 import Picture from '@/components/canvas/custom-component/Picture'
 import DeIcon from '@/components/canvas/custom-component/DeIcon'
 import VText from '@/components/canvas/custom-component/VText'

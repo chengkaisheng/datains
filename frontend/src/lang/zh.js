@@ -828,6 +828,8 @@ export default {
     circle: '圆形',
     label: '标签',
     label_position: '标签位置',
+    label_level: '标签水平移动',
+    label_vertical: '标签垂直移动',
     content_formatter: '内容格式',
     inside: '内',
     tooltip: '提示',

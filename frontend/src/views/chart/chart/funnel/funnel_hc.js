@@ -88,7 +88,9 @@ export const DEFAULT_COLOR_CASE = {
           format: '<b>{point.name}</b> ({point.y:,.0f})',
           color: 'black',
           allowOverlap: true,
-          y: 10
+          x: 0,
+          y: 0,
+          align: 'right'
         },
         neckWidth: '30%',
         neckHeight: '25%',
@@ -148,6 +150,9 @@ export const DEFAULT_COLOR_CASE = {
         dataLabels.enabled = customAttr.label.show
         dataLabels.color = customAttr.label.color
         dataLabels.style = { color: customAttr.label.color, fontSize: customAttr.label.fontSize }
+        dataLabels.align = customAttr.label.align? customAttr.label.align : 'right'
+        dataLabels.x = customAttr.label.xHc !==undefined? customAttr.label.xHc : 0
+        dataLabels.y = customAttr.label.yHc !==undefined? customAttr.label.yHc : 0
         const reg = new RegExp('\n', 'g')
         let formatter = customAttr.label.formatter.replace(reg, '<br/>')
         formatter = formatter.replace('{a}', '{series.name}')

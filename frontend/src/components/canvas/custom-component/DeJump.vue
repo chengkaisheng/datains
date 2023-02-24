@@ -78,9 +78,10 @@ export default {
         style.backgroundColor = this.element.options.jumpBgColor
       }
       style.color = this.element.options.fontColor
+      style.fontSize = this.element.options.fontSize !==undefined? this.element.options.fontSize+'px':'14px'
       // console.log('options',this.element.options,style)
-      style.marginTop = (this.element.style.height - 36) + 'px'
-      // style.lineHeight = this.element.style.height + 'px'
+      // style.marginTop = (this.element.style.height - 36) + 'px'
+      style.lineHeight = this.element.style.height + 'px'
       return style
     },
   },
@@ -131,11 +132,17 @@ export default {
 .nav_calss{
   display:flex;
   height: 100%;
+  justify-content: center;
+  align-items: center;
 }
 
 .jump_sel_pop {
   background-color: transparent;
   border-color: transparent;
+}
+
+.jump_sel /deep/ .el-input--medium {
+  font-size: inherit;
 }
 
 .jump_sel /deep/ .el-input--medium .el-input__inner {
@@ -159,6 +166,7 @@ export default {
 }
 /deep/ .el-select .el-input .el-select__caret {
   color: inherit;
+  font-size: inherit;
 }
 
 

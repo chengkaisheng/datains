@@ -21,7 +21,9 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import './utils/dialog'
 import DeComplexInput from '@/components/business/condition-table/DeComplexInput'
 import DeComplexSelect from '@/components/business/condition-table/DeComplexSelect'
+
 import '@/components/canvas/custom-component' // 注册自定义组件
+// import '@/components/canvas/custom-component/index' // 注册自定义组件
 
 import { loadModules } from 'esri-loader'
 Vue.prototype.$loadModules = loadModules

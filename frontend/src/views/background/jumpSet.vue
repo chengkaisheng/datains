@@ -72,6 +72,14 @@
         <el-col :span="12">
           <el-col class="col_bottom">
             <el-col :span="6" class="jump_col_4">
+              字体大小:
+            </el-col>
+            <el-col :span="18">
+              <el-input-number v-model="curComponent.options.fontSize" :min="10" :max="30"></el-input-number>
+            </el-col>
+          </el-col>
+          <el-col class="col_bottom">
+            <el-col :span="6" class="jump_col_4">
               选项字体:
             </el-col>
             <el-col :span="18">

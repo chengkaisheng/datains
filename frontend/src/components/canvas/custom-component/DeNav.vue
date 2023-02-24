@@ -7,10 +7,10 @@
           <span class="title_class" :style="{color:heightlight(item)}" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
         </div>
       </div>
-      <div v-show="element.options.isFloat" style="width: 100%;position: relative;" @mouseover="popOver" >
+      <div v-show="element.options.isFloat" style="width: 100%;position: relative;" > <!--@mouseover="popOver"-->
         <el-popover
           placement="bottom"
-          trigger="hover"
+          trigger="click"
           popper-class="float_pop"
           v-model="isVisible"
           :append-to-body="inScreen"
@@ -27,7 +27,9 @@
           </div>
           <div slot="reference" class="nav_pop_pos" :style="floatPosition"></div>
         </el-popover>
-        <p :style="floatStyle" style="width: 100%;margin: 0px;">{{element.options.floatName}}</p>
+        <p :style="floatStyle" style="width: 100%;margin: 0px;">
+          <span class="title_class" @mousedown="baseMoseDownEven" @click.stop="popClick">{{element.options.floatName}}</span>
+        </p>
       </div>
     
     
@@ -205,7 +207,7 @@ export default {
     setStyle1() {
       return function(value) {
         const style = {}
-        console.log('this.element.options', this.element.options)
+        // console.log('this.element.options')
         if (this.element.options.vertical !== 'elementKey') {
           if (this.canvasStyleData.navShowKey === value.name) {
             // return this.element.options.highlight
@@ -252,7 +254,7 @@ export default {
         style.backgroundRepeat = 'no-repeat'
         style.backgroundSize = '100% 100%'
         style.textAlign = this.element.options.horizontal
-        console.log('floatStyle,,,,',style)
+        console.log('setStyle1',style)
         return style
       }
     },
@@ -260,7 +262,7 @@ export default {
       const style = {}
       style.left = (this.element.options.floatLevel? parseInt(this.element.options.floatLevel) : 0) + 'px'
       style.top = (this.element.options.floatVertical? parseInt(this.element.options.floatVertical) : 0) + 'px'
-      console.log('修改后会进吗？',this.element.options)
+      // console.log('修改后会进吗？',this.element.options)
       return style
     },
     floatSize() {
@@ -268,16 +270,38 @@ export default {
     },
     floatStyle() {
       const style = {}
-      if(this.element.options.floatImg !== '') {
-        style.backgroundImage = `url(${this.element.options.floatImg})`
+      let arr = []
+      
+      if(this.element.options && this.element.options.navTabList && this.element.options.navTabList.length) {
+        this.element.options.navTabList.map(item => {
+          arr.push(item.name)
+        })
       }
+      if(arr.indexOf(this.canvasStyleData.navShowKey) === -1) {
+        if(this.element.options.floatImg !== '') {
+          style.backgroundImage = `url(${this.element.options.floatImg})`
+        }
+      } else {
+        style.color = this.element.options.highlight
+        // if (this.element.options.highlightType === 'color') {
+        //   style.backgroundColor = this.element.options.highlightBg
+        // } else {
+        //   if (this.element.options.heightBgImg) {
+        //     style.backgroundImage = `url(${this.element.options.heightBgImg})`
+        //   }
+        // }
+        if(this.element.options.floatHighImg) {
+          style.backgroundImage = `url(${this.element.options.floatHighImg})`
+        }
+      }
+      
 
       style.lineHeight = this.element.style.height + 'px'
       style.backgroundRepeat = 'no-repeat'
       style.backgroundSize = '100% 100%'
       style.textAlign = this.element.options.horizontal
 
-      // console.log('float........',style)
+      console.log('floatStyle........',style)
       return style
     },
     navList() {
@@ -335,7 +359,7 @@ export default {
     }
   },
   created() {
-    console.log('tab导航组件', this.element,this.canvasStyleData)
+    // console.log('tab导航组件', this.element,this.canvasStyleData)
   }, 
   mounted() {
     this.oldName = this.element.options.heightTabs
@@ -389,7 +413,7 @@ export default {
     },
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
-      console.log('const canvasStyleData', canvasStyleData)
+      // console.log('const canvasStyleData', canvasStyleData)
       // canvasStyleData.panel = this.panel
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
@@ -461,12 +485,12 @@ export default {
               let a = JSON.parse(JSON.stringify(item.options.navTabList)).find(val => val.name === this.element.showName)
               if(a !== undefined) {
                 item.options.heightTabs = key.name
+                console.warn('改变的',item)
+                this.$store.commit('setComponentData',compData)
               }
             }
           })
           // console.log('componentData',compData)
-          this.$store.commit('setComponentData',compData)
-          
         }
       }
       console.warn('--end---',this.canvasStyleData)
@@ -489,8 +513,15 @@ export default {
       }
     },
     popOver() {
-      console.log('over',this.inScreen)
+      // console.log('over',this.inScreen)
       this.isVisible = true
+    },
+    popClick() {
+      // console.log('click',this.element,this.canvasStyleData)
+      this.isVisible = true
+      // if (this.element.options.vertical !== 'elementKey') { // 点击的导航的级别不是元素级
+      //   this.canvasStyleData.navShowKey = this.element.options.floatName
+      // }
     },
     popOut() {
       console.log('out')

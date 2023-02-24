@@ -17,11 +17,25 @@
           <el-form-item :label="$t('chart.text_color')" class="form-item">
             <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
           </el-form-item>
-          <el-form-item v-show="chart.type && chart.type !== '3dpie'" :label="$t('chart.label_position')" class="form-item">
+          
+          <el-form-item v-show="chart.type && (chart.type.includes('3dcolumn') || chart.type === '3dcylinder')" :label="$t('chart.label_position')" class="form-item">
             <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr">
               <el-option v-for="option in labelPosition" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
+
+          <el-form-item v-show="chart.type && (chart.type === '3dfunnel' || chart.type === '3dpyramid')" :label="$t('chart.label_position')" class="form-item">
+            <el-select v-model="labelForm.align" :placeholder="$t('chart.label_position')" @change="changeLabelAttr">
+              <el-option v-for="option in labelPosition1" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-show="chart.type && (chart.type === '3dfunnel' || chart.type === '3dpyramid')" :label="$t('chart.label_level')" class="form-item">
+            <el-slider v-model="labelForm.xHc" :min="-100" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && (chart.type === '3dfunnel' || chart.type === '3dpyramid')" :label="$t('chart.label_vertical')" class="form-item">
+            <el-slider v-model="labelForm.yHc" :min="-50" :max="50" show-input :show-input-controls="false" input-size="mini" @change="changeLabelAttr" />
+          </el-form-item>
+
           <el-form-item v-show="chart.type && chart.type !== 'liquid'" class="form-item">
             <span slot="label">
               <span class="span-box">
@@ -67,6 +81,10 @@ export default {
         { name: this.$t('chart.text_pos_top'), value: 'top' },
         { name: this.$t('chart.center'), value: 'middle' },
         { name: this.$t('chart.text_pos_bottom'), value: 'bottom' }
+      ],
+      labelPosition1: [
+        {name: '左边',value: 'left'},
+        {name: '右边',value: 'right'},
       ],
       predefineColors: COLOR_PANEL
     }

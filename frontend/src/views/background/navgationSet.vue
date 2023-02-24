@@ -14,7 +14,7 @@
           <el-checkbox v-model="curComponent.options.isFloat">悬浮</el-checkbox>
         </el-col>
       </el-row>
-      <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
+      <el-row>
         <el-col :span="4">
           <span class="params-title">{{ '字体大小' }}</span>
         </el-col>
@@ -22,18 +22,21 @@
           <el-input-number v-model="curComponent.options.fontSize" :min="1" />
         </el-col>
         <el-col :span="4">
-          <span class="params-title">{{ '字体颜色' }}</span>
-        </el-col>
-        <el-col :span="8">
-          <el-color-picker v-model="curComponent.options.color" />
-        </el-col>
-      </el-row>
-      <el-row style="height: 50px;overflow: hidden;margin-top:0px;">
-        <el-col :span="4">
           <span class="params-title">{{ '间距' }}</span>
         </el-col>
         <el-col :span="8">
           <el-input-number v-model="curComponent.options.spacing" :min="0" />
+        </el-col>
+      </el-row>
+      <el-row style="height: 50px;overflow: hidden;margin-top:0px;">
+        <el-col :span="4">
+          <span class="params-title">{{ '导航启用级别' }}</span>
+        </el-col>
+        <el-col :span="8" style="height:40px;line-height:40px;">
+          <el-radio-group v-model="curComponent.options.vertical">
+            <el-radio label="directory">目录级</el-radio>
+            <el-radio label="elementKey">元素级</el-radio>
+          </el-radio-group>
         </el-col>
         <el-col :span="4">
           <span class="params-title">{{ '水平对齐方式' }}</span>
@@ -56,18 +59,7 @@
           </el-radio-group>
         </el-col> -->
       </el-row>
-      <el-row v-show="true">
-        <el-col :span="4">
-          <span class="params-title">{{ '导航启用级别' }}</span>
-        </el-col>
-        <el-col :span="8" style="height:40px;line-height:40px;">
-          <el-radio-group v-model="curComponent.options.vertical">
-            <el-radio label="directory">目录级</el-radio>
-            <el-radio label="elementKey">元素级</el-radio>
-          </el-radio-group>
-        </el-col>
-      </el-row>
-      <el-row v-show="false">
+      <!-- <el-row>
         <el-col :span="4">
           <span class="params-title">{{ '模式选择' }}</span>
         </el-col>
@@ -77,7 +69,7 @@
             <el-radio label="scroll">隐藏</el-radio>
           </el-radio-group>
         </el-col>
-      </el-row>
+      </el-row> -->
       <el-row v-show="curComponent.options.pattern=='scroll'&&curComponent.options.vertical=='elementKey'" style="height: 50px;overflow: hidden;margin-top:5px;">
         <el-col :span="4">
           <span class="params-title">{{ '展示数量' }}</span>
@@ -99,6 +91,12 @@
       </el-row> -->
       <el-row>
         <el-col :span="4">
+          <span class="params-title">{{ '字体颜色' }}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-color-picker v-model="curComponent.options.color" />
+        </el-col>
+        <el-col :span="4">
           <span class="params-title">{{ '高亮字体颜色' }}</span>
         </el-col>
         <el-col :span="8">
@@ -115,7 +113,7 @@
       </el-row> -->
       <el-row style="height: 140px;margin-top:10px;margin-bottom:10px;overflow: hidden">
         <el-col :span="4">
-          <span class="params-title">{{ '高亮背景' }}</span>
+          <span class="params-title">{{ curComponent.options.isFloat? '浮窗高亮背景': '高亮背景' }}</span>
         </el-col>
         <el-col :span="20">
           <el-row>
@@ -173,7 +171,7 @@
       </el-row>
       <el-row style="height: 140px;margin-top:10px;margin-bottom:20px;overflow: hidden">
         <el-col :span="4">
-          <span class="params-title">{{ '默认背景' }}</span>
+          <span class="params-title">{{ curComponent.options.isFloat? '浮窗默认背景': '默认背景' }}</span>
         </el-col>
         <el-col :span="20">
           <el-row>
@@ -302,26 +300,26 @@
 
       <el-row v-if="curComponent.options.isFloat">
         <el-col :span="4">
-          <span class="params-title">悬浮展示名称</span>
+          <span class="params-title">展示名称</span>
         </el-col>
         <el-col :span="8">
           <el-input v-model="curComponent.options.floatName" placeholder="请输入内容" />
         </el-col>
         <el-col :span="4">
-          <span class="params-title">悬浮字体大小</span>
+          <span class="params-title">浮窗字体大小</span>
         </el-col>
         <el-col :span="8">
           <el-input-number v-model="curComponent.options.floatSize" :min="1" />
         </el-col>
         <el-col style="margin-top: 10px;">
           <el-col :span="4">
-            <span class="params-title">悬浮展示宽度</span>
+            <span class="params-title">浮窗展示宽度</span>
           </el-col>
           <el-col :span="8">
             <el-input-number v-model="curComponent.options.floatWidth" :min="1"></el-input-number>
           </el-col>
           <el-col :span="4">
-            <span class="params-title">悬浮展示高度</span>
+            <span class="params-title">浮窗展示高度</span>
           </el-col>
           <el-col :span="8">
             <el-input-number v-model="curComponent.options.floatHeight" :min="1"></el-input-number>
@@ -345,14 +343,25 @@
         <el-col style="margin: 20px 0px;">
           <el-row>
             <el-col :span="4">
-              <span class="params-title">展示名称背景</span>
+              <span class="params-title">展示背景</span>
             </el-col>
             <el-col :span="3">
               <el-button size="mini" type="primary" @click="openFloatBgImg()">选择</el-button>
             </el-col>
-            <el-col :span="7" v-show="floatImg !== ''">
+            <el-col :span="5" v-show="floatImg !== ''">
               <div style="height:80px;width:120px;overflow-y:scroll;">
                 <img :src="floatImg" class="img_class">
+              </div>
+            </el-col>
+            <el-col :span="4">
+              <span class="params-title">展示高亮背景</span>
+            </el-col>
+            <el-col :span="3">
+              <el-button size="mini" type="primary" @click="openFloatHighImg()">选择</el-button>
+            </el-col>
+            <el-col :span="5" v-show="floatHighImg !== ''">
+              <div style="height:80px;width:120px;overflow-y:scroll;">
+                <img :src="floatHighImg" class="img_class">
               </div>
             </el-col>
           </el-row>
@@ -375,11 +384,14 @@
         <el-row style="padding:5px;">
           <el-col :span="4">
             <span class="params-title">导航标题</span>
+            <el-tooltip content="导航标题与其他tab导航标题不能相同" placement="top" effect="light">
+            <i class="el-icon-info"></i>
+            </el-tooltip>
           </el-col>
           <el-col :span="8">
             <el-input v-model="item.name" placeholder="请输入内容" />
           </el-col>
-          <el-col v-show="navInfoLis.length>1" :span="4" :offset="2" style="height:40px;line-height:40px;">
+          <el-col v-show="navInfoLis.length>1" :span="4" :offset="1" style="height:40px;line-height:40px;">
             <el-button type="danger" size="mini" @click="deleteNav(item,index)">{{ '删除导航' }}</el-button>
           </el-col>
         </el-row>
@@ -462,6 +474,7 @@ export default {
       predefineColors: COLOR_PANEL,
       navBgImg: '',
       floatImg: '',
+      floatHighImg: '',
       textData: [],
       chengKey: '',
       changImg: '',
@@ -566,6 +579,10 @@ export default {
     if (this.curComponent.options.floatImg) {
       this.floatImg = this.curComponent.options.floatImg
     }
+
+    if(this.curComponent.options.floatHighImg) {
+      this.floatHighImg = this.curComponent.options.floatHighImg
+    }
     // this.curComponent.options.defaultBg = this.navBgImg
   },
 
@@ -609,6 +626,8 @@ export default {
           this.navBgImg = this.currentlySelected
         } else if (this.chengKey === 'float') {
           this.floatImg = this.currentlySelected
+        } else if (this.chengKey === 'floatHigh') {
+          this.floatHighImg = this.currentlySelected
         }
       } else {
         if (this.chengKey === 'highlight') {
@@ -617,6 +636,8 @@ export default {
           this.navBgImg = this.updataUrl
         } else if (this.chengKey === 'float') {
           this.floatImg = this.updataUrl
+        } else if (this.chengKey === 'floatHigh') {
+          this.floatHighImg = this.updataUrl
         }
       }
       this.innerVisible = false
@@ -640,6 +661,11 @@ export default {
     openFloatBgImg() {
       this.currentlySelected = ''
       this.chengKey = 'float'
+      this.innerVisible = true
+    },
+    openFloatHighImg() {
+      this.currentlySelected = ''
+      this.chengKey = 'floatHigh'
       this.innerVisible = true
     },
     addNavInfo() {
@@ -741,8 +767,10 @@ export default {
       this.curComponent.options.heightBgImg = this.changImg
       // 默认背景
       this.curComponent.options.defaultBg = this.navBgImg
-      // 浮动背景
+      // 浮动展示背景
       this.curComponent.options.floatImg = this.floatImg
+      // 浮动展示高亮背景
+      this.curComponent.options.floatHighImg = this.floatHighImg
       this.commitStyle()
 
       this.$store.commit('recordSnapshot')

@@ -24,7 +24,6 @@
         <!-- display:displayClass(item) -->
         <ComponentWrapper
           v-for="(item, index) in componentDataInfo"
-
           :key="index"
           :style="{opacity:opacityClass(item),visibility:displayClass(item)}"
           :config="item"

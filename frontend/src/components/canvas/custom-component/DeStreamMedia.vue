@@ -137,6 +137,7 @@ export default {
   watch: {
     element: {
       handler: function() {
+        console.log('改变时',this.element)
         var url = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].url
         if (this.element.streamMediaLinks.videoType === 'flv') {
           if (this.pOption.url === undefined && url) {
@@ -155,6 +156,7 @@ export default {
           if (this.pOption.url === undefined && url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
             this.pOption.url = url
+            console.log('url',this.pOption)
             this.initOptionHls(this.pOption)
           }
           if (this.pOption.url !== undefined && this.pOption.url !== url) {

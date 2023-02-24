@@ -125,6 +125,7 @@ export const DEFAULT_SIZE = {
 export const DEFAULT_LABEL = {
   show: false,
   position: 'top',
+  align: 'right',
   color: '#909399',
   fontSize: '10',
   formatter: '{c}',
@@ -133,6 +134,9 @@ export const DEFAULT_LABEL = {
   labelLine: {
     show: true
   },
+  xHc: 0,
+  yHc: 0,
+
   progressFontSize: '14',
   progressValueSize: '14', // 进度环数值字体大小
   progressValueWeight: '500', // 数值粗细
