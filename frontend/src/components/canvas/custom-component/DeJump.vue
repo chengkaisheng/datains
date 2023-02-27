@@ -141,6 +141,11 @@ export default {
   border-color: transparent;
 }
 
+.jump_sel ::v-deep .el-select-dropdown {
+  background-color: transparent;
+  border-color: transparent;
+}
+
 .jump_sel /deep/ .el-input--medium {
   font-size: inherit;
 }
