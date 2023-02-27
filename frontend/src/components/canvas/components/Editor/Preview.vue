@@ -192,7 +192,7 @@ export default {
     },
     displayClass() {
       return function(value) {
-        // console.log('value-----', value)
+        // console.log('value2222-----', value)
         // if (value.type === 'de-frame') {
         if (value.showName) {
           if (this.canvasStyleData.showArr && value.navModel === 'elementKey') {
@@ -325,7 +325,7 @@ export default {
   watch: {
     componentData: {
       handler(newVal, oldVla) {
-        console.log('触发值的变化------')
+        // console.log('触发值的变化------',newVal,this.canvasStyleData)
         // this.restore()
         this.changeData()
       },
@@ -349,10 +349,8 @@ export default {
     // this.$nextTick(() => {
     //   _this.restore()
     // })
-    // if (!this.inScreen) {
-
-    // }
     // console.log('token有没有',this.$store.getters.token,this.inScreen)
+    // 用于判断全屏预览状态下组件不需要展示详情图标
     if(!this.$store.getters.token) {
       this.$store.commit('setScreenStatus',false)
     } else {

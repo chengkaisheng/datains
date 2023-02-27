@@ -1158,7 +1158,7 @@ export default {
     },
     displayClass() {
       return function(value) {
-        // console.log('value-----', value)
+        // console.log('value1111-----', value)
         // if (value.type === 'de-frame') {
         if (value.showName) {
           if (this.canvasStyleData.showArr && value.navModel === 'elementKey') {

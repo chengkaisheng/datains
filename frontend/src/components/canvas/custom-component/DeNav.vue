@@ -479,18 +479,21 @@ export default {
         }
       } else {
         if(!this.inScreen) {
-          let compData = JSON.parse(JSON.stringify(this.componentData))
-          compData.forEach(item => {
+          // let compData = JSON.parse(JSON.stringify(this.componentData))
+          this.componentData.forEach(item => {
             if(item.component === 'de-nav') {
               let a = JSON.parse(JSON.stringify(item.options.navTabList)).find(val => val.name === this.element.showName)
               if(a !== undefined) {
                 item.options.heightTabs = key.name
-                console.warn('改变的',item)
-                this.$store.commit('setComponentData',compData)
+                this.canvasStyleData.showArr = []
+                this.canvasStyleData.showArr.push(key.name)
+              }
+              if(item.id === this.element.id) {
+                item.options.heightTabs = key.name
               }
             }
           })
-          // console.log('componentData',compData)
+          this.$store.commit('setComponentData',this.componentData)
         }
       }
       console.warn('--end---',this.canvasStyleData)
