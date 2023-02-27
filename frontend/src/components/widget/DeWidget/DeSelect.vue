@@ -278,6 +278,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.deSelect ::v-deep .el-select-dropdown {
+  background-color: transparent;
+  border-color: transparent;
+}
+// .deSelect ::v-deep .el-select-dropdown__list {
+//   padding: 0px;
+// }
 .deSelect ::v-deep .el-input__inner {
   background-color: transparent;
   color: inherit;
