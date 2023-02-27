@@ -172,7 +172,8 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
   // 处理data
   if (chart.data) {
     // chart_option.title.text = chart.title
-    if (chart.data.series.length > 0) {
+    console.log('chart.data',chart.data)
+    if (chart.data.series.length === 1) {
       chart_option.series[0].name = chart.data.series[0].name
       if (customAttr.color) {
         chart_option.series[0].opacity = customAttr.color.alpha / 100
@@ -182,7 +183,6 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
       if (customAttr.size) {
         chart_option.plotOptions.pie.innerSize = customAttr.size.pieInnerRadius? customAttr.size.pieInnerRadius + '%' : '0%'
       }
-
       chart_option.series[0].depth = customAttr.size.depth ? customAttr.size.depth : 20
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
@@ -191,7 +191,25 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
         y.y = y.value
         chart_option.series[0].data.push(y)
       }
+    } else if(chart.data.series.length > 1){
+      const series = chart.data.series
+      const x = chart.data.x[0].replace(/\r|\n/ig,",").split(',')
+      console.log('xxxx',x)
+      const arr = []
+      for (let i = 0; i < series.length; i++) {
+        const obj = {
+          name: x.length === series.length?x[i]: series[i].name,
+          y: series[i].data.map(ele => { return ele.value })[0],
+        }
+        if (customAttr.color) {
+          obj.color = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        }
+        arr.push(obj)
+      }
+      chart_option.series[0].data = arr
+      
     }
+
   }
   console.log('pie,chart_option', chart_option)
   componentStyle(chart_option, chart, cstyle)
