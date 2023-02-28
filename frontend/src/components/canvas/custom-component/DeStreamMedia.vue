@@ -137,9 +137,10 @@ export default {
   watch: {
     element: {
       handler: function() {
-        // console.log('改变时',this.element)
+        console.log('改变',this.element)
         var url = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].url
         if (this.element.streamMediaLinks.videoType === 'flv') {
+          console.log('flv')
           if (this.pOption.url === undefined && url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
             this.pOption.url = url
@@ -153,10 +154,11 @@ export default {
           }
         }
         if (this.element.streamMediaLinks.videoType === 'hls') {
+          console.log('hls')
           if (this.pOption.url === undefined && url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
             this.pOption.url = url
-            console.log('url',this.pOption)
+            // console.log('url',this.pOption)
             this.initOptionHls(this.pOption)
           }
           if (this.pOption.url !== undefined && this.pOption.url !== url) {
@@ -166,6 +168,7 @@ export default {
           }
         }
         if (this.element.streamMediaLinks.videoType === 'rtmp') {
+          console.log('rtmp')
           if (this.pOption.url === undefined && url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
             this.pOption.url = url
@@ -178,6 +181,7 @@ export default {
           }
         }
         if (this.element.streamMediaLinks.videoType === 'webrtc') {
+          console.log('webrtc')
           if (this.pOption.url === undefined && url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
             this.pOption.url = url
@@ -561,7 +565,7 @@ export default {
         this.createWebSocket(url)
         this.lockReconnect = false
       }, 60000)
-    }
+    },
 
   }
 }
