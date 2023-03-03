@@ -16,7 +16,8 @@ import filter from '@/filter/filter'
 import directives from './directive'
 import VueClipboard from 'vue-clipboard2'
 import widgets from '@/components/widget'
-import Treeselect from '@riophae/vue-treeselect'
+// import Treeselect from '@riophae/vue-treeselect'
+import Treeselect from '@riophae/vue-treeselect/dist/vue-treeselect.cjs.js'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import './utils/dialog'
 import DeComplexInput from '@/components/business/condition-table/DeComplexInput'
@@ -75,6 +76,11 @@ Vue.use(VueFriendlyIframe)
  * Currently MockJs will be used in the production environment,
  * please remove it before going online ! ! !
  */
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+Vue.use(VueAxios,axios)
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+require('./mock')
 if (process.env.NODE_ENV === 'production') {
 //   const { mockXHR } = require('../mock')
 //   mockXHR()

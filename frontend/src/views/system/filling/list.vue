@@ -5,7 +5,7 @@
         <el-header style="line-height: 60px;">
           <el-row>
             <el-col :span="6">
-              <el-button @click="typeClick">
+              <el-button @click="typeClick()">
                 <i class="el-icon-folder-add"></i>
                 <span>新增分类</span>
               </el-button>
@@ -34,14 +34,16 @@
                 style="width: 100%;margin-bottom: 20px;"
                 row-key="id"
                 border
-                default-expand-all
                 :tree-props="{children: 'children',hasChildren: 'hasChildren'}"
                 @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55"></el-table-column>
                 <el-table-column
                   label="名称"
-                  prop="name"
                   show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    <i v-if="scope.row.type === 2" class="el-icon-document"></i>
+                    <span>{{scope.row.name}}</span>
+                  </template>
                 </el-table-column>
                 <el-table-column
                   prop="createdBy"
@@ -58,18 +60,18 @@
                 <el-table-column
                   prop="updateTime"
                   label="修改时间"
-                  width="150"
+                  width="180"
                   show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column
                   label="操作"
+                  width="150"
                 > 
-                <!-- slot-scope="scope" -->
-                  <template>
-                    <el-button type="text" icon="el-icon-edit" title="编辑"></el-button>
-                    <el-button type="text" icon="el-icon-folder-add" title="新增分类"></el-button>
-                    <el-button type="text" icon="el-icon-circle-plus-outline" title="新增数据填报"></el-button>
-                    <el-button type="text" icon="el-icon-s-grid" ></el-button>
+                  <template slot-scope="scope">
+                    <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-edit" title="编辑" @click="revise(scope.row)"></el-button>
+                    <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-folder-add" title="新增分类" @click="typeClick(scope.row)"></el-button>
+                    <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-circle-plus-outline" title="新增数据填报"></el-button>
+                    <!-- <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-s-grid" ></el-button> -->
                   </template>
                 </el-table-column>
               </el-table>
@@ -781,14 +783,15 @@
 
     </div>
     <el-dialog
-      title="新增"
+      :title="typeTitle"
       :visible.sync="visibleType"
+      :close-on-click-modal="false"
       width="30%"
       :before-close="handleClose">
       <div>
         <el-form ref="form" :model="formData" label-width="80px" :rules="rules">
-          <el-form-item label="名称" prop="typeName">
-            <el-input v-model="formData.typeName" ></el-input>
+          <el-form-item label="名称" prop="name">
+            <el-input v-model="formData.name" ></el-input>
           </el-form-item>
         </el-form>
         
@@ -803,6 +806,7 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
+import { mapState } from 'vuex'
 
 export default {
   components: {LayoutContent},
@@ -811,76 +815,20 @@ export default {
       panelType: 'list',
       searchValue: '',
       formData: {
-        typeName: '',
+        name: '',
       },
       addForm: {
         addName: '',
         addType: '',
       },
-      tableData: [{
-        id: 1,
-        updateTime: '2016-05-03',
-        updateBy: '王小虎',
-        createdBy: '王小虎',
-        name: '填报文件夹1',
-        type: 'group',
-        children: [
-          {
-            id: 11,
-            updateTime: '2016-05-01',
-            updateBy: '王小虎',
-            createdBy: '王小虎',
-            name: '填报文件夹1-1',
-            type: 'group',
-          },
-          {
-            id: 12,
-            updateTime: '2016-05-01',
-            updateBy: '王小虎',
-            createdBy: '王小虎',
-            name: '填报文件夹1-2',
-            type: 'group',
-          }
-        ],
-      }, {
-        id: 2,
-        updateTime: '2016-05-03',
-        updateBy: '王小虎',
-        createdBy: '王小虎',
-        name: '填报文件夹2',
-        type: 'group',
-        children: [],
-      }, {
-        id: 3,
-        updateTime: '2016-05-03',
-        updateBy: '王小虎',
-        createdBy: '王小虎',
-        name: '填报文件夹3',
-        type: 'group',
-        children: [],
-      }, {
-        id: 4,
-        updateTime: '2016-05-03',
-        updateBy: '王小虎',
-        createdBy: '王小虎',
-        name: '填报文件夹4',
-        type: 'group',
-        children: [],
-      }, {
-        id: 5,
-        updateTime: '2016-05-03',
-        updateBy: '王小虎',
-        createdBy: '王小虎',
-        name: '填报文件夹5',
-        type: 'group',
-        children: [],
-      }],
+      tableData: [],
       indent: 16,
       checkedAll: false,
 
       visibleType: false,
+      typeTitle: '',
       rules:{
-        typeName: [{ required: true, message: '请输入名称', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入名称', trigger: 'blur' }]
       },
 
       elementData: [
@@ -1173,30 +1121,118 @@ export default {
           dataField: [],
         },
       },
-      checkObj: {}
+      checkObj: {},
+      addId: 16,
     }
   },
+  computed:{
+    ...mapState([
+      'fillNumber'
+    ])
+  },
   mounted() {
-
+    this.addId = this.fillNumber
+    this.init()
   },
   methods: {
+    init() {
+      console.log('初始111')
+      this.axios.get('/system/data/fill/table/list').then(res => {
+        // console.log('数据，，',res)
+        if(res.status === 200) {
+          this.tableData = res.data.list
+        }
+      })
+      // getTableList().then(res => {
+      //   console.log('数据',res)
+      // })
+    },
     searchList() {
       console.log(this.searchValue)
+      if(!this.searchValue || !this.searchValue.replace(/\s/g,'')) return this.init()
+      this.axios.post('/system/data/fill/table/search',this.searchValue).then(res => {
+        // console.log('查询',res)
+        if(res.status === 200) {
+          this.tableData =  res.data.list
+        }
+      })
     },
     handleSelectionChange(val) {
       console.log(val)
     },
-    typeClick() {
+    typeClick(data) {
+      console.log('数据',data)
       this.visibleType = true
+      this.typeTitle = '新增'
+      if(data && data.id) {
+        this.formData.pid = data.id
+      }
     },
     handleClose() {
       this.visibleType = false
     },
+    revise(data) {
+      console.log('点击',data)
+      if(data.type === 1) {
+        this.typeTitle = '修改'
+        this.visibleType = true
+        this.formData = data
+      } else if (data.type ===2) {
+
+      }
+      
+    },
     onSuccess() {
-      this.visibleType = false
+      console.log('提交，，，',this.formData)
+      if(this.typeTitle === '新增') {
+        let obj = {
+          id: this.addId,
+          name: this.formData.name,
+          createdBy: this.$store.getters.name,
+          updateBy: '',
+          updateTime: '',
+          type: 1,
+          children: [],
+        }
+        if(this.formData.pid!== undefined) {
+          obj.pid = this.formData.pid
+        }
+        this.axios.post('/system/data/fill/table/add',obj).then(res => {
+          if(res.status === 200) {
+            this.$message.success('新增成功')
+            this.tableData = res.data.list
+            this.onCancel()
+            this.addId += 1
+            this.$store.commit('setFillNumber',this.addId)
+          }
+        }).catch(err => { this.$message.error('新增失败') })
+      } else if(this.typeTitle === '修改') {
+        let obj = {
+          id: this.formData.id,
+          name: this.formData.name,
+          createdBy: this.formData.createdBy,
+          updateBy: this.$store.getters.name,
+          updateTime: this.dateFormat(new Date())
+        }
+        if(this.formData.pid!== undefined) {
+          obj.pid = this.formData.pid
+        }
+      }
     },
     onCancel() {
       this.visibleType = false
+      this.formData = {name: ''}
+    },
+    dateFormat(date) {
+      let time = new Date(date)
+      let year = time.getFullYear()
+      let mon = time.getMonth()+1
+      let day = time.getDate()<10? '0'+ time.getDate() : time.getDate()
+      let h = time.getHours()<10? '0' + time.getHours() : time.getHours()
+      let m = time.getMinutes()<10? '0' + time.getMinutes() : time.getMinutes()
+      let s = time.getSeconds()<10? '0' + time.getSeconds() : time.getSeconds()
+
+      return year +'-'+ mon +'-'+ day + ' '+ h +':'+ m +':'+ s
     },
     fillClick() {
       this.panelType = 'add'

@@ -118,7 +118,8 @@ const data = {
     // 视图是否编辑记录
     panelViewEditInfo: {},
     // 仪表板视图明细
-    panelViewDetailsInfo: {}
+    panelViewDetailsInfo: {},
+    fillNumber: 16,
   },
   mutations: {
     ...animation.mutations,
@@ -552,6 +553,10 @@ const data = {
     },
     resetViewEditInfo(state) {
       state.panelViewEditInfo = {}
+    },
+    setFillNumber(state,value) {
+      console.log('设置值',value)
+      state.fillNumber = value
     }
   },
   modules: {
