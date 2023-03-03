@@ -111,6 +111,39 @@
           <el-color-picker v-model="curComponent.options.highlightBg" />
         </el-col>
       </el-row> -->
+      <el-row style="height: 140px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+        <el-col :span="4">
+          <span class="params-title">{{ curComponent.options.isFloat? '浮窗默认背景': '默认背景' }}</span>
+        </el-col>
+        <el-col :span="20">
+          <el-row>
+            <el-radio-group v-model="curComponent.options.defaultType" style="width: 100%;">
+              <el-col :span="8">
+                <el-radio label="color">颜色</el-radio>
+              </el-col>
+              <el-col :span="16">
+                <el-radio label="back">背景</el-radio>
+              </el-col>
+            </el-radio-group>
+          </el-row>
+          <el-row style="margin-top: 10px;">
+            <el-col :span="8">
+              <el-color-picker v-model="curComponent.options.defaultColor" />
+            </el-col>
+            <el-col :span="16">
+              <el-col :span="6">
+                <el-button size="mini" type="primary" @click="openNewBgImg()">选择</el-button>
+              </el-col>
+              <el-col :span="18">
+                <div v-show="navBgImg!==''" style="height:100px;width:120px;overflow-y:scroll;position: relative;">
+                  <i class="el-icon-delete i_pos" @click="deleteImg('default')"></i>
+                  <img :src="navBgImg" class="img_class">
+                </div>
+              </el-col>
+            </el-col>
+          </el-row>
+        </el-col>
+      </el-row>
       <el-row style="height: 140px;margin-top:10px;margin-bottom:10px;overflow: hidden">
         <el-col :span="4">
           <span class="params-title">{{ curComponent.options.isFloat? '浮窗高亮背景': '高亮背景' }}</span>
@@ -134,8 +167,9 @@
               <el-col :span="6">
                 <el-button size="mini" type="primary" @click="openNewImg()">选择</el-button>
               </el-col>
-              <el-col v-show="changImg!==''" :span="18">
-                <div style="height:100px;width:120px;overflow-y:scroll;">
+              <el-col :span="18">
+                <div v-show="changImg!==''" style="height:100px;width:120px;overflow-y:scroll;position: relative;">
+                  <i class="el-icon-delete i_pos" @click="deleteImg('highlight')"></i>
                   <img :src="changImg" class="img_class">
                 </div>
               </el-col>
@@ -169,109 +203,6 @@
           <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
         </el-col> -->
       </el-row>
-      <el-row style="height: 140px;margin-top:10px;margin-bottom:20px;overflow: hidden">
-        <el-col :span="4">
-          <span class="params-title">{{ curComponent.options.isFloat? '浮窗默认背景': '默认背景' }}</span>
-        </el-col>
-        <el-col :span="20">
-          <el-row>
-            <el-radio-group v-model="curComponent.options.defaultType" style="width: 100%;">
-              <el-col :span="8">
-                <el-radio label="color">颜色</el-radio>
-              </el-col>
-              <el-col :span="16">
-                <el-radio label="back">背景</el-radio>
-              </el-col>
-            </el-radio-group>
-          </el-row>
-          <el-row style="margin-top: 10px;">
-            <el-col :span="8">
-              <el-color-picker v-model="curComponent.options.defaultColor" />
-            </el-col>
-            <el-col :span="16">
-              <el-col :span="6">
-                <el-button size="mini" type="primary" @click="openNewBgImg()">选择</el-button>
-              </el-col>
-              <el-col v-show="navBgImg!==''" :span="18">
-                <div style="height:100px;width:120px;overflow-y:scroll;">
-                  <img :src="navBgImg" class="img_class">
-                </div>
-              </el-col>
-            </el-col>
-          </el-row>
-        </el-col>
-      </el-row>
-      <el-dialog
-        width="750px"
-        title="图片库"
-        :visible.sync="innerVisible"
-        append-to-body
-      >
-        <el-tabs v-model="activeNameTabs" @tab-click="handleClick">
-          <el-tab-pane label="图库选择" name="first">
-            <el-row class="bif_box">
-              <el-col>
-                <el-collapse v-model="activeNames">
-                  <el-collapse-item v-for="(ited,index) in allImgData" :key="index" :title="ited.name" :name="ited.name">
-                    <template slot="title">
-                      <span style="width:600px">{{ ited.name }}</span>
-                    </template>
-                    <el-row :gutter="10" style="padding:10px;">
-                      <el-col v-for="(item,indexs) in ited.str" :key="indexs" style="height:108px;margin-bottom:20px; position:relative;" :span="6">
-                        <div class="img_Box" @click="clickImg(item)">
-                          <img :src="item.url" class="img_class">
-                        </div>
-                      </el-col>
-                    </el-row>
-                  </el-collapse-item>
-                </el-collapse>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top:20px;">
-              <el-col :span="3">
-                <span class="params-title">{{ '选中图片：' }}</span>
-              </el-col>
-              <el-col :span="6" style="height:108px;margin-bottom:20px;overflow-y:scroll;">
-                <img :src="currentlySelected" class="img_class">
-              </el-col>
-            </el-row>
-          </el-tab-pane>
-          <el-tab-pane label="上传图片" name="second">
-            <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
-              <el-col :span="4">
-                <span class="params-title">{{ '选择图片' }}</span>
-              </el-col>
-              <el-col v-show="updataType" style="width: 130px!important;">
-                <el-upload
-                  action=""
-                  accept=".jpeg,.jpg,.png,.gif,.svg"
-                  class="avatar-uploader"
-                  list-type="picture-card"
-                  :class="{disabled:uploadDisabled}"
-                  :on-preview="handlePictureCardPreview"
-                  :on-remove="handleRemove"
-                  :http-request="upload"
-                  :file-list="fileList"
-                  :on-change="onChange"
-                >
-                  <i class="el-icon-plus" />
-                </el-upload>
-              </el-col>
-              <el-col v-show="updataType" :span="7">
-                <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
-              </el-col>
-            </el-row>
-          </el-tab-pane>
-        </el-tabs>
-
-        <el-row class="root-class">
-          <el-col :span="24">
-            <el-button size="mini" @click="cancelPicture()">{{ $t('commons.cancel') }}</el-button>
-            <el-button type="primary" size="mini" @click="savePicture()">{{ $t('commons.confirm') }}</el-button>
-          </el-col>
-        </el-row>
-
-      </el-dialog>
       <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;" /> -->
       <!-- 轮播的图片 -->
       <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
@@ -342,27 +273,33 @@
 
         <el-col style="margin: 20px 0px;">
           <el-row>
-            <el-col :span="4">
-              <span class="params-title">展示背景</span>
+            <el-col :span="12">
+              <el-col :span="8">
+                <span class="params-title">展示背景</span>
+              </el-col>
+              <el-col :span="6">
+                <el-button size="mini" type="primary" @click="openFloatBgImg()">选择</el-button>
+              </el-col>
+              <el-col :span="10">
+                <div v-show="floatImg !== ''" style="height:100px;width:120px;overflow-y:scroll;position: relative;">
+                    <i class="el-icon-delete i_pos" @click="deleteImg('float')"></i>
+                  <img :src="floatImg" class="img_class">
+                </div>
+              </el-col>
             </el-col>
-            <el-col :span="3">
-              <el-button size="mini" type="primary" @click="openFloatBgImg()">选择</el-button>
-            </el-col>
-            <el-col :span="5" v-show="floatImg !== ''">
-              <div style="height:80px;width:120px;overflow-y:scroll;">
-                <img :src="floatImg" class="img_class">
-              </div>
-            </el-col>
-            <el-col :span="4">
-              <span class="params-title">展示高亮背景</span>
-            </el-col>
-            <el-col :span="3">
-              <el-button size="mini" type="primary" @click="openFloatHighImg()">选择</el-button>
-            </el-col>
-            <el-col :span="5" v-show="floatHighImg !== ''">
-              <div style="height:80px;width:120px;overflow-y:scroll;">
-                <img :src="floatHighImg" class="img_class">
-              </div>
+            <el-col :span="12">
+              <el-col :span="8">
+                <span class="params-title">展示高亮背景</span>
+              </el-col>
+              <el-col :span="6">
+                <el-button size="mini" type="primary" @click="openFloatHighImg()">选择</el-button>
+              </el-col>
+              <el-col :span="10" >
+                <div v-show="floatHighImg !== ''" style="height:100px;width:120px;overflow-y:scroll;position: relative;">
+                    <i class="el-icon-delete i_pos" @click="deleteImg('floatHigh')"></i>
+                  <img :src="floatHighImg" class="img_class">
+                </div>
+              </el-col>
             </el-col>
           </el-row>
         </el-col>
@@ -422,6 +359,77 @@
         <el-button type="primary" size="mini" @click="save()">{{ $t('commons.confirm') }}</el-button>
       </el-col>
     </el-row>
+
+    <el-dialog
+        width="750px"
+        title="图片库"
+        :visible.sync="innerVisible"
+        append-to-body
+      >
+        <el-tabs v-model="activeNameTabs" @tab-click="handleClick">
+          <el-tab-pane label="图库选择" name="first">
+            <el-row class="bif_box">
+              <el-col>
+                <el-collapse v-model="activeNames">
+                  <el-collapse-item v-for="(ited,index) in allImgData" :key="index" :title="ited.name" :name="ited.name">
+                    <template slot="title">
+                      <span style="width:600px">{{ ited.name }}</span>
+                    </template>
+                    <el-row :gutter="10" style="padding:10px;">
+                      <el-col v-for="(item,indexs) in ited.str" :key="indexs" style="height:108px;margin-bottom:20px; position:relative;" :span="6">
+                        <div class="img_Box" @click="clickImg(item)">
+                          <img :src="item.url" class="img_class">
+                        </div>
+                      </el-col>
+                    </el-row>
+                  </el-collapse-item>
+                </el-collapse>
+              </el-col>
+            </el-row>
+            <el-row style="margin-top:20px;">
+              <el-col :span="3">
+                <span class="params-title">{{ '选中图片：' }}</span>
+              </el-col>
+              <el-col :span="6" style="height:108px;margin-bottom:20px;overflow-y:scroll;">
+                <img :src="currentlySelected" class="img_class">
+              </el-col>
+            </el-row>
+          </el-tab-pane>
+          <el-tab-pane label="上传图片" name="second">
+            <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+              <el-col :span="4">
+                <span class="params-title">{{ '选择图片' }}</span>
+              </el-col>
+              <el-col v-show="updataType" style="width: 130px!important;">
+                <el-upload
+                  action=""
+                  accept=".jpeg,.jpg,.png,.gif,.svg"
+                  class="avatar-uploader"
+                  list-type="picture-card"
+                  :class="{disabled:uploadDisabled}"
+                  :on-preview="handlePictureCardPreview"
+                  :on-remove="handleRemove"
+                  :http-request="upload"
+                  :file-list="fileList"
+                  :on-change="onChange"
+                >
+                  <i class="el-icon-plus" />
+                </el-upload>
+              </el-col>
+              <el-col v-show="updataType" :span="7">
+                <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+              </el-col>
+            </el-row>
+          </el-tab-pane>
+        </el-tabs>
+
+        <el-row class="root-class">
+          <el-col :span="24">
+            <el-button size="mini" @click="cancelPicture()">{{ $t('commons.cancel') }}</el-button>
+            <el-button type="primary" size="mini" @click="savePicture()">{{ $t('commons.confirm') }}</el-button>
+          </el-col>
+        </el-row>
+      </el-dialog>
   </el-row>
 </template>
 
@@ -642,6 +650,19 @@ export default {
       }
       this.innerVisible = false
     },
+    deleteImg(value) {
+      if(value === 'default') {
+        this.navBgImg = ""
+      } else if(value === 'highlight') {
+        this.changImg = ""
+      } else if(value === 'float') {
+        this.floatImg = ""
+      } else if(value === 'floatHigh') {
+        this.floatHighImg = ""
+      }
+      this.fileList = []
+      this.uploadDisabled = false
+    },
     getAllImg() {
       getAllImgList().then(res => {
         console.log('获取所有图片数据', res)
@@ -651,22 +672,35 @@ export default {
     openNewImg() {
       this.currentlySelected = ''
       this.chengKey = 'highlight'
+      this.fileList = []
+      this.uploadDisabled = false
+      this.updataUrl = ''
       this.innerVisible = true
     },
     openNewBgImg() {
       this.currentlySelected = ''
       this.chengKey = 'default'
+      this.fileList = []
+      this.uploadDisabled = false
+      this.updataUrl = ''
       this.innerVisible = true
     },
     openFloatBgImg() {
       this.currentlySelected = ''
       this.chengKey = 'float'
+      this.fileList = []
+      this.uploadDisabled = false
+      this.updataUrl = ''
       this.innerVisible = true
     },
     openFloatHighImg() {
       this.currentlySelected = ''
       this.chengKey = 'floatHigh'
+      this.fileList = []
+      this.uploadDisabled = false
+      this.updataUrl = ''
       this.innerVisible = true
+      
     },
     addNavInfo() {
       console.log('this.navInfoLis', this.navInfoLis)
@@ -828,6 +862,14 @@ export default {
 </script>
 
 <style scoped>
+  .i_pos {
+    position: absolute;
+    top: 28px;
+    left: 50px;
+    color: #ffffff;
+    font-size: 20px;
+    cursor: pointer;
+  }
   .el-card-template {
     min-width: 260px;
     min-width: 460px;
