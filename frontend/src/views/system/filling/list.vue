@@ -74,7 +74,28 @@
                     <el-button type="text" icon="el-icon-edit" title="编辑" @click="revise(scope.row)"></el-button>
                     <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-folder-add" title="新增分类" @click="typeClick(scope.row)"></el-button>
                     <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-circle-plus-outline" title="新增数据填报" @click="fillClick(scope.row)"></el-button>
-                    <!-- <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-s-grid" ></el-button> -->
+                    <el-popover
+                      width="90"
+                      trigger="click"
+                      placement="left"
+                      :append-to-body="false"
+                    > 
+                      <div>
+                        <el-row>
+                          <el-col>
+                            <el-button type="text"  icon="el-icon-rank">
+                              移动
+                            </el-button>
+                          </el-col>
+                          <el-col>
+                            <el-button type="text"  icon="el-icon-delete" @click="deleteClick(scope.row)">
+                              删除
+                            </el-button>
+                          </el-col>
+                        </el-row>
+                      </div>
+                      <el-button slot="reference" type="text"  icon="el-icon-more" title="更多" style="margin-left: 10px;"></el-button>
+                    </el-popover>
                   </template>
                 </el-table-column>
               </el-table>
@@ -1224,6 +1245,7 @@ export default {
     handleClose() {
       this.visibleType = false
     },
+    // 修改点击
     revise(data) {
       console.log('点击',data)
       this.typeTitle = '修改'
@@ -1239,6 +1261,9 @@ export default {
         // this.searchTypes()
       }
       
+    },
+    deleteClick(data) {
+      console.log('删除，，',data)
     },
     // 分类新增和修改
     onSuccess() {
@@ -1466,6 +1491,9 @@ export default {
 </script>
 
 <style scoped>
+::v-deep .el-popover {
+  min-width: 90px;
+}
 ::v-deep .main_panel .el-main {
   padding: 0px;
 }
