@@ -9,7 +9,7 @@
                 <i class="el-icon-folder-add"></i>
                 <span>新增分类</span>
               </el-button>
-              <el-button @click="fillClick">
+              <el-button @click="fillClick()">
                 <i class="el-icon-circle-plus-outline"></i>
                 <span>新增数据填报</span>
               </el-button>
@@ -60,17 +60,20 @@
                 <el-table-column
                   prop="updateTime"
                   label="修改时间"
-                  width="180"
+                  width="160"
                   show-overflow-tooltip>
+                  <!-- <template slot-scope="scope">
+                    <span>{{scope.row.updateTime | dateFormat}}</span>
+                  </template> -->
                 </el-table-column>
                 <el-table-column
                   label="操作"
-                  width="150"
+                  width="120"
                 > 
                   <template slot-scope="scope">
-                    <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-edit" title="编辑" @click="revise(scope.row)"></el-button>
+                    <el-button type="text" icon="el-icon-edit" title="编辑" @click="revise(scope.row)"></el-button>
                     <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-folder-add" title="新增分类" @click="typeClick(scope.row)"></el-button>
-                    <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-circle-plus-outline" title="新增数据填报"></el-button>
+                    <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-circle-plus-outline" title="新增数据填报" @click="fillClick(scope.row)"></el-button>
                     <!-- <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-s-grid" ></el-button> -->
                   </template>
                 </el-table-column>
@@ -88,9 +91,9 @@
               <el-button icon="el-icon-d-arrow-left" circle @click="goback"></el-button>
             </el-col>
             <el-col :span="6" :offset="14">
-              <el-button>取消</el-button>
+              <el-button @click="goback">取消</el-button>
               <el-button type="primary">预览</el-button>
-              <el-button type="primary">保存</el-button>
+              <el-button type="primary" @click="saveAdd">保存</el-button>
             </el-col>
           </el-row>
         </el-header>
@@ -99,13 +102,34 @@
             <el-col :span="6" class="bor_box" style="padding: 10px 20px;">
               <el-row>
                 <el-form ref="addForm" :model="addForm">
+                  <el-form-item label="所属文件：" v-if="typeTitle === '新增'">
+                    <el-select
+                      v-model="addtypename"
+                      placeholder="请选择"
+                      ref="selectAdd"
+                      clearable
+                      @clear="clearable"
+                      style="width: 100%;"
+                    >
+                      <el-option :value="addTypeList" style="height: auto">
+                        <el-tree
+                          node-key="id"
+                          ref="treeAdd"
+                          :data="addTypeList"
+                          :props="defaultProps"
+                          highlight-current
+                          @node-click="nodeClick"
+                        ></el-tree>
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
                   <el-form-item label="名称：">
                     <el-input v-model="addForm.addName"></el-input>
                   </el-form-item>
                   <el-form-item label="控件类型：">
                     <el-col>
                       <div v-for="(item,index) in elementData" :key="index" style="text-align: center;margin-bottom: 10px;" @click="checkElement(item)">
-                        <p class="namebox" :class="{boxCheck: item.value === checkValue}">
+                        <p class="namebox" :class="{boxCheck: item.value === addForm.addType}">
                           {{item.name}}
                         </p>
                       </div>
@@ -115,21 +139,28 @@
               </el-row>
               
             </el-col>
-            <el-col :span="10" class="bor_box" style="padding: 10px 20px;">
+            <el-col :span="8" class="bor_box" style="padding: 10px 20px;">
               <div>
-                <div v-if="checkValue === 'text'">
+                <div v-if="addForm.addType === 'text'">
+                  <!-- <p v-if="checkObj.showTitle">{{checkObj.titleValue}}</p>
+                  <div>
+                    <el-input v-model="checkObj.defaultValue" 
+                      :placeholder="checkObj.placeholder" 
+                      :readonly="checkObj.status === 'onlyread'">
+                    </el-input>
+                  </div> -->
                   <p>标题</p>
                   <div>
-                    <el-input v-model="inputValue" placeholder="请输入标题"></el-input>
+                    <el-input v-model="inputValue" placeholder="请输入" readonly></el-input>
                   </div>
                 </div>
-                <div v-if="checkValue === 'area'">
+                <div v-if="addForm.addType === 'area'">
                   <p>内容</p>
                   <div>
-                    <el-input type="textarea" v-model="inputValue" :rows="2" placeholder="请输入内容"></el-input>
+                    <el-input type="textarea" v-model="inputValue" readonly :rows="2" placeholder="请输入内容"></el-input>
                   </div>
                 </div>
-                <div v-if="checkValue === 'select'">
+                <div v-if="addForm.addType === 'select'">
                   <p>下拉框</p>
                   <div>
                     <el-select v-model="inputValue" placeholder="请选择">
@@ -139,7 +170,7 @@
                     </el-select>
                   </div>
                 </div>
-                <div v-if="checkValue === 'label'">
+                <div v-if="addForm.addType === 'label'">
                   <p>标签</p>
                   <div>
                     <el-select v-model="inputValue" multiple placeholder="请选择">
@@ -149,13 +180,13 @@
                     </el-select>
                   </div>
                 </div>
-                <div v-if="checkValue === 'number'">
+                <div v-if="addForm.addType === 'number'">
                   <p>数字输入框</p>
                   <div>
                     <el-input-number v-model="inputValue" :min="1" :max="10"></el-input-number>
                   </div>
                 </div>
-                <div v-if="checkValue === 'time'">
+                <div v-if="addForm.addType === 'time'">
                   <p>日期</p>
                   <div>
                     <el-date-picker
@@ -165,7 +196,7 @@
                     </el-date-picker>
                   </div>
                 </div>
-                <div v-if="checkValue === 'radio'">
+                <div v-if="addForm.addType === 'radio'">
                   <p>单选</p>
                   <div>
                     <el-radio-group v-model="inputValue">
@@ -175,7 +206,7 @@
                     </el-radio-group>
                   </div>
                 </div>
-                <div v-if="checkValue === 'checkbox'">
+                <div v-if="addForm.addType === 'checkbox'">
                   <p>多选</p>
                   <div>
                     <el-checkbox-group v-model="inputValue"> 
@@ -185,7 +216,7 @@
                     </el-checkbox-group>
                   </div>
                 </div>
-                <div v-if="checkValue === 'cascader'">
+                <div v-if="addForm.addType === 'cascader'">
                   <p>级联选择器</p>
                   <div>
                     <el-cascader :options="options" v-model="inputValue"></el-cascader>
@@ -194,11 +225,11 @@
                 
               </div>
             </el-col>
-            <el-col :span="8" class="bor_box">
+            <el-col :span="10" class="bor_box">
               <div>
-                <el-collapse v-model="panelValue" v-if="checkValue">
+                <el-collapse v-model="panelValue" v-if="addForm.addType">
                   <el-collapse-item title="基本配置" name="name">
-                    <div v-if="checkValue === 'text'" style="padding: 10px 20px;">
+                    <div v-if="addForm.addType === 'text'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
                           <el-checkbox v-model="checkObj.showTitle">显示标题</el-checkbox>
@@ -238,7 +269,7 @@
                             <el-radio-group v-model="checkObj.status">
                               <el-radio label="ordinary">普通</el-radio>
                               <el-radio label="onlyread">只读</el-radio>
-                              <el-radio label="hiden">隐藏</el-radio>
+                              <!-- <el-radio label="hiden">隐藏</el-radio> -->
                             </el-radio-group>
                           </el-col>
                         </el-col>
@@ -253,7 +284,7 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="checkValue === 'area'" style="padding: 10px 20px;">
+                    <div v-if="addForm.addType === 'area'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
                           <el-collapse v-model="areaValue">
@@ -287,7 +318,7 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="checkValue === 'select'" style="padding: 10px 20px;">
+                    <div v-if="addForm.addType === 'select'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
                           <el-col :span="6">来源于</el-col>
@@ -384,7 +415,7 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="checkValue === 'label'" style="padding: 10px 20px;">
+                    <div v-if="addForm.addType === 'label'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
                           <el-col :span="6">来源于</el-col>
@@ -454,7 +485,7 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="checkValue === 'number'" style="padding: 10px 20px;">
+                    <div v-if="addForm.addType === 'number'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
                           <el-checkbox v-model="checkObj.showTitle">显示标题</el-checkbox>
@@ -482,7 +513,7 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="checkValue === 'time'" style="padding: 10px 20px;">
+                    <div v-if="addForm.addType === 'time'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
                           <el-checkbox v-model="checkObj.showTitle">显示标题</el-checkbox>
@@ -538,7 +569,7 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="checkValue === 'radio'" style="padding: 10px 20px;">
+                    <div v-if="addForm.addType === 'radio'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
                           <el-col :span="6">来源于</el-col>
@@ -611,7 +642,7 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="checkValue === 'checkbox'" style="padding: 10px 20px;">
+                    <div v-if="addForm.addType === 'checkbox'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
                           <el-col :span="6">来源于</el-col>
@@ -684,7 +715,7 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="checkValue === 'cascader'" style="padding: 10px 20px;">
+                    <div v-if="addForm.addType === 'cascader'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
                           <el-col :span="6">来源于</el-col>
@@ -818,9 +849,18 @@ export default {
         name: '',
       },
       addForm: {
+        pid: null,
         addName: '',
         addType: '',
       },
+      updateForm: {},
+      defaultProps: {
+        id: 'id',
+        label: 'name',
+        children: 'children'
+      },
+      addTypeList: [],
+      addtypename: '',
       tableData: [],
       indent: 16,
       checkedAll: false,
@@ -842,7 +882,7 @@ export default {
         {name: '多选框',value: 'checkbox'},
         {name: '级联选择器',value: 'cascader'},
       ],
-      panelValue: '',
+      panelValue: 'name',
       areaValue: '',
       options: [
         {
@@ -1041,11 +1081,10 @@ export default {
           }]
         }
       ],
-      checkValue: null,
       inputValue: null,
       checkData: {
         'text': {
-          showTitle: false,
+          showTitle: true,
           titleValue: '',
           tableFieldName: '',
           placeholder: '',
@@ -1130,6 +1169,20 @@ export default {
       'fillNumber'
     ])
   },
+  filters: {
+    // dateFormat(date) {
+    //   if(!date || new Date(date) === 'Invalid Date') return
+    //   let time = new Date(date)
+    //   let year = time.getFullYear()
+    //   let mon = time.getMonth()+1<10? '0'+ time.getMonth() : time.getMonth()
+    //   let day = time.getDate()<10? '0'+ time.getDate() : time.getDate()
+    //   let h = time.getHours()<10? '0' + time.getHours() : time.getHours()
+    //   let m = time.getMinutes()<10? '0' + time.getMinutes() : time.getMinutes()
+    //   let s = time.getSeconds()<10? '0' + time.getSeconds() : time.getSeconds()
+
+    //   return year +'-'+ mon +'-'+ day + ' '+ h +':'+ m +':'+ s
+    // },
+  },
   mounted() {
     this.addId = this.fillNumber
     this.init()
@@ -1173,17 +1226,23 @@ export default {
     },
     revise(data) {
       console.log('点击',data)
+      this.typeTitle = '修改'
       if(data.type === 1) {
-        this.typeTitle = '修改'
         this.visibleType = true
         this.formData = data
       } else if (data.type ===2) {
-
+        this.updateForm = data
+        this.addForm.addName = data.name
+        this.addForm.addType = data.addType
+        this.checkObj = data.checkObj
+        this.panelType = 'add'
+        // this.searchTypes()
       }
       
     },
+    // 分类新增和修改
     onSuccess() {
-      console.log('提交，，，',this.formData)
+      // console.log('提交，，，',this.formData)
       if(this.typeTitle === '新增') {
         let obj = {
           id: this.addId,
@@ -1201,7 +1260,8 @@ export default {
           if(res.status === 200) {
             this.$message.success('新增成功')
             this.tableData = res.data.list
-            this.onCancel()
+            this.visibleType = false
+            this.formData = {name: ''}
             this.addId += 1
             this.$store.commit('setFillNumber',this.addId)
           }
@@ -1212,21 +1272,33 @@ export default {
           name: this.formData.name,
           createdBy: this.formData.createdBy,
           updateBy: this.$store.getters.name,
-          updateTime: this.dateFormat(new Date())
+          updateTime: this.dateFormat(new Date()),
+          type: this.formData.type,
+          children: this.formData.children
         }
         if(this.formData.pid!== undefined) {
           obj.pid = this.formData.pid
         }
+        this.axios.post('/system/data/fill/table/update',obj).then(res => {
+            // console.log('数据，，',res.data.list)
+          if(res.status === 200) {
+            this.$message.success('修改成功')
+            this.tableData = res.data.list
+            this.visibleType = false
+            this.formData = {name: ''}
+          }
+        })
       }
     },
     onCancel() {
       this.visibleType = false
       this.formData = {name: ''}
+      this.init()
     },
     dateFormat(date) {
       let time = new Date(date)
       let year = time.getFullYear()
-      let mon = time.getMonth()+1
+      let mon = time.getMonth()+1<10? '0'+ time.getMonth() : time.getMonth()
       let day = time.getDate()<10? '0'+ time.getDate() : time.getDate()
       let h = time.getHours()<10? '0' + time.getHours() : time.getHours()
       let m = time.getMinutes()<10? '0' + time.getMinutes() : time.getMinutes()
@@ -1234,14 +1306,105 @@ export default {
 
       return year +'-'+ mon +'-'+ day + ' '+ h +':'+ m +':'+ s
     },
-    fillClick() {
-      this.panelType = 'add'
+    //展示数据填报编辑页
+    fillClick(data) {
+      console.log('点击',data)
+      if(data && data.id) {
+        this.addtypename = data.name
+        this.addForm.pid = data.id
+      }
+      this.typeTitle = '新增'
+      this.searchTypes()
     },
+    // 查询类型
+    searchTypes(){
+      this.axios.get('/system/data/fill/add/search').then(res => {
+        // console.log('数据1111',res)
+        if(res.status === 200) {
+          this.addTypeList = res.data.list
+          this.panelType = 'add'
+        }
+      })
+    },
+    // 返回
     goback() {
       this.panelType = 'list'
+      this.inputValue = null
+      this.checkObj = {}
+      this.addForm = {
+        pid: null,
+        addName: '',
+        addType: '',
+      }
+      this.updateForm = {}
+    },
+    // 保存
+    saveAdd() {
+      // console.log('保存',this.checkObj,this.addForm,this.updateForm)
+      if(this.typeTitle === '新增') {
+        let obj = {
+          pid: this.addForm.pid,
+          id: this.addId,
+          name: this.addForm.addName,
+          createdBy: this.$store.getters.name,
+          updateBy: '',
+          updateTime: '',
+          type:  2,
+          addType: this.addForm.addType,
+          checkObj: {
+            ...this.checkObj
+          }
+        }
+        console.log('objjjjjjjjjjjjjjj',obj)
+        this.axios.post('/system/data/fill/table/add',obj).then(res => {
+          console.log('数据',res)
+          if(res.status === 200) {
+            this.$message.success('新增成功')
+            this.tableData = res.data.list
+            this.goback()
+            this.addId += 1
+            this.$store.commit('setFillNumber',this.addId)
+          }
+        })
+      } else if(this.typeTitle === '修改') {
+        let obj = {
+          pid: this.addForm.pid,
+          id: this.updateForm.id,
+          name: this.addForm.addName,
+          createdBy: this.updateForm.createdBy,
+          updateBy: this.$store.getters.name,
+          updateTime: this.dateFormat(new Date()),
+          type: this.updateForm.type,
+          addType: this.addForm.addType,
+          checkObj: this.checkObj,
+        }
+        console.log('xxxxxxxx',obj)
+        this.axios.post('/system/data/fill/table/update',obj).then(res => {
+            // console.log('数据，，',res.data.list)
+          if(res.status === 200) {
+            this.$message.success('修改成功')
+            this.tableData = res.data.list
+            this.goback()
+          }
+        })
+        
+      }
+      
+    },
+    // 树点击赋值
+    nodeClick(data,items,node) {
+      // console.log(data)
+      this.addForm.pid = data.id
+      this.addtypename = data.name
+      this.$refs.selectAdd.blur();
+    },
+    // 清空树选择
+    clearable() {
+      console.log('1111111')
+      this.addForm.pid = null
     },
     checkElement(data) {
-      this.checkValue = data.value
+      this.addForm.addType = data.value
 
       this.inputValue = null
 

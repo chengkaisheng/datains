@@ -25,6 +25,17 @@ var treeData = [
                 updateBy: '李四',
                 updateTime: '2023-03-01 14:24:34',
                 type: 2,
+                addType: 'text',
+                checkObj: {
+                    defaultValue: "测试",
+                    desc: "测试用的",
+                    isLoginName: false,
+                    placeholder: "请输入填报",
+                    showTitle: true,
+                    status: "ordinary",
+                    tableFieldName: "title",
+                    titleValue: "填报1",
+                }
             },
             {
                 id: 4,
@@ -34,6 +45,17 @@ var treeData = [
                 updateBy: '李四',
                 updateTime: '2023-03-01 14:26:34',
                 type: 2,
+                addType: 'text',
+                checkObj: {
+                    defaultValue: "测试11",
+                    desc: "测试用的11",
+                    isLoginName: false,
+                    placeholder: "请输入填报",
+                    showTitle: true,
+                    status: "ordinary",
+                    tableFieldName: "title",
+                    titleValue: "填报1",
+                }
             },
             {
                 id: 5,
@@ -43,6 +65,17 @@ var treeData = [
                 updateBy: '李四',
                 updateTime: '2023-03-01 14:27:34',
                 type: 2,
+                addType: 'text',
+                checkObj: {
+                    defaultValue: "测试22",
+                    desc: "测试用的33",
+                    isLoginName: false,
+                    placeholder: "请输入填报",
+                    showTitle: true,
+                    status: "ordinary",
+                    tableFieldName: "title",
+                    titleValue: "填报1",
+                }
             }
         ],
     },
@@ -62,6 +95,17 @@ var treeData = [
                 updateBy: '王五',
                 updateTime: '2023-03-02 14:14:34',
                 type: 2, 
+                addType: 'text',
+                checkObj: {
+                    defaultValue: "测试22",
+                    desc: "测试用的11",
+                    isLoginName: false,
+                    placeholder: "请输入填报",
+                    showTitle: true,
+                    status: "ordinary",
+                    tableFieldName: "title",
+                    titleValue: "填报1",
+                }
             }
         ],
     },
@@ -81,6 +125,17 @@ var treeData = [
                 updateBy: '赵六',
                 updateTime: '2023-03-03 14:20:34',
                 type: 2,
+                addType: 'text',
+                checkObj: {
+                    defaultValue: "测试",
+                    desc: "测试用的",
+                    isLoginName: false,
+                    placeholder: "请输入填报",
+                    showTitle: true,
+                    status: "ordinary",
+                    tableFieldName: "title",
+                    titleValue: "填报1",
+                }
             }
         ],
     },
@@ -100,6 +155,17 @@ var treeData = [
                 updateBy: '陈七',
                 updateTime: '2023-03-03 14:22:34',
                 type: 2,
+                addType: 'text',
+                checkObj: {
+                    defaultValue: "测试",
+                    desc: "测试用的",
+                    isLoginName: false,
+                    placeholder: "请输入填报",
+                    showTitle: true,
+                    status: "ordinary",
+                    tableFieldName: "title",
+                    titleValue: "填报1",
+                }
             }
         ],
     },
@@ -119,6 +185,17 @@ var treeData = [
                 updateBy: '刘八',
                 updateTime: '2023-03-04 14:22:34',
                 type: 2,
+                addType: 'text',
+                checkObj: {
+                    defaultValue: "测试",
+                    desc: "测试用的",
+                    isLoginName: false,
+                    placeholder: "请输入填报",
+                    showTitle: true,
+                    status: "ordinary",
+                    tableFieldName: "title",
+                    titleValue: "填报1",
+                }
             }
         ],
     },
@@ -138,6 +215,17 @@ var treeData = [
                 updateBy: '刁九',
                 updateTime: '2023-03-05 14:22:34',
                 type: 2,
+                addType: 'text',
+                checkObj: {
+                    defaultValue: "测试999",
+                    desc: "测试用的",
+                    isLoginName: false,
+                    placeholder: "请输入填报",
+                    showTitle: true,
+                    status: "ordinary",
+                    tableFieldName: "title",
+                    titleValue: "填报1",
+                }
             }
         ],
     },
@@ -174,22 +262,53 @@ const filterData = function(arr,value) {
     })
     return newarr
 }
-// 新增子数据
-const addData = function(arr,data) {
+// 新增树数据
+function addData(arr,data) {
     // console.log('数据',arr,data)
     for(let i=0;i<arr.length;i++) {
-        if(arr[i].type === 1) {
-            if(arr[i].id === data.pid) {
-                arr[i].children.push(data)
-            } else if(arr[i].children) {
-                if(arr[i].children.length) {
-                    arr[i].children = addData(arr[i].children,data)
-                }
+        if(arr[i].id === data.pid) {
+            arr[i].children.push(data)
+        } else if(arr[i].children) {
+            if(arr[i].children.length) {
+                arr[i].children = addData(arr[i].children,data)
             }
         }
     }
     return arr
 }
+
+// 修改树数据
+function updateData(arr,data) {
+    for(let i=0;i<arr.length;i++) {
+        if(arr[i].id === data.id) {
+            arr[i] = data
+        } else if(arr[i].children) {
+            if(arr[i].children.length) {
+                arr[i].children = updateData(arr[i].children,data)
+            }
+        }
+    }
+    return arr
+}
+
+// 过滤分类数据
+function filterTypeData(arr) {
+    let newarr = []
+    arr.map(item => {
+        let obj = {}
+        if(item.type === 1) {
+            obj = item
+            if(item.children && item.children.length) {
+                obj.children = filterTypeData(item.children)
+            } else {
+                obj.children = []
+            }
+            newarr.push(obj)
+        }
+    })
+    return newarr
+}
+
 
 // 查询所有
 Mock.mock('/system/data/fill/table/list','get',{list:treeData})
@@ -202,12 +321,19 @@ Mock.mock('/system/data/fill/table/search','post',(options) => {
     }
     return {list: arr}
 })
+// 查询所有的分类
+Mock.mock('/system/data/fill/add/search','get',() => {
+    let datas = JSON.parse(JSON.stringify(treeData))
+    let arr = filterTypeData(datas)
+    console.log('arrrrr',arr)
+    return {list: arr}
+})
 // 新增
 Mock.mock('/system/data/fill/table/add','post',(options) => {
     // console.log('options,,,',JSON.parse(options.body))
     let obj = JSON.parse(options.body)
     if(obj.pid) {
-        addData(treeData,obj)
+        treeData = addData(treeData,obj)
     } else {
         treeData.push(obj)
     }
@@ -216,14 +342,11 @@ Mock.mock('/system/data/fill/table/add','post',(options) => {
 // 修改
 Mock.mock('/system/data/fill/table/update','post',(options) => {
     let obj = JSON.parse(options.body)
-    console.log('修改obj',obj)
-    for(let i=0;i<treeData.length;i++) {
-        if(treeData[i].id === obj.id){
-            treeData[i] = obj
-        }
-    }
+    // console.log('修改obj',obj)
+    treeData = updateData(JSON.parse(JSON.stringify(treeData)),obj)
     return {list:treeData}
 })
+
 
 
 
