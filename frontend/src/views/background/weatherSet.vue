@@ -6,8 +6,19 @@
       </el-col>
     </el-row>
     <el-row class="main-content">
-
-      <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
+      <el-row style="margin-top: 10px;">
+        <el-col :span="4">
+          <span class="params-title">{{'省市编码'}}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input v-model="curComponent.weatherStyle.proCityCode" placeholder="请输入省市编码"></el-input>
+        </el-col>
+        <el-col :span="12" style="font-size: 13px;color: #888888;padding-left:10px;">
+          注意：省市编码为6位数<br/>
+          例如： '北京市':'110100','朝阳区':'110105'
+        </el-col>
+      </el-row>
+      <el-row style="height: 50px;overflow: hidden;margin-top:10px;">
         <el-col :span="4">
           <span class="params-title">{{ '字体颜色' }}</span>
         </el-col>
@@ -50,7 +61,6 @@ import { mapState } from 'vuex'
 // import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
-
 export default {
   name: 'Background',
   // components: { BackgroundItem },
@@ -111,7 +121,6 @@ export default {
   },
   created() {
     // this.init()
-
   },
   mounted() {
     console.log('this.curComponent', this.curComponent)
@@ -125,7 +134,6 @@ export default {
     // })
     console.log('this.options', this.options)
   },
-
   methods: {
     addNavInfo() {
       console.log('this.navInfoLis', this.navInfoLis)
@@ -196,9 +204,8 @@ export default {
       //   })
       // })
       // console.log('this.fileList', this.fileList)
-
       // console.log('this.imgUrlList', this.imgUrlList)
-      // this.$store.commit('recordSnapshot')
+      this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
     },
     commitStyle() {
@@ -276,7 +283,6 @@ export default {
     upload(file) {
       console.log('this is upload', file)
     }
-
   }
 }
 </script>
@@ -288,12 +294,10 @@ export default {
     width: 100%;
     height: 100%;
   }
-
   .main-row{
     height: 140px;
     overflow-y: auto;
   }
-
   .root-class {
     margin: 15px 0px 5px;
     text-align: center;
@@ -337,14 +341,12 @@ export default {
   .main-content{
     border:1px solid #E6E6E6;
   }
-
   .params-title{
     font-weight: bold;
     line-height: 40px;
     margin-left: 10px;
     font-size: 14px;
   }
-
   .params-title-small{
     font-weight: bold;
     line-height: 40px;

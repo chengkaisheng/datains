@@ -6,17 +6,18 @@
         <i class="el-icon-location-information" />
         {{ watherData.city }}
       </div>
-      <div class="iconClass" :style="iconStyle">
-        <svg-icon :icon-class="newIcon(watherData.type)" />
+      <div class="iconClass" :style="iconStyle" :title="watherData.type">
+        <svg-icon :icon-class="newIcon(watherData.type)"/>
       </div>
       <div class="statusClass" :style="fontStyle">
-        <span>{{ watherData.wendu }}℃ </span> <span> {{ watherData.fengxiang }}</span>
+        <span>{{ watherData.wendu }}℃ </span> 
+        <span> {{ watherData.fengxiang }}风 </span>
+        <span>{{watherData.fengli}}级 </span>
       </div>
     </div>
     <!-- <div class="icon_class" :style="boxStyle">
       <i v-if="iconData.type==='system'" :class="iconData.icon" :style="navStyleSet" />
       <svg-icon v-else :icon-class="iconData.icon" :style="navStyleSet" />
-
     </div> -->
     <!-- 天气组件 -->
   </div>
@@ -32,7 +33,6 @@ export default {
       require: true
     }
   },
-
   data() {
     return {
       // isShow: true,
@@ -45,7 +45,8 @@ export default {
         type: '',
         fengli: '',
         icon: ''
-      }
+      },
+      cityCode: '320508',
     }
   },
   computed: {
@@ -83,7 +84,6 @@ export default {
     },
     boxStyle() {
       const style = {}
-
       // style.textAlign = this.element.options.horizontal
       // style.alignItems = this.element.options.vertical
       style.height = this.element.style.height + 'px'
@@ -108,14 +108,27 @@ export default {
     }
   },
   watch: {
-
+    'element.weatherStyle.proCityCode': {
+      handler(val1,val2) {
+        console.log('改变',val1)
+        if(val1.length === 6) {
+          this.cityCode = val1
+          this.getSunType()
+        }
+      }
+    }
   },
   created() {
-    // console.log('轮播图片组件', this.element)
+    // console.log('天气组件', this.element)
   },
   mounted() {
     // this.changeSlidesPerView()
     // console.log('getLocation', this.getLocation())
+    if(this.element.weatherStyle.proCityCode !==undefined && this.element.weatherStyle.proCityCode !== '') {
+      this.cityCode = this.element.weatherStyle.proCityCode
+    } else {
+      this.cityCode = '320508'
+    }
     this.getSunType()
     // this.getLocation()
     this.timer = setInterval(() => {
@@ -128,27 +141,44 @@ export default {
   methods: {
     newIcon(key) {
       let name = ''
-      switch (key) {
-        case '多云':
-          name = 'duoyun'
-          break
-        case '晴':
-          name = 'qing'
-          break
-        case '阴天':
-          name = 'yingtian'
-          break
-        case '小雨':
-          name = 'xiaoyu'
-          break
-        case '雷阵雨':
-          name = 'leizhanyu'
-          break
-        case '大雨':
-          name = 'dayu'
-          break
-        default:
-          name = ''
+      if(key === '多云') {
+        name = 'duoyun'
+      } else if(key === '晴') {
+        name = 'qing'
+      } else if(key === '阴天' || key === '阴') {
+        name = 'yingtian'
+      } else if(key === '小雨') {
+        name = 'xiaoyu'
+      } else if(key === '中雨') {
+        name = 'zhongyu'
+      } else if(key === '大雨') {
+        name = 'dayu'
+      } else if(key === '小雪') {
+        name = 'xiaoxue'
+      } else if(key === '中雪') {
+        name = 'zhongxue'
+      } else if(key === '大雪') {
+        name = 'daxue'
+      } else if(key === '雨夹雪') {
+        name = '雨夹雪'
+      } else if(key === '阵雨') {
+        name = 'zhenyu'
+      } else if(key === '雷阵雨') {
+        name = 'leizhanyu'
+      } else if(key === '雷电') {
+        name = 'leidian'
+      } else if(key === '雾') {
+        name = 'wu'
+      } else if(key === '霾') {
+        name = 'mai'
+      } else if(key === '浮尘') {
+        name = 'fuchen'
+      } else if(key === '扬沙') {
+        name = 'yangsha'
+      } else if(key === '沙尘暴') {
+        name = 'shachenbao'
+      } else if(key === '冰雹') {
+        name = 'bingbao'
       }
       console.log('name', name)
       return name
@@ -157,16 +187,26 @@ export default {
       console.log('chu00000000000000')
       axios({
         methods: 'get',
-        url: 'http://wthrcdn.etouch.cn/weather_mini?city=姑苏区'
+        // 高德天气api
+        url: `https://restapi.amap.com/v3/weather/weatherInfo?key=e7c95b4565287414ba6e45efa71124e8&city=${this.cityCode}`
+        // url: 'http://wthrcdn.etouch.cn/weather_mini?city=姑苏区'
         // url: 'http://i.tianqi.com/index.php'
       }).then(res => {
-        console.log('天气信息-----', res.data)
-        const dataInfo = res.data.data
-        this.watherData.wendu = dataInfo.wendu
-        this.watherData.city = dataInfo.city
-        this.watherData.fengxiang = dataInfo.forecast[0].fengxiang
-        this.watherData.type = dataInfo.forecast[0].type
-        this.watherData.fengli = dataInfo.forecast[0].fengli
+        // console.log('天气信息-----', res)
+        if(res.status) {
+          const dataInfo = res.data.lives[0]
+          this.watherData.wendu = dataInfo.temperature
+          this.watherData.city = dataInfo.city
+          this.watherData.type = dataInfo.weather
+          this.watherData.fengxiang = dataInfo.winddirection
+          this.watherData.fengli = dataInfo.windpower
+        }
+        // const dataInfo = res.data.data
+        // this.watherData.wendu = dataInfo.wendu
+        // this.watherData.city = dataInfo.city
+        // this.watherData.fengxiang = dataInfo.forecast[0].fengxiang
+        // this.watherData.type = dataInfo.forecast[0].type
+        // this.watherData.fengli = dataInfo.forecast[0].fengli
       })
     },
     baseMoseDownEven(e) {
@@ -192,7 +232,6 @@ export default {
         )
       }
     },
-
     toggleNav(key) {
       // 切换导航
       console.log('previewCanvasScale', this.previewCanvasScale)
@@ -205,7 +244,6 @@ export default {
         }
       })
       this.heightKey = key.name
-
       console.log('key---')
       iframeArr.forEach(ele => {
         document.getElementById('iframe' + ele.id).contentWindow.postMessage(key, '*')
@@ -259,11 +297,9 @@ export default {
     line-height: 200px;
     margin: 0;
   }
-
   .el-carousel__item:nth-child(2n) {
     background-color: #99a9bf;
   }
-
   .el-carousel__item:nth-child(2n+1) {
     background-color: #d3dce6;
   } */
@@ -295,4 +331,3 @@ export default {
    /* transform:scaleX(1.5) */
 }
 </style>
-
