@@ -144,8 +144,9 @@ export const STREAMMEDIALINKS = {
   },
   rtmp: {
     type: 'rtmp',
-    cors: true // 允许跨域
+    cors: true, // 允许跨域
     // url: null // 网络动画视频
+    link: '1', // 链接类型
   },
   webrtc: {
     type: 'webrtc',

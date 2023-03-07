@@ -157,6 +157,7 @@
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
         :edit-mode="'edit'"
+        :video-status="displayClass(item)"
         :h="getShapeStyleIntDeDrag(item.style,'height')"
       />
     </de-drag>
@@ -509,6 +510,7 @@ function recalcCellWidth() {
 }
 
 function init() {
+  // console.log('innnnnnnnnitttttttt')
   this.cellWidth = this.baseWidth + this.baseMarginLeft
   this.cellHeight = this.baseHeight + this.baseMarginTop
   this.yourList = this.getList()

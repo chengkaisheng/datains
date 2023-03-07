@@ -95,6 +95,11 @@ export default {
     h: {
       type: Number,
       default: 200
+    },
+    videoStatus: {
+      type: String,
+      require: false,
+      default: 'visible'
     }
   },
   data() {
@@ -137,7 +142,7 @@ export default {
   watch: {
     element: {
       handler: function() {
-        console.log('改变',this.element)
+        console.log('改变',this.element,this.pOption)
         var url = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].url
         if (this.element.streamMediaLinks.videoType === 'flv') {
           console.log('flv')
@@ -155,29 +160,65 @@ export default {
         }
         if (this.element.streamMediaLinks.videoType === 'hls') {
           console.log('hls')
-          if (this.pOption.url === undefined && url) {
-            this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
-            this.pOption.url = url
-            // console.log('url',this.pOption)
-            this.initOptionHls(this.pOption)
+          let link = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].link
+          let params = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].params
+          if(link === '2') {
+            if (this.pOption.url === undefined && url && params) {
+              console.log('hls1111')
+              this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+              // this.pOption.url = url
+              // console.log('url',this.pOption)
+              this.initOptionHls(this.pOption)
+            }
+            if (this.pOption.url !== undefined && this.pOption.url !== url && this.pOption.params !== params) {
+              console.log('hls2222')
+              this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+              this.pOption.url = url
+              this.initOptionHls(this.pOption, true)
+            }
+          } else {
+            if (this.pOption.url === undefined && url) {
+              console.log('hls1111')
+              this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+              // this.pOption.url = url
+              // console.log('url',this.pOption)
+              this.initOptionHls(this.pOption)
+            }
+            if (this.pOption.url !== undefined && this.pOption.url !== url) {
+              console.log('hls2222')
+              this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+              this.pOption.url = url
+              this.initOptionHls(this.pOption, true)
+            }
           }
-          if (this.pOption.url !== undefined && this.pOption.url !== url) {
-            this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
-            this.pOption.url = url
-            this.initOptionHls(this.pOption, true)
-          }
+          
         }
         if (this.element.streamMediaLinks.videoType === 'rtmp') {
           console.log('rtmp')
-          if (this.pOption.url === undefined && url) {
-            this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
-            this.pOption.url = url
-            this.initOptionRtmp(url)
-          }
-          if (this.pOption.url !== undefined && this.pOption.url !== url) {
-            this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
-            this.pOption.url = url
-            this.initOptionRtmp(url, true)
+          let link = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].link
+          let params = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].params
+          if(link === '2') {
+            if (this.pOption.url === undefined && url && params) {
+              this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+              this.pOption.url = url
+              this.initOptionRtmp(this.pOption)
+            }
+            if (this.pOption.url !== undefined && this.pOption.url !== url && this.pOption.params !== params) {
+              this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+              this.pOption.url = url
+              this.initOptionRtmp(this.pOption, true)
+            }
+          } else {
+            if (this.pOption.url === undefined && url) {
+              this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+              this.pOption.url = url
+              this.initOptionRtmp(this.pOption)
+            }
+            if (this.pOption.url !== undefined && this.pOption.url !== url) {
+              this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
+              this.pOption.url = url
+              this.initOptionRtmp(this.pOption, true)
+            }
           }
         }
         if (this.element.streamMediaLinks.videoType === 'webrtc') {
@@ -207,6 +248,7 @@ export default {
     // }
   },
   created() {
+    console.log('这个状态是',this.videoStatus)
     var timestamp = new Date().getTime()
     var myPlayerHls = 'myPlayerHls' + timestamp
     var myPlayerRtmp = 'myPlayerRtmp' + timestamp
@@ -240,7 +282,7 @@ export default {
       this.initOptionHls(this.pOption)
     }
     if (this.element.streamMediaLinks.videoType === 'rtmp') {
-      this.initOptionRtmp(this.pOption.url)
+      this.initOptionRtmp(this.pOption)
     }
     if (this.element.streamMediaLinks.videoType === 'webrtc') {
       this.initOptionWeb(this.pOption.url.substring(7))
@@ -293,7 +335,7 @@ export default {
     initOptionHls(options, status) {
       console.log('axios,,,,,,',options)
       if(options.link === '2') {
-        let data;
+        let data = null;
         if(options.params !== '') {
           let arr = options.params.split('&')
           let obj = {}
@@ -303,7 +345,7 @@ export default {
           })
           data = obj
         }
-        console.log(data)
+        console.log('hls参数',data)
         // axios({
         //   url: options.url,
         //   method: 'post',
@@ -400,36 +442,88 @@ export default {
         )
       }
     },
-    initOptionRtmp(url, status) {
-      if (status) {
-        this.myPlayerRtmp.reset() // 重置 video
-        this.myPlayerRtmp.src([{
-          type: 'rtmp/flv',
-          src: url.substring(7)
-        }])
-        this.myPlayerRtmp.load()
-        this.myPlayerRtmp.play()
-        return false
-      }
-      this.$nextTick(() => {
-        this.myPlayerRtmp = videojs(this.myPlayer[1], {
-          sources: [{
-            type: 'rtmp/flv',
-            src: url.substring(7)
-          }],
-          controls: true,
-          muted: true,
-          autoplay: true,
-          preload: 'auto',
-          textTrackDisplay: false,
-          errorDisplay: false,
-          controlBar: false,
-          bigPlayButton: false
-        }, function() {
-          this.load()
-          this.play()
+    initOptionRtmp(options, status) {
+      console.log(options)
+      if(options.link === '2') {
+        let data = null;
+        if(options.params !== '') {
+          let arr = options.params.split('&')
+          let obj = {}
+          arr.map(item => {
+            let arr1 = item.split('=')
+            obj[arr1[0]] = arr1[1]
+          })
+          data = obj
+        }
+        console.log('rtmp参数',data)
+        axios.post(options.url,data,{
+          headers: {contentType: 'application/json; charset=utf-8'}
+        }).then(res => {
+          if(res.data){
+            if (status) {
+              this.myPlayerRtmp.reset() // 重置 video
+              this.myPlayerRtmp.src([{
+                type: 'rtmp/flv',
+                src: res.data.url.substring(7)
+              }])
+              this.myPlayerRtmp.load()
+              this.myPlayerRtmp.play()
+              return false
+            }
+            this.$nextTick(() => {
+              this.myPlayerRtmp = videojs(this.myPlayer[1], 
+              {
+                sources: [{
+                  type: 'rtmp/flv',
+                  src: res.data.url.substring(7)
+                }],
+                controls: true,
+                muted: true,
+                autoplay: true,
+                preload: 'auto',
+                textTrackDisplay: false,
+                errorDisplay: false,
+                controlBar: false,
+                bigPlayButton: false
+              }, function() {
+                this.load()
+                this.play()
+              })
+            })
+          }
         })
-      })
+      } else {
+        if (status) {
+          this.myPlayerRtmp.reset() // 重置 video
+          this.myPlayerRtmp.src([{
+            type: 'rtmp/flv',
+            src: options.url.substring(7)
+          }])
+          this.myPlayerRtmp.load()
+          this.myPlayerRtmp.play()
+          return false
+        }
+        this.$nextTick(() => {
+          this.myPlayerRtmp = videojs(this.myPlayer[1], {
+            sources: [{
+              type: 'rtmp/flv',
+              src: options.url.substring(7)
+            }],
+            controls: true,
+            muted: true,
+            autoplay: true,
+            preload: 'auto',
+            textTrackDisplay: false,
+            errorDisplay: false,
+            controlBar: false,
+            bigPlayButton: false
+          }, function() {
+            this.load()
+            this.play()
+          })
+        })
+      }
+      
     },
     initOptionWeb(url, status) {
       if (this.myPlayerWebrtc && status) {

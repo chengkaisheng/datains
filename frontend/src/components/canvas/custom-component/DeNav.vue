@@ -470,7 +470,8 @@ export default {
             console.warn(res)
             // res.options.heightTabs = res.options.navTabList[0].name
             this.canvasStyleData.showArr = []
-            this.canvasStyleData.showArr.push(res.options.heightTabs)
+            res.options&&res.options.heightTabs && this.canvasStyleData.showArr.push(res.options.heightTabs)
+            // console.log(this.canvasStyleData.showArr)
             chengkey = false
           }
         })
@@ -608,9 +609,9 @@ export default {
   .el-carousel__item:nth-child(2n+1) {
     background-color: #d3dce6;
   } */
-  .recommendPage{
-    /* padding:10px; */
-  }
+  // .recommendPage{
+  //   /* padding:10px; */
+  // }
   .recommendPage .swiper-container {
   position: relative;
   width: 100%;
