@@ -332,7 +332,8 @@ export default {
             }
 
             this.myPlayerHls = videojs(
-              this.myPlayer[0], {
+              this.myPlayer[0], 
+              {
                 autoplay: this.pOption.autoplay,
                 loop: this.pOption.loop,
                 bigPlayButton: false,
@@ -373,7 +374,8 @@ export default {
         }
 
         this.myPlayerHls = videojs(
-          this.myPlayer[0], {
+          this.myPlayer[0], 
+          {
             autoplay: this.pOption.autoplay,
             loop: this.pOption.loop,
             bigPlayButton: false,

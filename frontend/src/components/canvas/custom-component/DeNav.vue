@@ -431,7 +431,7 @@ export default {
             // delete keys
           }
         })
-        console.log('newArr', this.oldName, 'this.oldName', newArr)
+        // console.log('newArr', this.oldName, 'this.oldName', newArr)
         this.canvasStyleData.showArr = newArr
       }
 
@@ -443,9 +443,9 @@ export default {
         this.canvasStyleData.navShowKey = key.name
       } else {
         // this.canvasStyleData.navModel = 'independent'
-        console.warn('chi-------111111111-------chu', this.canvasStyleData.showArr)
+        // console.warn('chi-------111111111-------chu', this.canvasStyleData.showArr)
         if (this.canvasStyleData.showArr) {
-          console.warn('chi-------22222222-------chu', this.canvasStyleData.showArr)
+          // console.warn('chi-------22222222-------chu', this.canvasStyleData.showArr)
           if (this.canvasStyleData.showArr.indexOf(key.name) === -1) {
             this.canvasStyleData.showArr.push(key.name)
           }
@@ -462,7 +462,7 @@ export default {
 
       // 处理主tab切换后，子tab对应的元素组件也隐藏
       console.warn('---处理主tab切换后，子tab对应的元素组件也隐藏---')
-      console.warn('数据源', this.componentData, this.canvasStyleData)
+      // console.warn('数据源', this.componentData, this.canvasStyleData)
       if (this.element.options.vertical !== 'elementKey') {
         let chengkey = true
         this.componentData.forEach(res => {
@@ -478,7 +478,8 @@ export default {
           this.canvasStyleData.showArr = []
         }
       } else {
-        if(!this.inScreen) {
+        console.log('inScreen',this.inScreen)
+        // if(!this.inScreen) {
           // let compData = JSON.parse(JSON.stringify(this.componentData))
           this.componentData.forEach(item => {
             if(item.component === 'de-nav') {
@@ -494,7 +495,7 @@ export default {
             }
           })
           this.$store.commit('setComponentData',this.componentData)
-        }
+        // }
       }
       console.warn('--end---',this.canvasStyleData)
       // --end
