@@ -170,7 +170,7 @@ export default {
               // console.log('url',this.pOption)
               this.initOptionHls(this.pOption)
             }
-            if (this.pOption.url !== undefined && this.pOption.url !== url && this.pOption.params !== params) {
+            if (this.pOption.url !== undefined && (this.pOption.url !== url || this.pOption.params !== params)) {
               console.log('hls2222')
               this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
               this.pOption.url = url
@@ -203,7 +203,7 @@ export default {
               this.pOption.url = url
               this.initOptionRtmp(this.pOption)
             }
-            if (this.pOption.url !== undefined && this.pOption.url !== url && this.pOption.params !== params) {
+            if (this.pOption.url !== undefined && (this.pOption.url !== url || this.pOption.params !== params)) {
               this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
               this.pOption.url = url
               this.initOptionRtmp(this.pOption, true)
