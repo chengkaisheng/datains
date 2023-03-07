@@ -26,7 +26,7 @@
             </el-col>
           </el-row>
         </el-header>
-        <el-main>
+        <el-main class="main_box">
           <el-row>
             <el-col>
               <el-table
@@ -74,6 +74,8 @@
                     <el-button type="text" icon="el-icon-edit" title="编辑" @click="revise(scope.row)"></el-button>
                     <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-folder-add" title="新增分类" @click="typeClick(scope.row)"></el-button>
                     <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-circle-plus-outline" title="新增数据填报" @click="fillClick(scope.row)"></el-button>
+                    <el-button v-if="scope.row.type === 2" type="text" icon="el-icon-setting" title="属性" @click="attributeClick(scope.row)"></el-button>
+                    <el-button v-if="scope.row.type === 2" type="text" icon="el-icon-s-grid" title="数据管理" @click="dataManage(scope.row)"></el-button>
                     <el-popover
                       width="90"
                       trigger="click"
@@ -83,7 +85,7 @@
                       <div>
                         <el-row>
                           <el-col>
-                            <el-button type="text"  icon="el-icon-rank">
+                            <el-button type="text"  icon="el-icon-rank" @click="moveClick(scope.row)">
                               移动
                             </el-button>
                           </el-col>
@@ -122,7 +124,7 @@
           <el-row type="flex">
             <el-col :span="6" class="bor_box" style="padding: 10px 20px;">
               <el-row>
-                <el-form ref="addForm" :model="addForm">
+                <el-form ref="addForm" :model="addForm" class="form_box">
                   <el-form-item label="所属文件：" v-if="typeTitle === '新增'">
                     <el-select
                       v-model="addtypename"
@@ -131,6 +133,7 @@
                       clearable
                       @clear="clearable"
                       style="width: 100%;"
+                      :popper-append-to-body="false"
                     >
                       <el-option :value="addTypeList" style="height: auto">
                         <el-tree
@@ -839,7 +842,7 @@
       :visible.sync="visibleType"
       :close-on-click-modal="false"
       width="30%"
-      :before-close="handleClose">
+      :before-close="onCancel">
       <div>
         <el-form ref="form" :model="formData" label-width="80px" :rules="rules">
           <el-form-item label="名称" prop="name">
@@ -851,6 +854,46 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="onCancel">取 消</el-button>
         <el-button type="primary" @click="onSuccess">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="移动"
+      :visible.sync="visibleMove"
+      :close-on-click-modal="false"
+      width="30%"
+      :before-close="onMoveCancel"
+    >
+      <div>
+        <el-row>
+          <el-col>
+            <el-col :span="6">移动到：</el-col>
+            <el-col :span="18">
+              <el-select
+                v-model="addtypename"
+                placeholder="请选择"
+                ref="selectAdd"
+                clearable
+                @clear="clearable"
+                style="width: 100%;"
+              >
+                <el-option :value="addTypeList" style="height: auto">
+                  <el-tree
+                    node-key="id"
+                    ref="treeAdd"
+                    :data="addTypeList"
+                    :props="defaultProps"
+                    highlight-current
+                    @node-click="nodeClick"
+                  ></el-tree>
+                </el-option>
+              </el-select>
+            </el-col>
+          </el-col>
+        </el-row>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="onMoveCancel">取 消</el-button>
+        <el-button type="primary" @click="onMoveSuccess">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -887,6 +930,7 @@ export default {
       checkedAll: false,
 
       visibleType: false,
+      visibleMove: false,
       typeTitle: '',
       rules:{
         name: [{ required: true, message: '请输入名称', trigger: 'blur' }]
@@ -1242,9 +1286,6 @@ export default {
         this.formData.pid = data.id
       }
     },
-    handleClose() {
-      this.visibleType = false
-    },
     // 修改点击
     revise(data) {
       console.log('点击',data)
@@ -1262,8 +1303,25 @@ export default {
       }
       
     },
+    // 删除
     deleteClick(data) {
-      console.log('删除，，',data)
+      // console.log('删除，，',data)
+      this.$confirm('是否删除此文件?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'error'
+        }).then(() => {
+          this.axios.post('/system/data/fill/table/delete',{id: data.id}).then(res => {
+            // console.log('ressssssss',res)
+            if(res.status === 200) {
+              this.tableData = res.data.list
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+            }
+          })
+        }).catch(() => {});
     },
     // 分类新增和修改
     onSuccess() {
@@ -1320,6 +1378,18 @@ export default {
       this.formData = {name: ''}
       this.init()
     },
+    // 移动
+    moveClick(data) {
+      console.log('移动',data)
+      this.searchTypes()
+      // /system/data/fill/table/move
+    },
+    onMoveSuccess() {
+
+    },
+    onMoveCancel(){
+      this.visibleMove =false
+    },
     dateFormat(date) {
       let time = new Date(date)
       let year = time.getFullYear()
@@ -1340,6 +1410,7 @@ export default {
       }
       this.typeTitle = '新增'
       this.searchTypes()
+      this.panelType = 'add'
     },
     // 查询类型
     searchTypes(){
@@ -1347,9 +1418,15 @@ export default {
         // console.log('数据1111',res)
         if(res.status === 200) {
           this.addTypeList = res.data.list
-          this.panelType = 'add'
         }
       })
+    },
+    // 属性设置
+    attributeClick(data) {
+      console.log('属性',data)
+    },
+    dataManage(data){
+      console.log('数据管理',data)
     },
     // 返回
     goback() {
@@ -1361,6 +1438,7 @@ export default {
         addName: '',
         addType: '',
       }
+      this.addtypename = ''
       this.updateForm = {}
     },
     // 保存
@@ -1491,7 +1569,10 @@ export default {
 </script>
 
 <style scoped>
-::v-deep .el-popover {
+.form_box ::v-deep .el-select-dropdown__item {
+  padding: 0px;
+}
+.main_box ::v-deep .el-popover {
   min-width: 90px;
 }
 ::v-deep .main_panel .el-main {

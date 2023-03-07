@@ -309,6 +309,20 @@ function filterTypeData(arr) {
     return newarr
 }
 
+// 删除数据
+function deleteData(arr,data) {
+    for(let i=0;i<arr.length;i++) {
+        if(arr[i].id === data.id) {
+            arr.splice(i,1)
+        } else if (arr[i].children) {
+            if(arr[i].children.length) {
+                arr[i].children = deleteData(arr[i].children,data)
+            }
+        }
+    }
+    return arr
+}
+
 
 // 查询所有
 Mock.mock('/system/data/fill/table/list','get',{list:treeData})
@@ -346,7 +360,21 @@ Mock.mock('/system/data/fill/table/update','post',(options) => {
     treeData = updateData(JSON.parse(JSON.stringify(treeData)),obj)
     return {list:treeData}
 })
+// 删除
+Mock.mock('/system/data/fill/table/delete','post',(options) => {
+    // console.log('options',options)
+    let obj = JSON.parse(options.body)
+    treeData = deleteData(JSON.parse(JSON.stringify(treeData)),obj)
+    // console.log('ttttttt',treeData)
+    return {list: treeData}
+})
+// 移动
+Mock.mock('/system/data/fill/table/move','post',(options) => {
+    let obj = JSON.parse(optoins.body)
+    console.log(obj)
 
+    return {}
+})
 
 
 
