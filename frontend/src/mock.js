@@ -35,6 +35,15 @@ var treeData = [
                     status: "ordinary",
                     tableFieldName: "title",
                     titleValue: "填报1",
+                },
+                dataManage: {
+                    personData: [
+                        {
+                            name: '张小三',
+                            sid: '001',
+                            
+                        }
+                    ],
                 }
             },
             {
@@ -292,14 +301,14 @@ function updateData(arr,data) {
 }
 
 // 过滤分类数据
-function filterTypeData(arr) {
+function filterTypeData(arr,data) {
     let newarr = []
     arr.map(item => {
         let obj = {}
-        if(item.type === 1) {
+        if(item.type === 1 && item.id !== data.id) {
             obj = item
             if(item.children && item.children.length) {
-                obj.children = filterTypeData(item.children)
+                obj.children = filterTypeData(item.children,data)
             } else {
                 obj.children = []
             }
@@ -331,14 +340,16 @@ Mock.mock('/system/data/fill/table/search','post',(options) => {
     // console.log('options,,,',options)
     let arr = []
     if(options.body !== '') {
-        arr = filterData(treeData,options.body)
+        arr = filterData(JSON.parse(JSON.stringify(treeData)),options.body)
     }
     return {list: arr}
 })
 // 查询所有的分类
-Mock.mock('/system/data/fill/add/search','get',() => {
+Mock.mock('/system/data/fill/add/search','post',(options) => {
+    console.log('参数',options)
+    let obj = JSON.parse(options.body)
     let datas = JSON.parse(JSON.stringify(treeData))
-    let arr = filterTypeData(datas)
+    let arr = filterTypeData(datas,obj)
     console.log('arrrrr',arr)
     return {list: arr}
 })
@@ -347,7 +358,8 @@ Mock.mock('/system/data/fill/table/add','post',(options) => {
     // console.log('options,,,',JSON.parse(options.body))
     let obj = JSON.parse(options.body)
     if(obj.pid) {
-        treeData = addData(treeData,obj)
+        treeData = addData(JSON.parse(JSON.stringify(treeData)),obj)
+        // console.log('数据',treeData)
     } else {
         treeData.push(obj)
     }
@@ -370,10 +382,13 @@ Mock.mock('/system/data/fill/table/delete','post',(options) => {
 })
 // 移动
 Mock.mock('/system/data/fill/table/move','post',(options) => {
-    let obj = JSON.parse(optoins.body)
-    console.log(obj)
-
-    return {}
+    let obj = JSON.parse(options.body)
+    // console.log('移动数据：',obj)
+    let arr = deleteData(JSON.parse(JSON.stringify(treeData)),obj)
+    // console.log('删除后',arr)
+    treeData = addData(JSON.parse(JSON.stringify(arr)),obj)
+    // console.log('新增后',treeData)
+    return {list: treeData}
 })
 
 

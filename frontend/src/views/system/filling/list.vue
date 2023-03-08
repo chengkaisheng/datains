@@ -856,6 +856,7 @@
         <el-button type="primary" @click="onSuccess">确 定</el-button>
       </span>
     </el-dialog>
+    
     <el-dialog
       title="移动"
       :visible.sync="visibleMove"
@@ -866,28 +867,14 @@
       <div>
         <el-row>
           <el-col>
-            <el-col :span="6">移动到：</el-col>
-            <el-col :span="18">
-              <el-select
-                v-model="addtypename"
-                placeholder="请选择"
-                ref="selectAdd"
-                clearable
-                @clear="clearable"
-                style="width: 100%;"
-              >
-                <el-option :value="addTypeList" style="height: auto">
-                  <el-tree
-                    node-key="id"
-                    ref="treeAdd"
-                    :data="addTypeList"
-                    :props="defaultProps"
-                    highlight-current
-                    @node-click="nodeClick"
-                  ></el-tree>
-                </el-option>
-              </el-select>
-            </el-col>
+            <el-tree
+              node-key="id"
+              ref="treeAdd"
+              :data="addTypeList"
+              :props="defaultProps"
+              highlight-current
+              @node-click="nodeMoveClick"
+            ></el-tree>
           </el-col>
         </el-row>
       </div>
@@ -931,6 +918,8 @@ export default {
 
       visibleType: false,
       visibleMove: false,
+      moveObj: {}, // 移动对象
+      moveInObj: {}, // 移动到对象
       typeTitle: '',
       rules:{
         name: [{ required: true, message: '请输入名称', trigger: 'blur' }]
@@ -1381,14 +1370,34 @@ export default {
     // 移动
     moveClick(data) {
       console.log('移动',data)
-      this.searchTypes()
-      // /system/data/fill/table/move
+      this.visibleMove = true
+      this.moveObj = data  // 移动的对象
+      this.searchTypes(data)
+    },
+    nodeMoveClick(data) {
+      this.moveInObj = data // 移动的父类
     },
     onMoveSuccess() {
-
+      if(!this.moveInObj.id) return
+      console.log(this.moveObj,this.moveInObj)
+      let obj = {
+        ...this.moveObj,
+        pid: this.moveInObj.id,
+      }
+      // console.log('oooooo',obj)
+      this.axios.post('/system/data/fill/table/move',obj).then(res => {
+        // console.log('移动数据',res)
+        if(res.status === 200) {
+          this.$message.success('移动成功')
+          this.tableData = res.data.list
+          this.visibleMove = false
+        }
+      })
     },
     onMoveCancel(){
       this.visibleMove =false
+      this.moveObj = {}
+      this.moveInObj = {}
     },
     dateFormat(date) {
       let time = new Date(date)
@@ -1413,8 +1422,16 @@ export default {
       this.panelType = 'add'
     },
     // 查询类型
-    searchTypes(){
-      this.axios.get('/system/data/fill/add/search').then(res => {
+    searchTypes(data){
+      let obj = {id: ''}
+      if(data) { // 用于去除当前所在文件id
+        if(!data.pid) {
+          obj.id = data.id
+        } else {
+          obj.id = data.pid
+        }
+      }
+      this.axios.post('/system/data/fill/add/search',obj).then(res => {
         // console.log('数据1111',res)
         if(res.status === 200) {
           this.addTypeList = res.data.list
@@ -1495,7 +1512,7 @@ export default {
       
     },
     // 树点击赋值
-    nodeClick(data,items,node) {
+    nodeClick(data) {
       // console.log(data)
       this.addForm.pid = data.id
       this.addtypename = data.name
