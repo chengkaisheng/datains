@@ -1,7 +1,7 @@
 <template>
   <el-row ref="mainPlayer" style="width: 100%;height: 100%">
     <div v-if="element.streamMediaLinks.videoType == 'flv'">
-      <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
+      <div :id="`flv${myPlayer[3]}`" v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
         <video
           :id="myPlayer[3]"
           :ref="myPlayer[3]"
@@ -18,7 +18,7 @@
       </div>
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'hls'">
-      <div v-show="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
+      <div :id="`hls${myPlayer[0]}`" v-show="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
         <video
           :id="myPlayer[0]"
           :ref="myPlayer[0]"
@@ -33,6 +33,7 @@
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'rtmp'">
       <div
+        :id="`rtmp${myPlayer[1]}`"
         v-show="element.streamMediaLinks[element.streamMediaLinks.videoType].url"
         class="video-container "
         style="position: relative;"
@@ -53,9 +54,11 @@
       </div>
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'webrtc'">
-      <video :id="myPlayer[2]" :ref="myPlayer[2]" controls style="width: 100%;height: 100%;object-fit: fill">
-        <!--  -->
-      </video>
+      <div :id="`webrtc${myPlayer[2]}`">
+        <video :id="myPlayer[2]" :ref="myPlayer[2]" controls style="width: 100%;height: 100%;object-fit: fill">
+          <!--  -->
+        </video>
+      </div>
     </div>
   </el-row>
 </template>
@@ -243,6 +246,9 @@ export default {
         if(this.videoStatus === 'visible') {
           if(this.element.streamMediaLinks.videoType === 'hls') {
             console.log('hls1111====',this.myPlayerHls)
+            // 添加dom元素
+            let html = `<video id=${this.myPlayer[0]} ref="${this.myPlayer[0]}" :destroyOnClose="true" class="vjs-default-skin vjs-big-play-centered vjs-16-9 video-js" controls preload="auto"></video>`
+            document.getElementById(`hls${this.myPlayer[0]}`).innerHTML = html
             this.initOptionHls(this.pOption)
           }
         } else if (this.videoStatus === 'hidden') {
@@ -278,6 +284,7 @@ export default {
     this.myPlayer.push(myPlayerRtmp)
     this.myPlayer.push(myPlayerWebrtc)
     this.myPlayer.push(myPlayerFlv)
+    console.log('myPlayer',this.myPlayer)
   },
   mounted() {
     if (!this.pOption.url) {
@@ -298,7 +305,7 @@ export default {
       //   })
       // })
     }
-    if (this.element.streamMediaLinks.videoType === 'hls') {
+    if (this.element.streamMediaLinks.videoType === 'hls' && this.videoStatus === 'visible') {
       this.initOptionHls(this.pOption)
     }
     if (this.element.streamMediaLinks.videoType === 'rtmp') {
