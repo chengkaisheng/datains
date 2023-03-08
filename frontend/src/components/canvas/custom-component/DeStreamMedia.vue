@@ -242,11 +242,16 @@ export default {
         console.log('videoStatus',this.videoStatus)
         if(this.videoStatus === 'visible') {
           if(this.element.streamMediaLinks.videoType === 'hls') {
-            this.myPlayerHls.play()
+            console.log('hls1111====',this.myPlayerHls)
+            this.initOptionHls(this.pOption)
           }
         } else if (this.videoStatus === 'hidden') {
           if(this.element.streamMediaLinks.videoType === 'hls') {
-            this.myPlayerHls.pause()
+            console.log('hls222====',this.myPlayerHls)
+            if (this.myPlayerHls) {
+              const myPlayerHls = this.$refs[this.myPlayer[0]] // 不能用document 获取节点
+              videojs(myPlayerHls).dispose() // 销毁video实例，避免出现节点不存在 但是flash一直在执行，报 this.el.......is not function
+            }
           }
         }
       },
@@ -376,11 +381,12 @@ export default {
               this.myPlayerHls.load()
               // this.myPlayerHls.play()
 
-              if(this.videoStatus === 'visible') {
-                this.myPlayerHls.play()
-              } else if (this.videoStatus === 'hidden') {
-                this.myPlayerHls.pause()
-              }
+              // if(this.videoStatus === 'visible') {
+              //   this.myPlayerHls.play()
+              // } else if (this.videoStatus === 'hidden') {
+              //   this.myPlayerHls.pause()
+              //   
+              // }
               return false
             }
 
@@ -409,11 +415,11 @@ export default {
                 })
               }
             )
-            if(this.videoStatus === 'visible') {
-                this.myPlayerHls.play()
-            } else if (this.videoStatus === 'hidden') {
-              this.myPlayerHls.pause()
-            }
+            // if(this.videoStatus === 'visible') {
+            //     this.myPlayerHls.play()
+            // } else if (this.videoStatus === 'hidden') {
+            //   this.myPlayerHls.pause()
+            // }
           }
         }).catch(error => {
           console.log('error',error)
