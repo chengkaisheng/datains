@@ -371,7 +371,7 @@ export default {
               this.myPlayerHls.reset() // 重置 video
               this.myPlayerHls.src([{
                 type: 'application/x-mpegURL',
-                src: res.data.url.substring(7)
+                src: res.data.url
               }])
               this.myPlayerHls.load()
               // this.myPlayerHls.play()
