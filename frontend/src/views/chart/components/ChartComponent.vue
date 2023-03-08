@@ -29,6 +29,7 @@
 import {
   BASE_BAR,
   BASE_BAR_PART,
+  BASE_BAR_RATE,
   BASE_LINE,
   HORIZONTAL_BAR,
   BASE_PICTORIAL_BAR,
@@ -69,7 +70,8 @@ import {
   horizontalBarOption,
   horizontalStackBarOption,
   basePictorialBarOption,
-  base3DColumnOption
+  base3DColumnOption,
+  barRateOption
   // clockcatterOption
 } from '../chart/bar/bar'
 import {
@@ -282,6 +284,8 @@ export default {
         chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack-part') {
         chart_option = stackBarPartOption(JSON.parse(JSON.stringify(BASE_BAR_PART)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-rate') {
+        chart_option = barRateOption(JSON.parse(JSON.stringify(BASE_BAR_RATE)),chart,this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-polarStack') {
         chart_option = polarStackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-horizontal') {

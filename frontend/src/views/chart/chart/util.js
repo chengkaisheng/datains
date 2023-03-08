@@ -388,6 +388,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.pictorial_bar',
     icon: 'pictorial-bar'
   },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_compare',
+  //   value: 'bar-rate',
+  //   title: 'chart.chart_bar_rate',
+  //   icon: 'bar-rate'
+  // },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',

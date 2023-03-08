@@ -703,6 +703,46 @@ export const BASE_BAR_PART = {
   ]
 }
 
+export const BASE_BAR_RATE = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true
+  },
+  xAxis: [
+    {show: false}
+  ],
+  yAxis:[
+    {
+      axisTick: {show: false},
+      axisLine: {show: false},
+      // inverse: true, // 反向数据轴
+      axisLabel: {},
+      data: []
+    },
+    {
+      axisTick: {show: false},
+      axisLine: {show: false},
+      // inverse: true, // 反向数据轴
+      axisLabel: {},
+      data: []
+    },
+    {
+      axisLine: {
+          lineStyle: {
+              color: 'rgba(0,0,0,0)',
+          },
+      },
+      data: [],
+    },
+  ],
+  series: []
+}
+
 export const HORIZONTAL_BAR = {
   title: {
     text: '',

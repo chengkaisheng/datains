@@ -909,6 +909,7 @@ export default {
     chart_table_info: '明细表',
     chart_card: '指标卡',
     chart_bar: '基础柱状图',
+    chart_bar_rate: '横向进度图',
     pictorial_bar: '立体柱状图',
     chart_3d_column: '3D 柱状图',
     chart_cylinder: '3D 圆柱图',

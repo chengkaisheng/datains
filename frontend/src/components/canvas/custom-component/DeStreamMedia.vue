@@ -511,7 +511,7 @@ export default {
               {
                 sources: [{
                   type: 'rtmp/flv',
-                  src: res.data.url.substring(7)
+                  src: res.data.url
                 }],
                 controls: true,
                 muted: true,

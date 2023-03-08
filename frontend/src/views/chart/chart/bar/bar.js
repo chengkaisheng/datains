@@ -1884,3 +1884,81 @@ export  function base3DColumnOption(chart_option, chart, cstyle = {}) {
   componentStyle(chart_option,chart,cstyle)
   return chart_option
 }
+
+// 横向进度图
+export function barRateOption(chart_option, chart, cstyle = {}) {
+  console.log('进度图',chart)
+  // 处理shape attr
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.color) {
+      chart_option.color = customAttr.color.colors
+    }
+  }
+  // 处理data
+  if (chart.data) {
+    console.log('数据，，',chart.data)
+    chart_option.title.text = chart.title
+    chart_option.yAxis[0].data = chart.data.x
+    
+    // const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
+    // for (let i = 0; i < chart.data.series.length; i++) {
+    //   const y = chart.data.series[i]
+    //   // color
+    //   if (customAttr.color.variety) {
+    //     y.itemStyle = {
+    //       color: {
+    //         type: 'linear',
+    //         x: 0,
+    //         y: 1,
+    //         x2: 0,
+    //         y2: 0,
+    //         colorStops: [{
+    //           offset: 0, // 0% 的颜色
+    //           color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+    //         }, {
+    //           offset: 1, // 100% 的颜色
+    //           color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+    //         }],
+    //         global: false // 缺省为 false
+    //       },
+    //       barBorderRadius: barBorderRadiusArr,
+    //       barBorderWidth: customAttr.size.barBorderValue,
+    //       barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
+    //       borderType: customAttr.size.borderType,
+    //     }
+    //   } else {
+    //     y.itemStyle = {
+    //       color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+    //       barBorderWidth: customAttr.size.barBorderValue,
+    //       barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
+    //       barBorderRadius: barBorderRadiusArr,
+    //       borderType: customAttr.size.borderType,
+    //     }
+    //   }
+
+    //   // size
+    //   if (customAttr.size) {
+    //     if (customAttr.size.barDefault) {
+    //       y.barWidth = null
+    //       y.barGap = null
+    //     } else {
+    //       y.barWidth = customAttr.size.barWidth
+    //       y.barGap = customAttr.size.barGap
+    //     }
+    //   }
+    //   // label
+    //   if (customAttr.label) {
+    //     y.label = customAttr.label
+    //   }
+    //   y.type = 'bar'
+    //   chart_option.legend.data.push(y.name)
+    //   chart_option.series.push(y)
+    // }
+  }
+  // console.log('bar_echarts', chart_option)
+  // componentStyle(chart_option, chart, cstyle)
+  // seniorCfg(chart_option, chart)
+  return chart_option
+}
