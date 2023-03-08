@@ -51,6 +51,7 @@
         :filters="filters"
         :terminal="terminal"
         :screen-shot="screenShot"
+        :video-status="videoStatus"
       />
     </div>
   </div>
@@ -121,6 +122,11 @@ export default {
     screenShot: {
       type: Boolean,
       default: false
+    },
+    videoStatus: {
+      type: String,
+      require: false,
+      default: 'visible'
     }
   },
   data() {

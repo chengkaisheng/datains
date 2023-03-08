@@ -236,6 +236,21 @@ export default {
         }
       },
       deep: true
+    },
+    videoStatus: {
+      handler: function() {
+        console.log('videoStatus',this.videoStatus)
+        if(this.videoStatus === 'visible') {
+          if(this.element.streamMediaLinks.videoType === 'hls') {
+            this.myPlayerHls.play()
+          }
+        } else if (this.videoStatus === 'hidden') {
+          if(this.element.streamMediaLinks.videoType === 'hls') {
+            this.myPlayerHls.pause()
+          }
+        }
+      },
+      deep: true
     }
     // pOption: {
     //   handler: function() {
@@ -369,7 +384,13 @@ export default {
                 src: res.data.url
               }])
               this.myPlayerHls.load()
-              this.myPlayerHls.play()
+              // this.myPlayerHls.play()
+
+              if(this.videoStatus === 'visible') {
+                this.myPlayerHls.play()
+              } else if (this.videoStatus === 'hidden') {
+                this.myPlayerHls.pause()
+              }
               return false
             }
 
@@ -398,6 +419,11 @@ export default {
                 })
               }
             )
+            if(this.videoStatus === 'visible') {
+                this.myPlayerHls.play()
+            } else if (this.videoStatus === 'hidden') {
+              this.myPlayerHls.pause()
+            }
           }
         }).catch(error => {
           console.log('error',error)
@@ -411,7 +437,12 @@ export default {
             src: options.url
           }])
           this.myPlayerHls.load()
-          this.myPlayerHls.play()
+          // this.myPlayerHls.play()
+          if(this.videoStatus === 'visible') {
+              this.myPlayerHls.play()
+          } else if (this.videoStatus === 'hidden') {
+            this.myPlayerHls.pause()
+          }
           return false
         }
 
@@ -440,6 +471,11 @@ export default {
             })
           }
         )
+        if(this.videoStatus === 'visible') {
+            this.myPlayerHls.play()
+        } else if (this.videoStatus === 'hidden') {
+          this.myPlayerHls.pause()
+        }
       }
     },
     initOptionRtmp(options, status) {

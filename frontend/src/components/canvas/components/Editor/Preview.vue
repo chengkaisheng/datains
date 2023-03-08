@@ -32,6 +32,7 @@
           :terminal="terminal"
           :filters="filterMap[item.propValue && item.propValue.viewId]"
           :screen-shot="screenShot"
+          :video-status="displayClass(item)"
         />
         <!--视图详情-->
         <el-dialog
