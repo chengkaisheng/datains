@@ -361,27 +361,17 @@ export default {
           data = obj
         }
         console.log('hls参数',data)
-        // axios({
-        //   url: options.url,
-        //   method: 'post',
-        //   data: JSON.stringify(data),
-        //   timeout: 1000,
-        //   headers: {
-        //     'Content-Type': 'application/json; charset=utf-8'
-        //   }
-        // })
         axios.post(options.url,data,{
           headers: {contentType: 'application/json; charset=utf-8'}
         })
         .then(res => {
           console.log('11111,,,,',res)
-
           if(res.data) {
             if (status) {
               this.myPlayerHls.reset() // 重置 video
               this.myPlayerHls.src([{
                 type: 'application/x-mpegURL',
-                src: res.data.url
+                src: res.data.url.substring(7)
               }])
               this.myPlayerHls.load()
               // this.myPlayerHls.play()
@@ -495,12 +485,13 @@ export default {
         axios.post(options.url,data,{
           headers: {contentType: 'application/json; charset=utf-8'}
         }).then(res => {
+          console.log('rtmppppp',res)
           if(res.data){
             if (status) {
               this.myPlayerRtmp.reset() // 重置 video
               this.myPlayerRtmp.src([{
                 type: 'rtmp/flv',
-                src: res.data.url.substring(7)
+                src: res.data.url
               }])
               this.myPlayerRtmp.load()
               this.myPlayerRtmp.play()
