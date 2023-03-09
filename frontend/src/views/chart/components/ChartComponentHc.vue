@@ -237,6 +237,18 @@ export default {
           this.myChart.destroy()
         }
         this.myChart = this.$highcharts.chart(this.chartId, option)
+        console.log('这个',this.myChart)
+        if (this.chart.type === '3dfunnel'){
+          let customAttr = JSON.parse(this.chart.customAttr)
+          console.log('这，，，',customAttr)
+          if(customAttr.size) {
+            this.myChart.series[0].points.forEach(p => {
+              p.graphic.upperGroup.attr({
+                opacity: customAttr.size.hc3dFunnelOpacity !== undefined? customAttr.size.hc3dFunnelOpacity : 1
+              })
+            })
+          }
+        }
         // } else {
         //   chart.update(option, true)
         // }

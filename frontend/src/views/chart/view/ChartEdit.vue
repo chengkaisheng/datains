@@ -766,18 +766,7 @@
                   <el-collapse-item v-show="view.render && view.type !== 'candlestick'" name="color" :title="$t('chart.color')">
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
-                  <el-collapse-item
-                    v-show="view.render && view.render === 'highcharts' && view.type && (view.type.includes('3dcolumn') || view.type === '3dpie' || view.type === '3dcylinder')"
-                    name="rotate"
-                    :title="$t('chart.rotate')"
-                  >
-                    <rotate-selector
-                      :param="param"
-                      class="attr-selector"
-                      :chart="chart"
-                      @onSizeChange="onSizeChange"
-                    />
-                  </el-collapse-item>
+                  <!-- echarts相关 ↓↓↓↓-->
                   <el-collapse-item
                     v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick' 
                         && view.type !== 'contrast-funnel' && view.type !== 'map' 
@@ -819,6 +808,7 @@
                     />
                   </el-collapse-item>
                   <!-- && chart.type !== 'word-cloud' -->
+                  <!-- antv相关 ↓↓↓↓ -->
                   <el-collapse-item
                     v-show="view.render && view.render === 'antv' && view.type !== 'map' && view.type !== 'waterfall' && view.type !== 'treemap' && view.type !== 'funnel' && view.type !== 'bar-stack'"
                     name="size"
@@ -864,6 +854,32 @@
                       @onLabelChange="onLabelChange"
                     />
                   </el-collapse-item> -->
+                  <!-- highcharts相关 ↓↓↓↓-->
+                  <el-collapse-item
+                    v-show="view.render && view.render === 'highcharts' && view.type && (view.type.includes('3dcolumn') || view.type === '3dpie' || view.type === '3dcylinder')"
+                    name="rotate"
+                    :title="$t('chart.rotate')"
+                  >
+                    <rotate-selector
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onSizeChange="onSizeChange"
+                    />
+                  </el-collapse-item>
+                  <el-collapse-item
+                    v-show="view.render && view.render === 'highcharts' && view.type && view.type === '3dfunnel'"
+                    name="size"
+                    :title="$t('chart.size')"
+                  >
+                    <size-selector-hc 
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onSizeChange="onSizeChange"
+                    />
+                  </el-collapse-item>
+                  <!-- label ↓↓↓↓ -->
                   <el-collapse-item
                     v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')
                         &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' 
@@ -894,6 +910,7 @@
                       @onLabelChange="onLabelChange"
                     />
                   </el-collapse-item>
+                  <!-- tooltipr ↓↓↓↓ -->
                   <el-collapse-item
                     v-show="view.type &&!view.type.includes('vertical') && !view.type.includes('roll')
                       &&!view.type.includes('dialog') && !view.type.includes('table') 
@@ -1406,6 +1423,7 @@ import SizeSelector from '../components/shape-attr/SizeSelector'
 import ShapeSelector from '../components/shape-attr/ShapeSelector'
 import FocusSelector from '../components/shape-attr/FocusSelector'
 import RotateSelector from '../components/shape-attr/RotateSelector'
+import SizeSelectorHc from '../components/shape-attr/SizeSelectorHc'
 import LabelSelector from '../components/shape-attr/LabelSelector'
 import TitleSelector from '../components/component-style/TitleSelector'
 import LegendSelector from '../components/component-style/LegendSelector'
@@ -1506,6 +1524,7 @@ export default {
     ShapeSelector,
     FocusSelector,
     RotateSelector,
+    SizeSelectorHc,
     ColorSelector,
     ChartComponent,
     QuotaItem,
@@ -3065,29 +3084,29 @@ span {
   font-size: 12px;
 }
 
-.tab-header > > > .el-tabs__header {
+.tab-header ::v-deep .el-tabs__header {
   border-top: solid 1px #eee;
   border-right: solid 1px #eee;
 }
 
-.tab-header > > > .el-tabs__item {
+.tab-header ::v-deep .el-tabs__item {
   font-size: 12px;
   padding: 0 20px !important;
 }
 
-.blackTheme .tab-header > > > .el-tabs__item {
+.blackTheme .tab-header ::v-deep .el-tabs__item {
   background-color: var(--MainBG);
 }
 
-.tab-header > > > .el-tabs__nav-scroll {
+.tab-header ::v-deep .el-tabs__nav-scroll {
   padding-left: 0 !important;
 }
 
-.tab-header > > > .el-tabs__header {
+.tab-header ::v-deep .el-tabs__header {
   margin: 0 !important;
 }
 
-.tab-header > > > .el-tabs__content {
+.tab-header ::v-deep .el-tabs__content {
 }
 
 .draggable-group {
@@ -3105,7 +3124,7 @@ span {
   margin: 5px;
 }
 
-.el-radio > > > .el-radio__label {
+.el-radio ::v-deep .el-radio__label {
   padding-left: 0;
 }
 
@@ -3146,15 +3165,15 @@ span {
   height: calc(100% - 20px);
 }
 
-.dialog-css > > > .el-dialog__title {
+.dialog-css ::v-deep .el-dialog__title {
   font-size: 14px;
 }
 
-.dialog-css > > > .el-dialog__header {
+.dialog-css ::v-deep .el-dialog__header {
   padding: 20px 20px 0;
 }
 
-.dialog-css > > > .el-dialog__body {
+.dialog-css ::v-deep .el-dialog__body {
   padding: 10px 20px 20px;
 }
 
@@ -3198,7 +3217,7 @@ span {
 }
 
 .tree-select-span {
-  > > > div.vue-treeselect__control {
+  ::v-deep div.vue-treeselect__control {
     height: 32px !important;
     font-weight: normal !important;
   }
@@ -3264,11 +3283,11 @@ span {
   width: 80px;
 }
 
-.result-count > > > input {
+.result-count ::v-deep input {
   padding: 0 4px;
 }
 
-.radio-span > > > .el-radio__label {
+.radio-span ::v-deep .el-radio__label {
   margin-left: 4px;
 }
 

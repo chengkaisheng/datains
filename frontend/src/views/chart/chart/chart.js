@@ -122,6 +122,12 @@ export const DEFAULT_SIZE = {
 
   adaptWidth: true,
   widthData: [],
+
+  hc3dWidth: 80,
+  hc3dHeight: 80,
+  hc3dNeckWidth: 30,
+  hc3dNeckHeight: 25,
+  hc3dFunnelOpacity: 1,
 }
 export const DEFAULT_LABEL = {
   show: false,
