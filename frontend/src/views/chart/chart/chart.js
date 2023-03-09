@@ -740,7 +740,36 @@ export const BASE_BAR_RATE = {
       data: [],
     },
   ],
-  series: []
+  series: [],
+  dataZoom: [
+    {
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 0,
+      end: 100
+    }
+  ]
 }
 
 export const HORIZONTAL_BAR = {

@@ -1927,7 +1927,7 @@ export default {
         view.type.startsWith('gauge') || view.type === 'treemap' ||
         view.type === 'liquid' || view.type === 'word-cloud' ||
         view.type === 'waterfall' || view.type === 'contrast-funnel' ||
-        view.type.includes('progress')
+        view.type.includes('progress') || view.type === 'bar-rate'
       ) {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)

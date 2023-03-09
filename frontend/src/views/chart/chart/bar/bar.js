@@ -1895,6 +1895,18 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
+    // if (customAttr.tooltip) {
+    //   const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+    //   const reg = new RegExp('\n', 'g')
+
+    //   tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+    //   chart_option.tooltip = tooltip
+    // }
+    // console.log('customAttr____________', chart_option, chart)
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
   }
   // 处理data
   if (chart.data) {
@@ -1902,63 +1914,100 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
     chart_option.title.text = chart.title
     chart_option.yAxis[0].data = chart.data.x
     
-    // const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
-    // for (let i = 0; i < chart.data.series.length; i++) {
-    //   const y = chart.data.series[i]
-    //   // color
-    //   if (customAttr.color.variety) {
-    //     y.itemStyle = {
-    //       color: {
-    //         type: 'linear',
-    //         x: 0,
-    //         y: 1,
-    //         x2: 0,
-    //         y2: 0,
-    //         colorStops: [{
-    //           offset: 0, // 0% 的颜色
-    //           color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
-    //         }, {
-    //           offset: 1, // 100% 的颜色
-    //           color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
-    //         }],
-    //         global: false // 缺省为 false
-    //       },
-    //       barBorderRadius: barBorderRadiusArr,
-    //       barBorderWidth: customAttr.size.barBorderValue,
-    //       barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-    //       borderType: customAttr.size.borderType,
-    //     }
-    //   } else {
-    //     y.itemStyle = {
-    //       color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
-    //       barBorderWidth: customAttr.size.barBorderValue,
-    //       barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-    //       barBorderRadius: barBorderRadiusArr,
-    //       borderType: customAttr.size.borderType,
-    //     }
-    //   }
+    let arr = []
+    let arr1 = []
+    let arr2 = []
+    let datas = chart.data.series[0].data
+    let max = Math.max(...datas.map(item => {return item.value}))
+    // console.log(max)
+    for(let i=0;i<datas.length;i++) {
+      let obj = {
+        value: datas[i].value,
+      }
+      let obj1 = {
+        value: datas[i].value,
+      }
+      if (customAttr.color.variety) {
+        obj.itemStyle = {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 1,
+            y2: 0,
+            colorStops: [{
+              offset: 0, // 0% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+            }, {
+              offset: 1, // 100% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+            }],
+            global: false // 缺省为 false
+          },
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
+          borderType: customAttr.size.borderType,
+        }
+        obj1.itemStyle = {
+          color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha),
+        }
 
-    //   // size
-    //   if (customAttr.size) {
-    //     if (customAttr.size.barDefault) {
-    //       y.barWidth = null
-    //       y.barGap = null
-    //     } else {
-    //       y.barWidth = customAttr.size.barWidth
-    //       y.barGap = customAttr.size.barGap
-    //     }
-    //   }
-    //   // label
-    //   if (customAttr.label) {
-    //     y.label = customAttr.label
-    //   }
-    //   y.type = 'bar'
-    //   chart_option.legend.data.push(y.name)
-    //   chart_option.series.push(y)
+      } else {
+        obj.itemStyle = {
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
+          borderType: customAttr.size.borderType,
+        }
+        obj1.itemStyle = {
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+        }
+      }
+      
+      arr.push(obj)
+      arr1.push(obj1)
+      arr2.push({value: max})
+    }
+    
+    // // label
+    // if (customAttr.label) {
+    //   y.label = customAttr.label
     // }
+    chart_option.series[0] = {
+      name: '条',
+      type: 'bar',
+      stack: '圆',
+      barWidth: customAttr.size.barDefault?8: customAttr.size.barWidth,
+      yAxisIndex: 0,
+      data: arr,
+      z: 2,
+    }
+    chart_option.series[1] = {
+      name: 'xxx',
+      type: 'effectScatter',
+      effectType: 'ripple',
+      symbolSize: customAttr.size.barDefault? 10: customAttr.size.barWidth+2,
+      symbolPosition: 'end',
+      // symbolOffset: [20,0],
+      z: 12,
+      data: arr1
+    }
+    chart_option.series[2] = {
+      name: '背景',
+      type: 'bar',
+      barWidth: customAttr.size.barDefault?8: customAttr.size.barWidth,
+      barGap: '-100%',
+      data: arr2,
+      itemStyle: {
+        normal: {
+            color: 'rgba(28, 128, 213, 0.19)',
+            barBorderRadius: 5,
+        },
+      },
+    }
   }
-  // console.log('bar_echarts', chart_option)
-  // componentStyle(chart_option, chart, cstyle)
-  // seniorCfg(chart_option, chart)
+  console.log('bar-rate', chart_option)
+  componentStyle(chart_option, chart, cstyle)
+  seniorCfg(chart_option, chart)
   return chart_option
 }
