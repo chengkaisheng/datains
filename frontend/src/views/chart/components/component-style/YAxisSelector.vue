@@ -48,7 +48,7 @@
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
-          <span v-show="chart.type && !chart.type.includes('horizontal') && chart.type !== 'bar-double'">
+          <span v-show="chart.type && !chart.type.includes('horizontal') && chart.type !== 'bar-double' && chart.type !== 'bar-rate'">
             <el-divider />
             <el-form-item class="form-item">
               <span slot="label">

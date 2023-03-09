@@ -1917,6 +1917,7 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
     let arr = []
     let arr1 = []
     let arr2 = []
+    let arr3 = []
     let datas = chart.data.series[0].data
     let max = Math.max(...datas.map(item => {return item.value}))
     // console.log(max)
@@ -1926,6 +1927,9 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
       }
       let obj1 = {
         value: datas[i].value,
+      }
+      let obj2 = {
+        value: max
       }
       if (customAttr.color.variety) {
         obj.itemStyle = {
@@ -1937,42 +1941,64 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
             y2: 0,
             colorStops: [{
               offset: 0, // 0% 的颜色
-              color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+              color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alphaG)
             }, {
               offset: 1, // 100% 的颜色
               color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
             }],
             global: false // 缺省为 false
           },
-          barBorderWidth: customAttr.size.barBorderValue,
-          barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-          borderType: customAttr.size.borderType,
+          barBorderRadius: customAttr.size.barDefault? 5 : parseInt(customAttr.size.barWidth/2),
+          // barBorderWidth: customAttr.size.barBorderValue,
+          // barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
+          // borderType: customAttr.size.borderType,
         }
         obj1.itemStyle = {
           color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha),
+        }
+        obj2.itemStyle = {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 1,
+            y2: 0,
+            colorStops: [{
+              offset: 0, // 0% 的颜色
+              color: hexColorToRGBA('#1c80d5', (customAttr.color.alphaG-80<0)? 0 : customAttr.color.alphaG-80)
+            }, {
+              offset: parseFloat(datas[i].value/max), // 100% 的颜色
+              color: hexColorToRGBA('#1c80d5', (customAttr.color.alpha-80<0)? 0 : customAttr.color.alpha-80)
+            }],
+            global: false // 缺省为 false
+          },
+          barBorderRadius: customAttr.size.barDefault? 5 : parseInt(customAttr.size.barWidth/2),
         }
 
       } else {
         obj.itemStyle = {
           color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
-          barBorderWidth: customAttr.size.barBorderValue,
-          barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-          borderType: customAttr.size.borderType,
+          barBorderRadius: customAttr.size.barDefault? 5 : parseInt(customAttr.size.barWidth/2),
+          // barBorderWidth: customAttr.size.barBorderValue,
+          // barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
+          // borderType: customAttr.size.borderType,
         }
         obj1.itemStyle = {
           color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+        }
+        obj2.itemStyle = {
+          color: hexColorToRGBA('#1c80d5', (customAttr.color.alpha-80<0)? 0 : customAttr.color.alpha-80),
+          barBorderRadius: customAttr.size.barDefault? 5 : parseInt(customAttr.size.barWidth/2),
         }
       }
       
       arr.push(obj)
       arr1.push(obj1)
-      arr2.push({value: max})
+      arr2.push(obj2)
+      arr3.push(datas[i].value)
     }
+    chart_option.yAxis[1].data = arr3
     
-    // // label
-    // if (customAttr.label) {
-    //   y.label = customAttr.label
-    // }
     chart_option.series[0] = {
       name: '条',
       type: 'bar',
@@ -1989,6 +2015,7 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
       symbolSize: customAttr.size.barDefault? 10: customAttr.size.barWidth+2,
       symbolPosition: 'end',
       // symbolOffset: [20,0],
+      label: customAttr.label,
       z: 12,
       data: arr1
     }
@@ -1998,12 +2025,7 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
       barWidth: customAttr.size.barDefault?8: customAttr.size.barWidth,
       barGap: '-100%',
       data: arr2,
-      itemStyle: {
-        normal: {
-            color: 'rgba(28, 128, 213, 0.19)',
-            barBorderRadius: 5,
-        },
-      },
+      // itemStyle:{}
     }
   }
   console.log('bar-rate', chart_option)

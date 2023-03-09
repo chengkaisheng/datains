@@ -900,7 +900,7 @@
                       && !view.type.includes('progress') && !view.type.includes('text') 
                       && view.type !== 'liquid' && view.type !== 'gauge' 
                       && view.type !== 'label' && view.type !== 'calendar'
-                      && view.type !== 'map_bubble'"
+                      && view.type !== 'map_bubble' && view.type !== 'bar-rate'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
@@ -938,7 +938,7 @@
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
                   <el-collapse-item
                     v-show="view.type
-                      && (view.type.includes('bar') || view.type.includes('line')
+                      && ((view.type.includes('bar') &&  view.type !== 'bar-rate') || view.type.includes('line')
                       || view.type.includes('scatter') || view.type === 'chart-mix' 
                       || view.type === 'waterfall' || view.type === '3dcolumn' 
                       || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
@@ -999,7 +999,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type && (view.type === 'chart-mix' || view.type === 'bar-stack-part')"
+                    v-show="view.type && (view.type === 'chart-mix' || view.type === 'bar-stack-part' || view.type ==='bar-rate')"
                     name="yAxisExt"
                     :title="$t('chart.yAxis_ext')"
                   >
@@ -1080,7 +1080,8 @@
                       && !view.type.includes('progress') && view.type !== 'map_bubble'
                       && view.type !== 'graph' && view.type !== 'candlestick'
                       && view.type !== '3dsurface' && view.type !== '3d-column'
-                      && view.type !== 'boxplot' && !view.type.includes('roll')"
+                      && view.type !== 'boxplot' && !view.type.includes('roll')
+                      && view.type !== 'bar-rate'"
                     name="legend"
                     :title="$t('chart.legend')"
                   >

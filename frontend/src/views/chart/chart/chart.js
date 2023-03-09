@@ -9,6 +9,7 @@ export const DEFAULT_COLOR_CASE = {
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   colors1: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   borderColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+  alphaG: 100,
   alpha: 100,
   tableHeaderBgColor: '#e1eaff',
   tableItemBgColor: '#ffffff',

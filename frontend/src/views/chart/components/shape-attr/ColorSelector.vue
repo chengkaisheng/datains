@@ -120,7 +120,7 @@
             </el-popover>
           </el-form-item>
           <el-form-item v-show="chart.type && chart.render === 'echarts' && chart.type.includes('bar') 
-            && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar'" 
+            && chart.type !== 'bar-rate' && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar'" 
             :label="'边框颜色'" class="form-item"
           >
             <!-- <el-color-picker v-model="colorForm.borderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" /> -->
@@ -228,6 +228,9 @@
           <!--              </el-form-item>-->
         </div>
 
+        <el-form-item v-show="chart.type && chart.type === 'bar-rate'" label="渐变透明度" class="form-item form-item-slider">
+          <el-slider v-model="colorForm.alphaG" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase" />
+        </el-form-item>
         <el-form-item v-show="chart.type && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.not_alpha')" class="form-item form-item-slider">
           <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase" />
         </el-form-item>
