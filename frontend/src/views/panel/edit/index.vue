@@ -536,6 +536,7 @@ export default {
         'de-show-date',
         'de-video',
         'de-stream-media',
+        'de-kmedia-uni',
         'de-frame'
       ],
       enableSureButton: false,
@@ -1921,7 +1922,7 @@ export default {
     overflow-x: hidden;
   }
 
-  > > > .el-tabs__item {
+  ::v-deep .el-tabs__item {
     padding: 0 15px;
   }
   .view-selected-message-class {

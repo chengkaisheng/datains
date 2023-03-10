@@ -229,6 +229,14 @@ export const pictureList = [
     icon: 'iconfont icon-a-liumeitimeitiliebiao',
     defaultClass: 'text-filter'
   },
+  // {
+  //   id: '20006',
+  //   component: 'de-kmedia-uni',
+  //   type: 'de-kmedia-uni',
+  //   label: '通用视频',
+  //   icon: 'iconfont icon-a-liumeitimeitiliebiao',
+  //   defaultClass: 'text-filter'
+  // },
   {
     id: '20004',
     component: 'de-icons',
@@ -751,7 +759,7 @@ const list = [
     id: '20003',
     component: 'de-stream-media',
     type: 'de-stream-media',
-    label: '',
+    label: '流媒体',
     icon: 'iconfont icon-picture',
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,
@@ -760,6 +768,28 @@ const list = [
       height: 200
     },
     streamMediaLinks: STREAMMEDIALINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '20006',
+    component: 'de-kmedia-uni',
+    type: 'de-kmedia-uni',
+    label: '通用视频',
+    icon: 'iconfont icon-picture',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 400,
+      height: 200
+    },
+    options: {
+      devId: '',
+    },
     x: 1,
     y: 1,
     sizex: 10,

@@ -156,6 +156,12 @@
         </el-tooltip>
       </div>
 
+      <div v-if="attrShow('kmediaUniLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
+        <el-tooltip content="通用视频信息">
+          <KmediaUniLinks :link-info="curComponent.options" />
+        </el-tooltip>
+      </div>
+
       <div v-if="attrShow('frameLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-tooltip content="网页地址">
           <FrameLinks :link-info="curComponent.frameLinks" />
@@ -182,12 +188,13 @@ import { mapState } from 'vuex'
 import Hyperlinks from '@/components/canvas/components/Editor/Hyperlinks'
 import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
 import StreamMediaLinks from '@/components/canvas/components/Editor/StreamMediaLinks'
+import KmediaUniLinks from '@/components/canvas/components/Editor/KmediaUniLinks'
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import FrameLinks from '@/components/canvas/components/Editor/FrameLinks'
 
 export default {
-  components: { FrameLinks, Hyperlinks, DateFormat, VideoLinks, StreamMediaLinks },
+  components: { FrameLinks, Hyperlinks, DateFormat, VideoLinks, StreamMediaLinks , KmediaUniLinks },
   props: {
     scrollLeft: {
       type: Number,
@@ -314,6 +321,10 @@ export default {
       'de-stream-media': [
         'opacity',
         'streamMediaLinks'
+      ],
+      'de-kmedia-uni': [
+        'opacity',
+        'kmediaUniLinks'
       ],
       'de-frame': [
         'opacity',

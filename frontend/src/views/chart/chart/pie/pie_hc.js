@@ -100,7 +100,14 @@ export const BASE_PIE = {
     pointFormat: '<tr><td>{series.name}: </td>' +
 			'<td style="text-align: right"><b>{point.y}</b></td></tr>',
     footerFormat: '</table>',
-    valueDecimals: 2
+    valueDecimals: 2,
+    // formatter: function() {
+    //   var s = `<small>${this.x}</small>`
+    //   $.each(this.points,function() {
+    //     s += '<br/>' + this.series.name + '：'+ this.y;
+    //   });
+    //   return s
+    // },
   },
 
   series: [
