@@ -171,15 +171,27 @@ export const DEFAULT_COLOR_CASE = {
           fontSize: tooltip.textStyle.fontSize, 
           color: tooltip.textStyle.color 
         }
-        chart_option.tooltip.headerFormat =  `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small><table>`
-        chart_option.tooltip.pointFormat = `<tr><td style="font-size:${tooltip.textStyle.fontSize}px;">{series.name}: </td>` +
-          `<td style="text-align: right;font-size:${tooltip.textStyle.fontSize}px;"><b>{point.y}</b></td></tr>`
         let formatter = tooltip.formatter
         formatter = formatter.replace('{a}', '{series.name}')
         formatter = formatter.replace('{b}', '{point.name}')
         formatter = formatter.replace('{c}', '{point.y}')
         formatter = formatter.replace('{d}', '{point.percentage:.2f}%')
-        chart_option.tooltip.formatter = formatter
+        
+        if(!formatter) {
+          chart_option.tooltip.headerFormat =  `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small><table>`
+          chart_option.tooltip.pointFormat = `<tr><td style="font-size:${tooltip.textStyle.fontSize}px;">{series.name}: </td>` +
+            `<td style="text-align: right;font-size:${tooltip.textStyle.fontSize}px;"><b>{point.y}</b></td></tr>`
+          
+        } else {
+          if(formatter.indexOf('{point.name}') !== -1) {
+            chart_option.tooltip.headerFormat = `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small>`
+            chart_option.tooltip.pointFormat = `<div style="font-size:${tooltip.textStyle.fontSize}px;">${formatter}</div>`
+          } else {
+            chart_option.tooltip.headerFormat = ''
+            chart_option.tooltip.pointFormat = `<div style="font-size:${tooltip.textStyle.fontSize}px;">${formatter}</div>`
+          }
+        }
+        // chart_option.tooltip.formatter = formatter
       }
   
       // label

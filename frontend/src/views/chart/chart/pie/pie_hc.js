@@ -101,13 +101,6 @@ export const BASE_PIE = {
 			'<td style="text-align: right"><b>{point.y}</b></td></tr>',
     footerFormat: '</table>',
     valueDecimals: 2,
-    // formatter: function() {
-    //   var s = `<small>${this.x}</small>`
-    //   $.each(this.points,function() {
-    //     s += '<br/>' + this.series.name + '：'+ this.y;
-    //   });
-    //   return s
-    // },
   },
 
   series: [
@@ -140,15 +133,22 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
         fontSize: tooltip.textStyle.fontSize, 
         color: tooltip.textStyle.color 
       }
-      chart_option.tooltip.headerFormat =  `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small><table>`
-      chart_option.tooltip.pointFormat = `<tr><td style="font-size:${tooltip.textStyle.fontSize}px;">{series.name}: </td>` +
-        `<td style="text-align: right;font-size:${tooltip.textStyle.fontSize}px;"><b>{point.y}</b></td></tr>`
       let formatter = tooltip.formatter
       formatter = formatter.replace('{a}', '{series.name}')
       formatter = formatter.replace('{b}', '{point.name}')
       formatter = formatter.replace('{c}', '{point.y}')
       formatter = formatter.replace('{d}', '{point.percentage:.2f}%')
-      chart_option.tooltip.formatter = formatter
+      // console.log('这个formatter',formatter)
+      if(!formatter) {
+        chart_option.tooltip.headerFormat =  `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small><table>`
+        chart_option.tooltip.pointFormat = `<tr><td style="font-size:${tooltip.textStyle.fontSize}px;">{series.name}: </td>` +
+          `<td style="text-align: right;font-size:${tooltip.textStyle.fontSize}px;"><b>{point.y}</b></td></tr>`
+      } else {
+        chart_option.tooltip.headerFormat = '';
+        chart_option.tooltip.pointFormat = `<span style="font-size:${tooltip.textStyle.fontSize}px;">${formatter}</span>`
+      }
+      
+      // chart_option.tooltip.formatter = formatter
     }
 
     // label
