@@ -73,7 +73,9 @@ export default {
     dateStyle() {
       const style = {}
       // console.log('日期颜色。',this.element)
-      style.color = this.element.commonSelectFrame.fontColor
+      if(this.element.commonSelectFrame.fontColor !== undefined) {
+        style.color = this.element.commonSelectFrame.fontColor
+      }
       return style
     }
   },
