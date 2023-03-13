@@ -1,0 +1,39 @@
+{
+  "_from": "kmedia-uni",
+  "_id": "kmedia-uni@1.15.0",
+  "_inBundle": false,
+  "_integrity": "sha512-RzC+XS+I5eQJeZo6Vh/HkPRftmKXp77bXk7sC2CNfTxAoq95vbmQGDnBfrTsAia8vY/aT/NfOQQwhLv97fr+Kw==",
+  "_location": "/kmedia-uni",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "kmedia-uni",
+    "name": "kmedia-uni",
+    "escapedName": "kmedia-uni",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://kfront-dev-dev.devdolphin.com/ty-knpm/kmedia-uni/-/kmedia-uni-1.15.0.tgz",
+  "_shasum": "111587191f639e3adbbe4090b77bb0611b09f567",
+  "_spec": "kmedia-uni",
+  "_where": "D:\\kedacom\\web\\kmediaUni-package\\kmediaUni1.15.0",
+  "author": {
+    "name": "kmedia-uni"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "KMediaUni是一个基于HTML5的网络视频播放器，它支持更多编码格式的音视频码流",
+  "keywords": [
+    "kmedia-uni"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "kmedia-uni",
+  "version": "1.15.0"
+}

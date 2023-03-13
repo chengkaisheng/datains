@@ -229,14 +229,14 @@ export const pictureList = [
     icon: 'iconfont icon-a-liumeitimeitiliebiao',
     defaultClass: 'text-filter'
   },
-  // {
-  //   id: '20006',
-  //   component: 'de-kmedia-uni',
-  //   type: 'de-kmedia-uni',
-  //   label: '通用视频',
-  //   icon: 'iconfont icon-a-liumeitimeitiliebiao',
-  //   defaultClass: 'text-filter'
-  // },
+  {
+    id: '20006',
+    component: 'de-kmedia-uni',
+    type: 'de-kmedia-uni',
+    label: '通用视频',
+    icon: 'iconfont icon-a-liumeitimeitiliebiao',
+    defaultClass: 'text-filter'
+  },
   {
     id: '20004',
     component: 'de-icons',
