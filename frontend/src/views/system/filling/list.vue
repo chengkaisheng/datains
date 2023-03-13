@@ -883,6 +883,21 @@
         <el-button type="primary" @click="onMoveSuccess">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- <el-dialog
+      title="属性"
+      :visible.sync="visibleAttr"
+      :close-on-click-modal="false"
+      width="30%"
+      :before-close="onAttrCancel"
+    >
+      <div>
+
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="onAttrCancel">取 消</el-button>
+        <el-button type="primary" @click="onAttrSuccess">确 定</el-button>
+      </span>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -1441,6 +1456,13 @@ export default {
     // 属性设置
     attributeClick(data) {
       console.log('属性',data)
+
+    },
+    onAttrSuccess() {
+
+    },
+    onAttrCancel() {
+
     },
     dataManage(data){
       console.log('数据管理',data)
