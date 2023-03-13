@@ -289,7 +289,7 @@ export default {
       return route.children.filter(kid => !kid.hidden).length
     },
     async logout() {
-      // localStorage.clear()
+      localStorage.clear()
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
