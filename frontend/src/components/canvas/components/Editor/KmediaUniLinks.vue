@@ -21,6 +21,7 @@
 <script>
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import bus from '@/utils/bus'
 
 export default {
   props: {
@@ -58,6 +59,7 @@ export default {
     onSubmit() {
       this.curComponent.options = this.kmediaLinks
       this.$store.state.styleChangeTimes++
+      bus.$emit('kmediauniLinksChange-' + this.curComponent.id)
       this.popoverClose()
     },
     onClose() {
