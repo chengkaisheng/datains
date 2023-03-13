@@ -41,6 +41,11 @@ export default {
     screenShot: {
       type: Boolean,
       default: false
+    },
+    videoStatus: {
+      type: String,
+      require: false,
+      default: 'visible'
     }
   },
   data() {
@@ -58,11 +63,18 @@ export default {
   },
   watch: {
     h(newVal, oldVla) {
+    },
+    videoStatus: {
+      handler: function() {
+        console.log('改变status',this.videoStatus,this.element)
+      },
+      deep: true
     }
   },
   created() {
   },
   mounted() {
+    console.log('frame',this.videoStatus)
     bus.$on('frameLinksChange-' + this.element.id, () => {
       this.frameShow = false
       this.$nextTick(() => {
