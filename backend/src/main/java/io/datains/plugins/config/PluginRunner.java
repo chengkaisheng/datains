@@ -45,6 +45,7 @@ public class PluginRunner implements ApplicationRunner {
                     LogUtil.error("插件路径不存在 {} ", jarPath);
                 }
             } catch (Exception e) {
+                System.err.println(e);
                 LogUtil.error(e);
             }
         });

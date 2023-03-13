@@ -253,4 +253,18 @@
     f2c_license = #{f2cLicense,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+
+
+  <select id="lists" resultType="io.datains.base.domain.License">
+    select * from license
+  </select>
+
+  <update id="update" >
+    update license set license =#{license} where id = #{id}
+  </update>
+
+  <insert id="save" parameterType="io.datains.base.domain.License">
+    insert into license (id, update_time, license)
+    values (#{id,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{license,jdbcType=VARCHAR})
+  </insert>
 </mapper>

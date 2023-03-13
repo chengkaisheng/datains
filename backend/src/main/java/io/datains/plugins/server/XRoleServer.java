@@ -4,13 +4,10 @@ package io.datains.plugins.server;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.datains.auth.service.ExtAuthService;
+import io.datains.base.domain.XpackSysRole;
 import io.datains.commons.utils.PageUtils;
 import io.datains.commons.utils.Pager;
-import io.datains.plugins.common.entity.XpackGridRequest;
-import io.datains.plugins.config.SpringContextUtil;
-import io.datains.plugins.xpack.role.dto.response.XpackRoleDto;
-import io.datains.plugins.xpack.role.dto.response.XpackRoleItemDto;
-import io.datains.plugins.xpack.role.service.RoleXpackService;
+import io.datains.service.sys.RoleXpackService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -18,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.annotation.Resource;
 import java.util.List;
 @Api(tags = "xpack：角色管理")
 @RequestMapping("/plugin/role")
@@ -27,11 +25,13 @@ public class XRoleServer {
     @Autowired
     private ExtAuthService extAuthService;
 
+    @Resource
+    private RoleXpackService roleXpackService;
+
     @RequiresPermissions("role:add")
     @ApiOperation("新增角色")
     @PostMapping("/create")
-    public void create(@RequestBody XpackRoleDto role){
-        RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
+    public void create(@RequestBody XpackSysRole role){
         roleXpackService.save(role);
     }
 
@@ -40,7 +40,6 @@ public class XRoleServer {
     @ApiOperation("删除角色")
     @PostMapping("/delete/{roleId}")
     public void delete(@PathVariable("roleId") Long roleId){
-        RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
         extAuthService.clearDeptResource(roleId);
         roleXpackService.delete(roleId);
     }
@@ -49,25 +48,22 @@ public class XRoleServer {
     @RequiresPermissions("role:edit")
     @ApiOperation("更新角色")
     @PostMapping("/update")
-    public void update(@RequestBody XpackRoleDto role){
-        RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
+    public void update(@RequestBody XpackSysRole role){
         roleXpackService.update(role);
     }
 
     @RequiresPermissions("role:read")
     @ApiOperation("分页查询")
     @PostMapping("/roleGrid/{goPage}/{pageSize}")
-    public Pager<List<XpackRoleDto>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody XpackGridRequest request) {
-        RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
+    public Pager<List<XpackSysRole>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody XpackSysRole request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        Pager<List<XpackRoleDto>> listPager = PageUtils.setPageInfo(page, roleXpackService.query(request));
+        Pager<List<XpackSysRole>> listPager = PageUtils.setPageInfo(page, roleXpackService.query(request));
         return listPager;
     }
 
     @ApiIgnore
     @PostMapping("/all")
-    public List<XpackRoleItemDto> all() {
-        RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
+    public List<XpackSysRole> all() {
         return roleXpackService.allRoles();
     }
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.datains.base.mapper.XpackExtDeptMapper">
+
+    <resultMap id="simpleNode" type="io.datains.base.domain.PluginSimpleTreeNode">
+        <id property="id" column="id" javaType="java.lang.Long" />
+        <result property="pid" column="pid" javaType="java.lang.Long"/>
+    </resultMap>
+
+    <select id="allNodes" resultMap="simpleNode">
+        select dept_id as id, pid from sys_dept
+    </select>
+
+
+    <select id="nodesByExample" parameterType="io.datains.base.domain.XpackSysDept" resultMap="simpleNode">
+        select dept_id as id, pid from sys_dept
+        where 1=1
+        <if test="deptId != null">
+            and dept_id = #{deptId,jdbcType=BIGINT}
+        </if>
+        <if test="pid != null">
+            and pid = #{pid,jdbcType=BIGINT}
+        </if>
+        <if test="subCount != null">
+            and sub_count = #{subCount,jdbcType=INTEGER}
+        </if>
+        <if test="name != null">
+            and  `name` = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="deptSort != null">
+            and dept_sort = #{deptSort,jdbcType=INTEGER}
+        </if>
+        <if test="createBy != null">
+            and create_by = #{createBy,jdbcType=VARCHAR}
+        </if>
+        <if test="updateBy != null">
+            and update_by = #{updateBy,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null">
+            and create_time = #{createTime,jdbcType=BIGINT}
+        </if>
+        <if test="updateTime != null">
+            and update_time = #{updateTime,jdbcType=BIGINT}
+        </if>
+    </select>
+
+
+</mapper>

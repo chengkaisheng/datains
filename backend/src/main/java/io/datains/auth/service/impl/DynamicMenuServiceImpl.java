@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +35,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
     private ExtSysMenuMapper extSysMenuMapper;
 
     @Override
-    public List<DynamicMenuDto> load(String userId) {
+    public List<DynamicMenuDto> load(String userId) throws IOException {
         List<SysMenu> sysMenus = extSysMenuMapper.querySysMenu();
         List<DynamicMenuDto> dynamicMenuDtos = sysMenus.stream().map(this::convert).collect(Collectors.toList());
         //增加插件中的菜单
@@ -119,7 +120,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
     }
 
     @Transactional
-    public void syncPluginMenu() {
+    public void syncPluginMenu() throws IOException {
         extPluginSysMenuMapper.deletePluginMenu();
         List<PluginSysMenu> pluginSysMenuList = PluginUtils.pluginMenus();
         Set<PluginSysMenu> pluginSysMenuSet = new HashSet<>(pluginSysMenuList);
