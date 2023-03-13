@@ -36,6 +36,8 @@ var treeData = [
                     tableFieldName: "title",
                     titleValue: "填报1",
                 },
+                ownerList: ['001','002','003'], // 所有者
+                describe: '李四测试一一一',
                 dataManage: {
                     personData: [
                         {
@@ -64,6 +66,11 @@ var treeData = [
                     status: "ordinary",
                     tableFieldName: "title",
                     titleValue: "填报1",
+                },
+                ownerList: ['002'], // 所有者
+                describe: '李四测试ererer一',
+                dataManage: {
+                    personData: []
                 }
             },
             {
@@ -84,6 +91,11 @@ var treeData = [
                     status: "ordinary",
                     tableFieldName: "title",
                     titleValue: "填报1",
+                },
+                ownerList: ['002','003'], // 所有者
+                describe: '李四测试一ssssabs一',
+                dataManage: {
+                    personData: []
                 }
             }
         ],
@@ -114,6 +126,11 @@ var treeData = [
                     status: "ordinary",
                     tableFieldName: "title",
                     titleValue: "填报1",
+                },
+                ownerList: ['002','003'], // 所有者
+                describe: '王五测11试一一一',
+                dataManage: {
+                    personData: []
                 }
             }
         ],
@@ -144,6 +161,11 @@ var treeData = [
                     status: "ordinary",
                     tableFieldName: "title",
                     titleValue: "填报1",
+                },
+                ownerList: ['002','003'], // 所有者
+                describe: '54测11试一一一',
+                dataManage: {
+                    personData: []
                 }
             }
         ],
@@ -174,6 +196,11 @@ var treeData = [
                     status: "ordinary",
                     tableFieldName: "title",
                     titleValue: "填报1",
+                },
+                ownerList: ['002','003'], // 所有者
+                describe: '43qaa测11试一一一',
+                dataManage: {
+                    personData: []
                 }
             }
         ],
@@ -204,6 +231,11 @@ var treeData = [
                     status: "ordinary",
                     tableFieldName: "title",
                     titleValue: "填报1",
+                },
+                ownerList: ['002','003'], // 所有者
+                describe: '12测11试一一一',
+                dataManage: {
+                    personData: []
                 }
             }
         ],
@@ -234,6 +266,11 @@ var treeData = [
                     status: "ordinary",
                     tableFieldName: "title",
                     titleValue: "填报1",
+                },
+                ownerList: ['002','003'], // 所有者
+                describe: '122测11试一一一',
+                dataManage: {
+                    personData: []
                 }
             }
         ],

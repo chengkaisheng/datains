@@ -883,7 +883,8 @@
         <el-button type="primary" @click="onMoveSuccess">确 定</el-button>
       </span>
     </el-dialog>
-    <!-- <el-dialog
+
+    <el-dialog
       title="属性"
       :visible.sync="visibleAttr"
       :close-on-click-modal="false"
@@ -891,13 +892,33 @@
       :before-close="onAttrCancel"
     >
       <div>
-
+        <el-row>
+          <el-form :model="attrObj" ref="attrForm" label-width="90px">
+            <el-col>
+              <el-form-item label="名称">
+                <el-input v-model="attrObj.name"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col>
+              <el-form-item label="所有者">
+                <el-select v-model="attrObj.ownerList" multiple collapse-tags placeholder="请选择" style="width: 100%;">
+                  <el-option v-for="item of owners" :key="item.id" :value="item.id" :label="item.name"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col>
+              <el-form-item label="描述">
+                <el-input type="textarea" v-model="attrObj.describe" :autosize="{minRows: 2,maxRows: 4}" placeholder="请输入"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-form>
+        </el-row>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="onAttrCancel">取 消</el-button>
         <el-button type="primary" @click="onAttrSuccess">确 定</el-button>
       </span>
-    </el-dialog> -->
+    </el-dialog>
   </div>
 </template>
 
@@ -933,8 +954,19 @@ export default {
 
       visibleType: false,
       visibleMove: false,
-      moveObj: {}, // 移动对象
-      moveInObj: {}, // 移动到对象
+      visibleAttr: false,
+      moveObj: {}, // 移动的对象
+      moveInObj: {}, // 移动到的对象
+
+      attrObj: {},
+      owners: [
+        {id: '001',name: '李三伞'},
+        {id: '002',name: '张一期'},
+        {id: '003',name: '刘六七'},
+        {id: '004',name: '钟九九'},
+        {id: '005',name: '吴无误'},
+      ],
+
       typeTitle: '',
       rules:{
         name: [{ required: true, message: '请输入名称', trigger: 'blur' }]
@@ -1260,7 +1292,7 @@ export default {
     init() {
       console.log('初始111')
       this.axios.get('/system/data/fill/table/list').then(res => {
-        // console.log('数据，，',res)
+        console.log('数据，，',res)
         if(res.status === 200) {
           this.tableData = res.data.list
         }
@@ -1414,6 +1446,29 @@ export default {
       this.moveObj = {}
       this.moveInObj = {}
     },
+    // 属性设置
+    attributeClick(data) {
+      console.log('属性',data)
+      this.attrObj = data
+      this.visibleAttr = true
+    },
+    onAttrSuccess() {
+      console.log('attribute====>',this.attrObj)
+      this.axios.post('/system/data/fill/table/update',this.attrObj).then(res => {
+        if(res.status === 200) {
+          this.tableData = res.data.list
+          this.visibleAttr = false
+          this.attrObj = {}
+        }
+      })
+    },
+    onAttrCancel() {
+      this.attrObj = {}
+      this.visibleAttr = false
+    },
+    dataManage(data){
+      console.log('数据管理',data)
+    },
     dateFormat(date) {
       let time = new Date(date)
       let year = time.getFullYear()
@@ -1453,20 +1508,6 @@ export default {
         }
       })
     },
-    // 属性设置
-    attributeClick(data) {
-      console.log('属性',data)
-
-    },
-    onAttrSuccess() {
-
-    },
-    onAttrCancel() {
-
-    },
-    dataManage(data){
-      console.log('数据管理',data)
-    },
     // 返回
     goback() {
       this.panelType = 'list'
@@ -1495,6 +1536,11 @@ export default {
           addType: this.addForm.addType,
           checkObj: {
             ...this.checkObj
+          },
+          ownerList: [], // 所有者
+          describe: '',
+          dataManage: {
+            personData: []
           }
         }
         console.log('objjjjjjjjjjjjjjj',obj)
@@ -1519,6 +1565,9 @@ export default {
           type: this.updateForm.type,
           addType: this.addForm.addType,
           checkObj: this.checkObj,
+          ownerList: this.updateForm.ownerList, // 所有者
+          describe: this.updateForm.describe,
+          dataManage: this.updateForm.dataManage
         }
         console.log('xxxxxxxx',obj)
         this.axios.post('/system/data/fill/table/update',obj).then(res => {
