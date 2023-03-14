@@ -240,7 +240,7 @@ export default {
       },
       deep: true
     },
-    videoStatus: {
+    videoStatus: { // 切换tab导航，不关联的视屏video销毁，关联的展示，用于释放运行内存
       handler: function() {
         console.log('videoStatus',this.videoStatus)
         if(this.videoStatus === 'visible') {
@@ -386,14 +386,8 @@ export default {
                 src: res.data.url
               }])
               this.myPlayerHls.load()
-              // this.myPlayerHls.play()
+              this.myPlayerHls.play()
 
-              // if(this.videoStatus === 'visible') {
-              //   this.myPlayerHls.play()
-              // } else if (this.videoStatus === 'hidden') {
-              //   this.myPlayerHls.pause()
-              //   
-              // }
               return false
             }
 
@@ -422,11 +416,6 @@ export default {
                 })
               }
             )
-            // if(this.videoStatus === 'visible') {
-            //     this.myPlayerHls.play()
-            // } else if (this.videoStatus === 'hidden') {
-            //   this.myPlayerHls.pause()
-            // }
           }
         }).catch(error => {
           console.log('error',error)
@@ -474,11 +463,6 @@ export default {
             })
           }
         )
-        if(this.videoStatus === 'visible') {
-            this.myPlayerHls.play()
-        } else if (this.videoStatus === 'hidden') {
-          this.myPlayerHls.pause()
-        }
       }
     },
     initOptionRtmp(options, status) {
