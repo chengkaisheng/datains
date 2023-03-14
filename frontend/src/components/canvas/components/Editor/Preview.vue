@@ -79,6 +79,8 @@ import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
 import bus from '@/utils/bus'
 import { buildFilterMap } from '@/utils/conditionUtil'
+import { hexColorToRGBA } from '@/views/chart/chart/util.js'
+
 export default {
   components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
   model: {
@@ -271,9 +273,10 @@ export default {
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          let rgba = hexColorToRGBA(this.canvasStyleData.panel.color,this.canvasStyleData.panel.alpha !== undefined? this.canvasStyleData.panel.alpha : 100)
           style = {
-            background: this.canvasStyleData.panel.color,
-            ...style
+            ...style,
+            background: rgba,
           }
         }
       }
