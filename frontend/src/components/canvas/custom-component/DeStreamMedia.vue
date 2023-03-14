@@ -243,23 +243,23 @@ export default {
     videoStatus: { // 切换tab导航，不关联的视屏video销毁，关联的展示，用于释放运行内存
       handler: function() {
         console.log('videoStatus',this.videoStatus)
-        if(this.videoStatus === 'visible') {
-          if(this.element.streamMediaLinks.videoType === 'hls') {
-            console.log('hls1111====',this.myPlayerHls)
-            // 添加dom元素
-            let html = `<video id=${this.myPlayer[0]} ref="${this.myPlayer[0]}" :destroyOnClose="true" class="vjs-default-skin vjs-big-play-centered vjs-16-9 video-js" controls preload="auto"></video>`
-            document.getElementById(`hls${this.myPlayer[0]}`).innerHTML = html
-            this.initOptionHls(this.pOption)
-          }
-        } else if (this.videoStatus === 'hidden') {
-          if(this.element.streamMediaLinks.videoType === 'hls') {
-            console.log('hls222====',this.myPlayerHls)
-            if (this.myPlayerHls) {
-              const myPlayerHls = this.$refs[this.myPlayer[0]] // 不能用document 获取节点
-              videojs(myPlayerHls).dispose() // 销毁video实例，避免出现节点不存在 但是flash一直在执行，报 this.el.......is not function
-            }
-          }
-        }
+        // if(this.videoStatus === 'visible') {
+        //   if(this.element.streamMediaLinks.videoType === 'hls') {
+        //     console.log('hls1111====',this.myPlayerHls)
+        //     // 添加dom元素
+        //     let html = `<video id=${this.myPlayer[0]} ref="${this.myPlayer[0]}" :destroyOnClose="true" class="vjs-default-skin vjs-big-play-centered vjs-16-9 video-js" controls preload="auto"></video>`
+        //     document.getElementById(`hls${this.myPlayer[0]}`).innerHTML = html
+        //     this.initOptionHls(this.pOption)
+        //   }
+        // } else if (this.videoStatus === 'hidden') {
+        //   if(this.element.streamMediaLinks.videoType === 'hls') {
+        //     console.log('hls222====',this.myPlayerHls)
+        //     if (this.myPlayerHls) {
+        //       const myPlayerHls = this.$refs[this.myPlayer[0]] // 不能用document 获取节点
+        //       videojs(myPlayerHls).dispose() // 销毁video实例，避免出现节点不存在 但是flash一直在执行，报 this.el.......is not function
+        //     }
+        //   }
+        // }
       },
       deep: true
     }
