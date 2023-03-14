@@ -93,4 +93,12 @@ public interface LicenseMapper {
      * @mbg.generated
      */
     int updateByPrimaryKey(License record);
+
+
+    List<License> lists();
+
+    boolean update(String license,String id);
+
+    boolean save(License license);
+
 }

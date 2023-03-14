@@ -213,10 +213,12 @@ public class AuthServer implements AuthApi {
 
     @Override
     public boolean isPluginLoaded() {
-        Boolean licValid = PluginUtils.licValid();
+        /*Boolean licValid = PluginUtils.licValid();
         if (!licValid)
             return false;
-        return authUserService.pluginLoaded();
+        return authUserService.pluginLoaded();*/
+        System.err.println(PluginUtils.licValid());
+      return PluginUtils.licValid();
     }
 
     @Override

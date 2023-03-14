@@ -1,23 +1,21 @@
 package io.datains.plugins.server;
 
 import io.datains.auth.api.dto.CurrentUserDto;
+import io.datains.base.domain.*;
 import io.datains.commons.constants.AuthConstants;
 import io.datains.commons.utils.AuthUtils;
 import io.datains.controller.handler.annotation.I18n;
 import io.datains.listener.util.CacheUtils;
 import io.datains.plugins.config.SpringContextUtil;
-import io.datains.plugins.xpack.auth.dto.request.XpackBaseTreeRequest;
-import io.datains.plugins.xpack.auth.dto.request.XpackSysAuthRequest;
-import io.datains.plugins.xpack.auth.dto.response.XpackSysAuthDetail;
-import io.datains.plugins.xpack.auth.dto.response.XpackSysAuthDetailDTO;
-import io.datains.plugins.xpack.auth.dto.response.XpackVAuthModelDTO;
+import io.datains.service.sys.AuthXpackService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import io.datains.plugins.xpack.auth.service.AuthXpackService;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,11 +26,13 @@ public class XAuthServer {
 
     private static final Set<String> cacheTypes = new HashSet<>();
 
+    @Autowired
+    private AuthXpackService sysAuthService;
+
     @RequiresPermissions("auth:read")
     @PostMapping("/authModels")
     @I18n
     public List<XpackVAuthModelDTO> authModels(@RequestBody XpackBaseTreeRequest request) {
-        AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
         CurrentUserDto user = AuthUtils.getUser();
         return sysAuthService.searchAuthModelTree(request, user.getUserId(), user.getIsAdmin());
     }
@@ -40,15 +40,13 @@ public class XAuthServer {
     @RequiresPermissions("auth:read")
     @PostMapping("/authDetails")
     public Map<String, List<XpackSysAuthDetailDTO>> authDetails(@RequestBody XpackSysAuthRequest request) {
-        AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
         return sysAuthService.searchAuthDetails(request);
     }
 
     @RequiresPermissions("auth:read")
-    @GetMapping("/authDetailsModel/{authType}/{direction}")
+    @GetMapping("/authDetailsModel/{authType}")
     @I18n
-    public List<XpackSysAuthDetail> authDetailsModel(@PathVariable String authType, @PathVariable String direction) {
-        AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
+    public List<XpackSysAuthDetail> authDetailsModel(@PathVariable String authType) {
         List<XpackSysAuthDetail> authDetails = sysAuthService.searchAuthDetailsModel(authType);
         if (authType.equalsIgnoreCase("dataset")) {
             XpackSysAuthDetail xpackSysAuthDetail = new XpackSysAuthDetail();
@@ -63,7 +61,6 @@ public class XAuthServer {
     @RequiresPermissions("auth:read")
     @PostMapping("/authChange")
     public void authChange(@RequestBody XpackSysAuthRequest request) {
-        AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
         CurrentUserDto user = AuthUtils.getUser();
         sysAuthService.authChange(request, user.getUserId(), user.getUsername(), user.getIsAdmin());
         // 当权限发生变化 前端实时刷新对应菜单
@@ -92,7 +89,6 @@ public class XAuthServer {
     }
 
     private List<String> getAuthModels(String id, String type, Long userId, Boolean isAdmin) {
-        AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
         List<XpackVAuthModelDTO> vAuthModelDTOS = sysAuthService
                 .searchAuthModelTree(new XpackBaseTreeRequest(id, type, "children"), userId, isAdmin);
         List<String> authSources = Optional.ofNullable(vAuthModelDTOS).orElse(new ArrayList<>()).stream()

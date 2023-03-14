@@ -32,7 +32,7 @@
                         </goals>
                         <configuration>
                             <!-- See https://nodejs.org/en/download/ for latest node and npm (lts) versions -->
-                            <nodeVersion>v15.12.0</nodeVersion>
+                            <nodeVersion>v14.9.0</nodeVersion>
                             <npmVersion>7.6.3</npmVersion>
                         </configuration>
                     </execution>

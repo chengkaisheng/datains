@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.datains.base.mapper.XpackExtRoleMapper">
+    <resultMap id="xpackRoleItemMap" type="io.datains.base.domain.XpackRoleItemDto">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+
+    <select id="query" parameterType="io.datains.base.domain.XpackSysRole" resultType="io.datains.base.domain.XpackSysRole">
+        select *
+        from sys_role
+        where 1 = 1
+        <if test="roleId != null">
+            role_id = #{roleId,jdbcType=BIGINT}
+        </if>
+        <if test="name != null">
+            and `name` = #{name,jdbcType=VARCHAR}
+        </if>
+        <if test="description != null">
+            and description = #{description,jdbcType=VARCHAR}
+        </if>
+        <if test="createBy != null">
+            and create_by = #{createBy,jdbcType=VARCHAR}
+        </if>
+        <if test="updateBy != null">
+            and update_by = #{updateBy,jdbcType=VARCHAR}
+        </if>
+        order by create_time desc
+
+    </select>
+
+    <select id="querylike" parameterType="io.datains.base.domain.XpackSysRole" resultType="io.datains.base.domain.XpackSysRole">
+        select *
+        from sys_role
+        where 1 = 1
+        <if test="name != null">
+        and name like CONCAT(CONCAT('%', #{name}), '%')
+        </if>
+        order by create_time desc
+
+    </select>
+
+
+    <delete id="deleteMenuMapping">
+        delete from sys_roles_menus where role_id = #{roleId}
+    </delete>
+
+
+    <delete id="deleteUserMapping">
+        delete from sys_users_roles where role_id = #{roleId}
+    </delete>
+
+    <select id="queryAll" resultMap="xpackRoleItemMap">
+        select role_id as id, name from sys_role
+    </select>
+
+
+
+
+
+</mapper>
