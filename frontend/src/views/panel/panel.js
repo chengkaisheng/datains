@@ -4,6 +4,7 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 
 export const DEFAULT_PANEL_STYLE = {
   color: '#ffffff',
+  alpha: 100, // 透明度
   imageUrl: null,
   backgroundType: 'image',
   gap: 'yes',

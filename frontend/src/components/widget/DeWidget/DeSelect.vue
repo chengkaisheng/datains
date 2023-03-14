@@ -10,7 +10,6 @@
     :multiple="element.options.attrs.multiple"
     :placeholder="$t(element.options.attrs.placeholder)"
     :popper-append-to-body="inScreen"
-    size="mini"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
@@ -96,7 +95,8 @@ export default {
         }
         style.color = this.element.commonSelectFrame.fontColor
       }
-      style.borderRadius = '4px'
+      // style.borderRadius = '4px'
+      style.lineHeight = this.element.style.height + 'px'
       return style
     },
     optionStyle() {

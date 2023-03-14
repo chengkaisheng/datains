@@ -14,6 +14,12 @@
             <el-col :span="18">
               <el-color-picker v-model="panel.color" :predefine="predefineColors" size="mini" style="cursor: pointer;z-index: 1004;" @change="onChangeType" />
             </el-col>
+            <el-col>
+              <el-col :span="6">透明度</el-col>
+              <el-col :span="18">
+                <el-input-number v-model="panel.alpha" :max="100" :min="0" size="small" @change="onChangeType"></el-input-number>
+              </el-col>
+            </el-col>
           </el-row>
           <el-row style="height: 60px;margin-top:10px;overflow: hidden">
             <el-col :span="6">
@@ -79,6 +85,9 @@ export default {
   },
   created() {
     // 初始化赋值
+    if(this.canvasStyleData.panel.alpha === undefined) {
+      this.canvasStyleData.panel.alpha = 100
+    }
     this.panel = this.canvasStyleData.panel
     if (this.panel.imageUrl && typeof (this.panel.imageUrl) === 'string') {
       this.fileList.push({ url: this.panel.imageUrl })

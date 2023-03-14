@@ -39,6 +39,10 @@ export default {
     element: {
       handler(val1,val2) {
         console.log('kmedia改变======',val1)
+        this.kframeShow = false
+        this.$nextTick(() => {
+          this.kframeShow = true
+        })
       }, 
       deep: true
     }

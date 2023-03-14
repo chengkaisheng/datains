@@ -215,7 +215,8 @@ export default {
   }
 
   .condition-content {
-    overflow: auto hidden;
+    // overflow: auto hidden;
+    overflow: hidden;
     top: 2em;
     left: 0px;
     right: 0px;

@@ -606,9 +606,17 @@ export default {
         console.log('是否触发此处修改------------2222222', customAttr)
         if (customAttr.color) {
           this.table_header_class.color = customAttr.color.tableFontColor
-          this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
+          if(customAttr.color.tableHeaderBgColor) {
+            this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
+          } else {
+            this.table_header_class.background = hexColorToRGBA('#ffffff', 0)
+          } 
           this.table_item_class.color = customAttr.color.tableInfoFontColor
-          this.table_item_class.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha)
+          if(customAttr.color.tableItemBgColor) {
+            this.table_item_class.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha)
+          } else {
+            this.table_item_class.background = hexColorToRGBA('#ffffff',0)
+          }
           this.scrollId.backgroundColor = customAttr.color.tableHeightColor
           this.scrollId.color = customAttr.color.tableHeightFontColor
         }

@@ -443,6 +443,8 @@ import ChartEdit from '@/views/chart/view/ChartEdit'
 import OuterParamsSet from '@/views/panel/OuterParamsSet/index'
 import SketchRule from 'vue-sketch-ruler'
 
+import { hexColorToRGBA } from '@/views/chart/chart/util.js'
+
 export default {
   name: 'PanelEdit',
   components: {
@@ -647,7 +649,7 @@ export default {
       let style = {
         padding: this.componentGap + 'px'
       }
-      console.log('this.canvasStyleData==========', this.canvasStyleData)
+      console.log('this.canvasStyleData=======面板===', this.canvasStyleData)
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && typeof (this.canvasStyleData.panel.imageUrl) === 'string') {
           style = {
@@ -655,9 +657,10 @@ export default {
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          let rgba = hexColorToRGBA(this.canvasStyleData.panel.color,this.canvasStyleData.panel.alpha !== undefined? this.canvasStyleData.panel.alpha : 100)
           style = {
-            background: this.canvasStyleData.panel.color,
-            ...style
+            ...style,
+            background: rgba,
           }
         }
       }
