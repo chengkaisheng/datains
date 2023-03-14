@@ -107,6 +107,7 @@ export default {
       this.getTree()
     },
     showCurrentTemplate(pid) {
+      // console.log('pidddddddddd',pid)
       this.currentTemplateId = pid
       if (this.currentTemplateId) {
         find({ pid: this.currentTemplateId }).then(response => {
@@ -165,6 +166,7 @@ export default {
         templateType: this.currentTemplateType,
         level: '0'
       }
+      // console.log('initttttt',request)
       find(request).then(res => {
         this.templateList = res.data
         this.showFirst()
