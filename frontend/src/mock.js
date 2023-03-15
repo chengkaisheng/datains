@@ -41,10 +41,93 @@ var treeData = [
                 dataManage: {
                     personData: [
                         {
-                            name: '张小三',
-                            sid: '001',
-                            
-                        }
+                            sname: '张小三',
+                            sid: '0201001',
+                            sclass: '一班',
+                            sage: '16',
+                            submitBy: '李四',
+                            updateBy: '李四',
+                            submitTime: '2023-03-01 15:20:34',
+                            updateTime: '2023-03-01 15:25:34',
+                            province: '上海'
+                        },
+                        {
+                            sname: '李小四',
+                            sid: '0201002',
+                            sclass: '一班',
+                            sage: '15',
+                            submitBy: '李四',
+                            updateBy: '张三',
+                            submitTime: '2023-03-01 15:26:34',
+                            updateTime: '2023-03-01 16:06:10',
+                            province: '上海'
+                        },
+                        {
+                            sname: '王小五',
+                            sid: '0201003',
+                            sclass: '一班',
+                            sage: '16',
+                            submitBy: '李四',
+                            updateBy: '',
+                            submitTime: '2023-03-01 15:27:05',
+                            updateTime: '',
+                            province: '上海'
+                        },
+                        {
+                            sname: '赵小龙',
+                            sid: '0201004',
+                            sclass: '一班',
+                            sage: '16',
+                            submitBy: '李四',
+                            updateBy: 'admin',
+                            submitTime: '2023-03-01 15:30:01',
+                            updateTime: '2023-03-01 17:04:01',
+                            province: '上海'
+                        },
+                        {
+                            sname: '胡桃',
+                            sid: '0202001',
+                            sclass: '二班',
+                            sage: '16',
+                            submitBy: 'admin',
+                            updateBy: '',
+                            submitTime: '2023-03-02 09:30:01',
+                            updateTime: '',
+                            province: '上海'
+                        },
+                        {
+                            sname: '行秋',
+                            sid: '0202002',
+                            sclass: '二班',
+                            sage: '16',
+                            submitBy: 'admin',
+                            updateBy: '李四',
+                            submitTime: '2023-03-02 09:35:01',
+                            updateTime: '2023-03-02 13:23:01',
+                            province: '上海'
+                        },
+                        {
+                            sname: '夜阑',
+                            sid: '0202003',
+                            sclass: '二班',
+                            sage: '16',
+                            submitBy: 'admin',
+                            updateBy: '',
+                            submitTime: '2023-03-02 09:42:01',
+                            updateTime: '',
+                            province: '上海'
+                        },
+                        {
+                            sname: '钟离',
+                            sid: '0202004',
+                            sclass: '二班',
+                            sage: '16',
+                            submitBy: 'admin',
+                            updateBy: 'admin',
+                            submitTime: '2023-03-02 09:54:01',
+                            updateTime: '2023-03-02 09:56:01',
+                            province: '上海'
+                        },
                     ],
                 }
             },

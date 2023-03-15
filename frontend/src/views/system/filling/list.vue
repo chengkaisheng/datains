@@ -75,7 +75,7 @@
                     <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-folder-add" title="新增分类" @click="typeClick(scope.row)"></el-button>
                     <el-button v-if="scope.row.type === 1" type="text" icon="el-icon-circle-plus-outline" title="新增数据填报" @click="fillClick(scope.row)"></el-button>
                     <el-button v-if="scope.row.type === 2" type="text" icon="el-icon-setting" title="属性" @click="attributeClick(scope.row)"></el-button>
-                    <el-button v-if="scope.row.type === 2" type="text" icon="el-icon-s-grid" title="数据管理" @click="dataManage(scope.row)"></el-button>
+                    <el-button v-if="scope.row.type === 2" type="text" icon="el-icon-s-grid" title="数据管理" @click="dataManageClick(scope.row)"></el-button>
                     <el-popover
                       width="90"
                       trigger="click"
@@ -835,7 +835,9 @@
       </el-container>
     </div>
     <div v-if="panelType === 'manage'">
-
+      <el-container>
+        <data-manage @goback="manageBack" :targetData="targetObj"/>
+      </el-container>
     </div>
     <el-dialog
       :title="typeTitle"
@@ -923,11 +925,11 @@
 </template>
 
 <script>
-import LayoutContent from '@/components/business/LayoutContent'
 import { mapState } from 'vuex'
+import dataManage from './dataManage'
 
 export default {
-  components: {LayoutContent},
+  components: { dataManage },
   data() {
     return {
       panelType: 'list',
@@ -966,6 +968,8 @@ export default {
         {id: '004',name: '钟九九'},
         {id: '005',name: '吴无误'},
       ],
+
+      targetObj: {}, // 数据管理
 
       typeTitle: '',
       rules:{
@@ -1466,8 +1470,12 @@ export default {
       this.attrObj = {}
       this.visibleAttr = false
     },
-    dataManage(data){
-      console.log('数据管理',data)
+    dataManageClick(data){
+      this.panelType = 'manage'
+      this.targetObj = data
+    },
+    manageBack() {
+      this.panelType = 'list'
     },
     dateFormat(date) {
       let time = new Date(date)
