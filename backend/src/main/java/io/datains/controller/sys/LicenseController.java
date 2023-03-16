@@ -69,11 +69,14 @@ public class LicenseController {
                 return ResultHolder.success(null);
             case expired:
                 String expired = f2CLicenseResponse.getLicense().getExpired();
-                DataInsException.throwException("License has expired since " + expired + ", please update license.");
+//                DataInsException.throwException("License has expired since " + expired + ", please update license.");
+                DataInsException.throwException("许可证已于 " + expired + " 过期, 请及时更新！");
             case invalid:
                 DataInsException.throwException(f2CLicenseResponse.getMessage());
             default:
-                DataInsException.throwException("Invalid License.");
+//                DataInsException.throwException("Invalid License.");
+                DataInsException.throwException("无效的许可证");
+
         }
         return new ResultHolder();
     }

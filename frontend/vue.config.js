@@ -22,7 +22,6 @@ module.exports = {
       '^(?!/login)': {
         target: 'http://localhost:8081/',
         // target: 'http://ofmfa31n5roz.ngrok2.xiaomiqiu.cn/',
-
         // target: 'http://localhost:9528/',
         // target: 'http://ew5nffth3rvv.ngrok2.xiaomiqiu.cn/', 192.168.3.223
         // target: 'http://172.16.226.133/',
@@ -31,7 +30,7 @@ module.exports = {
         // target: 'http://192.168.3.223/',
         // target: 'http://183.194.65.250:9091/',
         // http://183.194.64.166:9091/
-         target: 'http://192.168.3.67/',
+        //  target: 'http://192.168.3.67/',
         // target: 'http://183.194.65.250:9091/',
         // target: 'http://183.194.64.166:9091/',  // 服务器
         // target: 'http://192.168.3.223/',
