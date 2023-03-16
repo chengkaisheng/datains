@@ -23,7 +23,7 @@
             style="margin-bottom: 10px;"
             :closable="false">
           </el-alert>
-          <el-row :style="{'margin-top': !dateDecide? '30px': '0px;'}">
+          <el-row>
             <el-col class="col_box">
               <el-col :span="10" class="box_title">{{ $t('about.auth_to') }}：</el-col>
               <el-col :span="14">{{ license.corporation }}</el-col>
