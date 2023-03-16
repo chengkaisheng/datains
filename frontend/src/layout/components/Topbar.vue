@@ -87,6 +87,7 @@ import {
 import {
   initTheme
 } from '@/utils/ThemeUtil'
+// import { delToken } from '@/api/user'
 export default {
   name: 'Topbar',
   components: {
@@ -290,6 +291,7 @@ export default {
     },
     async logout() {
       localStorage.clear()
+      // delToken().then((res) => {})
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },

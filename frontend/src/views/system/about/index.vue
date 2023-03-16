@@ -90,6 +90,7 @@ export default {
       build: null,
       licenseKey: '',
       fileList: [],
+      oldLic: {},
       headers: { Authorization: getToken() }
     }
   },
@@ -138,6 +139,7 @@ export default {
       this.validateHandler({}, res => {
         console.log('res.data',res.data)
         this.license = this.getLicense(res.data)
+        this.oldLic = this.getLicense(res.data)
       })
     },
     validateHandler(param, success) {
@@ -171,10 +173,20 @@ export default {
           this.$success(this.$t('about.update_success'))
           this.license = this.getLicense(response.data)
           // console.log('license数据',this.license)
+          if(this.oldLic.status === 'expired') {
+            setTimeout(() => {
+              this.logOut()
+            },100)
+          }
         } else {
           this.$warning(response.data.message)
         }
       })
+    },
+    async logOut() {
+      localStorage.clear()
+      await this.$store.dispatch('user/logout')
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
     support() {
       const url = 'http://mivicelab.com/'

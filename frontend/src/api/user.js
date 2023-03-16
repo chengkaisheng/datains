@@ -8,6 +8,13 @@ export function login(data) {
   })
 }
 
+// export function delToken(){
+//   return request({
+//     url: '/api/user/delRedisToken',
+//     method: 'get',
+//   })
+// }
+
 export function getInfo(token) {
   return request({
     url: '/api/auth/userInfo',
