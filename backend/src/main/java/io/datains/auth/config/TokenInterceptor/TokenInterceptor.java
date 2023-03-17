@@ -43,7 +43,7 @@ public class TokenInterceptor  implements HandlerInterceptor {
             return true;
         }
         Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
-        String s = redisService.get(UserKey.getById, userId.toString());
+        String s = redisService.get(UserKey.getById, "datains_"+userId.toString());
         if (StringUtils.isEmpty(s)){
             return false;
         }

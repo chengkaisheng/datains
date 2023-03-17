@@ -145,9 +145,9 @@ public class AuthServer implements AuthApi {
         result.put("token", token);
         ServletUtils.setToken(token);
         authUserService.clearCache(user.getUserId());
-        String s = redisService.get(UserKey.getById, user.getUserId().toString());
+        String s = redisService.get(UserKey.getById, "datains_"+user.getUserId().toString());
         if (StringUtils.isEmpty(s)){
-            boolean set = redisService.set(UserKey.getById, user.getUserId().toString(), token);
+            boolean set = redisService.set(UserKey.getById, "datains_"+user.getUserId().toString(), token);
             System.err.println(set);
         }
         return result;
@@ -209,7 +209,7 @@ public class AuthServer implements AuthApi {
             return "fail";
         }
        // CurrentUserDto user = AuthUtils.getUser();
-        boolean set = redisService.delete(UserKey.getById, userId.toString());
+        boolean set = redisService.delete(UserKey.getById, "datains_"+userId.toString());
 
         System.err.println("token注销"+set);
         return "success";
