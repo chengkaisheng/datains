@@ -106,7 +106,7 @@
             >
               <i class="el-icon-plus" />
             </el-upload>
-            <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogVisible">
+            <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :append-to-body="true" :visible.sync="dialogVisible">
               <img width="100%" :src="dialogImageUrl" alt="">
             </el-dialog>
           </el-col>
@@ -172,7 +172,7 @@
               >
                 <i class="el-icon-plus" />
               </el-upload>
-              <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogSelVisible">
+              <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :append-to-body="true" :visible.sync="dialogSelVisible">
                 <img width="100%" :src="dialogSelImageUrl" alt="">
               </el-dialog>
             </el-col>
@@ -231,7 +231,7 @@
                       >
                         <i class="el-icon-plus" />
                       </el-upload>
-                      <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogDownVisible">
+                      <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :append-to-body="true" :visible.sync="dialogDownVisible">
                         <img width="100%" :src="dialogDownImageUrl" alt="">
                       </el-dialog>
                     </el-col>

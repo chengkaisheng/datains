@@ -415,6 +415,9 @@
                 >
                   <i class="el-icon-plus" />
                 </el-upload>
+                <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :append-to-body="true" :visible.sync="dialogVisible">
+                  <img width="100%" :src="dialogImageUrl" alt="">
+                </el-dialog>
               </el-col>
               <el-col v-show="updataType" :span="7">
                 <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
