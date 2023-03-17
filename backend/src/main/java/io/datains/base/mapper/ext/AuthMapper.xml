@@ -45,6 +45,10 @@
         select user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from` from sys_user where username = #{username}
     </select>
 
+    <update id="updateEnabled" >
+      update sys_user set enabled = 0 where user_id = #{uid}
+    </update>
+
     <select id="findLdapUserByName" resultMap="baseMap">
         select user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from` from sys_user a where username = #{username} and a.from = 1
     </select>

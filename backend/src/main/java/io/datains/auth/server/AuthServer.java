@@ -9,7 +9,9 @@ import io.datains.auth.entity.SysUserEntity;
 import io.datains.auth.entity.TokenInfo;
 import io.datains.auth.service.AuthUserService;
 import io.datains.auth.util.JWTUtils;
+import io.datains.auth.util.RedisService;
 import io.datains.auth.util.RsaUtil;
+import io.datains.auth.util.UserKey;
 import io.datains.commons.utils.*;
 import io.datains.controller.sys.request.LdapAddRequest;
 import io.datains.exception.DataInsException;
@@ -36,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
@@ -49,6 +52,12 @@ public class AuthServer implements AuthApi {
 
     @Autowired
     private SysUserService sysUserService;
+
+    @Resource
+    private RedisService redisService;
+
+    int i = 0;
+    Integer userId = null;
 
     @Override
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
@@ -101,7 +110,8 @@ public class AuthServer implements AuthApi {
         }
 
         if (user.getEnabled() == 0) {
-            DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
+            DataInsException.throwException("账号已被锁定,请联系管理员");
+            //DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
         String realPwd = user.getPassword();
 
@@ -113,10 +123,21 @@ public class AuthServer implements AuthApi {
             pwd = CodingUtil.md5(pwd);
 
             if (!StringUtils.equals(pwd, realPwd)) {
+                if (i == 0){
+                    userId = user.getUserId().intValue();
+                }
+                if (user.getUserId().intValue()!=userId){
+                    userId = user.getUserId().intValue();
+                    i = 0;
+                }
+                i++;
+                if (i==5){
+                    authUserService.updateEnabled(user.getUserId().intValue());
+                }
                 DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
             }
         }
-
+         i = 0;
         Map<String, Object> result = new HashMap<>();
         TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
         String token = JWTUtils.sign(tokenInfo, realPwd);
@@ -124,6 +145,11 @@ public class AuthServer implements AuthApi {
         result.put("token", token);
         ServletUtils.setToken(token);
         authUserService.clearCache(user.getUserId());
+        String s = redisService.get(UserKey.getById, user.getUserId().toString());
+        if (StringUtils.isEmpty(s)){
+            boolean set = redisService.set(UserKey.getById, user.getUserId().toString(), token);
+            System.err.println(set);
+        }
         return result;
     }
 
@@ -162,7 +188,7 @@ public class AuthServer implements AuthApi {
     @Override
     public String logout() {
         String token = ServletUtils.getToken();
-
+        Long userId = null;
         if (isOpenOidc()) {
             HttpServletRequest request = ServletUtils.request();
             String idToken = request.getHeader("IdToken");
@@ -176,13 +202,16 @@ public class AuthServer implements AuthApi {
             return "success";
         }
         try {
-            Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
+             userId = JWTUtils.tokenInfoByToken(token).getUserId();
             authUserService.clearCache(userId);
         } catch (Exception e) {
             LogUtil.error(e);
             return "fail";
         }
+       // CurrentUserDto user = AuthUtils.getUser();
+        boolean set = redisService.delete(UserKey.getById, userId.toString());
 
+        System.err.println("token注销"+set);
         return "success";
     }
 
