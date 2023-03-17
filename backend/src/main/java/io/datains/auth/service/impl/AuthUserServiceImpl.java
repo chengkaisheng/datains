@@ -66,6 +66,11 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
+    public int updateEnabled(Integer uid) {
+        return authMapper.updateEnabled(uid);
+    }
+
+    @Override
     public SysUserEntity getUserBySub(String sub) {
         return authMapper.findUserBySub(sub);
     }
