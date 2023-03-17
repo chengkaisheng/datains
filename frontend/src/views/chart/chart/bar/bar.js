@@ -16,9 +16,11 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
     }
     // tooltip
     if (customAttr.tooltip) {
+      console.log('这个悬浮',customAttr.tooltip)
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
     chart_option.grid.left = customAttr.size.spaceleft
@@ -105,6 +107,7 @@ export function contrastBarOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
     chart_option.grid.left = customAttr.size.spaceleft
@@ -229,6 +232,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
     chart_option.grid.left = customAttr.size.spaceleft
@@ -510,6 +514,7 @@ export function rankingBarOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
     chart_option.grid.left = customAttr.size.spaceleft
@@ -633,6 +638,7 @@ export function polarStackBarOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
     chart_option.grid.left = customAttr.size.spaceleft
@@ -749,6 +755,7 @@ export function clockcatterOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
     chart_option.grid.left = customAttr.size.spaceleft
@@ -836,6 +843,7 @@ export function pyramidBarOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
     chart_option.grid.left = customAttr.size.spaceleft
@@ -985,6 +993,7 @@ export function triangleBarOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
     chart_option.grid.left = customAttr.size.spaceleft
@@ -1070,6 +1079,7 @@ export function annularBarOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
     chart_option.grid.left = customAttr.size.spaceleft
@@ -1293,6 +1303,7 @@ export function annularBarOptions(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
     chart_option.grid.left = customAttr.size.spaceleft
@@ -1534,8 +1545,8 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
     if (customAttr.tooltip) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
-
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
     // console.log('customAttr____________', chart_option, chart)
@@ -1636,6 +1647,7 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
     chart_option.grid.left = customAttr.size.spaceleft
@@ -1844,6 +1856,7 @@ export  function base3DColumnOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
   }

@@ -22,7 +22,7 @@ export function basePieOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
-
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
   }
@@ -88,7 +88,7 @@ export function prominentPieOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
-
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
   }
@@ -151,6 +151,7 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
   }
@@ -237,6 +238,7 @@ export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
   }
@@ -426,6 +428,7 @@ export function texturePieOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
   }
@@ -483,6 +486,7 @@ export function newHartOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
   }
