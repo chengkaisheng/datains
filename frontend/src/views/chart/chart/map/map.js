@@ -21,6 +21,7 @@ export function baseMapOption(chart_option, chart) {
         const c = params.value ? params.value : ''
         return text.replace(new RegExp('{a}', 'g'), a).replace(new RegExp('{b}', 'g'), b).replace(new RegExp('{c}', 'g'), c)
       }
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
   }

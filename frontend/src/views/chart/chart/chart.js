@@ -190,6 +190,7 @@ export const DEFAULT_TOOLTIP = {
   },
   formatter: '',
   antvFormatter: '',
+  widthNumber: 200,
 }
 export const DEFAULT_TOTAL = {
   row: {

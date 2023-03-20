@@ -20,6 +20,9 @@
           <el-form-item :label="$t('chart.text_color')" class="form-item">
             <el-color-picker v-model="tooltipForm.textStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeTooltipAttr" />
           </el-form-item>
+          <!-- <el-form-item :label="$t('chart.tooltip_width_number')" class="form-item" v-if="chart.render && chart.render !== 'highcharts'">
+            <el-slider v-model="tooltipForm.widthNumber" show-input :show-input-controls="false" input-size="mini" :min="80" :max="1000" @change="changeTooltipAttr" />
+          </el-form-item> -->
           <el-form-item class="form-item">
             <span slot="label">
               <span class="span-box">

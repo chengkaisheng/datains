@@ -14,7 +14,7 @@
       <el-row class="prog_box" :style="{width:progStyle.inside? '100%' : '97%'}">
         <el-col v-for="item in progressData" :key="item.value" style="margin-bottom: 10px;">
           <el-col :span="progStyle.position === 'top'? 24 : 6" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
-            <p style="text-align: center;" >{{item.name}}</p>
+            <p class="prog_title" >{{item.name}}</p>
           </el-col>
           <el-col :span="progStyle.position === 'top'? 24 : 18">
             <el-progress :text-inside="progStyle.inside" :color="item.color" 
@@ -293,5 +293,12 @@ export default {
 }
 .prog_box ::v-deep .el-progress-bar__innerText {
   color: inherit !important;
+}
+
+.prog_title {
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 </style>

@@ -18,8 +18,11 @@
         <div class="condition-content-container">
           <div class="first-element">
             <div
-              :class="element.component === 'de-select-grid' ? 'first-element-grid-contaner': ''"
               class="first-element-contaner"
+              :class="[
+                element.component === 'de-select-grid'?'first-element-grid-contaner': '',
+                element.component === 'de-select'? 'first-element-select-contaner' : '', 
+              ]"
             >
 
               <component
@@ -244,6 +247,7 @@ export default {
 
   .first-element-contaner {
     width: calc(100% - 10px);
+    height: 100%;
     background: initial;
     position: absolute;
     bottom: 0px; // 原值为5px
@@ -261,6 +265,10 @@ export default {
     // background: #fff;
     // border: 1px solid #d7dae2;
     top: 5px;
+  }
+
+  .first-element-select-contaner {
+    align-items: initial;
   }
 
   .condition-main-line {

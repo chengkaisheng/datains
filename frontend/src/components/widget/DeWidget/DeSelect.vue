@@ -96,7 +96,9 @@ export default {
         style.color = this.element.commonSelectFrame.fontColor
       }
       // style.borderRadius = '4px'
+      style.height = '100%'
       style.lineHeight = this.element.style.height + 'px'
+      console.log('select样式',style)
       return style
     },
     optionStyle() {
@@ -302,6 +304,14 @@ export default {
 }
 .deSelect ::v-deep .el-input__suffix-inner {
   color: inherit;
+}
+.deSelect ::v-deep .el-input--medium .el-input__icon {
+  line-height: inherit;
+}
+
+.deSelect ::v-deep .el-input--medium .el-input__inner {
+  height: inherit;
+  line-height: inherit;
 }
 
 </style>

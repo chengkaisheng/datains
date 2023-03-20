@@ -14,6 +14,7 @@ export function baseFunnelOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
   }
@@ -66,6 +67,7 @@ export function baseContrastFunnelOption(chart_option, chart, cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
 
