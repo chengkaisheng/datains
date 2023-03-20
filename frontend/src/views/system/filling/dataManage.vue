@@ -364,7 +364,7 @@ export default {
     },
     // 删除
     deleteClick(data) {
-
+      console.log('delete',data)
     }
   }
 }
