@@ -1347,21 +1347,21 @@ export default {
     deleteClick(data) {
       // console.log('删除，，',data)
       this.$confirm('是否删除此文件?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'error'
-        }).then(() => {
-          this.axios.post('/system/data/fill/table/delete',{id: data.id}).then(res => {
-            // console.log('ressssssss',res)
-            if(res.status === 200) {
-              this.tableData = res.data.list
-              this.$message({
-                type: 'success',
-                message: '删除成功!'
-              });
-            }
-          })
-        }).catch(() => {});
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      }).then(() => {
+        this.axios.post('/system/data/fill/table/delete',{id: data.id}).then(res => {
+          // console.log('ressssssss',res)
+          if(res.status === 200) {
+            this.tableData = res.data.list
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+          }
+        })
+      }).catch(() => {});
     },
     // 分类新增和修改
     onSuccess() {

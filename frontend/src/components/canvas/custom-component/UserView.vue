@@ -1391,7 +1391,7 @@ export default {
             return true
           })
           .catch((err) => {
-            console.log(err)
+            console.log('错误',err)
             this.requestStatus = 'error'
             if (err.message && err.message.indexOf('timeout') > -1) {
               this.message = this.$t('panel.timeout_refresh')
@@ -1404,6 +1404,7 @@ export default {
                 this.message = err
               }
             }
+            console.log('message',this.message)
             this.isFirstLoad = false
             return true
           })
