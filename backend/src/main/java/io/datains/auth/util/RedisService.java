@@ -39,6 +39,7 @@ public class RedisService {
 			//生成真正的key
 			String realKey  = prefix.getPrefix() + key;
 			String str = jedis.get(realKey);
+			jedis.expire(realKey,24*60*60);
 			return str;
 		}finally {
 			returnToPool(jedis);
