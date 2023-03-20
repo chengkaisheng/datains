@@ -39,7 +39,6 @@ public class RedisService {
 			//生成真正的key
 			String realKey  = prefix.getPrefix() + key;
 			String str = jedis.get(realKey);
-			jedis.expire(realKey,24*60*60);
 			return str;
 		}finally {
 			returnToPool(jedis);
@@ -64,7 +63,7 @@ public class RedisService {
 
 			//生成真正的key
 			 String realKey  = prefix.getPrefix() + key;
-			 int seconds =  prefix.expireSeconds();
+			 int seconds = 24*60*60;
 			 if(seconds <= 0) {
 
 					jedis.set(realKey, str);
@@ -74,6 +73,7 @@ public class RedisService {
 					 jedis.setex(realKey, seconds, str);
 
 			 }
+
 			 return true;
 		 }finally {
 			  returnToPool(jedis);
