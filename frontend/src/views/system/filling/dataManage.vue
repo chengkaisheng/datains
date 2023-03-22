@@ -73,10 +73,9 @@
           height="60vh"
           :data="personData"
         >
-          <el-table-column label="姓名" prop="sname" show-overflow-tooltip width="120"></el-table-column>
-          <el-table-column label="学号" prop="sid" show-overflow-tooltip width="120"></el-table-column>
-          <el-table-column label="班级" prop="sclass" show-overflow-tooltip width="120"></el-table-column>
-          <el-table-column label="年龄" prop="sage" show-overflow-tooltip width="120"></el-table-column>
+          <el-table-column v-for="(item,index) of tableProps" :key="index"
+           :label="item.name" :prop="item.value" show-overflow-tooltip width="120">
+          </el-table-column>
           <el-table-column label="提交人" prop="submitBy" show-overflow-tooltip width="120"></el-table-column>
           <el-table-column label="修改人" prop="updateBy" show-overflow-tooltip width="120"></el-table-column>
           <el-table-column label="提交时间" prop="submitTime" show-overflow-tooltip></el-table-column>
@@ -98,37 +97,83 @@
         :before-close="onCancel"
       >
         <div>
-          <el-row>
-            <el-col style="margin-bottom: 10px;">
-              <el-col :span="4">姓名：</el-col>
-              <el-col :span="20">
-                <el-input v-model="addForm.sname" size="small" placeholder="请输入"></el-input>
+          <el-row v-for="(item,index) of formEleData" :key="index">
+            <el-col style="margin-bottom: 10px;" v-if="item.addType === 'text'">
+              <el-col :span="4" v-if="item.showTitle">{{item.titleValue}}</el-col>
+              <el-col :span="item.showTitle? 20 : 24">
+                <el-input v-model="addForm[item.tableFieldName]" 
+                  size="small" :placeholder="item.placeholder" :readonly="item.status ==='onlyread'">
+                </el-input>
               </el-col>
             </el-col>
-            <el-col style="margin-bottom: 10px;">
-              <el-col :span="4">年龄：</el-col>
-              <el-col :span="20">
-                <el-input-number v-model="addForm.sage" size="small" placeholder="请输入"></el-input-number>
+            <el-col style="margin-bottom: 10px;" v-if="item.addType === 'area'">
+              <el-col :span="4" v-if="item.showTitle">{{item.titleValue}}</el-col>
+              <el-col :span="item.showTitle? 20 : 24">
+                <el-input type="textarea" v-model="addForm[item.tableFieldName]"
+                  :placeholder="item.placeholder"
+                  :autosize="{ minRows: 2, maxRows: 4}">
+                </el-input>
               </el-col>
             </el-col>
-            <el-col style="margin-bottom: 10px;">
-              <el-col :span="4">学号</el-col>
-              <el-col :span="20">
-                <el-input v-model="addForm.sid" size="small" placeholder="请输入"></el-input>
+            <el-col style="margin-bottom: 10px;" v-if="item.addType === 'select'">
+              <el-col :span="4" v-if="item.showTitle">{{item.titleValue}}</el-col>
+              <el-col :span="item.showTitle? 20 : 24">
+                <el-select v-model="addForm[item.tableFieldName]" style="width: 100%;" clearable :placeholder="item.placeholder">
+                  <el-option v-for="(obj,ind) of item.optionData" :key="ind" 
+                    :label="obj.optionValue" :value="obj.relationId">
+                  </el-option>
+                </el-select>
               </el-col>
             </el-col>
-            <el-col style="margin-bottom: 10px;">
-              <el-col :span="4">班级</el-col>
-              <el-col :span="20">
-                <el-input v-model="addForm.sclass" size="small" placeholder="请输入"></el-input>
+            <el-col style="margin-bottom: 10px;" v-if="item.addType === 'label'">
+              <el-col :span="4" v-if="item.showTitle">{{item.titleValue}}</el-col>
+              <el-col :span="item.showTitle? 20 : 24">
+                <el-select v-model="addForm[item.tableFieldName]" style="width: 100%;" clearable :placeholder="item.placeholder">
+                  <el-option v-for="(obj,ind) of item.labelData" :key="ind" 
+                    :label="obj.labelValue" :value="obj.labelValue">
+                  </el-option>
+                </el-select>
               </el-col>
             </el-col>
-            <el-col>
-              <el-col :span="4">所在省份：</el-col>
-              <el-col :span="20">
-                <el-radio-group v-model="addForm.province">
-                  <el-radio v-for="item of provinceList" :key="item" :label="item"></el-radio>
+            <el-col style="margin-bottom: 10px;" v-if="item.addType === 'number'">
+              <el-col :span="4" v-if="item.showTitle">{{item.titleValue}}</el-col>
+              <el-col :span="item.showTitle? 20 : 24">
+                <el-input-number v-model="addForm[item.tableFieldName]" :placeholder="item.placeholder"
+                  :min="item.minValue" :max="item.maxValue" :step="item.stepValue"
+                ></el-input-number>
+              </el-col>
+            </el-col>
+            <el-col style="margin-bottom: 10px;" v-if="item.addType === 'time'">
+              <el-col :span="4" v-if="item.showTitle">{{item.titleValue}}</el-col>
+              <el-col :span="item.showTitle? 20 : 24">
+                <el-date-picker
+                  :type="item.formatType"
+                  v-model="addForm[item.tableFieldName]"
+                  :placeholder="item.placeholder"
+                  :value-format="item.formatValue"
+                ></el-date-picker>
+              </el-col>
+            </el-col>
+            <el-col style="margin-bottom: 10px;" v-if="item.addType === 'radio'">
+              <el-col :span="4" v-if="item.showTitle">{{item.titleValue}}</el-col>
+              <el-col :span="item.showTitle? 20 : 24">
+                <el-radio-group v-model="addForm[item.tableFieldName]">
+                  <el-radio v-for="(val,ind) of item.radioData" :key="ind" :label="val"></el-radio>
                 </el-radio-group>
+              </el-col>
+            </el-col>
+            <el-col style="margin-bottom: 10px;" v-if="item.addType === 'checkbox'">
+              <el-col :span="4" v-if="item.showTitle">{{item.titleValue}}</el-col>
+              <el-col :span="item.showTitle? 20 : 24">
+                <el-checkbox-group v-model="addForm[item.tableFieldName]">
+                  <el-checkbox v-for="(val,ind) of item.checkBoxData" :key="ind" :label="val"></el-checkbox>
+                </el-checkbox-group>
+              </el-col>
+            </el-col>
+            <el-col style="margin-bottom: 10px;" v-if="item.addType === 'cascader'">
+              <el-col :span="4" v-if="item.showTitle">{{item.titleValue}}</el-col>
+              <el-col :span="item.showTitle? 20 : 24">
+                <el-cascader :options="cascaderData" v-model="addForm[item.tableFieldName]" :placeholder="item.placeholder"></el-cascader>
               </el-col>
             </el-col>
           </el-row>
@@ -160,7 +205,7 @@
             <el-col>
               <el-col :span="8" class="ask_box" style="text-align: right;padding-right: 10px;">下载Excel模板：</el-col>
               <el-col :span="16">
-                <el-button type="text" size="mini" @click="downloadModel">模板.xls<i class="el-icon-download"></i></el-button>
+                <el-button type="text" size="mini" @click="downloadModel">模板.xlsx<i class="el-icon-download"></i></el-button>
               </el-col>
             </el-col>
           </el-row>
@@ -224,6 +269,8 @@
 </template>
 <script>
 import { export_json_to_excel } from '@/plugins/Export2Excel'
+import xlsx from 'xlsx'
+
 export default {
   name: 'dataManage',
   props: {
@@ -239,19 +286,17 @@ export default {
         submitTime: [],
         updateTime: [],
       },
+      tableProps: [], // 表格pro
+      formEleData: [], // 表单的格式
       personData: [],
+
       submitList: [],
       updateList: [],
 
       visibleAdd: false,
       status: '',
-      addForm: {
-        sname: '',
-        sage: null,
-        sid: '',
-        sclass: '',
-        province: '',
-      },
+      addForm: {},
+      oldForm: {},
       provinceList: [
         "北京",
         "上海",
@@ -308,13 +353,41 @@ export default {
   },
   created() {
     console.log('数据===>',this.targetData)
-    this.personData = JSON.parse(JSON.stringify(this.targetData.dataManage.personData))
+    this.initData()
   },
   mounted() {
-    this.init()
+    this.personData = JSON.parse(JSON.stringify(this.targetData.dataManage.personData))
+    this.initSearch()
   },
   methods: {
-    init() {
+    initData() {
+      let form = JSON.parse(JSON.stringify(this.targetData.checkObjs))
+      for(let i=0;i<form.length;i++) {
+        if(form[i].tableFieldName !== '') {
+          if(form[i].defaultValue && form[i].defaultValue !== '') {
+            this.oldForm[form[i].tableFieldName] = form[i].defaultValue
+          } else {
+            this.oldForm[form[i].tableFieldName] = ''
+          }
+        }
+      }
+      this.formEleData = form
+      console.log('新增表单',this.oldForm,this.formEleData)
+
+
+      let list = JSON.parse(JSON.stringify(this.targetData.checkObjs))
+      let arr2 = []
+      for(let i=0;i<list.length;i++) {
+        let obj = {
+          name: list[i].titleValue,
+          value: list[i].tableFieldName
+        }
+        arr2.push(obj)
+      }
+      this.tableProps = arr2
+      console.log('表格props：',this.tableProps)
+    },
+    initSearch() {
       let arr1 = []
       let arr2 = []
       this.personData.forEach(item => {
@@ -383,47 +456,42 @@ export default {
     addPeson() {
       this.visibleAdd = true
       this.status = '新增'
+      this.addForm = JSON.parse(JSON.stringify(this.oldForm))
     },
     onSuccess(){
       console.log('提交',this.addForm)
       if(this.status === '新增') {
         let obj = {
-          sname: this.addForm.sname,
-          sid: this.addForm.sid,
-          sage: this.addForm.sage,
-          sclass: this.addForm.sclass,
+          ...this.addForm,
           submitBy: this.$store.getters.name,
           submitTime: this.dateFormat(new Date()),
           updateBy: '',
           updateTime: '',
-          province: this.addForm.province
         }
         this.targetData.updateBy = this.$store.getters.name
         this.targetData.updateTime = this.dateFormat(new Date())
         this.targetData.dataManage.personData.push(obj)
+        console.log('新增obj',obj)
         this.axios.post('/system/data/fill/table/update',this.targetData).then(res => {
           this.personData = JSON.parse(JSON.stringify(this.targetData.dataManage.personData))
           this.onCancel()
         })
       } else if (this.status === '编辑') {
         let obj = {
-          sname: this.addForm.sname,
-          sid: this.addForm.sid,
-          sage: this.addForm.sage,
-          sclass: this.addForm.sclass,
-          submitBy: this.addForm.submitBy,
-          submitTime: this.addForm.submitTime,
+          ...this.addForm,
+          // submitBy: this.addForm.submitBy,
+          // submitTime: this.addForm.submitTime,
           updateBy: this.$store.getters.name,
           updateTime: this.dateFormat(new Date()),
           province: this.addForm.province
         }
+        console.log('修改obj',obj)
         let data = JSON.parse(JSON.stringify(this.targetData.dataManage.personData))
         for(let i=0;i<data.length;i++) {
           if(data[i].sid === obj.sid) {
             data[i] = obj
           }
         }
-        console.log('修改后',data)
         this.targetData.dataManage.personData = JSON.parse(JSON.stringify(data))
         this.targetData.updateBy = this.$store.getters.name
         this.targetData.updateTime = this.dateFormat(new Date())
@@ -446,13 +514,7 @@ export default {
     },
     onCancel() {
       this.visibleAdd = false
-      this.addForm = {
-        sname: '',
-        sage: null,
-        sid: '',
-        sclass: '',
-        province: '',
-      }
+      this.addForm = JSON.parse(JSON.stringify(this.oldForm))
     },
     // 导入点击
     importClick() {
@@ -484,14 +546,94 @@ export default {
     },
     // 下载模板 
     downloadModel() {
-      const excelHeader = ['姓名','学号','班级','年龄','提交人','修改人','提交时间','修改时间','省份']
-      const excelHeaderKeys = ['sname','sid','sclass','sage','submitBy','updateBy','submitTime','updateTime','province']
+      let arr1 = JSON.parse(JSON.stringify(this.tableProps)).map(item => item.name)
+      let arr2 = JSON.parse(JSON.stringify(this.tableProps)).map(item => item.value)
+      const excelHeader = [...arr1,'提交人','修改人','提交时间','修改时间']
+      const excelHeaderKeys = [...arr2,'submitBy','updateBy','submitTime','updateTime']
       const excelData = []
       const excelName = '模板'
       export_json_to_excel(excelHeader, excelData, excelName)
     },
-    onImpSuccess() {
+    async onImpSuccess() {
+      console.log(this.fileList)
+      if(!this.fileList.length) {
+        this.$message.info('请上传文件')
+        return
+      }
+      // 读取文件不是立马能够读取到的，所以是异步的，使用Promise
+      let dataBinary = await new Promise((resolve) => {
+        // Web API构造函数FileReader，可实例化对象，去调用其身上方法，去读取解析文件信息
+        let reader = new FileReader();
+        reader.readAsBinaryString(this.fileList[0].raw); //读取raw的file文件
+        reader.onload = (ev) => {
+          resolve(ev.target.result); // 将解析好的结果扔出去，用于使用
+        }
+      });
+      // console.log("读取出的流文件", dataBinary);
 
+      // 使用 xlsx插件解析读取好的二进制excel流文件
+      let workBook = xlsx.read(dataBinary, {type: 'binary', cellDates: true});
+      // excel 有很多的sheet，这里取第一个sheet 
+      let firstWorkSheet = workBook.Sheets[workBook.SheetNames[0]];
+      // 分为 第一行的数据， 和第一行以下的数据
+      const header = this.getHeaderRow(firstWorkSheet)
+      console.log("读取的excel表头数据（第一行）", header);
+      const data = xlsx.utils.sheet_to_json(firstWorkSheet);
+      console.log("读取所有excel数据", data);
+
+      let arr = []
+      for(let i=0;i<data.length;i++) {
+        let a = data[i]
+        let obj = {}
+        for(let k in a) {
+          this.tableProps.map(item => {
+            if(item.name === k) {
+              obj[item.value] = a[k]
+            }
+          })
+
+          if(k === '提交人') {
+            obj.submitBy = a[k]
+          }
+          if(k === '修改人') {
+            obj.updateBy = a[k]
+          }
+          if(k === '提交时间') {
+            obj.submitTime = a[k]
+          }
+          if(k === '修改时间') {
+            obj.updateTime = a[k]
+          }
+        }
+        arr.push(obj)
+      }
+      console.log('处理后数据',arr)
+      this.targetData.updateBy = this.$store.getters.name
+      this.targetData.updateTime = this.dateFormat(new Date())
+      this.targetData.dataManage.personData.push(...arr)
+      this.axios.post('/system/data/fill/table/update',this.targetData).then(res => {
+        this.personData = JSON.parse(JSON.stringify(this.targetData.dataManage.personData))
+        this.visibleImp = false
+        this.isShowList = false
+        this.fileList = []
+      })
+    },
+    getHeaderRow(sheet) {
+      const headers = []; 
+      const range = xlsx.utils.decode_range(sheet["!ref"]); //读取sheet的单元格
+      let C;
+      const R = range.s.r;
+      // 从第一行开始
+      for(C = range.s.c; C <=range.e.c; ++C) {
+        // 行走范围内的每一列
+        const cell = sheet[xlsx.utils.encode_cell({c: C, r: R})];
+        // 查找第一行中的单元格
+        let hdr = 'UNKNOWN' + C;  // 替换为所需的默认值
+        if(cell && cell.t) hdr = xlsx.utils.format_cell(cell);
+        headers.push(hdr)
+      }
+
+      return headers
     },
     onImpCancel() {
       this.visibleImp = false
@@ -506,9 +648,10 @@ export default {
       this.$refs[formName].validate((valid) => {
         if(valid) {
           console.log('expform',this.expForm)
-
-          const excelHeader = ['姓名','学号','班级','年龄','提交人','修改人','提交时间','修改时间','省份']
-          const excelHeaderKeys = ['sname','sid','sclass','sage','submitBy','updateBy','submitTime','updateTime','province']
+          let arr1 = JSON.parse(JSON.stringify(this.tableProps)).map(item => item.name)
+          let arr2 = JSON.parse(JSON.stringify(this.tableProps)).map(item => item.value)
+          const excelHeader = [...arr1,'提交人','修改人','提交时间','修改时间']
+          const excelHeaderKeys = [...arr2,'submitBy','updateBy','submitTime','updateTime']
           const excelData = JSON.parse(JSON.stringify(this.personData)).map(item => excelHeaderKeys.map(i => item[i]))
           const excelName = this.expForm.expName
           export_json_to_excel(excelHeader, excelData, excelName)

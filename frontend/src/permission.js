@@ -186,6 +186,31 @@ export const loadMenus = (next, to) => {
       redirect: '/filling/list'
     }
     asyncRouter.splice(5,0,fillingRouter)
+    const assistRouter = {
+      children: [{
+        component: () => import('@/views/system/assist/index.vue'),
+        isPlugin: false,
+        name: 'assist-index',
+        noLayout: null,
+        path: 'index',
+        type: 1,
+        permission: null
+      }],
+      component: () => import('@/layout/index.vue'),
+      hidden: false,
+      isPlugin: false,
+      meta: {
+        icon: 'assist',
+        title: '自助取数'
+      },
+      name: 'assist',
+      noLayout: null,
+      pid: 0,
+      path: '/assist',
+      permission: null,
+      redirect: '/assist/index'
+    }
+    asyncRouter.splice(6,0,assistRouter)
 
     console.log('asyncRouter', asyncRouter)
     // Add Router end
