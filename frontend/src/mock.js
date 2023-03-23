@@ -1,4 +1,6 @@
 const Mock = require('mockjs')
+
+// 数据填报
 var treeData = [
     {
         id: 1,
@@ -69,6 +71,7 @@ var treeData = [
                         minValue: 10,
                         maxValue: 20,
                         stepValue: 1,
+                        defaultValue: 10,
                     },
                 ],
                 ownerList: ['001','002','003'], // 所有者
@@ -389,6 +392,92 @@ Mock.mock('/system/data/fill/table/move','post',(options) => {
 })
 
 
+// 自助取数
+var assistData = [
+    {
+        id: 1,
+        name: '测试1',
+        createdBy: '张三',
+        updateBy: '张三',
+        updateTime: '2023-02-28 14:18:34',
+        type: 1,
+        children: [
+            {
+                id: 2,
+                pid: 1,
+                name: '测试自助11',
+                createdBy: '张三',
+                updateBy: '张三',
+                updateTime: '2023-02-28 14:20:01',
+                type: 2,
+                ownerList: ['001','002','003'], // 所有者
+                describe: '张三测试一一一',
+            }
+        ],
+    },
+    {
+        id: 3,
+        name: '测试2',
+        createdBy: '李四',
+        updateBy: '李四',
+        updateTime: '2023-03-01 14:22:34',
+        type: 1,
+        children: [],
+    },
+    {
+        id: 4,
+        name: '测试3',
+        createdBy: '王五',
+        updateBy: '王五',
+        updateTime: '2023-03-02 14:13:34',
+        type: 1,
+        children: [],
+    },
+]
+
+// 查询所有
+Mock.mock('/system/data/assist/table/list','get',{list:assistData})
+// 查询所有的分类
+Mock.mock('/system/data/assist/add/search','post',(options) => {
+    let obj = JSON.parse(options.body)
+    let datas = JSON.parse(JSON.stringify(assistData))
+    let arr = filterTypeData(datas,obj)
+    return {list: arr}
+})
+// 新增
+Mock.mock('/system/data/assist/table/add','post',(options) => {
+    // console.log('options,,,',JSON.parse(options.body))
+    let obj = JSON.parse(options.body)
+    if(obj.pid) {
+        assistData = addData(JSON.parse(JSON.stringify(assistData)),obj)
+    } else {
+        assistData.push(obj)
+    }
+    return {list: assistData}
+})
+// 修改
+Mock.mock('/system/data/assist/table/update','post',(options) => {
+    let obj = JSON.parse(options.body)
+    // console.log('修改obj',obj)
+    assistData = updateData(JSON.parse(JSON.stringify(assistData)),obj)
+    return {list:assistData}
+})
+// 移动
+Mock.mock('/system/data/assist/table/move','post',(options) => {
+    let obj = JSON.parse(options.body)
+    // console.log('移动数据：',obj)
+    let arr = deleteData(JSON.parse(JSON.stringify(assistData)),obj)
+    // console.log('删除后',arr)
+    assistData = addData(JSON.parse(JSON.stringify(arr)),obj)
+    // console.log('新增后',treeData)
+    return {list: assistData}
+})
+// 删除
+Mock.mock('/system/data/assist/table/delete','post',(options) => {
+    let obj = JSON.parse(options.body)
+    assistData = deleteData(JSON.parse(JSON.stringify(assistData)),obj)
+    return {list: assistData}
+})
 
 // const Random = Mock.Random
 // const produceList = function(){

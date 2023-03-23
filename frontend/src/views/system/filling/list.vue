@@ -47,7 +47,7 @@
                 </el-table-column>
                 <el-table-column
                   prop="createdBy"
-                  label="创建者"
+                  label="创建人"
                   width="120"
                   show-overflow-tooltip>
                 </el-table-column>
@@ -166,112 +166,128 @@
             </el-col>
             <el-col :span="8" class="bor_box" style="padding: 10px 20px;">
               <div v-for="(item,index) of checkObjs" :key="index" style="position: relative;margin-bottom; 10px;">
-                <i class="el-icon-edit-outline close_obj_edit" @click="editElement(item,index)"></i>
+                <i class="el-icon-edit-outline close_obj_edit" :style="{color: editNum === index?'#409eff':'#000000'}" @click="editElement(item,index)"></i>
                 <i class="el-icon-close close_obj_del" @click="delElement(index)"></i>
                 <div v-if="item.addType === 'text'">
-                  <!-- <p v-if="item.showTitle">{{item.titleValue}}</p>
-                  <div>
-                    <el-input v-model="item.defaultValue" 
-                      :placeholder="item.placeholder" 
-                      :readonly="item.status === 'onlyread'">
-                    </el-input>
-                  </div> -->
-                  <p>文本框</p>
-                  <div>
-                    <el-input v-model="inputValue" placeholder="请输入" readonly></el-input>
-                  </div>
+                  <el-row class="col_bottom">
+                    <el-col :span="6" v-if="item.showTitle">{{item.titleValue?item.titleValue : '文本框'}}</el-col>
+                    <el-col>
+                      <el-input v-model="item.defaultValue" 
+                        :placeholder="item.placeholder" 
+                        :readonly="item.status === 'onlyread'">
+                      </el-input>
+                    </el-col>
+                  </el-row>
                 </div>
                 <div v-if="item.addType === 'area'">
-                  <p>文本域</p>
-                  <div>
-                    <el-input type="textarea" v-model="inputValue" readonly :rows="2" placeholder="请输入内容"></el-input>
-                  </div>
+                  <el-row class="col_bottom">
+                    <el-col :span="6" v-if="item.showTitle">{{item.titleValue?item.titleValue : '文本域'}}</el-col>
+                    <el-col>
+                      <el-input type="textarea" v-model="item.defaultValue" 
+                        :placeholder="item.placeholder" 
+                        :rows="2"
+                        :readonly="item.status === 'onlyread'">
+                      </el-input>
+                    </el-col>
+                  </el-row>
                 </div>
                 <div v-if="item.addType === 'select'">
-                  <p>下拉框</p>
-                  <div>
-                    <el-select v-model="inputValue" placeholder="请选择" disabled>
-                      <el-option value="1">数值一</el-option>
-                      <el-option value="2">数值一</el-option>
-                      <el-option value="3">数值一</el-option>
-                    </el-select>
-                  </div>
+                  <el-row class="col_bottom">
+                    <el-col :span="6" v-if="item.showTitle">{{item.titleValue?item.titleValue : '下拉框'}}</el-col>
+                    <el-col>
+                      <el-select v-model="item.defaultValue" style="width: 100%;" clearable :placeholder="item.placeholder">
+                        <el-option v-for="(obj,ind) of item.optionData" :key="ind"
+                          :label="obj.optionValue" :value="obj.relationId"></el-option>
+                      </el-select>
+                    </el-col>
+                  </el-row>
                 </div>
                 <div v-if="item.addType === 'label'">
-                  <p>标签</p>
-                  <div>
-                    <el-select v-model="inputValue" multiple placeholder="请选择" disabled>
-                      <el-option value="1">标签1</el-option>
-                      <el-option value="2">标签2</el-option>
-                      <el-option value="3">标签3</el-option>
-                    </el-select>
-                  </div>
+                  <el-row class="col_bottom">
+                    <el-col :span="6" v-if="item.showTitle">{{item.titleValue?item.titleValue : '标签'}}</el-col>
+                    <el-col>
+                      <el-select v-model="item.defaultValue" style="width: 100%;" clearable :placeholder="item.placeholder">
+                        <el-option v-for="(obj,ind) of item.labelData" :key="ind"
+                          :label="obj.labelValue" :value="obj.labelValue"></el-option>
+                      </el-select>
+                    </el-col>
+                  </el-row>
                 </div>
                 <div v-if="item.addType === 'number'">
-                  <p>数字输入框</p>
-                  <div>
-                    <el-input-number v-model="inputValue" :min="1" :max="10" disabled></el-input-number>
-                  </div>
+                  <el-row class="col_bottom">
+                    <el-col :span="6" v-if="item.showTitle">{{item.titleValue?item.titleValue : '数字输入框'}}</el-col>
+                    <el-col>
+                      <el-input-number v-model="item.defaultValue" :placeholder="item.placeholder"
+                        :min="item.minValue" :max="item.maxValue" :step="item.stepValue"
+                      ></el-input-number>
+                    </el-col>
+                  </el-row>
                 </div>
                 <div v-if="item.addType === 'time'">
-                  <p>日期</p>
-                  <div>
-                    <el-date-picker
-                      type="date"
-                      v-model="inputValue"
-                      readonly
-                      placeholder="选择日期">
-                    </el-date-picker>
-                  </div>
+                  <el-row class="col_bottom">
+                    <el-col :span="6" v-if="item.showTitle">{{item.titleValue?item.titleValue : '日期'}}</el-col>
+                    <el-col>
+                      <el-date-picker :type="item.formatType" v-model="item.defaultValue"
+                        :placeholder="item.placeholder" :value-format="item.formatValue"
+                      ></el-date-picker>
+                    </el-col>
+                  </el-row>
                 </div>
                 <div v-if="item.addType === 'radio'">
-                  <p>单选</p>
-                  <div>
-                    <el-radio-group v-model="inputValue" disabled>
-                      <el-radio>备选项</el-radio>
-                      <el-radio>备选项</el-radio>
-                      <el-radio>备选项</el-radio>
-                    </el-radio-group>
-                  </div>
+                  <el-row class="col_bottom">
+                    <el-col :span="6" v-if="item.showTitle">{{item.titleValue?item.titleValue : '单选'}}</el-col>
+                    <el-col>
+                      <el-radio-group v-model="item.defaultValue">
+                        <el-radio v-for="(val,ind) of item.radioData" :key="ind" :label="val"></el-radio>
+                      </el-radio-group>
+                    </el-col>
+                  </el-row>
                 </div>
                 <div v-if="item.addType === 'checkbox'">
-                  <p>多选</p>
-                  <div>
-                    <el-checkbox-group v-model="inputValue" disabled> 
-                      <el-checkbox>选项1</el-checkbox>
-                      <el-checkbox>选项2</el-checkbox>
-                      <el-checkbox>选项3</el-checkbox>
-                    </el-checkbox-group>
-                  </div>
+                  <el-row class="col_bottom">
+                    <el-col :span="6" v-if="item.showTitle">{{item.titleValue?item.titleValue : '多选'}}</el-col>
+                    <el-col>
+                      <el-checkbox-group v-model="item.defaultValue">
+                        <el-checkbox v-for="(val,ind) of item.checkBoxData" :key="ind" :label="val"></el-checkbox>
+                      </el-checkbox-group>
+                    </el-col>
+                  </el-row>
                 </div>
                 <div v-if="item.addType === 'cascader'">
-                  <p>级联选择器</p>
-                  <div>
-                    <el-cascader :options="options" v-model="inputValue" disabled></el-cascader>
-                  </div>
+                  <el-row class="col_bottom">
+                    <el-col :span="6" v-if="item.showTitle">{{item.titleValue?item.titleValue : '级联选择器'}}</el-col>
+                    <el-col>
+                      <el-cascader :options="item.cascaderData" v-model="item.defaultValue" 
+                        :placeholder="item.placeholder" clearable>
+                      </el-cascader>
+                    </el-col>
+                  </el-row>
                 </div>
               </div>
             </el-col>
             <el-col :span="10" class="bor_box">
               <div>
-                <el-collapse v-model="panelValue" v-if="checkObjs.length">
-                  <el-collapse-item title="基本配置" v-for="(item,index) of checkObjs" :key="index" :name="'name'+index">
-                    <div v-if="item.addType === 'text'" style="padding: 10px 20px;">
+                <el-collapse v-model="panelValue" v-if="editNum !== null && checkObjs[editNum].addType">
+                  <el-collapse-item name="name">
+                    <template slot="title">
+                      <i class="header-icon el-icon-info"></i>基本配置
+                    </template>
+                    <div v-if="checkObjs[editNum].addType === 'text'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
-                          <el-checkbox v-model="item.showTitle">显示标题</el-checkbox>
+                          <el-checkbox v-model="checkObjs[editNum].showTitle">显示标题</el-checkbox>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">标题</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.titleValue" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].titleValue" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">表文字字段名称</el-col>
                           <el-col :span="18">
                             <el-col>
-                              <el-input v-model="item.tableFieldName" placeholder="请输入"></el-input>
+                              <el-input v-model="checkObjs[editNum].tableFieldName" placeholder="请输入"></el-input>
                             </el-col>
                             <el-col>
                               <span>表字段名称必须以字母开头，支持字母、数字、下划线，最大长度为40个字符</span>
@@ -281,19 +297,19 @@
                         <el-col class="col_bottom">
                           <el-col :span="6">提示文字</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.placeholder" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].placeholder" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">描述信息</el-col>
                           <el-col :span="18">
-                            <el-input type="textarea" v-model="item.desc" placeholder="多行输入"></el-input>
+                            <el-input type="textarea" v-model="checkObjs[editNum].desc" placeholder="多行输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">默认状态</el-col>
                           <el-col :span="18">
-                            <el-radio-group v-model="item.status">
+                            <el-radio-group v-model="checkObjs[editNum].status">
                               <el-radio label="ordinary">普通</el-radio>
                               <el-radio label="onlyread">只读</el-radio>
                               <!-- <el-radio label="hiden">隐藏</el-radio> -->
@@ -303,30 +319,30 @@
                         <el-col class="col_bottom">
                           <el-col :span="6">默认值</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.defaultValue" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].defaultValue" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
-                          <el-checkbox v-model="item.isLoginName">使用登录用户名</el-checkbox>
+                          <el-checkbox v-model="checkObjs[editNum].isLoginName">使用登录用户名</el-checkbox>
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="item.addType === 'area'" style="padding: 10px 20px;">
+                    <div v-if="checkObjs[editNum].addType === 'area'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
-                          <el-checkbox v-model="item.showTitle">显示标题</el-checkbox>
+                          <el-checkbox v-model="checkObjs[editNum].showTitle">显示标题</el-checkbox>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">标题</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.titleValue" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].titleValue" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">表文字字段名称</el-col>
                           <el-col :span="18">
                             <el-col>
-                              <el-input v-model="item.tableFieldName" placeholder="请输入"></el-input>
+                              <el-input v-model="checkObjs[editNum].tableFieldName" placeholder="请输入"></el-input>
                             </el-col>
                             <el-col>
                               <span>表字段名称必须以字母开头，支持字母、数字、下划线，最大长度为40个字符</span>
@@ -336,14 +352,20 @@
                         <el-col class="col_bottom">
                           <el-col :span="6">提示文字</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.placeholder" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].placeholder" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
+                          <el-col :span="6">默认值</el-col>
+                          <el-col :span="18">
+                            <el-input type="textarea" v-model="checkObjs[editNum].defaultValue" rows="2" placeholder="请输入"></el-input>
+                          </el-col>
+                        </el-col>
+                        <!-- <el-col class="col_bottom">
                           <el-collapse v-model="areaValue">
                             <el-collapse-item title="校验" name="check">
                               <el-col style="margin-left: 20px;">
-                                <el-checkbox-group v-model="item.checkList">
+                                <el-checkbox-group v-model="checkObjs[editNum].checkList">
                                   <el-checkbox label="must">必须</el-checkbox>
                                   <el-checkbox label="min">最小长度</el-checkbox>
                                   <el-checkbox label="max">最大长度</el-checkbox>
@@ -356,7 +378,7 @@
                                   最大宽度
                                 </el-col>
                                 <el-col :span="18">
-                                  <el-radio-group v-model="item.styleValue" style="width: 100%">
+                                  <el-radio-group v-model="checkObjs[editNum].styleValue" style="width: 100%">
                                     <el-col :span="12">
                                       <el-radio label="440">440px</el-radio>
                                     </el-col>
@@ -368,24 +390,24 @@
                               </el-col>
                             </el-collapse-item>
                           </el-collapse>
-                        </el-col>
+                        </el-col> -->
                       </el-row>
                     </div>
-                    <div v-if="item.addType === 'select'" style="padding: 10px 20px;">
+                    <div v-if="checkObjs[editNum].addType === 'select'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
-                          <el-checkbox v-model="item.showTitle">显示标题</el-checkbox>
+                          <el-checkbox v-model="checkObjs[editNum].showTitle">显示标题</el-checkbox>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">标题</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.titleValue" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].titleValue" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">数据字段名</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.tableFieldName" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].tableFieldName" placeholder="请输入"></el-input>
                           </el-col>
                           <el-col :span="18" :offset="6" style="font-size: 10px;">
                             表字段名称必须以字母开头，支持字母、数字、下划线，最大长度为40个字符
@@ -394,28 +416,28 @@
                         <el-col class="col_bottom">
                           <el-col :span="6">提示文字</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.placeholder" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].placeholder" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">来源于</el-col>
                           <el-col :span="18">
-                            <el-select v-model="item.sourceBy">
+                            <el-select v-model="checkObjs[editNum].sourceBy">
                               <el-option value="sourceCustom" label="自定义数据"></el-option>
                               <el-option value="sourceData" label="数据源"></el-option>
                             </el-select>
                           </el-col>
                         </el-col>
-                        <el-col v-if="item.sourceBy === 'sourceCustom'">
+                        <el-col v-if="checkObjs[editNum].sourceBy === 'sourceCustom'">
                           <el-col class="col_bottom">
-                            <el-checkbox v-model="item.customId">自定义数据ID值</el-checkbox>
+                            <el-checkbox v-model="checkObjs[editNum].customId">自定义数据ID值</el-checkbox>
                           </el-col>
                           <el-col class="col_bottom">
                             <el-col style="text-align: center;">
                               <el-col :span="10">选项展示名称</el-col>
                               <el-col :span="12" :offset="2">关键字段ID值</el-col>
                             </el-col>
-                            <el-col v-for="(obj,ind) in item.optionData" :key="ind" class="col_bottom">
+                            <el-col v-for="(obj,ind) in checkObjs[editNum].optionData" :key="ind" class="col_bottom">
                               <el-col :span="10">
                                 <el-input v-model="obj.optionValue" placeholder="请输入"></el-input>
                               </el-col>
@@ -423,21 +445,31 @@
                                 <el-input v-model="obj.relationId" placeholder="请输入"></el-input>
                               </el-col>
                               <el-col :span="2" style="text-align: center;">
-                                <i class="el-icon-delete-solid" @click="clickDel(item,ind)"></i>
+                                <i class="el-icon-delete-solid" @click="clickDel(checkObjs[editNum],ind)"></i>
                               </el-col>
                             </el-col>
                             <el-col :span="22">
-                              <p class="add_p" @click="clickAdd(item)">
+                              <p class="add_p" @click="clickAdd(checkObjs[editNum])">
                                 <i class="el-icon-plus"></i>
                               </p>
                             </el-col>
                           </el-col>
+                          <el-col class="col_bottom">
+                            <el-col :span="6">默认值</el-col>
+                            <el-col :span="18">
+                              <el-select v-model="checkObjs[editNum].defaultValue" style="width: 100%;" clearable>
+                                <el-option v-for="(obj,ind) of checkObjs[editNum].optionData" :key="ind" 
+                                  :label="obj.optionValue" :value="obj.relationId">
+                                </el-option>
+                              </el-select>
+                            </el-col>
+                          </el-col>
                         </el-col>
-                        <el-col v-if="item.sourceBy === 'sourceData'">
+                        <el-col v-if="checkObjs[editNum].sourceBy === 'sourceData'">
                           <el-col class="col_bottom">
                             <el-col :span="6">数据源</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataSource">
+                              <el-select v-model="checkObjs[editNum].dataSource">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -447,7 +479,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">数据表</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataTable">
+                              <el-select v-model="checkObjs[editNum].dataTable">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -457,7 +489,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">数据字段</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataField">
+                              <el-select v-model="checkObjs[editNum].dataField">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -467,7 +499,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">默认值</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.defualtValue">
+                              <el-select v-model="checkObjs[editNum].defaultValue">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -477,22 +509,22 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="item.addType === 'label'" style="padding: 10px 20px;">
+                    <div v-if="checkObjs[editNum].addType === 'label'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
-                          <el-checkbox v-model="item.showTitle">显示标题</el-checkbox>
+                          <el-checkbox v-model="checkObjs[editNum].showTitle">显示标题</el-checkbox>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">标题</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.titleValue" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].titleValue" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">表文字字段名称</el-col>
                           <el-col :span="18">
                             <el-col>
-                              <el-input v-model="item.tableFieldName" placeholder="请输入"></el-input>
+                              <el-input v-model="checkObjs[editNum].tableFieldName" placeholder="请输入"></el-input>
                             </el-col>
                             <el-col>
                               <span>表字段名称必须以字母开头，支持字母、数字、下划线，最大长度为40个字符</span>
@@ -502,38 +534,50 @@
                         <el-col class="col_bottom">
                           <el-col :span="6">提示文字</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.placeholder" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].placeholder" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">来源于</el-col>
                           <el-col :span="18">
-                            <el-select v-model="item.sourceBy">
+                            <el-select v-model="checkObjs[editNum].sourceBy">
                               <el-option value="sourceCustom" label="自定义数据"></el-option>
                               <el-option value="sourceData" label="数据源"></el-option>
                             </el-select>
                           </el-col>
                         </el-col>
-                        <el-col v-if="item.sourceBy === 'sourceCustom'">
-                          <el-col v-for="(obj,ind) in item.labelData" :key="ind" class="col_bottom">
-                            <el-col :span="14">
-                              <el-input v-model="obj.labelValue" placeholder="请输入"></el-input>
+                        <el-col v-if="checkObjs[editNum].sourceBy === 'sourceCustom'">
+                          <el-col class="col_bottom">
+                            <el-col v-for="(obj,ind) in checkObjs[editNum].labelData" :key="ind" class="col_bottom">
+                              <el-col :span="14">
+                                <el-input v-model="obj.labelValue" placeholder="请输入"></el-input>
+                              </el-col>
+                              <el-col :span="2" style="text-align: center;">
+                                <i class="el-icon-delete-solid" @click="labelDel(checkObjs[editNum],ind)"></i>
+                              </el-col>
                             </el-col>
-                            <el-col :span="2" style="text-align: center;">
-                              <i class="el-icon-delete-solid" @click="labelDel(item,ind)"></i>
+                            <el-col :span="16">
+                              <p class="add_p" @click="labelAdd(checkObjs[editNum])">
+                                <i class="el-icon-plus"></i>
+                              </p>
                             </el-col>
                           </el-col>
-                          <el-col :span="16">
-                            <p class="add_p" @click="labelAdd(item)">
-                              <i class="el-icon-plus"></i>
-                            </p>
+                          <el-col class="col_bottom">
+                            <el-col :span="6">默认值</el-col>
+                            <el-col :span="18">
+                              <el-select v-model="checkObjs[editNum].defaultValue" style="width: 100%;" clearable>
+                                <el-option v-for="(obj,ind) of checkObjs[editNum].optionData" :key="ind" 
+                                  :label="obj.optionValue" :value="obj.relationId">
+                                </el-option>
+                              </el-select>
+                            </el-col>
                           </el-col>
                         </el-col>
-                        <el-col v-if="item.sourceBy === 'sourceData'">
+                        <el-col v-if="checkObjs[editNum].sourceBy === 'sourceData'">
                           <el-col class="col_bottom">
                             <el-col :span="6">数据源</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataSource">
+                              <el-select v-model="checkObjs[editNum].dataSource">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -543,7 +587,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">数据表</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataTable">
+                              <el-select v-model="checkObjs[editNum].dataTable">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -553,7 +597,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">数据字段</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataField">
+                              <el-select v-model="checkObjs[editNum].dataField">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -563,7 +607,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">默认值</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.defualtValue">
+                              <el-select v-model="checkObjs[editNum].defaultValue">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -573,21 +617,21 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="item.addType === 'number'" style="padding: 10px 20px;">
+                    <div v-if="checkObjs[editNum].addType === 'number'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
-                          <el-checkbox v-model="item.showTitle">显示标题</el-checkbox>
+                          <el-checkbox v-model="checkObjs[editNum].showTitle">显示标题</el-checkbox>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">标题</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.titleValue" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].titleValue" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">表字段名称</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.tableFieldName" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].tableFieldName" placeholder="请输入"></el-input>
                           </el-col>
                           <el-col :span="18" :offset="6" style="font-size: 10px;">
                             表字段名称必须以字母开头，支持字母、数字、下划线，最大长度为40个字符
@@ -596,50 +640,60 @@
                         <el-col class="col_bottom">
                           <el-col :span="6">提示文字</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.placeholder" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].placeholder" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">描述信息</el-col>
                           <el-col :span="18">
-                            <el-input type="textarea" v-model="item.desc" placeholder="请输入"></el-input>
+                            <el-input type="textarea" v-model="checkObjs[editNum].desc" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">最小值</el-col>
                           <el-col :span="18">
-                            <el-input-number v-model="item.minValue"></el-input-number>
+                            <el-input-number v-model="checkObjs[editNum].minValue" @change="minChange(checkObjs[editNum])"></el-input-number>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">最大值</el-col>
                           <el-col :span="18">
-                            <el-input-number v-model="item.maxValue"></el-input-number>
+                            <el-input-number v-model="checkObjs[editNum].maxValue"></el-input-number>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">计数器步长</el-col>
                           <el-col :span="18">
-                            <el-input-number v-model="item.stepValue" :step="0.1"></el-input-number>
+                            <el-input-number v-model="checkObjs[editNum].stepValue" :step="0.1"></el-input-number>
                           </el-col>
                         </el-col>
+                        <el-col class="col_bottom">
+                            <el-col :span="6">默认值</el-col>
+                            <el-col :span="18">
+                              <el-input-number v-model="checkObjs[editNum].defaultValue"
+                                :max="checkObjs[editNum].maxValue"
+                                :min="checkObjs[editNum].minValue"
+                                :step="checkObjs[editNum].stepValue">
+                              </el-input-number>
+                            </el-col>
+                          </el-col>
                       </el-row>
                     </div>
-                    <div v-if="item.addType === 'time'" style="padding: 10px 20px;">
+                    <div v-if="checkObjs[editNum].addType === 'time'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
-                          <el-checkbox v-model="item.showTitle">显示标题</el-checkbox>
+                          <el-checkbox v-model="checkObjs[editNum].showTitle">显示标题</el-checkbox>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">标题</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.titleValue" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].titleValue" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">表字段名称</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.tableFieldName" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].tableFieldName" placeholder="请输入"></el-input>
                           </el-col>
                           <el-col :span="18" :offset="6" style="font-size: 10px;">
                             表字段名称必须以字母开头，支持字母、数字、下划线，最大长度为40个字符
@@ -648,19 +702,19 @@
                         <el-col class="col_bottom">
                           <el-col :span="6">提示文字</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.placeholder" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].placeholder" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">描述信息</el-col>
                           <el-col :span="18">
-                            <el-input type="textarea" v-model="item.desc" placeholder="请输入"></el-input>
+                            <el-input type="textarea" v-model="checkObjs[editNum].desc" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">默认状态</el-col>
                           <el-col :span="18">
-                            <el-radio-group v-model="item.status">
+                            <el-radio-group v-model="checkObjs[editNum].status">
                               <el-radio label="ordinary">普通</el-radio>
                               <el-radio label="onlyread">只读</el-radio>
                               <el-radio label="hiden">隐藏</el-radio>
@@ -670,13 +724,13 @@
                         <el-col class="col_bottom">
                           <el-col :span="6">默认值</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.defaultValue" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].defaultValue" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">格式</el-col>
                           <el-col :span="18">
-                            <el-select v-model="item.formatType" @change="dateTypeChange(item)">
+                            <el-select v-model="checkObjs[editNum].formatType" @change="dateTypeChange(checkObjs[editNum])">
                               <el-option label="年-月-日" value="date"></el-option>
                               <el-option label="年" value="year"></el-option>
                               <el-option label="年-月" value="month"></el-option>
@@ -687,21 +741,21 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="item.addType === 'radio'" style="padding: 10px 20px;">
+                    <div v-if="checkObjs[editNum].addType === 'radio'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
-                          <el-checkbox v-model="item.showTitle">显示标题</el-checkbox>
+                          <el-checkbox v-model="checkObjs[editNum].showTitle">显示标题</el-checkbox>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">标题</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.titleValue" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].titleValue" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">表字段名称</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.tableFieldName" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].tableFieldName" placeholder="请输入"></el-input>
                           </el-col>
                           <el-col :span="18" :offset="6" style="font-size: 10px;">
                             表字段名称必须以字母开头，支持字母、数字、下划线，最大长度为40个字符
@@ -710,35 +764,35 @@
                         <el-col class="col_bottom">
                           <el-col :span="6">来源于</el-col>
                           <el-col :span="18">
-                            <el-select v-model="item.sourceBy">
+                            <el-select v-model="checkObjs[editNum].sourceBy">
                               <el-option value="sourceCustom" label="自定义数据"></el-option>
                               <el-option value="sourceData" label="数据源"></el-option>
                             </el-select>
                           </el-col>
                         </el-col>
-                        <el-col v-if="item.sourceBy === 'sourceCustom'">
+                        <el-col v-if="checkObjs[editNum].sourceBy === 'sourceCustom'">
                           <el-col  class="col_bottom">
-                            <el-checkbox v-model="item.selfRelationId">自动关联字段ID值</el-checkbox>
+                            <el-checkbox v-model="checkObjs[editNum].selfRelationId">自动关联字段ID值</el-checkbox>
                           </el-col>
-                          <el-col v-for="(obj,ind) in item.radioData" :key="ind" class="col_bottom">
+                          <el-col v-for="(obj,ind) in checkObjs[editNum].radioData" :key="ind" class="col_bottom">
                             <el-col :span="14">
                               <el-input v-model="obj.radioValue" placeholder="请输入"></el-input>
                             </el-col>
                             <el-col :span="2" style="text-align: center;">
-                              <i class="el-icon-delete-solid" @click="radioDel(item,ind)"></i>
+                              <i class="el-icon-delete-solid" @click="radioDel(checkObjs[editNum],ind)"></i>
                             </el-col>
                           </el-col>
                           <el-col :span="16">
-                            <p class="add_p" @click="radioAdd(item)">
+                            <p class="add_p" @click="radioAdd(checkObjs[editNum])">
                               <i class="el-icon-plus"></i>
                             </p>
                           </el-col>
                         </el-col>
-                        <el-col v-if="item.sourceBy === 'sourceData'">
+                        <el-col v-if="checkObjs[editNum].sourceBy === 'sourceData'">
                           <el-col class="col_bottom">
                             <el-col :span="6">数据源</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataSource">
+                              <el-select v-model="checkObjs[editNum].dataSource">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -748,7 +802,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">数据表</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataTable">
+                              <el-select v-model="checkObjs[editNum].dataTable">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -758,7 +812,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">数据字段</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataField">
+                              <el-select v-model="checkObjs[editNum].dataField">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -768,7 +822,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">默认值</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.defualtValue">
+                              <el-select v-model="checkObjs[editNum].defaultValue">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -778,22 +832,22 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="item.addType === 'checkbox'" style="padding: 10px 20px;">
+                    <div v-if="checkObjs[editNum].addType === 'checkbox'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
                           <el-col class="col_bottom">
-                          <el-checkbox v-model="item.showTitle">显示标题</el-checkbox>
+                          <el-checkbox v-model="checkObjs[editNum].showTitle">显示标题</el-checkbox>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">标题</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.titleValue" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].titleValue" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">表字段名称</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.tableFieldName" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].tableFieldName" placeholder="请输入"></el-input>
                           </el-col>
                           <el-col :span="18" :offset="6" style="font-size: 10px;">
                             表字段名称必须以字母开头，支持字母、数字、下划线，最大长度为40个字符
@@ -801,35 +855,35 @@
                         </el-col>
                         <el-col :span="6">来源于</el-col>
                           <el-col :span="18">
-                            <el-select v-model="item.sourceBy">
+                            <el-select v-model="checkObjs[editNum].sourceBy">
                               <el-option value="sourceCustom" label="自定义数据"></el-option>
                               <el-option value="sourceData" label="数据源"></el-option>
                             </el-select>
                           </el-col>
                         </el-col>
-                        <el-col v-if="item.sourceBy === 'sourceCustom'">
+                        <el-col v-if="checkObjs[editNum].sourceBy === 'sourceCustom'">
                           <el-col  class="col_bottom">
-                            <el-checkbox v-model="item.selfRelationId">自动关联字段ID值</el-checkbox>
+                            <el-checkbox v-model="checkObjs[editNum].selfRelationId">自动关联字段ID值</el-checkbox>
                           </el-col>
-                          <el-col v-for="(obj,ind) in item.checkBoxData" :key="ind" class="col_bottom">
+                          <el-col v-for="(obj,ind) in checkObjs[editNum].checkBoxData" :key="ind" class="col_bottom">
                             <el-col :span="14">
                               <el-input v-model="obj.checkBoxValue" placeholder="请输入"></el-input>
                             </el-col>
                             <el-col :span="2" style="text-align: center;">
-                              <i class="el-icon-delete-solid" @click="checkDel(item,ind)"></i>
+                              <i class="el-icon-delete-solid" @click="checkDel(checkObjs[editNum],ind)"></i>
                             </el-col>
                           </el-col>
                           <el-col :span="16">
-                            <p class="add_p" @click="checkAdd(item)">
+                            <p class="add_p" @click="checkAdd(checkObjs[editNum])">
                               <i class="el-icon-plus"></i>
                             </p>
                           </el-col>
                         </el-col>
-                        <el-col v-if="item.sourceBy === 'sourceData'">
+                        <el-col v-if="checkObjs[editNum].sourceBy === 'sourceData'">
                           <el-col class="col_bottom">
                             <el-col :span="6">数据源</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataSource">
+                              <el-select v-model="checkObjs[editNum].dataSource">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -839,7 +893,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">数据表</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataTable">
+                              <el-select v-model="checkObjs[editNum].dataTable">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -849,7 +903,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">数据字段</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataField">
+                              <el-select v-model="checkObjs[editNum].dataField">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -859,7 +913,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">默认值</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.defualtValue">
+                              <el-select v-model="checkObjs[editNum].defaultValue">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -869,21 +923,21 @@
                         </el-col>
                       </el-row>
                     </div>
-                    <div v-if="item.addType === 'cascader'" style="padding: 10px 20px;">
+                    <div v-if="checkObjs[editNum].addType === 'cascader'" style="padding: 10px 20px;">
                       <el-row>
                         <el-col class="col_bottom">
-                          <el-checkbox v-model="item.showTitle">显示标题</el-checkbox>
+                          <el-checkbox v-model="checkObjs[editNum].showTitle">显示标题</el-checkbox>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">标题</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.titleValue" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].titleValue" placeholder="请输入"></el-input>
                           </el-col>
                         </el-col>
                         <el-col class="col_bottom">
                           <el-col :span="6">表字段名称</el-col>
                           <el-col :span="18">
-                            <el-input v-model="item.tableFieldName" placeholder="请输入"></el-input>
+                            <el-input v-model="checkObjs[editNum].tableFieldName" placeholder="请输入"></el-input>
                           </el-col>
                           <el-col :span="18" :offset="6" style="font-size: 10px;">
                             表字段名称必须以字母开头，支持字母、数字、下划线，最大长度为40个字符
@@ -892,22 +946,22 @@
                         <el-col class="col_bottom">
                           <el-col :span="6">来源于</el-col>
                           <el-col :span="18">
-                            <el-select v-model="item.sourceBy">
+                            <el-select v-model="checkObjs[editNum].sourceBy">
                               <el-option value="sourceCustom" label="自定义数据"></el-option>
                               <el-option value="sourceData" label="数据源"></el-option>
                             </el-select>
                           </el-col>
                         </el-col>
-                        <el-col v-if="item.sourceBy === 'sourceCustom'">
+                        <el-col v-if="checkObjs[editNum].sourceBy === 'sourceCustom'">
                           <el-col class="col_bottom">
-                            <el-checkbox v-model="item.customId">自定义数据ID值</el-checkbox>
+                            <el-checkbox v-model="checkObjs[editNum].customId">自定义数据ID值</el-checkbox>
                           </el-col>
                           <el-col class="col_bottom">
                             <el-col style="text-align: center;">
                               <el-col :span="10">选项展示名称</el-col>
                               <el-col :span="12" :offset="2">关键字段ID值</el-col>
                             </el-col>
-                            <el-col v-for="(obj,ind) in item.cascaderData" :key="ind" class="col_bottom">
+                            <el-col v-for="(obj,ind) in checkObjs[editNum].cascaderData" :key="ind" class="col_bottom">
                               <el-col :span="10">
                                 <el-input v-model="obj.cascaderValue" placeholder="请输入"></el-input>
                               </el-col>
@@ -915,21 +969,21 @@
                                 <el-input v-model="obj.relationId" placeholder="请输入"></el-input>
                               </el-col>
                               <el-col :span="2" style="text-align: center;">
-                                <i class="el-icon-delete-solid" @click="cascaderDel(item,index)"></i>
+                                <i class="el-icon-delete-solid" @click="cascaderDel(checkObjs[editNum],index)"></i>
                               </el-col>
                             </el-col>
                             <el-col :span="22">
-                              <p class="add_p" @click="cascaderAdd(item)">
+                              <p class="add_p" @click="cascaderAdd(checkObjs[editNum])">
                                 <i class="el-icon-plus"></i>
                               </p>
                             </el-col>
                           </el-col>
                         </el-col>
-                        <el-col v-if="item.sourceBy === 'sourceData'">
+                        <el-col v-if="checkObjs[editNum].sourceBy === 'sourceData'">
                           <el-col class="col_bottom">
                             <el-col :span="6">数据源</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataSource">
+                              <el-select v-model="checkObjs[editNum].dataSource">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -939,7 +993,7 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">数据表</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataTable">
+                              <el-select v-model="checkObjs[editNum].dataTable">
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
@@ -949,12 +1003,29 @@
                           <el-col class="col_bottom">
                             <el-col :span="6">数据字段</el-col>
                             <el-col :span="18">
-                              <el-select v-model="item.dataField" multiple>
+                              <el-select v-model="checkObjs[editNum].dataField" multiple>
                                 <el-option label="1" value="1"></el-option>
                                 <el-option label="2" value="2"></el-option>
                                 <el-option label="3" value="3"></el-option>
                               </el-select>
                             </el-col>
+                          </el-col>
+                        </el-col>
+                      </el-row>
+                    </div>
+                  </el-collapse-item>
+                  <el-collapse-item name="type">
+                    <template slot="title">
+                      <i class="header-icon el-icon-edit-outline"></i>修改
+                    </template>
+                    <div style="padding: 10px 20px;">
+                      <el-row>
+                        <el-col>
+                          <el-col :span="6">控件类型</el-col>
+                          <el-col :span="18">
+                            <el-select v-model="editType" @change="typeChange">
+                              <el-option v-for="item of elementData" :key="item.value" :label="item.name" :value="item.value"></el-option>
+                            </el-select>
                           </el-col>
                         </el-col>
                       </el-row>
@@ -979,7 +1050,7 @@
       width="30%"
       :before-close="onCancel">
       <div>
-        <el-form ref="form" :model="formData" label-width="80px" :rules="rules">
+        <el-form ref="formData" :model="formData" label-width="80px" :rules="rules">
           <el-form-item label="名称" prop="name">
             <el-input v-model="formData.name" ></el-input>
           </el-form-item>
@@ -988,7 +1059,7 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="onCancel">取 消</el-button>
-        <el-button type="primary" @click="onSuccess">确 定</el-button>
+        <el-button type="primary" @click="onSuccess('formData')">确 定</el-button>
       </span>
     </el-dialog>
     
@@ -1358,6 +1429,7 @@ export default {
           placeholder: '',
           checkList: [],
           styleValue: '',
+          defaultValue: '',
         },
         'select': {
           addType: 'select',
@@ -1371,7 +1443,7 @@ export default {
           dataSource: '',
           dataTable: '',
           dataField: '',
-          defualtValue: '',
+          defaultValue: '',
         },
         'label': {
           addType: 'label',
@@ -1384,7 +1456,7 @@ export default {
           dataSource: '',
           dataTable: '',
           dataField: '',
-          defualtValue: '',
+          defaultValue: '',
         },
         'number': {
           addType: 'number',
@@ -1396,6 +1468,7 @@ export default {
           minValue: 0,
           maxValue: 100,
           stepValue: 1,
+          defaultValue: 0,
         },
         'time': {
           addType: 'time',
@@ -1420,7 +1493,7 @@ export default {
           dataSource: '',
           dataTable: '',
           dataField: '',
-          defualtValue: '',
+          defaultValue: '',
         },
         'checkbox': {
           addType: 'checkbox',
@@ -1433,7 +1506,7 @@ export default {
           dataSource: '',
           dataTable: '',
           dataField: '',
-          defualtValue: '',
+          defaultValue: [],
         },
         'cascader': {
           addType: 'cascader',
@@ -1446,6 +1519,7 @@ export default {
           dataSource: '',
           dataTable: '',
           dataField: [],
+          defaultValue: [],
         },
       },
       checkObjs: [], 
@@ -1505,7 +1579,6 @@ export default {
       console.log(val)
     },
     typeClick(data) {
-      console.log('数据',data)
       this.visibleType = true
       this.typeTitle = '新增'
       if(data && data.id) {
@@ -1550,56 +1623,63 @@ export default {
       }).catch(() => {});
     },
     // 分类新增和修改
-    onSuccess() {
+    onSuccess(formName) {
       // console.log('提交，，，',this.formData)
-      if(this.typeTitle === '新增') {
-        let obj = {
-          id: this.addId,
-          name: this.formData.name,
-          createdBy: this.$store.getters.name,
-          updateBy: '',
-          updateTime: '',
-          type: 1,
-          children: [],
-        }
-        if(this.formData.pid!== undefined) {
-          obj.pid = this.formData.pid
-        }
-        this.axios.post('/system/data/fill/table/add',obj).then(res => {
-          if(res.status === 200) {
-            this.$message.success('新增成功')
-            this.tableData = res.data.list
-            this.visibleType = false
-            this.formData = {name: ''}
-            this.addId += 1
-            this.$store.commit('setFillNumber',this.addId)
+      this.$refs[formName].validate(valid => {
+        if(valid) {
+          if(this.typeTitle === '新增') {
+            let obj = {
+              id: this.addId,
+              name: this.formData.name,
+              createdBy: this.$store.getters.name,
+              updateBy: '',
+              updateTime: '',
+              type: 1,
+              children: [],
+            }
+            if(this.formData.pid!== undefined) {
+              obj.pid = this.formData.pid
+            }
+            this.axios.post('/system/data/fill/table/add',obj).then(res => {
+              if(res.status === 200) {
+                this.$message.success('新增成功')
+                this.tableData = res.data.list
+                this.visibleType = false
+                this.formData = {name: ''}
+                this.addId += 1
+                this.$store.commit('setFillNumber',this.addId)
+              }
+            }).catch(err => { this.$message.error('新增失败') })
+          } else if(this.typeTitle === '修改') {
+            let obj = {
+              id: this.formData.id,
+              name: this.formData.name,
+              createdBy: this.formData.createdBy,
+              updateBy: this.$store.getters.name,
+              updateTime: this.dateFormat(new Date()),
+              type: this.formData.type,
+              children: this.formData.children
+            }
+            if(this.formData.pid!== undefined) {
+              obj.pid = this.formData.pid
+            }
+            this.axios.post('/system/data/fill/table/update',obj).then(res => {
+                // console.log('数据，，',res.data.list)
+              if(res.status === 200) {
+                this.$message.success('修改成功')
+                this.tableData = res.data.list
+                this.visibleType = false
+                this.formData = {name: ''}
+              }
+            })
           }
-        }).catch(err => { this.$message.error('新增失败') })
-      } else if(this.typeTitle === '修改') {
-        let obj = {
-          id: this.formData.id,
-          name: this.formData.name,
-          createdBy: this.formData.createdBy,
-          updateBy: this.$store.getters.name,
-          updateTime: this.dateFormat(new Date()),
-          type: this.formData.type,
-          children: this.formData.children
+        } else {
+          return false
         }
-        if(this.formData.pid!== undefined) {
-          obj.pid = this.formData.pid
-        }
-        this.axios.post('/system/data/fill/table/update',obj).then(res => {
-            // console.log('数据，，',res.data.list)
-          if(res.status === 200) {
-            this.$message.success('修改成功')
-            this.tableData = res.data.list
-            this.visibleType = false
-            this.formData = {name: ''}
-          }
-        })
-      }
+      })
     },
     onCancel() {
+      this.$refs.formData.resetFields()
       this.visibleType = false
       this.formData = {name: ''}
       this.init()
@@ -1666,7 +1746,7 @@ export default {
     dateFormat(date) {
       let time = new Date(date)
       let year = time.getFullYear()
-      let mon = time.getMonth()+1<10? '0'+ time.getMonth() : time.getMonth()
+      let mon = time.getMonth()+1<10? '0'+ (time.getMonth()+1) : time.getMonth()+1
       let day = time.getDate()<10? '0'+ time.getDate() : time.getDate()
       let h = time.getHours()<10? '0' + time.getHours() : time.getHours()
       let m = time.getMinutes()<10? '0' + time.getMinutes() : time.getMinutes()
@@ -1688,7 +1768,7 @@ export default {
     // 查询类型
     searchTypes(data){
       let obj = {id: ''}
-      if(data) { // 用于去除当前所在文件id
+      if(data) { // 用于去除当前所在的文件id
         if(!data.pid) {
           obj.id = data.id
         } else {
@@ -1714,6 +1794,8 @@ export default {
       }
       this.addtypename = ''
       this.updateForm = {}
+      this.editNum = null
+      this.editType = ''
     },
     // 保存
     saveAdd() {
@@ -1794,9 +1876,25 @@ export default {
       this.checkObjs.push(obj)
     },
     editElement(item,index){
-      this.visibleEdit = true
+      // this.visibleEdit = true
+      console.log('11111',item,index)
       this.editType = item.addType
       this.editNum = index
+    },
+    minChange(data){
+      if(data.minValue > data.defaultValue) {
+        data.defaultValue = data.minValue
+      }
+    },
+    typeChange(){
+      let data = JSON.parse(JSON.stringify(this.checkObjs))
+      for(let i=0;i<data.length;i++) {
+        if(i === this.editNum && data[i].addType !== this.editType) {
+          data[i] = JSON.parse(JSON.stringify(this.checkData[this.editType]))
+        }
+      }
+      console.log('改变后',data)
+      this.checkObjs = JSON.parse(JSON.stringify(data))
     },
     onEditCancel(){
       this.visibleEdit = false
@@ -1818,6 +1916,8 @@ export default {
       this.editNum = null
     },
     delElement(index) {
+      this.editNum = null;
+      this.editType = '';
       if(this.checkObjs.length) {
         this.checkObjs.splice(index,1)
       }
@@ -1905,6 +2005,10 @@ export default {
   min-height: 500px;
 }
 
+.header-icon {
+  font-size: 18px;
+}
+
 .namebox {
   border: 1px solid #C0C4CC;
   border-radius: 3px;
@@ -1931,6 +2035,7 @@ export default {
   right: 20px;
   font-size: 16px;
   cursor: pointer;
+  z-index: 1;
 }
 .close_obj_del {
   position: absolute;
@@ -1938,5 +2043,6 @@ export default {
   right: 0px;
   font-size: 16px;
   cursor: pointer;
+  z-index: 1;
 }
 </style>

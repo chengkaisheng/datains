@@ -173,7 +173,7 @@
             <el-col style="margin-bottom: 10px;" v-if="item.addType === 'cascader'">
               <el-col :span="4" v-if="item.showTitle">{{item.titleValue}}</el-col>
               <el-col :span="item.showTitle? 20 : 24">
-                <el-cascader :options="cascaderData" v-model="addForm[item.tableFieldName]" :placeholder="item.placeholder"></el-cascader>
+                <el-cascader :options="item.cascaderData" v-model="addForm[item.tableFieldName]" :placeholder="item.placeholder"></el-cascader>
               </el-col>
             </el-col>
           </el-row>
@@ -260,7 +260,7 @@
           </el-row>
         </div>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="onExpCancel('expForm')">取 消</el-button>
+          <el-button @click="onExpCancel">取 消</el-button>
           <el-button type="primary" @click="onExpSuccess('expForm')">确 定</el-button>
         </span>
       </el-dialog>
@@ -504,7 +504,7 @@ export default {
     dateFormat(date) {
       let time = new Date(date)
       let year = time.getFullYear()
-      let mon = time.getMonth()+1<10? '0'+ time.getMonth() : time.getMonth()
+      let mon = time.getMonth()+1<10? '0'+ (time.getMonth()+1) : time.getMonth()+1
       let day = time.getDate()<10? '0'+ time.getDate() : time.getDate()
       let h = time.getHours()<10? '0' + time.getHours() : time.getHours()
       let m = time.getMinutes()<10? '0' + time.getMinutes() : time.getMinutes()
@@ -661,8 +661,8 @@ export default {
         }
       });
     },
-    onExpCancel(formName){
-      this.$refs[formName].resetFields();
+    onExpCancel(){
+      this.$refs.expForm.resetFields();
       this.visibleExp = false
       this.expForm = {
         expName: '',
