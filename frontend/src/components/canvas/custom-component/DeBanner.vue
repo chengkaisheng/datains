@@ -5,10 +5,11 @@
         :options="swiperOption" class="swiper-wrapper" :style="bannerStyle">
         <swiper-slide v-for="(item,index) in bannerImgList" :key="index">
           <div style="width: 100%;height: 100%;">
-            <div style="width: 100%;height: 70%;">
+            <div style="width: 100%;" :style="{'height': textShow? '70%' : '100%'}">
               <img :src="item.url" style="width:100%;height:100%;">
             </div>
             <div
+              v-if="textShow"
               class="img_box"
               :style="{
                 'background-color': item.imgBackgroundColor && item.imgOpacity? hexToRgba(item.imgBackgroundColor,item.imgOpacity) : 'none',
@@ -126,6 +127,10 @@ export default {
     },
     pictureGap() {
       return this.element.options.pictureGap
+    },
+    textShow() {
+      // console.log('111',this.element.options.textShow)
+      return this.element.options.textShow !== undefined? this.element.options.textShow : true
     },
     coverflowEffect() {
       let obj = {}

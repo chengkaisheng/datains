@@ -501,6 +501,7 @@ const list = [
       slideDepth: 60,
       slideModifier: 2,
       slideShadow: true,
+      textShow: true,
       bannerImgList: []
       // autoplay: { delay: 1000, disableOnInteraction: false }
     },
