@@ -715,12 +715,12 @@
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
-                      <span style="width: 80px;text-align: right;" v-if="view.type && !this.view.type.includes('roll')">
+                      <span style="width: 80px;text-align: right;" v-if="view.type && !view.type.includes('roll')">
                         <span>{{ $t('chart.drill') }}</span>
                         /
                         <span>{{ $t('chart.dimension') }}</span>
                       </span>
-                      <span style="width: 80px;text-align: right;" v-if="view.type && this.view.type.includes('roll')">
+                      <span style="width: 80px;text-align: right;" v-if="view.type && view.type.includes('roll')">
                         <span>{{$t('chart.detail')}}</span>
                       </span>
                       <draggable
@@ -1699,6 +1699,7 @@ export default {
     }
   },
   created() {
+    console.log('param.....',this.param)
     const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
     if (plugins) {
       this.loadPluginType()
@@ -1760,6 +1761,7 @@ export default {
     initTableData(id) {
       if (id != null) {
         post('/dataset/table/getWithPermission/' + id, null).then(response => {
+          console.log('这个图表的字段',response)
           this.table = response.data
           this.initTableField(id)
         }).catch(err => {
@@ -3096,29 +3098,29 @@ span {
   font-size: 12px;
 }
 
-.tab-header > > > .el-tabs__header {
+.tab-header ::v-deep .el-tabs__header {
   border-top: solid 1px #eee;
   border-right: solid 1px #eee;
 }
 
-.tab-header > > > .el-tabs__item {
+.tab-header ::v-deep .el-tabs__item {
   font-size: 12px;
   padding: 0 20px !important;
 }
 
-.blackTheme .tab-header > > > .el-tabs__item {
+.blackTheme .tab-header ::v-deep .el-tabs__item {
   background-color: var(--MainBG);
 }
 
-.tab-header > > > .el-tabs__nav-scroll {
+.tab-header ::v-deep .el-tabs__nav-scroll {
   padding-left: 0 !important;
 }
 
-.tab-header > > > .el-tabs__header {
+.tab-header ::v-deep .el-tabs__header {
   margin: 0 !important;
 }
 
-.tab-header > > > .el-tabs__content {
+.tab-header ::v-deep .el-tabs__content {
 }
 
 .draggable-group {
@@ -3136,7 +3138,7 @@ span {
   margin: 5px;
 }
 
-.el-radio > > > .el-radio__label {
+.el-radio ::v-deep .el-radio__label {
   padding-left: 0;
 }
 
@@ -3177,15 +3179,15 @@ span {
   height: calc(100% - 20px);
 }
 
-.dialog-css > > > .el-dialog__title {
+.dialog-css ::v-deep .el-dialog__title {
   font-size: 14px;
 }
 
-.dialog-css > > > .el-dialog__header {
+.dialog-css ::v-deep .el-dialog__header {
   padding: 20px 20px 0;
 }
 
-.dialog-css > > > .el-dialog__body {
+.dialog-css ::v-deep .el-dialog__body {
   padding: 10px 20px 20px;
 }
 
@@ -3228,11 +3230,9 @@ span {
   height: 100%;
 }
 
-.tree-select-span {
-  > > > div.vue-treeselect__control {
-    height: 32px !important;
-    font-weight: normal !important;
-  }
+.tree-select-span ::v-deep div.vue-treeselect__control {
+  height: 32px !important;
+  font-weight: normal !important;
 }
 
 .drag-block-style {
@@ -3295,11 +3295,11 @@ span {
   width: 80px;
 }
 
-.result-count > > > input {
+.result-count ::v-deep input {
   padding: 0 4px;
 }
 
-.radio-span > > > .el-radio__label {
+.radio-span ::v-deep .el-radio__label {
   margin-left: 4px;
 }
 

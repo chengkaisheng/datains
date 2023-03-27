@@ -79,7 +79,7 @@
         </el-header>
         <el-main>
           <el-row type="flex">
-            <el-col :span="18" class="bor_box min_hg">
+            <el-col :span="assistData.assistMuster?18:24" class="bor_box min_hg">
               <el-row class="col_bottom" v-if="typeTitle === '新增'">
                 <el-col :span="4">所属文件</el-col>
                 <el-col :span="8" class="sel_box">
@@ -92,7 +92,7 @@
                     style="width: 100%;"
                     :popper-append-to-body="false"
                   >
-                    <el-option :value="addFileList" style="height: auto">
+                    <el-option :value="addFileList" style="height: 100%;max-height: 200px;overflow-y: auto;padding: 0;background-color: #ffffff;">
                       <el-tree
                         node-key="id"
                         ref="treeAdd"
@@ -114,7 +114,8 @@
               <el-row class="col_bottom">
                 <el-col :span="4">数据集</el-col>
                 <el-col :span="8">
-                  <el-select ref="dataRef" v-model="assistData.assistMuster">
+                  <el-select ref="dataRef" v-model="assistData.assistMuster" 
+                    placeholder="请选择" style="width: 100%;">
                     <el-option v-model="setvalue" 
                       style="height: 100%;max-height: 200px;overflow-y: auto;padding: 0;background-color: #ffffff;"
                     >
@@ -159,15 +160,15 @@
                 </el-col>
               </el-row>
               <el-row class="bor_box" style="min-height:350px;">
-                <de-container>
+                <!-- <de-container>
                   <de-main-container>
                     <dataset-table-data :table="table" />
                   </de-main-container>
-                </de-container>
+                </de-container> -->
               </el-row>
             </el-col>
-            <el-col :span="6" class="bor_box min_hg">
-              <chart-edit ref="chartEditRef" :edit-from="'panel'" :param="chartEditParam" />
+            <el-col :span="assistData.assistMuster?6:0" class="bor_box min_hg">
+              <assist-chart v-if="assistData.assistMuster&&table.id && chartView && isShowChart" ref="chartEditRef" :edit-from="'panel'" :chart="chartView" :table-data="table" :param="chartEditParam"></assist-chart>
             </el-col>
           </el-row>
         </el-main>
@@ -261,15 +262,32 @@
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
 import selectTree from '@/views/system/assist/selectTree'
+import DeContainer from '@/components/datains/DeContainer'
 import DeMainContainer from '@/components/datains/DeMainContainer'
 import DatasetTableData from '@/views/dataset/common/DatasetTableData'
 import { getTable } from '@/api/dataset/dataset'
-import ChartEdit from '@/views/chart/view/ChartEdit'
+import assistChart from '@/views/system/assist/assistChart'
 import { mapState } from 'vuex'
+
+import {
+  DEFAULT_COLOR_CASE,
+  DEFAULT_LABEL,
+  DEFAULT_LEGEND_STYLE,
+  DEFAULT_SIZE,
+  DEFAULT_TITLE_STYLE,
+  DEFAULT_TOOLTIP,
+  DEFAULT_XAXIS_STYLE,
+  DEFAULT_YAXIS_STYLE,
+  DEFAULT_YAXIS_EXT_STYLE,
+  DEFAULT_SPLIT,
+  DEFAULT_FUNCTION_CFG,
+  DEFAULT_THRESHOLD,
+  DEFAULT_TOTAL
+} from '@/views/chart/chart/chart'
 
 export default {
   name: '',
-  components: {LayoutContent,selectTree,DatasetTableData,DeMainContainer,ChartEdit},
+  components: {LayoutContent,selectTree,DatasetTableData,DeContainer,DeMainContainer,assistChart},
   props: {
     mode: {
       type: Number,
@@ -354,17 +372,33 @@ export default {
         assistArea: '',
         assistYear: '',
         assistTime: [],
-      }
+      },
+      chartView: {
+        render: 'antv',
+        type: 'table-normal'
+      },
+      isShowChart: true,
     }
   },
   computed: {
     ...mapState([
       'fillNumber'
-    ])
+    ]),
+    chartEditParam() {
+      if (this.chartView) {
+        if (this.chartView.type === 'table-normal') {
+          return { 'data': this.chartView, 'optType': 'edit' }
+        }else {
+          return {}
+        }
+      }
+      return this.chartView ? { 'data': this.chartView, 'optType': 'edit' } : {}
+    },
   },
   mounted() {
     this.addId = this.fillNumber
     this.init()
+    this.createView()
   },
   methods: {
     init() {
@@ -375,19 +409,6 @@ export default {
         }
       })
     },
-    chartEditParam() {
-      // if (this.curComponent) {
-      //   if (this.curComponent.type === 'view') {
-      //     return { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }
-      //   } else if (this.curComponent.type === 'de-tabs' && this.$store.state.chart.viewId) {
-      //     return { 'id': this.$store.state.chart.viewId, 'optType': 'edit' }
-      //   } else {
-      //     return {}
-      //   }
-      // }
-      // return this.curComponent ? { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' } : {}
-      return {}
-    },
     getTable(table) {
       // this.table = table
       console.log('这个有触发吗？',table)
@@ -396,10 +417,58 @@ export default {
       table && table.id && getTable(table.id).then(response => {
         this.table = response.data
         console.log('这个数据',this.table)
+        this.$refs.dataRef.blur()
+        this.isShowChart = false
+        setTimeout(()=>{
+          this.isShowChart = true
+        })
         // this.$emit('getTable', this.table)
       }).catch(res => {
         this.table = {}
       })
+    },
+    createView() {
+      this.chartView.name = this.assistData.name
+      this.chartView.title = this.assistData.name
+      this.chartView.id = this.addId
+      this.chartView.tableId = this.table.id
+      this.chartView.type = 'table-normal'
+      this.chartView.isPlugin = false
+      this.chartView.render = 'antv'
+      this.chartView.resultMode = 'custom'
+      this.chartView.resultCount = 1000
+      this.chartView.customAttr = JSON.stringify({
+        color: DEFAULT_COLOR_CASE,
+        tableColor: DEFAULT_COLOR_CASE,
+        size: DEFAULT_SIZE,
+        label: DEFAULT_LABEL,
+        tooltip: DEFAULT_TOOLTIP,
+        totalCfg: DEFAULT_TOTAL
+      })
+      this.chartView.customStyle = JSON.stringify({
+        text: DEFAULT_TITLE_STYLE,
+        legend: DEFAULT_LEGEND_STYLE,
+        xAxis: DEFAULT_XAXIS_STYLE,
+        yAxis: DEFAULT_YAXIS_STYLE,
+        yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
+        split: DEFAULT_SPLIT
+      })
+      this.chartView.senior = JSON.stringify({
+        functionCfg: DEFAULT_FUNCTION_CFG,
+        assistLine: [],
+        threshold: DEFAULT_THRESHOLD
+      })
+      this.chartView.stylePriority = 'view' // 默认样式优先级视图
+      this.chartView.xaxis = JSON.stringify([])
+      this.chartView.xaxisExt = JSON.stringify([])
+      this.chartView.yaxis = JSON.stringify([])
+      this.chartView.yaxisExt = JSON.stringify([])
+      this.chartView.extStack = JSON.stringify([])
+      this.chartView.customFilter = JSON.stringify([])
+      this.chartView.drillFields = JSON.stringify([])
+      this.chartView.extBubble = JSON.stringify([])
+      this.chartView.data = {}
+      console.log('数据',this.chartView)
     },
     handleSelectionChange(val) {
       console.log(val)
@@ -545,6 +614,8 @@ export default {
         assistYear: '',
         assistTime: [],
       }
+      this.table = {}
+      this.chartView = {}
     },
     submit() {
 
@@ -620,17 +691,17 @@ export default {
 
 <style scoped>
 .ms-aside-container {
-    height: 50vh;
-    min-width: 180px;
-    max-width: 280px;
-    padding: 0 0;
-  }
+  height: 50vh;
+  min-width: 180px;
+  max-width: 280px;
+  padding: 0 0;
+}
 
-  .ms-main-container {
-    height: 50vh;
-    border: 1px solid #E6E6E6;
-    border-left: 0 solid;
-  }
+.ms-main-container {
+  height: 52vh;
+  border: 1px solid #E6E6E6;
+  border-left: 0 solid;
+}
 
 ::v-deep .main_panel .el-main {
   padding: 0px;
@@ -643,9 +714,9 @@ export default {
   min-height: 500px;
 }
 
-.sel_box ::v-deep .el-select-dropdown__item {
+/* .sel_box ::v-deep .el-select-dropdown__item {
   padding: 0px;
-}
+} */
 
 .col_bottom {
   margin-bottom: 10px;
