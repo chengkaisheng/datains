@@ -73,8 +73,17 @@
         <el-col :span="4">
           <span class="params-title">{{ $t('panel.converflow_shadow') }}</span>
         </el-col>
-        <el-col :span="8" style="line-hieght: 40px;">
+        <el-col :span="8" style="line-height: 40px;">
           <el-radio-group v-model="curComponent.options.slideShadow">
+            <el-radio :label="true">显示</el-radio>
+            <el-radio :label="false">隐藏</el-radio>
+          </el-radio-group>
+        </el-col>
+        <el-col :span="4">
+          <span class="params-title">{{ $t('panel.text_show_desc') }}</span>
+        </el-col>
+        <el-col :span="8" style="line-height: 40px;">
+          <el-radio-group v-model="curComponent.options.textShow">
             <el-radio :label="true">显示</el-radio>
             <el-radio :label="false">隐藏</el-radio>
           </el-radio-group>

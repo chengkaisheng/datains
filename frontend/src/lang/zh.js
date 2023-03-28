@@ -1567,6 +1567,7 @@ export default {
     converflow_depth: '滑块深度',
     converflow_modefier: '滑块调节倍率',
     converflow_shadow: '滑块阴影',
+    text_show_desc: '文字描述显隐',
     web_set_tips: '部分网站可能设置不允许嵌入而无法显示',
     repeat_params: '存在名称重复的参数',
     enable_outer_param_set: '启用外部参数设置',
