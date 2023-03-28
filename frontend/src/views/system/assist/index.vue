@@ -71,9 +71,9 @@
       <el-container>
         <el-header style="line-height: 60px;border: 1px solid #cccccc;">
           <el-button icon="el-icon-d-arrow-left" circle @click="goback"></el-button>
-          <span>自助填报</span>
+          <span>自助取数</span>
           <span style="float: right;">
-            <el-button >取消</el-button>
+            <el-button @click="goback">取消</el-button>
             <el-button type="primary" @click="submit">保存</el-button>
           </span>
         </el-header>
@@ -106,7 +106,7 @@
                 </el-col>
               </el-row>
               <el-row class="col_bottom">
-                <el-col :span="4">自助填报名称</el-col>
+                <el-col :span="4">自助取数名称</el-col>
                 <el-col :span="8">
                   <el-input v-model="assistData.name" placeholder="请输入"></el-input>
                 </el-col>
@@ -159,16 +159,17 @@
                   <el-button>创建任务</el-button>
                 </el-col>
               </el-row>
-              <el-row class="bor_box" style="min-height:350px;">
+              <el-row class="bor_box" style="height:350px;">
                 <!-- <de-container>
                   <de-main-container>
                     <dataset-table-data :table="table" />
                   </de-main-container>
                 </de-container> -->
+                <div id="table_normal" style="width: 100%;height: 100%;overflow: hidden;" ></div>
               </el-row>
             </el-col>
             <el-col :span="assistData.assistMuster?6:0" class="bor_box min_hg">
-              <assist-chart v-if="assistData.assistMuster&&table.id && chartView && isShowChart" ref="chartEditRef" :edit-from="'panel'" :chart="chartView" :table-data="table" :param="chartEditParam"></assist-chart>
+              <assist-chart v-if="assistData.assistMuster&&table.id && chartView && isShowChart" ref="chartEditRef" :edit-from="'panel'" :chart="chartView" :type-title="typeTitle" :table-data="table" :param="chartEditParam"></assist-chart>
             </el-col>
           </el-row>
         </el-main>
@@ -268,6 +269,10 @@ import DatasetTableData from '@/views/dataset/common/DatasetTableData'
 import { getTable } from '@/api/dataset/dataset'
 import assistChart from '@/views/system/assist/assistChart'
 import { mapState } from 'vuex'
+import bus from '@/utils/bus'
+import {
+  post,
+} from '@/api/chart/chart'
 
 import {
   DEFAULT_COLOR_CASE,
@@ -284,6 +289,8 @@ import {
   DEFAULT_THRESHOLD,
   DEFAULT_TOTAL
 } from '@/views/chart/chart/chart'
+
+import { baseTableNormal } from '@/views/chart/chart/table/table-info'
 
 export default {
   name: '',
@@ -350,6 +357,7 @@ export default {
       },
       setvalue: '',
       table:{},
+      tableList: {},
 
       attrObj: {},
       owners: [
@@ -368,16 +376,20 @@ export default {
       assistData: {
         pid: '',
         name: '',
+        assistTid: '',
         assistMuster: '',
         assistArea: '',
         assistYear: '',
         assistTime: [],
+        viewInfo: {},
       },
       chartView: {
         render: 'antv',
         type: 'table-normal'
       },
+      antVRenderStatus: false,
       isShowChart: true,
+      myChart: null
     }
   },
   computed: {
@@ -398,7 +410,7 @@ export default {
   mounted() {
     this.addId = this.fillNumber
     this.init()
-    this.createView()
+    this.bindEvent()
   },
   methods: {
     init() {
@@ -409,11 +421,87 @@ export default {
         }
       })
     },
+    bindEvent() {
+      bus.$on('view-in-chart', (param) => {
+        this.getDataEdit(param)
+      })
+    },
+    getDataEdit(param) {
+      const data = JSON.parse(JSON.stringify(param))
+      if(param.type === 'propData') {
+        this.chartView.xaxis = param.viewInfo.xaxis
+        this.chartView.yaxis = param.viewInfo.yaxis
+        // console.log('param',this.chartView)
+      } else if(param.type === 'propStyle') {
+        this.chartView.customAttr = param.viewInfo.customAttr
+        this.chartView.customStyle = param.viewInfo.customStyle
+        this.chartView.senior = param.viewInfo.senior
+        this.chartView.title = param.viewInfo.title
+        this.chartView.name = param.viewInfo.title
+        // console.log('propStyle',this.chartView)
+      }
+      this.viewData(data.viewInfo)
+    },
+    viewData(viewInfo) {
+      // console.log('数据变动',viewInfo,this.tableList)
+      let field = this.tableList.fields.map(item => {return {...item}})
+      let data = this.tableList.data.map(item => {return {...item}})
+      let xaxis = JSON.parse(viewInfo.xaxis).map(item => item.datainsName)
+      let yaxis = JSON.parse(viewInfo.yaxis).map(item => item.datainsName)
+      let f = xaxis.concat(yaxis)
+      console.log('111',field,data,f)
+      let arr1 = []
+      let arr2 = []
+      if(f.length) {
+        field.map(item => {
+          if(f.indexOf(item.datainsName) !== -1) {
+            arr1.push(item)
+          }
+        })
+        for(let i=0;i<data.length;i++) {
+          let obj = {}
+          for(let k in data[i]) {
+            if(f.indexOf(k) !== -1) {
+              obj[k] = data[i][k]
+            }
+          }
+          arr2.push(obj)
+        }
+      }
+      // console.log('处理后',arr1,arr2)
+      this.chartView.data = {
+        fields: arr1,
+        tableRow: arr2,
+      }
+      console.log('chartView:::',this.chartView)
+      this.antVRenderStatus = true
+      if(this.chartView.type === 'table-normal') {
+        this.myChart = baseTableNormal(this.myChart, 'table_normal', this.chartView, null, arr2,'')
+      } else {
+        if (this.myChart) {
+          this.antVRenderStatus = false
+          this.myChart.destroy()
+        }
+      }
+      // console.log('myChart',this.myChart)
+      if (this.myChart) {
+        this.myChart.options.animation = false
+      }
+      if (this.myChart && this.antVRenderStatus) {
+        // console.log('this.antVRenderStatus', this.antVRenderStatus)
+        this.myChart.render()
+      }
+      // 
+    },
     getTable(table) {
       // this.table = table
       console.log('这个有触发吗？',table)
       // this.selObj.setvalue = table.label
       this.assistData.assistMuster = table.label
+      this.assistData.assistTid = table.id
+      if(this.myChart) {
+        this.myChart.destroy()
+      }
       table && table.id && getTable(table.id).then(response => {
         this.table = response.data
         console.log('这个数据',this.table)
@@ -422,53 +510,63 @@ export default {
         setTimeout(()=>{
           this.isShowChart = true
         })
+        this.createView()
+        this.getTableData()
         // this.$emit('getTable', this.table)
       }).catch(res => {
         this.table = {}
       })
     },
+    getTableData() {
+      if (this.table.id) {
+        post('/dataset/table/getPreviewData/1/100', this.table, false,30000).then(res => {
+          console.log('res11',res)
+          this.tableList = res.data
+        })
+      }
+    },
     createView() {
-      this.chartView.name = this.assistData.name
-      this.chartView.title = this.assistData.name
-      this.chartView.id = this.addId
-      this.chartView.tableId = this.table.id
-      this.chartView.type = 'table-normal'
-      this.chartView.isPlugin = false
-      this.chartView.render = 'antv'
-      this.chartView.resultMode = 'custom'
-      this.chartView.resultCount = 1000
-      this.chartView.customAttr = JSON.stringify({
-        color: DEFAULT_COLOR_CASE,
-        tableColor: DEFAULT_COLOR_CASE,
-        size: DEFAULT_SIZE,
-        label: DEFAULT_LABEL,
-        tooltip: DEFAULT_TOOLTIP,
-        totalCfg: DEFAULT_TOTAL
-      })
-      this.chartView.customStyle = JSON.stringify({
-        text: DEFAULT_TITLE_STYLE,
-        legend: DEFAULT_LEGEND_STYLE,
-        xAxis: DEFAULT_XAXIS_STYLE,
-        yAxis: DEFAULT_YAXIS_STYLE,
-        yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
-        split: DEFAULT_SPLIT
-      })
-      this.chartView.senior = JSON.stringify({
-        functionCfg: DEFAULT_FUNCTION_CFG,
-        assistLine: [],
-        threshold: DEFAULT_THRESHOLD
-      })
-      this.chartView.stylePriority = 'view' // 默认样式优先级视图
-      this.chartView.xaxis = JSON.stringify([])
-      this.chartView.xaxisExt = JSON.stringify([])
-      this.chartView.yaxis = JSON.stringify([])
-      this.chartView.yaxisExt = JSON.stringify([])
-      this.chartView.extStack = JSON.stringify([])
-      this.chartView.customFilter = JSON.stringify([])
-      this.chartView.drillFields = JSON.stringify([])
-      this.chartView.extBubble = JSON.stringify([])
-      this.chartView.data = {}
-      console.log('数据',this.chartView)
+        this.chartView.name = this.assistData.name
+        this.chartView.title = this.assistData.name
+        this.chartView.id = this.typeTitle === '新增'?this.addId : this.assistData.id
+        this.chartView.tableId = this.table.id
+        this.chartView.type = 'table-normal'
+        this.chartView.isPlugin = false
+        this.chartView.render = 'antv'
+        this.chartView.resultMode = 'custom'
+        this.chartView.resultCount = 1000
+        this.chartView.customAttr = JSON.stringify({
+          color: DEFAULT_COLOR_CASE,
+          tableColor: DEFAULT_COLOR_CASE,
+          size: DEFAULT_SIZE,
+          label: DEFAULT_LABEL,
+          tooltip: DEFAULT_TOOLTIP,
+          totalCfg: DEFAULT_TOTAL
+        })
+        this.chartView.customStyle = JSON.stringify({
+          text: DEFAULT_TITLE_STYLE,
+          legend: DEFAULT_LEGEND_STYLE,
+          xAxis: DEFAULT_XAXIS_STYLE,
+          yAxis: DEFAULT_YAXIS_STYLE,
+          yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
+          split: DEFAULT_SPLIT
+        })
+        this.chartView.senior = JSON.stringify({
+          functionCfg: DEFAULT_FUNCTION_CFG,
+          assistLine: [],
+          threshold: DEFAULT_THRESHOLD
+        })
+        this.chartView.stylePriority = 'view' // 默认样式优先级视图
+        this.chartView.xaxis = JSON.stringify([])
+        this.chartView.xaxisExt = JSON.stringify([])
+        this.chartView.yaxis = JSON.stringify([])
+        this.chartView.yaxisExt = JSON.stringify([])
+        this.chartView.extStack = JSON.stringify([])
+        this.chartView.customFilter = JSON.stringify([])
+        this.chartView.drillFields = JSON.stringify([])
+        this.chartView.extBubble = JSON.stringify([])
+        this.chartView.data = {}
+        console.log('数据',this.chartView)
     },
     handleSelectionChange(val) {
       console.log(val)
@@ -491,6 +589,15 @@ export default {
       if(data.type === 1) {
         this.visibleType = true
         this.formData = data
+      } else if (data.type === 2) {
+        this.assistData = data
+        this.panelType = 'add'
+        this.table.id = data.assistTid
+        this.chartView = data.chartView
+        this.getTableData()
+        setTimeout(() => {
+          this.viewData(data.chartView)
+        },100)
       }
     },
     onSuccess(formName) {
@@ -609,6 +716,7 @@ export default {
       this.assistData = {
         pid: '',
         name: '',
+        assistTid: '',
         assistMuster: '',
         assistArea: '',
         assistYear: '',
@@ -618,7 +726,58 @@ export default {
       this.chartView = {}
     },
     submit() {
+      console.log('保存',this.assistData,this.table,this.chartView)
+      if(!this.assistData.assistMuster && !this.assistData.pid) return
+      if(this.typeTitle === '新增') {
+        let obj = {
+          id: this.addId,
+          pid: this.assistData.pid,
+          name: this.assistData.name,
+          assistMuster: this.assistData.assistMuster,
+          assistTid: this.assistData.assistTid,
+          createdBy: this.$store.getters.name,
+          createdTime: this.dateFormat(new Date()),
+          updateBy: '',
+          updateTime: '',
+          type: 2,
+          ownerList: [], // 所有者
+          describe: '',
+          chartView: this.chartView
+        }
+        this.axios.post('/system/data/assist/table/add',obj).then(res => {
+          if(res.status === 200) {
+            this.$message.success('新增成功')
+            this.tableData = res.data.list
+            this.addId += 1
+            this.$store.commit('setFillNumber',this.addId)
+            this.goback()
+          }
+        })
+      } else if(this.typeTitle === '修改') {
+        let obj = {
+          id: this.assistData.id,
+          pid: this.assistData.pid,
+          name: this.assistData.name,
+          assistMuster: this.assistData.assistMuster,
+          assistTid: this.assistData.assistTid,
+          createdBy: this.assistData.createdBy,
+          createdTime: this.assistData.createdTime,
+          updateBy: this.$store.getters.name,
+          updateTime: this.dateFormat(new Date()),
+          type: 2,
+          ownerList: this.assistData.ownerList, // 所有者
+          describe: this.assistData.describe,
+          chartView: this.chartView
+        }
 
+        this.axios.post('/system/data/assist/table/update',obj).then(res => {
+          if(res.status === 200) {
+            this.$message.success('修改成功')
+            this.tableData = res.data.list
+            this.goback()
+          }
+        })
+      }
     },
     attributeClick(data) {
       this.attrObj = data

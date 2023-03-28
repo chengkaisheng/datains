@@ -505,6 +505,11 @@ export default {
     tableData: {
       type: Object,
       required: true
+    },
+    typeTitle: {
+      type: String,
+      required: false,
+      default: '新增'
     }
   },
   data() {
@@ -525,7 +530,7 @@ export default {
         extBubble: [],
         zaxis: [],
         show: true,
-        type: 'bar',
+        type: 'table-normal',
         title: '',
         customAttr: {
           color: DEFAULT_COLOR_CASE,
@@ -621,11 +626,19 @@ export default {
     console.log('chart',this.chart)
     console.log('tableData',this.tableData)
     this.initTableField()
+    this.initField()
   },
   activated() {
   },
 
   methods: {
+    initField() {
+      if(this.typeTitle === '修改') {
+        this.view.xaxis = JSON.parse(this.chart.xaxis)
+        this.view.yaxis = JSON.parse(this.chart.yaxis)
+      }
+    },
+    // 获取表字段拖拽数据
     initTableField(id) {
       if (this.tableData) {
         post('/dataset/table/getFieldsFromDE', this.tableData).then(response => {
@@ -678,46 +691,172 @@ export default {
     // move回调方法
     onMove(e, originalEvent) {
       console.log('拖动', e)
-      // this.moveId = e.draggedContext.element.id
-      // return true
+      this.moveId = e.draggedContext.element.id
+      return true
     },
     moveToDimension(e) {
       console.log('moveToDimension:::::::::::', e)
-      // this.dragMoveDuplicate(this.dimensionData, e, 'ds')
-      // this.calcData(true)
+      this.dragMoveDuplicate(this.dimensionData, e, 'ds')
+      this.calcData(true)
     },
     moveToQuota(e) {
       this.dragMoveDuplicate(this.quotaData, e, 'ds')
       this.calcData(true)
     },
     addXaxis(e) {
-      // if (this.view.type !== 'table-info') {
-      //   this.dragCheckType(this.view.xaxis, 'd')
-      // }
-      // this.dragMoveDuplicate(this.view.xaxis, e)
-      // if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'label') && this.view.xaxis.length > 1) {
-      //   this.view.xaxis = [this.view.xaxis[0]]
-      // }
-      // this.calcData(true)
+      if (this.view.type !== 'table-info') {
+        this.dragCheckType(this.view.xaxis, 'd')
+      }
+      this.dragMoveDuplicate(this.view.xaxis, e)
+      this.calcData(true)
     },
     addYaxis(e) {
-      // this.dragCheckType(this.view.yaxis, 'q')
-      // this.dragMoveDuplicate(this.view.yaxis, e)
-      // if ((this.view.type === 'map' || this.view.type === 'waterfall' || this.view.type === 'word-cloud') && this.view.yaxis.length > 1) {
-      //   this.view.yaxis = [this.view.yaxis[0]]
-      // }
-      // this.calcData(true)
+      this.dragCheckType(this.view.yaxis, 'q')
+      this.dragMoveDuplicate(this.view.yaxis, e)
+      this.calcData(true)
+    },
+    // drag
+    dragCheckType(list, type) {
+      if (list && list.length > 0) {
+        for (let i = 0; i < list.length; i++) {
+          if (list[i].groupType !== type) {
+            list.splice(i, 1)
+          }
+        }
+      }
+    },
+    dragMoveDuplicate(list, e, mode) {
+      console.log('dragMoveDuplicate::::::::::', list, e, mode)
+      if (mode === 'ds') {
+        list.splice(e.newDraggableIndex, 1)
+      } else {
+        const that = this
+        const dup = list.filter(function(m) {
+          return m.id === that.moveId
+        })
+        if (dup && dup.length > 1) {
+          list.splice(e.newDraggableIndex, 1)
+        }
+      }
     },
     calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
-      // this.changeEditStatus(true)
-      // const view = this.buildParam(true, 'chart', false, switchType)
-      // console.log('calcData：', this.panelInfo, view)
-      // if (!view) return
-      // // 缓存 拖动的数据并调用 UserView组件的view-in-cache 方法传值
-      // console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^保存还是--走这里')
-      // save2Cache(this.panelInfo.id, view).then(() => {
-      //   bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
-      // })
+      const view = this.buildParam(true, 'chart', false, switchType)
+      console.log('calcData：', view)
+      if (!view) return
+      bus.$emit('view-in-chart',{type: 'propData',viewInfo: view})
+    },
+    buildParam(getData, trigger, needRefreshGroup = false, switchType = false) {
+      if (!this.view.resultCount ||
+        this.view.resultCount === '' ||
+        isNaN(Number(this.view.resultCount)) ||
+        String(this.view.resultCount).includes('.') ||
+        parseInt(this.view.resultCount) < 1) {
+        this.view.resultCount = '1000'
+      }
+
+      if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
+        this.$message({
+          showClose: true,
+          message: this.$t('chart.table_info_switch'),
+          type: 'warning'
+        })
+        this.view.xaxis = []
+      }
+
+      const view = JSON.parse(JSON.stringify(this.view))
+      view.id = this.chart.id
+      view.sceneId = this.chart.sceneId
+      view.name = this.chart.title ? this.chart.title : this.tableData.name
+      view.title = this.chart.title ? this.chart.title : this.tableData.name
+      
+      view.tableId = this.chart.tableId
+
+      view.xaxis.forEach(function(ele) {
+        // if (!ele.summary || ele.summary === '') {
+        //   ele.summary = 'sum'
+        // }
+        if (!ele.dateStyle || ele.dateStyle === '') {
+          ele.dateStyle = 'y_M_d'
+        }
+        if (!ele.datePattern || ele.datePattern === '') {
+          ele.datePattern = 'date_sub'
+        }
+        if (!ele.sort || ele.sort === '') {
+          ele.sort = 'none'
+        }
+        if (!ele.filter) {
+          ele.filter = []
+        }
+      })
+
+      view.yaxis.forEach(function(ele) {
+        if (!ele.chartType) {
+          ele.chartType = 'bar'
+        }
+        if (!ele.summary || ele.summary === '') {
+          if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+            ele.summary = 'count'
+          } else {
+            ele.summary = 'sum'
+          }
+        }
+        if (!ele.sort || ele.sort === '') {
+          ele.sort = 'none'
+        }
+        if (!ele.filter) {
+          ele.filter = []
+        }
+        if (!ele.compareCalc) {
+          ele.compareCalc = compareItem
+        }
+      })
+
+      this.chart = JSON.parse(JSON.stringify(view))
+      this.view = JSON.parse(JSON.stringify(view))
+
+      view.xaxis = JSON.stringify(view.xaxis)
+      view.xaxisExt = JSON.stringify(view.xaxisExt)
+      view.yaxis = JSON.stringify(view.yaxis)
+      view.zaxis = JSON.stringify(view.zaxis)
+      view.yaxisExt = JSON.stringify(view.yaxisExt)
+      view.customAttr = JSON.stringify(view.customAttr)
+      view.customStyle = JSON.stringify(view.customStyle)
+      view.customFilter = JSON.stringify(view.customFilter)
+      view.extStack = JSON.stringify(view.extStack)
+      view.drillFields = JSON.stringify(view.drillFields)
+      view.extBubble = JSON.stringify(view.extBubble)
+      view.senior = JSON.stringify(view.senior)
+      console.log('buildParam：', view)
+      delete view.data
+      return view
+    },
+    calcStyle() {
+      // 将视图传入echart...组件
+      // console.log('calcStyle::::::>>>>>',this.view)
+      const view = JSON.parse(JSON.stringify(this.view))
+      view.xaxis = JSON.stringify(this.view.xaxis)
+      view.xaxisExt = JSON.stringify(this.view.xaxisExt)
+      view.yaxis = JSON.stringify(this.view.yaxis)
+      view.yaxisExt = JSON.stringify(this.view.yaxisExt)
+      view.zaxis = JSON.stringify(this.view.zaxis)
+      view.extStack = JSON.stringify(this.view.extStack)
+      view.drillFields = JSON.stringify(this.view.drillFields)
+      view.extBubble = JSON.stringify(this.view.extBubble)
+      view.customAttr = JSON.stringify(this.view.customAttr)
+      view.customStyle = JSON.stringify(this.view.customStyle)
+      view.customFilter = JSON.stringify(this.view.customFilter)
+      view.senior = JSON.stringify(this.view.senior)
+      view.title = this.view.title
+      view.stylePriority = this.view.stylePriority
+      // view.data = this.data
+      this.chart = view
+      console.log('calcStyle,,,,', view)
+      // 保存到缓存表
+      const viewSave = this.buildParam(true, 'chart', false, false)
+     
+      if (!viewSave) return
+      
+      bus.$emit('view-in-chart', {type: 'propStyle',viewInfo: view})
     },
     dimensionItemChange(item) {
       this.calcData(true)
@@ -731,12 +870,12 @@ export default {
       this.calcData(true)
     },
     showDimensionEditFilter(item) {
-      // this.dimensionItem = JSON.parse(JSON.stringify(item))
-      // this.dimensionFilterEdit = true
+      this.dimensionItem = JSON.parse(JSON.stringify(item))
+      this.dimensionFilterEdit = true
     },
     showRename(val) {
-      // this.itemForm = JSON.parse(JSON.stringify(val))
-      // this.renameItem = true
+      this.itemForm = JSON.parse(JSON.stringify(val))
+      this.renameItem = true
     },
     quotaItemChange(item) {
       this.calcData(true)
@@ -750,15 +889,15 @@ export default {
       this.calcData(true)
     },
     showQuotaEditFilter(item) {
-      // this.quotaItem = JSON.parse(JSON.stringify(item))
-      // if (!this.quotaItem.logic) {
-      //   this.quotaItem.logic = 'and'
-      // }
-      // this.quotaFilterEdit = true
+      this.quotaItem = JSON.parse(JSON.stringify(item))
+      if (!this.quotaItem.logic) {
+        this.quotaItem.logic = 'and'
+      }
+      this.quotaFilterEdit = true
     },
     showQuotaEditCompare(item) {
-      // this.quotaItemCompare = JSON.parse(JSON.stringify(item))
-      // this.showEditQuotaCompare = true
+      this.quotaItemCompare = JSON.parse(JSON.stringify(item))
+      this.showEditQuotaCompare = true
     },
     saveRename() {
       this.$refs['itemForm'].validate((valid) => {
@@ -784,23 +923,21 @@ export default {
     },
     closeRename() {
       this.renameItem = false
-      // this.resetRename()
     },
-
     onColorChange(val) {
       console.log('val: ', val)
       this.view.customAttr.color = val
-      // this.calcStyle()
+      this.calcStyle()
     },
     onSizeChange(val) {
       console.log('12121212----------------', val)
       this.view.customAttr.size = val
-      // this.calcStyle()
+      this.calcStyle()
     },
     onTextChange(val) {
       this.view.customStyle.text = val
       this.view.title = val.title
-      // this.calcStyle()
+      this.calcStyle()
     },
   }
 }
