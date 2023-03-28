@@ -119,6 +119,7 @@ export default {
       },
       labelStyle: {
         color: '#000000',
+        fontSize: '14px',
       }
     }
   },
@@ -290,9 +291,11 @@ export default {
 
 .prog_box ::v-deep .el-progress__text {
   color: inherit !important;
+  font-size: inherit;
 }
 .prog_box ::v-deep .el-progress-bar__innerText {
   color: inherit !important;
+  font-size: inherit;
 }
 
 .prog_title {
