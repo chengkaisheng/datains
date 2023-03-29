@@ -32,4 +32,6 @@ public interface AuthMapper {
 
     List<CurrentRoleDto> roles(@Param("userId") Long userId);
 
+    int updateEnabled(@Param("uid") Integer uid);
+
 }

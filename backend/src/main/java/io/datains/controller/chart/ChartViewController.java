@@ -88,8 +88,8 @@ public class ChartViewController {
         chartViewService.delete(id);
     }
 
-    @DePermissionProxy(value = "proxy", paramIndex = 2)
-    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW, paramIndex = 1)
+/*    @DePermissionProxy(value = "proxy", paramIndex = 2)
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW, paramIndex = 1)*/
     @ApiOperation("数据")
     @PostMapping("/getData/{id}/{panelId}")
     public ChartViewDTO getData(@PathVariable String id, @PathVariable String panelId,

@@ -75,6 +75,11 @@ public class AuthUserServiceImpl implements AuthUserService {
         return authMapper.roleCodes(userId);
     }
 
+    @Override
+    public int updateEnabled(Integer uid) {
+        return authMapper.updateEnabled(uid);
+    }
+
     /**
      * 此处需被F2CRealm登录认证调用 也就是说每次请求都会被调用 所以最好加上缓存
      *

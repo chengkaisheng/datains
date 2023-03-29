@@ -175,6 +175,7 @@ public class PanelLinkService {
         return result;
     }
 
+
     // 验证请求头部携带的信息 如果正确说明通过密码验证 否则没有通过
     public Boolean validateHeads(PanelLink panelLink) throws Exception {
         HttpServletRequest request = ServletUtils.request();
