@@ -187,15 +187,31 @@
           </el-row> -->
           <el-row>
             <el-col :span="4" ><span class="params-title-small">框字体颜色：</span></el-col>
-            <el-col :span="1">
+            <el-col :span="8">
               <el-color-picker v-model="curComponent.commonSelectFrame.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+            </el-col>
+            <el-col :span="4">
+              <span class="params-title-small">框字体大小：</span>
+            </el-col>
+            <el-col :span="8">
+              <el-select v-model="curComponent.commonSelectFrame.fontSize" size="small">
+                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value"></el-option>
+              </el-select>
             </el-col>
           </el-row>
           <el-row v-if="curComponent.component === 'de-select'" style="margin-top: 10px;">
             <el-col style="margin-bottom: 10px;">
               <el-col :span="4" ><span class="params-title-small">选项字体颜色：</span></el-col>
-              <el-col :span="1">
+              <el-col :span="8">
                 <el-color-picker v-model="curComponent.commonSelectFrame.checkColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+              </el-col>
+              <el-col :span="4" >
+                <span class="params-title-small">选项字体大小：</span>
+              </el-col>
+              <el-col :span="8">
+                <el-select v-model="curComponent.commonSelectFrame.checkFontSize" size="small">
+                  <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value"></el-option>
+                </el-select>
               </el-col>
             </el-col>
             <el-col>
@@ -243,8 +259,16 @@
           <el-row v-if="curComponent.component === 'de-select-grid'" style="margin-top: 10px;">
             <el-col style="margin-bottom: 10px;">
               <el-col :span="4" ><span class="params-title-small">列表字体颜色：</span></el-col>
-              <el-col :span="1">
+              <el-col :span="8">
                 <el-color-picker v-model="curComponent.commonSelectFrame.panelColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+              </el-col>
+              <el-col :span="4" >
+                <span class="params-title-small">列表字体大小：</span>
+              </el-col>
+              <el-col :span="8">
+                <el-select v-model="curComponent.commonSelectFrame.panelFontSize" size="small">
+                  <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value"></el-option>
+                </el-select>
               </el-col>
             </el-col>
             <el-col>
@@ -330,11 +354,13 @@ export default {
       dialogDownVisible: false,
       uploadDownDisabled: false,
       panel: null,
-      predefineColors: COLOR_PANEL
+      predefineColors: COLOR_PANEL,
+      fontSize: [],
     }
   },
   created() {
     this.init()
+    this.initFont()
   },
   mounted() {
 
@@ -362,6 +388,16 @@ export default {
       this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
       this.selectOrigin =deepCopy(this.curComponent.commonSelectFrame)
       this.queryBackground()
+    },
+    initFont() {
+      const arr = []
+      for (let i = 12; i <= 40; i = i + 2) {
+        arr.push({
+          name: i + '',
+          value: i + ''
+        })
+      }
+      this.fontSize = arr
     },
     queryBackground() {
       queryBackground().then(response => {

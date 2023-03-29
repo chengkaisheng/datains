@@ -46,7 +46,7 @@
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
         </el-form-item>
-        <el-form-item v-show="chart.type && chart.type === 'progress-loop'" label="数值大小" class="form-item">
+        <el-form-item label="数值大小" class="form-item">
           <el-select v-model="labelForm.progressValueSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>

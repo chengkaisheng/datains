@@ -104,7 +104,7 @@
           </el-form-item>
           <span v-show="axisForm.axisLabel.show">
             <el-form-item :label="$t('chart.axis_label_width')" class="form-item form-item-slider">
-              <el-slider v-model="axisForm.axisLabel.width" show-input :show-input-controls="false" :min="0" :max="200" input-size="mini" @change="changeXAxisStyle" />
+              <el-slider v-model="axisForm.axisLabel.width" show-input :show-input-controls="false" :min="0" :max="400" input-size="mini" @change="changeXAxisStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.axis_label_overflow')" class="form-item">
               <el-select v-model="axisForm.axisLabel.overflow"  @change="changeXAxisStyle">

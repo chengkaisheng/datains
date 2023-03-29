@@ -12,14 +12,14 @@
           :label="$t('chart.bar_gap')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="-1" :max="5" :step="0.1" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type === 'bar'" :label="'柱圆角'" class="form-item form-item-slider">
+        <el-form-item v-show="chart.type && chart.type === 'bar'" :label="'柱圆角'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barBorderRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="50" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar' && chart.type !== 'bar-rate'" 
+        <el-form-item v-show="chart.type && chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar' && chart.type !== 'bar-rate'" 
           :label="'柱边框'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barBorderValue" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar' && chart.type !== 'bar-rate'" 
+        <el-form-item v-show="chart.type && chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar' && chart.type !== 'bar-rate'" 
           :label="'边框类型'" class="form-item"
         >
           <el-select v-model="sizeForm.borderType" @change="changeBarSizeCase">
@@ -32,16 +32,16 @@
       <!-- {{ sizeForm }} -->
       <el-form v-show="chart.type &&(chart.type.includes('bar')||chart.type.includes('line')) " ref="spaceSize" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item :label="'左间距'" class="form-item">
-          <el-slider v-model="sizeForm.spaceleft" show-input :show-input-controls="false" input-size="mini" :min="0" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.spaceleft" show-input :show-input-controls="false" input-size="mini" :min="0" :max="400" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="'右间距'" class="form-item">
-          <el-slider v-model="sizeForm.spaceRight" show-input :show-input-controls="false" input-size="mini" :min="0" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.spaceRight" show-input :show-input-controls="false" input-size="mini" :min="0" :max="400" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="'上间距'" class="form-item">
-          <el-slider v-model="sizeForm.spaceTop" show-input :show-input-controls="false" input-size="mini" :min="0" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.spaceTop" show-input :show-input-controls="false" input-size="mini" :min="0" :max="200" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="'下间距'" class="form-item">
-          <el-slider v-model="sizeForm.spaceBottom" show-input :show-input-controls="false" input-size="mini" :min="0" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.spaceBottom" show-input :show-input-controls="false" input-size="mini" :min="0" :max="200" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
 

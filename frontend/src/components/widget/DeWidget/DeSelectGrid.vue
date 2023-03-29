@@ -127,6 +127,7 @@ export default {
           style.backgroundColor = this.element.commonSelectFrame.color
         }
         style.color = this.element.commonSelectFrame.fontColor
+        style.fontSize = this.element.commonSelectFrame.fontSize?this.element.commonSelectFrame.fontSize +'px': '14px'
       }
       
       return style
@@ -143,6 +144,7 @@ export default {
       const style = {}
       if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
         style.color = this.element.commonSelectFrame.panelColor
+        style.fontSize = this.element.commonSelectFrame.panelFontSize?this.element.commonSelectFrame.panelFontSize +'px': '14px'
       }
       return style
     }
