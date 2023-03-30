@@ -420,8 +420,7 @@ export default {
           viewIds: []
         }, manualModify: true }
         const data = JSON.parse(JSON.stringify(this.dataInfo))
-        const obj = data[0]
-        data.shift()
+        const obj = data.shift()
         data.push(obj)
         this.dataInfo = JSON.parse(JSON.stringify(data))
         // const data = this.dataInfo[0]
