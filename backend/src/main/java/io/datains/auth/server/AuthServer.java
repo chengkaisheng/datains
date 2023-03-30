@@ -9,9 +9,7 @@ import io.datains.auth.entity.SysUserEntity;
 import io.datains.auth.entity.TokenInfo;
 import io.datains.auth.service.AuthUserService;
 import io.datains.auth.util.JWTUtils;
-import io.datains.auth.util.RedisService;
 import io.datains.auth.util.RsaUtil;
-import io.datains.auth.util.UserKey;
 import io.datains.commons.utils.*;
 import io.datains.controller.sys.request.LdapAddRequest;
 import io.datains.exception.DataInsException;
@@ -41,8 +39,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import static cn.hutool.crypto.CipherMode.encrypt;
-
 @RestController
 public class AuthServer implements AuthApi {
 
@@ -55,8 +51,6 @@ public class AuthServer implements AuthApi {
     @Autowired
     private SysUserService sysUserService;
 
-    @Resource
-    private RedisService redisService;
 
     int i = 0;
     Integer userId = null;
@@ -147,11 +141,6 @@ public class AuthServer implements AuthApi {
         result.put("token", token);
         ServletUtils.setToken(token);
         authUserService.clearCache(user.getUserId());
-        String s = redisService.get(UserKey.getById, "datains_"+user.getUserId().toString());
-        if (StringUtils.isEmpty(s)){
-            boolean set = redisService.set(UserKey.getById, "datains_"+user.getUserId().toString(), token);
-            System.err.println(set);
-        }
         return result;
     }
 
@@ -211,10 +200,6 @@ public class AuthServer implements AuthApi {
             return "fail";
         }
 
-        // CurrentUserDto user = AuthUtils.getUser();
-        boolean set = redisService.delete(UserKey.getById, "datains_"+userId.toString());
-
-        System.err.println("token注销"+set);
         return "success";
     }
 
