@@ -234,9 +234,14 @@ export default {
       }).then(() => {
         //	此dom为echarts图标展示dom
         this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
-        if (!this.myChart) {
-          this.myChart = this.$echarts.init(document.getElementById(this.chartId))
+        // if (!this.myChart) {
+        //   this.myChart = this.$echarts.init(document.getElementById(this.chartId))
+        // }
+        if(this.myChart) {
+          console.log('销毁，，，')
+          this.myChart.dispose() // 销毁重绘
         }
+        this.myChart = this.$echarts.init(document.getElementById(this.chartId))
         this.drawEcharts()
 
         this.myChart.off('click')
