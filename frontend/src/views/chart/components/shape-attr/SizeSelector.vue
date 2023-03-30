@@ -198,6 +198,11 @@
       </el-form>
 
       <el-form v-show="chart.type && (chart.type.includes('text') || chart.type === 'label')" ref="sizeFormText" :model="sizeForm" label-width="100px" size="mini">
+        <el-form-item label="排列格式" class="form-item">
+          <el-select v-model="sizeForm.quotaArrayStatus" placeholder="请选择" @change="changeBarSizeCase">
+            <el-option v-for="item in quotaArrays" :key="item.value" :label="item.name" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item :label="$t('chart.quota_font_size')" class="form-item">
           <el-select v-model="sizeForm.quotaFontSize" :placeholder="$t('chart.quota_font_size')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -207,11 +212,6 @@
           <el-checkbox v-model="sizeForm.dimensionShow" @change="changeBarSizeCase">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="sizeForm.dimensionShow">
-          <el-form-item v-show="chart.type === 'text'" label="排列格式" class="form-item">
-            <el-select v-model="sizeForm.quotaArrayStatus" placeholder="请选择" @change="changeBarSizeCase">
-              <el-option v-for="item in quotaArrays" :key="item.value" :label="item.name" :value="item.value"></el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item v-show="chart.type" :label="$t('chart.dimension_font_size')" class="form-item">
             <el-select v-model="sizeForm.dimensionFontSize" :placeholder="$t('chart.dimension_font_size')" @change="changeBarSizeCase">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
