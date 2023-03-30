@@ -18,6 +18,8 @@ public interface AuthUserService {
 
     List<String> roles(Long userId);
 
+    int updateEnabled(Integer uid);
+
     List<String> permissions(Long userId);
 
     List<CurrentRoleDto> roleInfos(Long userId);

@@ -9,7 +9,9 @@ import io.datains.auth.entity.SysUserEntity;
 import io.datains.auth.entity.TokenInfo;
 import io.datains.auth.service.AuthUserService;
 import io.datains.auth.util.JWTUtils;
+import io.datains.auth.util.RedisService;
 import io.datains.auth.util.RsaUtil;
+import io.datains.auth.util.UserKey;
 import io.datains.commons.utils.*;
 import io.datains.controller.sys.request.LdapAddRequest;
 import io.datains.exception.DataInsException;
@@ -36,7 +38,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import static cn.hutool.crypto.CipherMode.encrypt;
 
 @RestController
 public class AuthServer implements AuthApi {
@@ -49,6 +54,12 @@ public class AuthServer implements AuthApi {
 
     @Autowired
     private SysUserService sysUserService;
+
+    @Resource
+    private RedisService redisService;
+
+    int i = 0;
+    Integer userId = null;
 
     @Override
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
@@ -101,7 +112,8 @@ public class AuthServer implements AuthApi {
         }
 
         if (user.getEnabled() == 0) {
-            DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
+            DataInsException.throwException("账号已被锁定,请联系管理员");
+            //DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
         String realPwd = user.getPassword();
 
@@ -113,10 +125,21 @@ public class AuthServer implements AuthApi {
             pwd = CodingUtil.md5(pwd);
 
             if (!StringUtils.equals(pwd, realPwd)) {
+                if (i == 0){
+                    userId = user.getUserId().intValue();
+                }
+                if (user.getUserId().intValue()!=userId){
+                    userId = user.getUserId().intValue();
+                    i = 0;
+                }
+                i++;
+                if (i==5){
+                    authUserService.updateEnabled(user.getUserId().intValue());
+                }
                 DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
             }
         }
-
+        i = 0;
         Map<String, Object> result = new HashMap<>();
         TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
         String token = JWTUtils.sign(tokenInfo, realPwd);
@@ -124,13 +147,18 @@ public class AuthServer implements AuthApi {
         result.put("token", token);
         ServletUtils.setToken(token);
         authUserService.clearCache(user.getUserId());
+        String s = redisService.get(UserKey.getById, "datains_"+user.getUserId().toString());
+        if (StringUtils.isEmpty(s)){
+            boolean set = redisService.set(UserKey.getById, "datains_"+user.getUserId().toString(), token);
+            System.err.println(set);
+        }
         return result;
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         String s = CodingUtil.md5("123456");
         System.err.println(s);
-    }
+    }*/
 
     @Override
     public CurrentUserDto userInfo() {
@@ -162,7 +190,7 @@ public class AuthServer implements AuthApi {
     @Override
     public String logout() {
         String token = ServletUtils.getToken();
-
+        Long userId = null;
         if (isOpenOidc()) {
             HttpServletRequest request = ServletUtils.request();
             String idToken = request.getHeader("IdToken");
@@ -176,14 +204,27 @@ public class AuthServer implements AuthApi {
             return "success";
         }
         try {
-            Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
+             userId = JWTUtils.tokenInfoByToken(token).getUserId();
             authUserService.clearCache(userId);
         } catch (Exception e) {
             LogUtil.error(e);
             return "fail";
         }
 
+        // CurrentUserDto user = AuthUtils.getUser();
+        boolean set = redisService.delete(UserKey.getById, "datains_"+userId.toString());
+
+        System.err.println("token注销"+set);
         return "success";
+    }
+
+    public static String decryptParam(String text) throws Exception {
+        return RsaUtil.decryptByPrivateKey("MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEA0vfvyTdGJkdbHkB8mp0f3FE0GYP3AYPaJF7jUd1M0XxFSE2ceK3k2kw20YvQ09NJKk+OMjWQl9WitG9pB6tSCQIDAQABAkA2SimBrWC2/wvauBuYqjCFwLvYiRYqZKThUS3MZlebXJiLB+Ue/gUifAAKIg1avttUZsHBHrop4qfJCwAI0+YRAiEA+W3NK/RaXtnRqmoUUkb59zsZUBLpvZgQPfj1MhyHDz0CIQDYhsAhPJ3mgS64NbUZmGWuuNKp5coY2GIj/zYDMJp6vQIgUueLFXv/eZ1ekgz2Oi67MNCk5jeTF2BurZqNLR3MSmUCIFT3Q6uHMtsB9Eha4u7hS31tj1UWE+D+ADzp59MGnoftAiBeHT7gDMuqeJHPL4b+kC+gzV4FGTfhR9q3tTbklZkD2A==", text);
+    }
+
+    public static void main(String[] args) throws Exception {
+        System.err.println(decryptParam("prYyIJ81OqNhzVqzcs1M4fLUg2cqT%2BUkSv4iIVz6R0MZXyx7vR0Mfa2UxtNDfesmrakUW%2BjqosB%2FelV0FQOOeA"));
+       // System.err.println(JWTUtils.tokenInfoByToken("prYyIJ81OqNhzVqzcs1M4fLUg2cqT%2BUkSv4iIVz6R0MZXyx7vR0Mfa2UxtNDfesmrakUW%2BjqosB%2FelV0FQOOeA").getUserId());
     }
 
     @Override

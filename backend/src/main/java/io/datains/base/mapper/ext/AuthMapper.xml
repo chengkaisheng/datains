@@ -91,6 +91,10 @@
     </select>
 
 
+    <update id="updateEnabled" >
+      update sys_user set enabled = 0 where user_id = #{uid}
+    </update>
+
     <select id="permissionsAll" resultType="String">
 		SELECT
 			sys_menu.permission

@@ -1,8 +1,11 @@
 package io.datains.service.chart;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.datains.auth.entity.SysUserEntity;
+import io.datains.auth.filter.F2CLinkFilter;
 import io.datains.auth.service.AuthUserService;
 import io.datains.base.domain.*;
 import io.datains.base.mapper.ChartViewCacheMapper;
@@ -48,8 +51,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -337,6 +343,15 @@ public class ChartViewService {
 
         DatasetTableField datasetTableFieldObj = DatasetTableField.builder().tableId(view.getTableId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableFieldObj);
+        HttpServletRequest requests = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest();
+        String authorization = requests.getHeader("Authorization");
+        if (authorization.equals("undefined" )|| authorization ==null){
+            String linkToken = requests.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
+            DecodedJWT jwt = JWT.decode(linkToken);
+            Long userId = jwt.getClaim("userId").asLong();
+            requestList.setUser(userId);
+        }
         // 获取数据集,需校验权限
         DataSetTableDTO table = dataSetTableService.getWithPermission(view.getTableId(), requestList.getUser());
         checkPermission("use", table, requestList.getUser());
