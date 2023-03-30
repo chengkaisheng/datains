@@ -39,12 +39,15 @@ export const COMMON_SELECT_FRAME = {
   backImg: null, // 框背景图
   alpha: 100, // 颜色透明度
   fontColor: '#000000', // 框字体颜色
+  fontSize: 14, // 框字体大小
   checkBgType: 'color', // 下拉选项样式设置类型
   checkColor: '#000000', // 下拉选项字体颜色
+  checkFontSize: 14, // 下拉选项字体大小
   checkBgColor: '#FFFFFF', // 下拉选项背景颜色
   checkBgImg: null, // 下拉选项背景图
   panelBgColor: '#ffffff', // 面板背景色
   panelColor: '#000000', // 面板字体色
+  panelFontSize: 14, // 面板字体大小
 }
 
 // 空组件仪表板样式

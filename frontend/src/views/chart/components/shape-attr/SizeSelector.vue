@@ -12,14 +12,14 @@
           :label="$t('chart.bar_gap')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="-1" :max="5" :step="0.1" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type === 'bar'" :label="'柱圆角'" class="form-item form-item-slider">
+        <el-form-item v-show="chart.type && chart.type === 'bar'" :label="'柱圆角'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barBorderRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="50" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar' && chart.type !== 'bar-rate'" 
+        <el-form-item v-show="chart.type && chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar' && chart.type !== 'bar-rate'" 
           :label="'柱边框'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barBorderValue" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar' && chart.type !== 'bar-rate'" 
+        <el-form-item v-show="chart.type && chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar' && chart.type !== 'bar-rate'" 
           :label="'边框类型'" class="form-item"
         >
           <el-select v-model="sizeForm.borderType" @change="changeBarSizeCase">
@@ -32,16 +32,16 @@
       <!-- {{ sizeForm }} -->
       <el-form v-show="chart.type &&(chart.type.includes('bar')||chart.type.includes('line')) " ref="spaceSize" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item :label="'左间距'" class="form-item">
-          <el-slider v-model="sizeForm.spaceleft" show-input :show-input-controls="false" input-size="mini" :min="0" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.spaceleft" show-input :show-input-controls="false" input-size="mini" :min="0" :max="400" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="'右间距'" class="form-item">
-          <el-slider v-model="sizeForm.spaceRight" show-input :show-input-controls="false" input-size="mini" :min="0" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.spaceRight" show-input :show-input-controls="false" input-size="mini" :min="0" :max="400" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="'上间距'" class="form-item">
-          <el-slider v-model="sizeForm.spaceTop" show-input :show-input-controls="false" input-size="mini" :min="0" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.spaceTop" show-input :show-input-controls="false" input-size="mini" :min="0" :max="200" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="'下间距'" class="form-item">
-          <el-slider v-model="sizeForm.spaceBottom" show-input :show-input-controls="false" input-size="mini" :min="0" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.spaceBottom" show-input :show-input-controls="false" input-size="mini" :min="0" :max="200" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
 
@@ -198,6 +198,11 @@
       </el-form>
 
       <el-form v-show="chart.type && (chart.type.includes('text') || chart.type === 'label')" ref="sizeFormText" :model="sizeForm" label-width="100px" size="mini">
+        <el-form-item label="排列格式" class="form-item">
+          <el-select v-model="sizeForm.quotaArrayStatus" placeholder="请选择" @change="changeBarSizeCase">
+            <el-option v-for="item in quotaArrays" :key="item.value" :label="item.name" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item :label="$t('chart.quota_font_size')" class="form-item">
           <el-select v-model="sizeForm.quotaFontSize" :placeholder="$t('chart.quota_font_size')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -207,11 +212,6 @@
           <el-checkbox v-model="sizeForm.dimensionShow" @change="changeBarSizeCase">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="sizeForm.dimensionShow">
-          <el-form-item v-show="chart.type === 'text'" label="排列格式" class="form-item">
-            <el-select v-model="sizeForm.quotaArrayStatus" placeholder="请选择" @change="changeBarSizeCase">
-              <el-option v-for="item in quotaArrays" :key="item.value" :label="item.name" :value="item.value"></el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item v-show="chart.type" :label="$t('chart.dimension_font_size')" class="form-item">
             <el-select v-model="sizeForm.dimensionFontSize" :placeholder="$t('chart.dimension_font_size')" @change="changeBarSizeCase">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />

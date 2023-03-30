@@ -85,9 +85,9 @@ export const DEFAULT_COLOR_CASE = {
     legend: {
       icon: 'circle'
     },
-  
+    labels: {},
     plotOptions: {
-      column: {
+      cylinder: {
         allowPointSelect: true,
         cursor: 'pointer',
         depth: 25,
@@ -208,9 +208,8 @@ export const DEFAULT_COLOR_CASE = {
         formatter = formatter.replace('{c}', '{point.y}')
         formatter = formatter.replace('{d}', '{point.percentage:.2f}%')
         dataLabels.format = formatter
-  
         // 系列数据标签的选项，显示在每个数据点旁边
-        chart_option.plotOptions.column.dataLabels = dataLabels
+        chart_option.plotOptions.cylinder.dataLabels = dataLabels
       }
   
       // size
@@ -304,7 +303,7 @@ export const DEFAULT_COLOR_CASE = {
       }
   
       if (customStyle.legend && chart_option.legend) {
-        chart_option.plotOptions.column.showInLegend = customStyle.legend.show
+        chart_option.plotOptions.cylinder.showInLegend = customStyle.legend.show
         // chart_option.legend.padding = padding
         chart_option.legend.layout = customStyle.legend.orient
         chart_option.legend.verticalAlign = customStyle.legend.vPosition

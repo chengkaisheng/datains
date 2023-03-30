@@ -119,6 +119,7 @@ export default {
       },
       labelStyle: {
         color: '#000000',
+        fontSize: '14px',
       }
     }
   },
@@ -256,6 +257,7 @@ export default {
         this.progStyle.position = customAttr.label.progressPosition !== undefined? customAttr.label.progressPosition : 'top'
         this.customColor = customAttr.color.colors[0]
         this.labelStyle.color = customAttr.color.progressLabelColor? customAttr.color.progressLabelColor : '#000000'
+        this.labelStyle.fontSize = customAttr.label.progressValueSize !== undefined? customAttr.label.progressValueSize + 'px' : '14px'
       }
     },
 
@@ -290,9 +292,11 @@ export default {
 
 .prog_box ::v-deep .el-progress__text {
   color: inherit !important;
+  font-size: inherit !important;
 }
 .prog_box ::v-deep .el-progress-bar__innerText {
   color: inherit !important;
+  font-size: inherit !important;
 }
 
 .prog_title {

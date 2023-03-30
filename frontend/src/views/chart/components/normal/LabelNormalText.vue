@@ -70,6 +70,9 @@ export default {
       },
       label_space: {
         marginTop: '10px',
+        marginBottom: '0px',
+        marginLeft: '0px',
+        marginRight: '0px',
         textAlign: 'center'
       },
       bg_class: {
@@ -142,10 +145,38 @@ export default {
           this.quotaShow = customAttr.size.quotaShow
           this.label_class.fontSize = customAttr.size.dimensionFontSize + 'px'
           this.label_content_class.fontSize = customAttr.size.quotaFontSize + 'px'
+          this.content_class.flexDirection = customAttr.size.quotaArrayStatus !== undefined? customAttr.size.quotaArrayStatus : 'column'
           if (!this.dimensionShow) {
             this.label_space.marginTop = '0px'
+            this.label_space.marginBottom = '0px'
+            this.label_space.marginLeft = '0px'
+            this.label_space.marginRight = '0px'
           } else {
-            this.label_space.marginTop = customAttr.size.spaceSplit + 'px'
+            if(customAttr.size.quotaArrayStatus !== undefined) {
+              if(customAttr.size.quotaArrayStatus === 'column') {
+                this.label_space.marginTop = customAttr.size.spaceSplit + 'px'
+                this.label_space.marginBottom = '0px'
+                this.label_space.marginLeft = '0px'
+                this.label_space.marginRight = '0px'
+              } else if(customAttr.size.quotaArrayStatus === 'column-reverse') {
+                this.label_space.marginTop = '0px'
+                this.label_space.marginBottom = customAttr.size.spaceSplit + 'px'
+                this.label_space.marginLeft = '0px'
+                this.label_space.marginRight = '0px'
+              } else if(customAttr.size.quotaArrayStatus === 'row') {
+                this.label_space.marginTop = '0px'
+                this.label_space.marginBottom = '0px'
+                this.label_space.marginLeft = customAttr.size.spaceSplit + 'px'
+                this.label_space.marginRight = '0px'
+              } else if(customAttr.size.quotaArrayStatus === 'row-reverse') {
+                this.label_space.marginTop = '0px'
+                this.label_space.marginBottom = '0px'
+                this.label_space.marginLeft = '0px'
+                this.label_space.marginRight = customAttr.size.spaceSplit + 'px'
+              }
+            } else {
+              this.label_space.marginTop = customAttr.size.spaceSplit + 'px'
+            }
           }
         }
       }

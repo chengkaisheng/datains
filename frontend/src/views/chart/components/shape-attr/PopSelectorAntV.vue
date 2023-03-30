@@ -19,6 +19,12 @@
         <el-form-item :label="$t('chart.pop_top')" class="form-item">
           <el-slider v-model="popForm.popTop" show-input :show-input-controls="false" input-size="mini" :min="-1000" :step="1" :max="1000" @change="changePopCase" />
         </el-form-item>
+        <el-divider />
+        <el-form-item :label="$t('chart.pop_title_fontSize')" class="form-item">
+          <el-select v-model="popForm.popTitleFontSize" @change="changePopCase">
+            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
         <el-form-item :label="$t('chart.pop_title_color')" class="form-item">
           <el-color-picker v-model="popForm.popTitleColor" class="color-picker-style" :predefine="predefineColors" @change="changePopCase" />
         </el-form-item>
@@ -34,6 +40,12 @@
               <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
               <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
             </el-radio-group>
+        </el-form-item>
+        <el-divider />
+        <el-form-item :label="$t('chart.pop_content_fontSize')" class="form-item">
+          <el-select v-model="popForm.popContentFontSize" @change="changePopCase">
+            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
         </el-form-item>
         <el-form-item :label="$t('chart.pop_content_color')" class="form-item">
           <el-color-picker v-model="popForm.popContentColor" class="color-picker-style" :predefine="predefineColors" @change="changePopCase" />
@@ -55,6 +67,12 @@
         <!-- <el-form-item :label="$t('chart.pop_content_border_width')" class="form-item">
           <el-slider v-model="popForm.popContentBorderBottomWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :step="1" :max="10" @change="changePopCase" />
         </el-form-item> -->
+        <el-form-item :label="$t('chart.pop_content_left')" class="form-item">
+          <el-slider v-model="popForm.popContentLeft" show-input :show-input-controls="false" input-size="mini" :min="1" :step="1" :max="100" @change="changePopCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.pop_content_left')" class="form-item">
+          <el-slider v-model="popForm.popContentRight" show-input :show-input-controls="false" input-size="mini" :min="1" :step="1" :max="100" @change="changePopCase" />
+        </el-form-item>
       </el-form>
     </el-col>
   </div>
@@ -81,7 +99,8 @@ export default {
         {name: '实线',value: 'solid'},
         {name: '虚线',value: 'dashed'},
         {name: '点',value: 'dotted'},
-      ]
+      ],
+      fontSize: []
     }
   },
   watch: {
@@ -93,6 +112,7 @@ export default {
   },
   mounted() {
     this.initData()
+    this.init()
   },
   methods: {
     initData() {
@@ -111,21 +131,35 @@ export default {
           this.popForm.popOpen = this.popForm.popOpen? this.popForm.popOpen : DEFAULT_LABEL.popOpen
           this.popForm.popLeft = this.popForm.popLeft? this.popForm.popLeft : DEFAULT_LABEL.popLeft
           this.popForm.popTop = this.popForm.popTop? this.popForm.popTop : DEFAULT_LABEL.popTop
+          this.popForm.popTitleFontSize = this.popForm.popTitleFontSize? this.popForm.popTitleFontSize : DEFAULT_LABEL.popTitleFontSize
           this.popForm.popTitleColor = this.popForm.popTitleColor? this.popForm.popTitleColor : DEFAULT_LABEL.popTitleColor
           this.popForm.popTitleBackground = this.popForm.popTitleBackground? this.popForm.popTitleBackground : DEFAULT_LABEL.popTitleBackground
           this.popForm.popHeight = this.popForm.popHeight? this.popForm.popHeight : DEFAULT_LABEL.popHeight
           this.popForm.popPosition = this.popForm.popPosition? this.popForm.popPosition : DEFAULT_LABEL.popPosition
+          this.popForm.popContentFontSize = this.popForm.popContentFontSize? this.popForm.popContentFontSize : DEFAULT_LABEL.popContentFontSize
           this.popForm.popContentColor = this.popForm.popContentColor? this.popForm.popContentColor : DEFAULT_LABEL.popContentColor
           this.popForm.popContentBackground = this.popForm.popContentBackground? this.popForm.popContentBackground : DEFAULT_LABEL.popContentBackground
           this.popForm.popContentHeight = this.popForm.popContentHeight? this.popForm.popContentHeight : DEFAULT_LABEL.popContentHeight
           this.popForm.popContentBorderBottomColor = this.popForm.popContentBorderBottomColor? this.popForm.popContentBorderBottomColor : DEFAULT_LABEL.popContentBorderBottomColor
+          this.popForm.popContentLeft = this.popForm.popContentLeft? this.popForm.popContentLeft : DEFAULT_LABEL.popContentLeft
+          this.popForm.popContentRight = this.popForm.popContentRight? this.popForm.popContentRight : DEFAULT_LABEL.popContentRight
         }
       }
     },
     
     changePopCase() {
       this.$emit('onLabelChange', this.popForm)
-    }
+    },
+    init() {
+      const arr = []
+      for (let i = 10; i <= 60; i = i + 2) {
+        arr.push({
+          name: i + '',
+          value: i + ''
+        })
+      }
+      this.fontSize = arr
+    },
 
   }
 }

@@ -170,15 +170,19 @@ export const DEFAULT_LABEL = {
   popLeft: 0,
   popTop: 0,
   popTitleBackground: '#082456',
+  popTitleFontSize: 14,
   popTitleColor: '#FFFFFF',
   popHeight: 30,
   popPosition: 'center',
   popContentBackground: '#1b2642',
+  popContentFontSize: 14,
   popContentColor: '#FFFFFF',
   popContentHeight: 25,
   // popContentBorderBottomStyle: 'dashed',
-  popContentBorderBottomColor: '#ffffff'
+  popContentBorderBottomColor: '#ffffff',
   // popContentBorderBottomWidth: 1,
+  popContentLeft: 30,
+  popContentRight: 70,
 }
 export const DEFAULT_TOOLTIP = {
   show: true,

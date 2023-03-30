@@ -94,6 +94,7 @@ export default {
           style.backgroundColor = this.element.commonSelectFrame.color
         }
         style.color = this.element.commonSelectFrame.fontColor
+        style.fontSize = this.element.commonSelectFrame.fontSize? this.element.commonSelectFrame.fontSize + 'px': '14px'
       }
       // style.borderRadius = '4px'
       style.height = '100%'
@@ -114,6 +115,7 @@ export default {
           style.backgroundColor = this.element.commonSelectFrame.checkBgColor
         }
         style.color = this.element.commonSelectFrame.checkColor
+        style.fontSize = this.element.commonSelectFrame.checkFontSize? this.element.commonSelectFrame.checkFontSize + 'px': '14px'
       }
       console.log('optionstyle,,,',style)
       return style
@@ -291,9 +293,11 @@ export default {
   background-color: transparent;
   color: inherit;
   border: none;
+  font-size: inherit;
 }
 .deSelect ::v-deep .el-input__inner::placeholder {
   color: inherit;
+  font-size: inherit;
 }
 .sel_background {
   background-color: transparent;
@@ -301,15 +305,24 @@ export default {
 }
 .deSelect ::v-deep .el-input__suffix {
   color: inherit;
+  font-size: inherit;
 }
 .deSelect ::v-deep .el-input__suffix-inner {
   color: inherit;
+  font-size: inherit;
+}
+.deSelect ::V-deep  .el-input--medium  {
+  font-size: inherit;
+}
+.deSelect ::v-deep .el-input{
+  font-size: inherit;
 }
 .deSelect ::v-deep .el-input--medium .el-input__icon {
   line-height: inherit;
 }
 
 .deSelect ::v-deep .el-input--medium .el-input__inner {
+  font-size: inherit;
   height: inherit;
   line-height: inherit;
 }

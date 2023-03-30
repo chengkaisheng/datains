@@ -68,6 +68,7 @@ export default {
           // style.backgroundColor = this.hexColorToRGBA(this.element.commonSelectFrame.color,this.element.commonSelectFrame.alpha)
         }
         style.color = this.element.commonSelectFrame.fontColor
+        style.fontSize = this.element.commonSelectFrame.fontSize?this.element.commonSelectFrame.fontSize+'px':'14px'
       }
       
       return style

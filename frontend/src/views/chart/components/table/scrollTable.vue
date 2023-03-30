@@ -30,8 +30,8 @@
             </p>
             <el-row>
               <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
-                <el-col :span="8" style="text-align: right;">{{ obj.name }}：</el-col>
-                <el-col :span="16">{{ obj.value }}</el-col>
+                <el-col class="box_over" style="text-align: right;" :style="{width: pop_content_width.titleWidth}">{{ obj.name }}：</el-col>
+                <el-col :style="{width: pop_content_width.contentWidth}">{{ obj.value }}</el-col>
               </el-col>
             </el-row>
             <div slot="reference" class="pop_position" :style="{left: popOpen.left,top: popOpen.top}" />
@@ -184,16 +184,22 @@ export default {
         textAlign: 'center',
         backgroundColor: '#082456',
         lineHeight: '30px',
-        color: '#ffffff'
+        color: '#ffffff',
+        fontSize: '14px',
       },
 
       pop_content: {
+        fontSize: '14px',
         backgroundColor: '#1b2642',
         color: '#ffffff',
         lineHeight: '25px',
         borderBottomStyle: 'dashed',
         borderBottomWidth: '1px',
-        borderBottomColor: '#ffffff'
+        borderBottomColor: '#ffffff',
+      },
+      pop_content_width: {
+        titleWidth: '30%',
+        contentWidth: '70%',
       },
 
       adaptWidth: true,
@@ -245,8 +251,7 @@ export default {
   },
   watch: {
     chart: function() {
-      console.log('this.chart.data----------！！！！！！', this.chart.data)
-      console.log('this.chart.data----------2222', this.chart)
+      console.log('this.chart.data----------2222', this.chart,this.timer)
 
       if (this.chart.data) {
         clearInterval(this.timer)
@@ -414,13 +419,17 @@ export default {
           fieldId: this.chart.data.fields[0].id,
           viewIds: []
         }, manualModify: true }
-        const data = this.dataInfo[0]
-        setTimeout(() => {
-          this.dataInfo.splice(0, 1)
-        }, 100) // 时间调短测试
-        setTimeout(() => {
-          this.dataInfo.push(data)
-        }, 101)
+        const data = JSON.parse(JSON.stringify(this.dataInfo))
+        const obj = data.shift()
+        data.push(obj)
+        this.dataInfo = JSON.parse(JSON.stringify(data))
+        // const data = this.dataInfo[0]
+        // setTimeout(() => {
+        //   this.dataInfo.splice(0, 1)
+        // }, 100) // 时间调短测试
+        // setTimeout(() => {
+        //   this.dataInfo.push(data)
+        // }, 101)
         // console.log('存储数据', this.dataInfo[3])
         const keyObj = this.dataInfo[this.highlight]
         // const objArr = []
@@ -436,10 +445,8 @@ export default {
         if (this.bannerLinkageKey === true) {
           this.setCondition(keyValue)
         }
-        setTimeout(() => {
-          // console.log('字段是？',this.fields)
-          this.getDetailsInfo(this.dataInfo)
-        },102)
+        // console.log('字段是？',this.fields)
+        this.getDetailsInfo(this.dataInfo)
         
       }, this.scrolleTime) // 滚动速度
     },
@@ -652,24 +659,32 @@ export default {
           // console.log('label数据，，，，，', customAttr.label)
           this.isPopShow = customAttr.label.popShow
           this.popOpen.position = customAttr.label.popOpen
-          this.popOpen.left = customAttr.label.popLeft !== undefined ? customAttr.label.popLeft + 'px' : '0px'
-          this.popOpen.top = customAttr.label.popTop !== undefined ? customAttr.label.popTop + 'px' : '0px'
-          this.pop_title.color = customAttr.label.popTitleColor
+          this.popOpen.left = customAttr.label.popLeft? customAttr.label.popLeft + 'px' : '0px'
+          this.popOpen.top = customAttr.label.popTop? customAttr.label.popTop + 'px' : '0px'
+          this.pop_title.fontSize = customAttr.label.popTitleFontSize? customAttr.label.popTitleFontSize + 'px' : '14px'
+          this.pop_title.color = customAttr.label.popTitleColor? customAttr.label.popTitleColor : '#082456'
           this.pop_title.backgroundColor = customAttr.label.popTitleBackground
           this.pop_title.textAlign = customAttr.label.popPosition
           this.pop_title.lineHeight = customAttr.label.popHeight + 'px'
+          this.pop_content.fontSize = customAttr.label.popContentFontSize? customAttr.label.popContentFontSize + 'px' : '14px'
           this.pop_content.color = customAttr.label.popContentColor
           this.pop_content.backgroundColor = customAttr.label.popContentBackground
           this.pop_content.lineHeight = customAttr.label.popContentHeight + 'px'
           // this.pop_content.borderBottomStyle = customAttr.label.popContentBorderBottomStyle
           // this.pop_content.borderBottomWidth = customAttr.label.popContentBorderBottomWidth + 'px'
           this.pop_content.borderBottomColor = customAttr.label.popContentBorderBottomColor
+
+          this.pop_content_width.titleWidth = customAttr.label.popContentLeft? customAttr.label.popContentLeft+'%' : '30%'
+          this.pop_content_width.contentWidth = customAttr.label.popContentRight? customAttr.label.popContentRight+'%' : '70%'
+
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
         // 页面mounted()时候调用一次
         this.getDetailsInfo(this.dataInfo)
 
-        this.tableScroll()// 表格滚动
+        if(!this.isVisible) { // 判断弹窗是否显示了，显示不让其滚动
+          this.tableScroll()// 表格滚动
+        }
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
@@ -776,7 +791,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.box_over {
+  overflow: hidden; //超出的文本隐藏
+  text-overflow: ellipsis; //溢出用省略号显示
+  white-space: nowrap;  // 默认不换行；
+}
 .scroll_pop {
   padding: 0px !important;
 }
