@@ -224,8 +224,7 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
 }
 
 export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
-  console.log('渐变玫瑰图', cstyle)
-  console.log('玫瑰环图', chart, cstyle)
+  // console.log('玫瑰环图', chart, cstyle)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
