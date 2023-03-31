@@ -268,7 +268,8 @@ export default {
     console.log('获取边框数据', this.element)
     console.log('this.chart---', this.chart)
     // console.log('滚动表格',this.inScreen)
-    this.oldData = JSON.parse(JSON.stringify(this.chart))
+    // this.oldData = JSON.parse(JSON.stringify(this.chart))
+
     if (this.chart.data) {
       this.prossData()
       // this.tableScroll()
@@ -652,8 +653,12 @@ export default {
           this.scrolleTime = customAttr.size.automaticTime
 
           console.log('widthData',customAttr.size.widthData)
-          this.widthData = customAttr.size.widthData
-          this.adaptWidth = customAttr.size.adaptWidth !== undefined? customAttr.size.adaptWidth : true
+          if(customAttr.size.widthData && customAttr.size.widthData.length) {
+            this.adaptWidth = customAttr.size.adaptWidth !== undefined? customAttr.size.adaptWidth : true
+            this.widthData = customAttr.size.widthData
+          } else {
+            this.adaptWidth = true
+          }
         }
         if (customAttr.label) {
           // console.log('label数据，，，，，', customAttr.label)

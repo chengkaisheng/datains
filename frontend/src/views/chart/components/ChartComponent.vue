@@ -234,14 +234,9 @@ export default {
       }).then(() => {
         //	此dom为echarts图标展示dom
         this.myChart = this.$echarts.getInstanceByDom(document.getElementById(this.chartId))
-        // if (!this.myChart) {
-        //   this.myChart = this.$echarts.init(document.getElementById(this.chartId))
-        // }
-        if(this.myChart) {
-          console.log('销毁，，，')
-          this.myChart.dispose() // 销毁重绘
+        if (!this.myChart) {
+          this.myChart = this.$echarts.init(document.getElementById(this.chartId))
         }
-        this.myChart = this.$echarts.init(document.getElementById(this.chartId))
         this.drawEcharts()
 
         this.myChart.off('click')
@@ -254,6 +249,33 @@ export default {
             that.trackBarStyle.top = (param.event.offsetY - 15) + 'px'
             that.$refs.viewTrack.trackButtonClick()
           }
+        })
+
+        this.myChart.on('legendselectchanged',function(params){
+          console.log('图例点击',params)
+          // 获取当前选中的图例名称
+          let selectedName = params.name;
+          let options = that.myChart.getOption()
+          let series = options.series
+
+          // 遍历饼图系列，根据选中状态重新计算数据
+          for(let i=0;i<series.length;i++) {
+            if(series[i].type === 'pie') {
+              let data = series[i].data
+              for(let j=0;j<data.length;j++) {
+                let item = data[j]
+                if(item.name === selectedName) {
+                  item.selected = true;
+                } else {
+                  item.selected = false;
+                }
+              }
+            }
+          }
+          console.log('series:',series)
+
+          // 重新设置数据和图案
+          that.myChart.setOption(options)
         })
       })
     },
