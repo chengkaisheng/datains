@@ -88,7 +88,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         // 先判断是不是api调用
         HttpServletRequest hRequest = (HttpServletRequest) request;
         String authorization = hRequest.getHeader("Authorization");
-        if (authorization.equals("undefined" )|| authorization==null){
+        if (StringUtils.isEmpty(authorization)||authorization.equals("undefined" )){
             return true;
         }
         if (isLoginAttempt(request, response) || ApiKeyHandler.isApiKeyCall(hRequest)) {

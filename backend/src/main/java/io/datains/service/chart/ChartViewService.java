@@ -346,7 +346,7 @@ public class ChartViewService {
         HttpServletRequest requests = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getRequest();
         String authorization = requests.getHeader("Authorization");
-        if (authorization.equals("undefined" )|| authorization ==null){
+        if ( StringUtils.isEmpty(authorization) || authorization.equals("undefined" )){
             String linkToken = requests.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
             DecodedJWT jwt = JWT.decode(linkToken);
             Long userId = jwt.getClaim("userId").asLong();
