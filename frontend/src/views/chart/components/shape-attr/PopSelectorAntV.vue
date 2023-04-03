@@ -70,7 +70,7 @@
         <el-form-item :label="$t('chart.pop_content_left')" class="form-item">
           <el-slider v-model="popForm.popContentLeft" show-input :show-input-controls="false" input-size="mini" :min="1" :step="1" :max="100" @change="changePopCase" />
         </el-form-item>
-        <el-form-item :label="$t('chart.pop_content_left')" class="form-item">
+        <el-form-item :label="$t('chart.pop_content_right')" class="form-item">
           <el-slider v-model="popForm.popContentRight" show-input :show-input-controls="false" input-size="mini" :min="1" :step="1" :max="100" @change="changePopCase" />
         </el-form-item>
       </el-form>
