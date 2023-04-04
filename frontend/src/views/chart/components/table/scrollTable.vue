@@ -113,7 +113,7 @@ export default {
         width: '100%',
         fontSize: '18px',
         color: '#303133',
-        textAlign: 'left',
+        textAlign: 'center',
         fontStyle: 'normal',
         fontWeight: 'normal'
       },
@@ -124,7 +124,7 @@ export default {
       table_header_class: {
         fontSize: '12px',
         color: '#606266',
-        background: '#e8eaec',
+        background: '#E1EAFF',
         height: '36px',
         textAlign: 'left'
       },
@@ -259,6 +259,9 @@ export default {
       } else {
         this.fields = []
         this.dataInfo = []
+        this.$nextTick(() => {
+          this.initStyle()
+        })
         clearInterval(this.timer)
       }
     }
@@ -684,15 +687,18 @@ export default {
 
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
-        // 页面mounted()时候调用一次
-        this.getDetailsInfo(this.dataInfo)
+        if(this.fields.length){
+          // 页面mounted()时候调用一次
+          this.getDetailsInfo(this.dataInfo)
 
-        if(!this.isVisible) { // 判断弹窗是否显示了，显示不让其滚动
-          this.tableScroll()// 表格滚动
+          if(!this.isVisible) { // 判断弹窗是否显示了，显示不让其滚动
+            this.tableScroll()// 表格滚动
+          }
         }
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
+        console.log('customStyle',customStyle)
         if (customStyle.text) {
           this.title_show = customStyle.text.show
           this.title_class.fontSize = (customStyle.text.fontSize * this.previewCanvasScale.scalePointWidth) + 'px'
