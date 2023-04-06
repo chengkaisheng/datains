@@ -33,7 +33,17 @@ public class TokenInterceptorConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/anonymous/license/validate")
                 .excludePathPatterns("/plugin/theme/themes")
                 .excludePathPatterns("/plugin/theme/items/*")
-
+                .excludePathPatterns("/api/link/validate")
+                .excludePathPatterns("/api/link/resourceDetail/*")
+                .excludePathPatterns("/api/link/shortUrl")
+                .excludePathPatterns("/system/requestTimeOut")
+                .excludePathPatterns("/pluginCommon/component/ThemeSetting")
+                .excludePathPatterns("/linkage/getPanelAllLinkageInfo/*")
+                .excludePathPatterns("/chart/view/*/*")
+                .excludePathPatterns("/linkage/getPanelAllLinkageInfo/*")
+                .excludePathPatterns("/plugin/theme/themes")
+                .excludePathPatterns("/plugin/theme/items/*")
+                .excludePathPatterns("/chart/view/getData/*/*")
 
         ;
 

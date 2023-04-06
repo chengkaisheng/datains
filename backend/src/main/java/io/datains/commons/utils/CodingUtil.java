@@ -37,6 +37,10 @@ public class CodingUtil {
         return md5(src, UTF_8);
     }
 
+    public static void main(String[] args) {
+        System.err.println(md5("123456"));
+    }
+
     /**
      * MD5加密
      *

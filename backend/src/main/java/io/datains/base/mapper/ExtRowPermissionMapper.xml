@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.datains.base.mapper.ExtRowPermissionMapper">
+
+  <resultMap id="RowPermissonsDTO" type="io.datains.dto.DataSetRowPermissionsDTO">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="auth_target_type" jdbcType="VARCHAR" property="authTargetType" />
+    <result column="auth_target_id" jdbcType="BIGINT" property="authTargetId" />
+    <result column="dataset_id" jdbcType="VARCHAR" property="datasetId" />
+    <result column="dataset_field_id" jdbcType="VARCHAR" property="datasetFieldId" />
+    <result column="logic" jdbcType="VARCHAR" property="logic" />
+    <result column="enum_check_field" jdbcType="VARCHAR" property="enumCheckField" />
+    <result column="filter_type" jdbcType="VARCHAR" property="filterType" />
+    <result column="filter" jdbcType="VARCHAR" property="filter" />
+    <result column="update_time" jdbcType="BIGINT" property="updateTime" />
+  </resultMap>
+
+  <select id="searchRowPermissons" resultMap="RowPermissonsDTO" parameterType="io.datains.dto.DataSetRowPermissionsDTO">
+    SELECT dataset_table.name as datasetName, dataset_table_field.name as fieldName, dataset_row_permissions.*
+    FROM dataset_row_permissions
+    left join dataset_table on dataset_table.id=dataset_row_permissions.dataset_id
+    left join dataset_table_field on dataset_table_field.id=dataset_row_permissions.dataset_field_id
+    where 1=1
+    <if test="authTargetType != null">
+      and dataset_row_permissions.auth_target_type=#{authTargetType,jdbcType=VARCHAR}
+    </if>
+    <if test="authTargetId != null">
+      and dataset_row_permissions.auth_target_id=#{authTargetId,jdbcType=BIGINT}
+    </if>
+    <if test="authTargetIds != null">
+      and auth_target_id in
+      <foreach collection='authTargetIds' item='authTargetId' open='(' separator=',' close=')'>#{authTargetId}</foreach>
+    </if>
+    <if test="datasetId != null">
+      and dataset_row_permissions.dataset_id=#{datasetId}
+    </if>
+    <if test="datasetFieldId != null">
+      and dataset_row_permissions.dataset_field_id=#{datasetFieldId}
+    </if>
+  </select>
+
+
+  <select id="queryRowPermissions" parameterType="io.datains.dto.XpackGridExample" resultMap="RowPermissonsDTO">
+    SELECT dataset_table.name as datasetName, dataset_table_field.name as fieldName, dataset_row_permissions.*
+    FROM dataset_row_permissions
+    left join dataset_table on dataset_table.id=dataset_row_permissions.dataset_id
+    left join dataset_table_field on dataset_table_field.id=dataset_row_permissions.dataset_field_id
+    <if test="_parameter != null">
+      <include refid="gridCondition" />
+    </if>
+    order by dataset_row_permissions.update_time desc
+  </select>
+
+  <sql id="gridCondition">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+
+
+  <insert id="insert" parameterType="io.datains.dto.DatasetRowPermissions">
+        insert into dataset_row_permissions (id, auth_target_type, auth_target_id,
+                                             dataset_id, dataset_field_id, logic, filter_type, enum_check_field, `filter`,
+                                             update_time)
+        values (#{id,jdbcType=VARCHAR}, #{authTargetType,jdbcType=VARCHAR}, #{authTargetId,jdbcType=BIGINT},
+                #{datasetId,jdbcType=VARCHAR}, #{datasetFieldId,jdbcType=VARCHAR}, #{logic,jdbcType=VARCHAR}, #{filterType,jdbcType=VARCHAR},#{enumCheckField,jdbcType=VARCHAR},#{filter,jdbcType=VARCHAR},
+                #{updateTime,jdbcType=BIGINT})
+    </insert>
+
+  <update id="updateByPrimaryKey" parameterType="io.datains.dto.DatasetRowPermissions">
+        update dataset_row_permissions
+        set auth_target_type = #{authTargetType,jdbcType=VARCHAR},
+            auth_target_id = #{authTargetId,jdbcType=BIGINT},
+            dataset_id = #{datasetId,jdbcType=VARCHAR},
+            dataset_field_id = #{datasetFieldId,jdbcType=VARCHAR},
+            logic = #{logic,jdbcType=VARCHAR},
+            filter_type = #{filterType,jdbcType=VARCHAR},
+            enum_check_field = #{enumCheckField,jdbcType=VARCHAR},
+            `filter` = #{filter,jdbcType=VARCHAR},
+            update_time = #{updateTime,jdbcType=BIGINT}
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete from dataset_row_permissions
+        where id = #{id,jdbcType=VARCHAR}
+    </delete>
+
+  <select id="searchAuthUsers" parameterType="java.lang.String" resultType="io.datains.base.domain.Item">
+        SELECT sys_user.user_id as id, sys_user.username as name
+        FROM sys_auth
+        left join sys_auth_detail on sys_auth.id=sys_auth_detail.auth_id
+        left join sys_user on sys_user.user_id=sys_auth.auth_target
+        where sys_auth.auth_target_type='user'
+          and sys_auth.auth_source_type='dataset'
+          and sys_auth.auth_source=#{datasetId,jdbcType=VARCHAR}
+          and sys_auth_detail.privilege_type=1
+          and sys_auth_detail.privilege_value=1
+          and sys_user.is_admin=false
+    </select>
+
+  <select id="searchAuthRoles" parameterType="java.lang.String" resultType="io.datains.base.domain.Item">
+        SELECT sys_role.role_id as id, sys_role.name as name
+        FROM sys_auth
+                 left join sys_auth_detail on sys_auth.id=sys_auth_detail.auth_id
+                 left join sys_role on sys_role.role_id=sys_auth.auth_target
+        where sys_auth.auth_target_type='role'
+          and sys_auth.auth_source_type='dataset'
+          and sys_auth.auth_source=#{datasetId,jdbcType=VARCHAR}
+          and sys_auth_detail.privilege_type=1
+          and sys_auth_detail.privilege_value=1
+    </select>
+
+  <select id="searchAuthDepts" parameterType="java.lang.String"  resultType="io.datains.base.domain.Item">
+        SELECT sys_dept.dept_id as id, sys_dept.name as name
+        FROM sys_auth
+                 left join sys_auth_detail on sys_auth.id=sys_auth_detail.auth_id
+                 left join sys_dept on sys_dept.dept_id=sys_auth.auth_target
+        where sys_auth.auth_target_type='dept'
+          and sys_auth.auth_source_type='dataset'
+          and sys_auth.auth_source=#{datasetId,jdbcType=VARCHAR}
+          and sys_auth_detail.privilege_type=1
+          and sys_auth_detail.privilege_value=1
+    </select>
+
+  <select id="searchUser" parameterType="java.lang.Long" resultType="io.datains.base.domain.Item">
+        SELECT sys_user.user_id as id, sys_user.username as name
+        FROM sys_user
+        where user_id = #{userId,jdbcType=BIGINT}
+    </select>
+
+  <select id="searchRole" parameterType="java.lang.Long" resultType="io.datains.base.domain.Item">
+        SELECT sys_role.role_id as id, sys_role.name as name
+        FROM sys_role
+        where sys_role.role_id = #{roleId}
+    </select>
+
+  <select id="searchDept" parameterType="java.lang.Long" resultType="io.datains.base.domain.Item">
+        SELECT sys_dept.dept_id as id, sys_dept.name as name
+        FROM sys_dept
+        where sys_dept.dept_id = #{deptId}
+    </select>
+</mapper>

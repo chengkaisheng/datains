@@ -39,7 +39,7 @@ public class TokenInterceptor  implements HandlerInterceptor {
     @JsonIgnore
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader("Authorization");
-        if (StringUtils.isEmpty(token)){
+        if (StringUtils.isEmpty(token) || token.equals("undefined")){
             return true;
         }
         Long userId = JWTUtils.tokenInfoByToken(token).getUserId();

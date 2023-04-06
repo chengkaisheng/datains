@@ -7,13 +7,13 @@ import io.datains.commons.constants.DePermissionType;
 import io.datains.commons.constants.ResourceAuthLevel;
 import io.datains.commons.utils.PageUtils;
 import io.datains.commons.utils.Pager;
+import io.datains.dto.DataSetRowPermissionsDTO;
+import io.datains.dto.DatasetRowPermissions;
+import io.datains.dto.XpackConditionEntity;
+import io.datains.dto.XpackGridRequest;
 import io.datains.i18n.Translator;
-import io.datains.plugins.common.entity.XpackConditionEntity;
-import io.datains.plugins.common.entity.XpackGridRequest;
 import io.datains.plugins.config.SpringContextUtil;
-import io.datains.plugins.xpack.auth.dto.request.DataSetRowPermissionsDTO;
-import io.datains.plugins.xpack.auth.dto.request.DatasetRowPermissions;
-import io.datains.plugins.xpack.auth.service.RowPermissionService;
+import io.datains.service.RowPermissionService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -22,6 +22,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
+/*行权限*/
 @ApiIgnore
 @RestController
 @RequestMapping("plugin/dataset/rowPermissions")
@@ -58,7 +59,7 @@ public class RowPermissionsController {
     @PostMapping("/list")
     public List<DataSetRowPermissionsDTO> rowPermissions(@RequestBody DataSetRowPermissionsDTO request) {
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
-       return rowPermissionService.searchRowPermissions(request);
+        return rowPermissionService.searchRowPermissions(request);
     }
 
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
