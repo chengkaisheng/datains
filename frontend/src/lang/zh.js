@@ -803,6 +803,7 @@ export default {
     funnel_width: '宽度',
     line_smooth: '平滑折线',
     title_style: '标题样式',
+    text_show: '字体显示',
     text_fontsize: '字体大小',
     text_color: '字体颜色',
     tooltip_width_number: '悬浮窗宽度',

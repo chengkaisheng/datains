@@ -17,7 +17,7 @@
           <el-progress :width="cleWidth" :stroke-width="progStyle.strokeWidth" 
             type="circle" :color="customColor" :percentage="progressData.value" :style="labelStyle">
           </el-progress>
-          <p style="text-align: center;" :style="progStyle">{{progressData.name}}</p>
+          <p v-if="progressShow" style="text-align: center;" :style="progStyle">{{progressData.name}}</p>
         </el-col>
       </el-row>
     </div>
@@ -96,6 +96,7 @@ export default {
         value: 0,
       },
       customColor: '#409eff',
+      progressShow: true,
       progStyle: {
         fontSize: '14px',
         color: '#000000',
@@ -232,7 +233,8 @@ export default {
       if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
         // console.log('customAttr,progress',customAttr)
-
+        
+        this.progressShow = customAttr.label.progressShow !== undefined? customAttr.label.progressShow : true
         this.progStyle.fontSize = customAttr.label.progressFontSize + 'px'
         this.progStyle.color = customAttr.label.progressFontColor
         this.progStyle.fontFamily =  this.canvasStyleData.fontFamily

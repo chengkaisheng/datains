@@ -822,7 +822,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'antv' && (view.type.includes('roll') || view.type.includes('dialog'))"
+                    v-show="view.render && view.render === 'antv' && (view.type.includes('roll') && view.type !== 'roll-click-element')"
                     :title="$t('chart.pop_config')"
                   >
                     <pop-selector-ant-v 

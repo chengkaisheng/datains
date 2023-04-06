@@ -63,7 +63,7 @@ import vueSeamlessScroll from 'vue-seamless-scroll'
 import eventBus from '@/components/canvas/utils/eventBus'
 
 export default {
-  name: 'TableNormal',
+  name: 'scrollTable',
   components: {
     vueSeamlessScroll
   },

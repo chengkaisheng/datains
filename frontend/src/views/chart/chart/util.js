@@ -42,6 +42,13 @@ export const TYPE_CONFIGS = [
     title: '滚动表格',
     icon: 'roll-elemnt'
   },
+  {
+    render: 'antv',
+    category: 'chart.chart_type_table',
+    value: 'roll-click-element',
+    title: '点击滚动表格',
+    icon: 'roll-click-element'
+  },
   // {
   //   render: 'antv',
   //   category: 'chart.chart_type_table',

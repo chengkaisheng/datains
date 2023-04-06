@@ -144,6 +144,7 @@ export const DEFAULT_LABEL = {
   xHc: 0,
   yHc: 0,
 
+  progressShow: true,
   progressFontSize: '14',
   progressValueSize: '14', // 进度环数值字体大小
   progressValueWeight: '500', // 数值粗细

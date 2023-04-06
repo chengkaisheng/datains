@@ -127,6 +127,15 @@
       :in-screen="inScreen"
       class="table-class"
     />
+    <icon-scroll-table
+      v-else-if="tableRollClickFlag"
+      :ref="element.propValue.id"
+      :element="element"
+      :show-summary="chart.type === 'roll-click-element'"
+      :chart="chart"
+      :in-screen="inScreen"
+      class="table-class"
+    />
     <!-- 
       :filter="filter"
       :is-edit="isEdit" -->
@@ -171,6 +180,7 @@ import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import TableRoll from '@/views/chart/components/table/TableRoll'
 import scrollTable from '@/views/chart/components/table/scrollTable'
+import IconScrollTable from '@/views/chart/components/table/IconScrollTable'
 import dialogTable from '@/views/chart/components/table/dialogTable'
 import progressBar from '@/views/chart/components/progress/progressBar'
 import progressLoop from '@/views/chart/components/progress/progressLoop'
@@ -215,6 +225,7 @@ export default {
     ChartComponentH3,
     ChartComponentHc,
     scrollTable,
+    IconScrollTable,
     dialogTable,
     progressBar,
     progressLoop,
@@ -406,7 +417,15 @@ export default {
       return (
         this.httpRequest.status &&
         this.chart.type &&
-        this.chart.type.includes('roll') &&
+        this.chart.type === 'roll-elemnt' &&
+        this.renderComponent() === 'antv'
+      )
+    },
+    tableRollClickFlag() {
+      return (
+        this.httpRequest.status &&
+        this.chart.type &&
+        this.chart.type === 'roll-click-element' &&
         this.renderComponent() === 'antv'
       )
     },
@@ -635,7 +654,7 @@ export default {
     searchCount: function(val1) {
       if (val1 > 0 && this.requestStatus !== 'waiting') {
         console.log('-----------计时器', this.chart)
-        if (this.chart.type !== 'roll-elemnt') {
+        if (this.chart.type !== 'roll-elemnt' && this.chart.type !== 'roll-click-element') {
           this.getData(this.element.propValue.viewId)
         }
       }
@@ -718,7 +737,7 @@ export default {
         ) * this.scaleCoefficient
       const customAttrChart = JSON.parse(this.sourceCustomAttrStr)
       const customStyleChart = JSON.parse(this.sourceCustomStyleStr)
-      if (this.chart.type !== 'roll-elemnt') {
+      if (this.chart.type !== 'roll-elemnt' && this.chart.type !== 'roll-click-element') {
         // this.mergeScale()
         recursionTransObj(
           customAttrTrans,
