@@ -173,10 +173,12 @@ export default {
           this.$success(this.$t('about.update_success'))
           this.license = this.getLicense(response.data)
           // console.log('license数据',this.license)
-          if(this.oldLic.status === 'expired') {
+          if(this.oldLic.status === 'valid') {
             setTimeout(() => {
               this.logOut()
             },100)
+          } else {
+            this.oldLic.status = this.getLicense(response.data)
           }
         } else {
           this.$warning(response.data.message)
