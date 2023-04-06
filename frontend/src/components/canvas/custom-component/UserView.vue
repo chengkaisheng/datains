@@ -398,7 +398,7 @@ export default {
       )
     },
     tableRollFlag() {
-      console.log('shuju________----------111111', this.chart)
+      // console.log('shuju________----------111111', this.chart)
       const rollChart = JSON.parse(JSON.stringify(this.chart))
 
       localStorage.setItem('rollChart', JSON.stringify(rollChart))

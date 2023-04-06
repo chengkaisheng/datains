@@ -156,7 +156,7 @@
           <el-input-number v-model="sizeForm.tableSpacing" :min="0" :max="200" label="描述文字" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item v-show="chart.type && chart.type.includes('vertical')" :label="'表头宽度'" class="form-item">
-          <el-input-number v-model="sizeForm.tableHeightWidth" :min="0" :max="200" label="描述文字" @change="changeBarSizeCase" />
+          <el-input-number v-model="sizeForm.tableHeightWidth" :min="0" label="描述文字" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item v-show="chart.type && !chart.type.includes('vertical')" :label="$t('chart.table_title_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableTitleHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
