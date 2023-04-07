@@ -239,8 +239,8 @@ export default {
         this.progStyle.color = customAttr.label.progressFontColor
         this.progStyle.fontFamily =  this.canvasStyleData.fontFamily
         this.progStyle.strokeWidth = customAttr.label.strokeWidth !== undefined? customAttr.label.strokeWidth : 20
-        this.customColor = customAttr.color.colors[0]
-        this.labelStyle.color = customAttr.color.progressLabelColor? customAttr.color.progressLabelColor : '#000000'
+        this.customColor = hexColorToRGBA(customAttr.color.colors[0],customAttr.color.alpha)
+        this.labelStyle.color = customAttr.label.progressLabelColor? customAttr.label.progressLabelColor : '#000000'
         this.labelStyle.fontSize = customAttr.label.progressValueSize? customAttr.label.progressValueSize + 'px' : '14px'
         this.labelStyle.fontWeight = customAttr.label.progressValueWeight? customAttr.label.progressValueWeight : '400'
       }

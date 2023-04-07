@@ -119,6 +119,7 @@
               </div>
             </el-popover>
           </el-form-item>
+          <!-- 边框颜色 -->
           <el-form-item v-show="chart.type && chart.render === 'echarts' && chart.type.includes('bar') 
             && chart.type !== 'bar-rate' && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar'" 
             :label="'边框颜色'" class="form-item"
@@ -164,8 +165,19 @@
               </div>
             </el-popover>
           </el-form-item>
-          <el-form-item v-show="chart.type ==='bar-annular'" :label="'柱状背景色'" class="form-item">
+
+          <el-form-item v-show="chart.type && chart.type ==='bar-annular'" :label="'柱状背景色'" class="form-item">
             <el-color-picker v-model="colorForm.bgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
+
+          <el-form-item v-show="chart.type && chart.type ==='progress-count'" label="颜色层级" class="form-item">
+            <el-select v-model="colorForm.progressLevel" size="mini" @change="changeColorCase">
+              <el-option label="不分级" :value="1"></el-option>
+              <el-option label="二级" :value="2"></el-option>
+              <el-option label="三级" :value="3"></el-option>
+              <el-option label="四级" :value="4"></el-option>
+              <el-option label="五级" :value="5"></el-option>
+            </el-select>
           </el-form-item>
 
           <el-form-item v-show="(chart.type && (chart.type.includes('text') || chart.type === 'label')) || sourceType==='panelTable'" :label="$t('chart.quota_color')" class="form-item">
@@ -173,10 +185,6 @@
           </el-form-item>
           <el-form-item v-show="(chart.type && (chart.type.includes('text') || chart.type === 'label')) || sourceType==='panelTable'" :label="$t('chart.dimension_color')" class="form-item">
             <el-color-picker v-model="colorForm.dimensionColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
-          </el-form-item>
-
-          <el-form-item v-show="chart.type && chart.type.includes('progress')" label="数值颜色" class="form-item">
-            <el-color-picker v-model="colorForm.progressLabelColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
 
           <el-form-item v-show="chart.type && chart.type === 'text_popup'" label="背景颜色" class="form-item">

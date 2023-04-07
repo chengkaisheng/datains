@@ -50,6 +50,17 @@
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
+    <progressCount
+     v-else-if="progressCountFlag"
+     :ref="element.propValue.id"
+      class="chart-class"
+      :chart="chart"
+      :track-menu="trackMenu"
+      :search-count="searchCount"
+      :terminal-type="scaleCoefficientType"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
+    ></progressCount>
     <progressLoop
       v-else-if="progressLoopFlag"
       :ref="element.propValue.id"
@@ -183,6 +194,7 @@ import scrollTable from '@/views/chart/components/table/scrollTable'
 import IconScrollTable from '@/views/chart/components/table/IconScrollTable'
 import dialogTable from '@/views/chart/components/table/dialogTable'
 import progressBar from '@/views/chart/components/progress/progressBar'
+import progressCount from '@/views/chart/components/progress/progressCount'
 import progressLoop from '@/views/chart/components/progress/progressLoop'
 import textPopup from '@/views/chart/components/popup/textPopup'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
@@ -228,6 +240,7 @@ export default {
     IconScrollTable,
     dialogTable,
     progressBar,
+    progressCount,
     progressLoop,
     textPopup
   },
@@ -434,6 +447,14 @@ export default {
         this.httpRequest.status &&
         this.chart.type &&
         this.chart.type === 'progress' &&
+        this.renderComponent() === 'echarts'
+      )
+    },
+    progressCountFlag() {
+      return (
+        this.httpRequest.status &&
+        this.chart.type &&
+        this.chart.type === 'progress-count' &&
         this.renderComponent() === 'echarts'
       )
     },

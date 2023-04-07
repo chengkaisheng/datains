@@ -1947,10 +1947,16 @@ export default {
         view.type.startsWith('gauge') || view.type === 'treemap' ||
         view.type === 'liquid' || view.type === 'word-cloud' ||
         view.type === 'waterfall' || view.type === 'contrast-funnel' ||
-        view.type.includes('progress') || view.type === 'bar-rate'
+        (view.type.includes('progress') && view.type !== 'progress-count') 
+        || view.type === 'bar-rate'
       ) {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
+        }
+      }
+      if( view.type === 'progress-count') {
+        if(view.yaxis.length > 2) {
+          view.yaxis.splice(2,1)
         }
       }
       if(view.type === '3d-column' || view.type === '3d-scatter' || view.type === 'map_bubble') {

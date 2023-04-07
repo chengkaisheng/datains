@@ -418,6 +418,13 @@ export const TYPE_CONFIGS = [
   },
   {
     render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'progress-count',
+    title: 'chart.chart_bar_count_progress',
+    icon: 'progress-count'
+  },
+  {
+    render: 'echarts',
     category: 'chart.chart_type_distribute',
     value: 'pie',
     title: 'chart.chart_pie',

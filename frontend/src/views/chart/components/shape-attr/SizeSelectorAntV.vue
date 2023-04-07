@@ -112,7 +112,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.table_title_show')" class="form-item">
+        <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" :label="$t('chart.table_title_show')" class="form-item">
           <el-checkbox v-model="sizeForm.tableTitleShow" @change="changeBarSizeCase"></el-checkbox>
         </el-form-item>
         <el-form-item :label="$t('chart.table_title_fontsize')" class="form-item">

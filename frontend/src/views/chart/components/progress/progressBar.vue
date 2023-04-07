@@ -11,14 +11,15 @@
       {{ chart.title }}
     </span>
     <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius,'height': title_show? 'calc(100% - 30px);' : '100%;'}">
-      <el-row class="prog_box" :style="{width:progStyle.inside? '100%' : '97%'}">
+      <el-row class="prog_box">
         <el-col v-for="item in progressData" :key="item.value" style="margin-bottom: 10px;">
           <el-col :span="progStyle.position === 'top'? 24 : 6" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
-            <p class="prog_title" >{{item.name}}</p>
+            <div class="prog_title" >{{item.name}}</div>
           </el-col>
           <el-col :span="progStyle.position === 'top'? 24 : 18">
             <el-progress :text-inside="progStyle.inside" :color="item.color" 
-              :stroke-width="progStyle.strokeWidth" :percentage="item.value" :style="labelStyle">
+              :stroke-width="progStyle.strokeWidth" :percentage="item.value>100?100:item.value" 
+              :format="formatValue(item.value)" :style="labelStyle">
             </el-progress>
           </el-col>
         </el-col>
@@ -207,7 +208,7 @@ export default {
             arr.push({
               name: obj.dimensionList[0].value,
               value: obj.value,
-              color: customAttr.color.colors[i]
+              color: hexColorToRGBA(customAttr.color.colors[i%customAttr.color.colors.length],customAttr.color.alpha)
             })
           }
           this.progressData = arr
@@ -255,8 +256,8 @@ export default {
         this.progStyle.inside = customAttr.label.progressInside !== undefined? customAttr.label.progressInside : true
         this.progStyle.strokeWidth = customAttr.label.strokeWidth !== undefined? customAttr.label.strokeWidth : 20
         this.progStyle.position = customAttr.label.progressPosition !== undefined? customAttr.label.progressPosition : 'top'
-        this.customColor = customAttr.color.colors[0]
-        this.labelStyle.color = customAttr.color.progressLabelColor? customAttr.color.progressLabelColor : '#000000'
+        // this.customColor = customAttr.color.colors[0]
+        this.labelStyle.color = customAttr.label.progressLabelColor? customAttr.label.progressLabelColor : '#000000'
         this.labelStyle.fontSize = customAttr.label.progressValueSize !== undefined? customAttr.label.progressValueSize + 'px' : '14px'
       }
     },
@@ -278,6 +279,11 @@ export default {
         this.calcHeightRightNow()
       }, 100)
     },
+    formatValue(value) {
+      return () => {
+        return value + '%'
+      }
+    }
   }
 }
 </script>
@@ -288,6 +294,10 @@ export default {
   height: 100%;
   padding-top: 5px;
   // overflow: hidden;
+}
+
+.prog_box ::v-deep .el-progress-bar {
+  width: 97%;
 }
 
 .prog_box ::v-deep .el-progress__text {

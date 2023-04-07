@@ -44,11 +44,17 @@
         <el-form-item v-show="chart.type && chart.type === 'progress-loop'" :label="$t('chart.text_show')" class="form-item">
           <el-checkbox v-model="labelForm.progressShow" @change="changeLabelAttr"></el-checkbox>
         </el-form-item>
+        <el-form-item :label="$t('chart.text_color')" class="form-item">
+          <el-color-picker v-model="labelForm.progressFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
+        </el-form-item>
         <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
           <el-select v-model="labelForm.progressFontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
         </el-form-item>
+        <el-form-item  label="数值颜色" class="form-item">
+            <el-color-picker v-model="labelForm.progressLabelColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
+          </el-form-item>
         <el-form-item label="数值大小" class="form-item">
           <el-select v-model="labelForm.progressValueSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -59,16 +65,15 @@
               <el-option v-for="option in fontWeight" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.text_color')" class="form-item">
-          <el-color-picker v-model="labelForm.progressFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
-        </el-form-item>
-        <el-form-item v-show="chart.type && chart.type === 'progress'" :label="$t('chart.text_position')" class="form-item">
+        <el-form-item v-show="chart.type && (chart.type === 'progress' || chart.type === 'progress-count')" 
+          :label="$t('chart.text_position')" class="form-item">
           <el-radio-group v-model="labelForm.progressPosition" size="small" @change="changeLabelAttr">
             <el-radio-button label="top">上方</el-radio-button>
             <el-radio-button label="parallel">平行</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-if="chart.type && chart.type === 'progress'" :label="$t('chart.internal_display')" class="form-item" >
+        <el-form-item v-if="chart.type && (chart.type === 'progress' || chart.type === 'progress-count')" 
+          :label="$t('chart.internal_display')" class="form-item" >
           <el-radio-group v-model="labelForm.progressInside" @change="changeLabelAttr">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>

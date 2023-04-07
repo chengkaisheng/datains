@@ -23,7 +23,7 @@ export const DEFAULT_COLOR_CASE = {
   textPopBackColor: '#0c4f96',
   popupBackColor: '#1b2642',
   tableBorderColor: '#cfdaf4',
-  progressLabelColor: '#000000',
+  progressLevel: 5,
 
   innerRing: '#eeeeee',
   outerRing: '#eeeeee'
@@ -146,6 +146,7 @@ export const DEFAULT_LABEL = {
   yHc: 0,
 
   progressShow: true,
+  progressLabelColor: '#000000',
   progressFontSize: '14',
   progressValueSize: '14', // 进度环数值字体大小
   progressValueWeight: '500', // 数值粗细
