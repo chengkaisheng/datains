@@ -58,6 +58,7 @@ export const DEFAULT_SIZE = {
   funnelWidth: 80,
   radarShape: 'polygon',
   radarSize: 80,
+  tableTitleShow: true,
   tableTitleFontSize: 12,
   tableItemFontSize: 12,
   tableSpacing: 10,

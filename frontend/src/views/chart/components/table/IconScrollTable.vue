@@ -4,9 +4,9 @@
         <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
         <p style="text-align:center;">
           <!-- <i class="el-icon-arrow-up"></i> -->
-          <svg-icon icon-class="arrow-up" class="" />
+          <svg-icon icon-class="arrow-up" class="svg_box"  @click="clickUpScroll"/>
         </p>
-        <div :class="adaptWidth? 'table_new_header': 'table_new_header_notadapt'" :style="table_header_class">
+        <div v-show="table_title_show" :class="adaptWidth? 'table_new_header': 'table_new_header_notadapt'" :style="table_header_class">
           <div v-for="(item,index) in fields" v-show="item.checked" :key="index" class="header_title" 
             :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
             {{ item.name }}
@@ -29,7 +29,7 @@
         </div>
         <p style="text-align:center;">
           <!-- <i class="el-icon-arrow-down"></i> -->
-          <svg-icon icon-class="arrow-down" class="" />
+          <svg-icon icon-class="arrow-down" class="svg_box" @click="clickDownScroll"/>
         </p>
       </el-row>
     </div>
@@ -121,6 +121,7 @@
         },
         widthData: [],
         title_show: true,
+        table_title_show: true,
         borderRadius: '0px',
         currentPage: {
           page: 1,
@@ -316,6 +317,18 @@
         }
         this.$store.commit('addViewFilter', param)
       },
+      clickUpScroll(){
+        const data = JSON.parse(JSON.stringify(this.dataInfo))
+        const obj = data.pop()
+        data.unshift(obj)
+        this.dataInfo = JSON.parse(JSON.stringify(data))
+      },
+      clickDownScroll() {
+        const data = JSON.parse(JSON.stringify(this.dataInfo))
+        const obj = data.shift()
+        data.push(obj)
+        this.dataInfo = JSON.parse(JSON.stringify(data))
+      },
       
       prossData() {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
@@ -472,6 +485,7 @@
             }
             // this.table_header_class.fontSize = ((customAttr.size.tableTitleFontSize - 4) * this.previewCanvasScale.scalePointWidth) + 'px'
             // this.table_item_class.fontSize = ((customAttr.size.tableItemFontSize - 4) * this.previewCanvasScale.scalePointWidth) + 'px'
+            this.table_title_show = customAttr.size.tableTitleShow !== undefined? customAttr.size.tableTitleShow : true
             this.table_header_class.fontSize = (customAttr.size.tableTitleFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
             this.table_item_class.fontSize = (customAttr.size.tableItemFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
             this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
@@ -613,6 +627,9 @@
   </script>
   
   <style lang="scss" scoped>
+  .svg_box {
+    cursor: pointer;
+  }
   .box_over {
     overflow: hidden; //超出的文本隐藏
     text-overflow: ellipsis; //溢出用省略号显示

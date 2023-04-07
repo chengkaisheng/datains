@@ -112,6 +112,9 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item :label="$t('chart.table_title_show')" class="form-item">
+          <el-checkbox v-model="sizeForm.tableTitleShow" @change="changeBarSizeCase"></el-checkbox>
+        </el-form-item>
         <el-form-item :label="$t('chart.table_title_fontsize')" class="form-item">
           <el-select v-model="sizeForm.tableTitleFontSize" :placeholder="$t('chart.table_title_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -149,12 +152,12 @@
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
         </el-form-item> -->
-        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type && chart.type.includes('roll')" :label="'轮播速率'" class="form-item">
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type && (chart.type.includes('roll') && chart.type !== 'roll-click-element')" :label="'轮播速率'" class="form-item">
           <el-select v-model="sizeForm.automaticTime" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
             <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type && chart.type.includes('roll')" :label="'轮播联动'" class="form-item">
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type && (chart.type.includes('roll')&& chart.type !== 'roll-click-element')" :label="'轮播联动'" class="form-item">
           <!-- <el-select v-model="sizeForm.bannerLinkage" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
             <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select> -->
