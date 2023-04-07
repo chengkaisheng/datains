@@ -1,6 +1,5 @@
 package io.datains.dto;
 
-import io.datains.plugins.xpack.auth.dto.request.DatasetRowPermissions;
 import lombok.Data;
 
 import java.util.List;

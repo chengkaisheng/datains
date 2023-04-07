@@ -17,7 +17,7 @@ public class ChartViewCacheService {
     @Resource
     private ExtChartViewMapper extChartViewMapper;
 
-    @Transactional
+
     public void refreshCache(String viewId){
         if(extChartViewMapper.updateToCache(viewId)==0){
             extChartViewMapper.copyToCache(viewId);
