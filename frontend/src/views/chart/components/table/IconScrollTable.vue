@@ -629,6 +629,8 @@
   <style lang="scss" scoped>
   .svg_box {
     cursor: pointer;
+    font-size: 128px;
+    height: 40px;
   }
   .box_over {
     overflow: hidden; //超出的文本隐藏

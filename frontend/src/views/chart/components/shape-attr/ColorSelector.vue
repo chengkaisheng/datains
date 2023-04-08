@@ -203,6 +203,9 @@
         </div>
 
         <div v-if="sourceType==='view' || sourceType==='panelTable'">
+          <!-- <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" label="图标颜色">
+            <el-color-picker v-model="colorForm.tableIconColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item> -->
           <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll')||chart.type.includes('dialog'))) || sourceType==='panelTable'" :label="$t('chart.table_header_bg')" class="form-item">
             <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>

@@ -11,6 +11,7 @@ export const DEFAULT_COLOR_CASE = {
   borderColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   alphaG: 100,
   alpha: 100,
+  tableIconColor: '#000000',
   tableHeaderBgColor: '#e1eaff',
   tableItemBgColor: '#ffffff',
   tableFontColor: '#000000',
