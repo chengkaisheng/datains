@@ -4,7 +4,7 @@
         <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
         <p style="text-align:center;">
           <!-- <i class="el-icon-arrow-up"></i> -->
-          <svg-icon icon-class="arrow-up" class="svg_box"  @click="clickUpScroll"/>
+          <svg-icon icon-class="arrow-up" :style="{color: icon_color}" class="svg_box"  @click="clickUpScroll"/>
         </p>
         <div v-show="table_title_show" :class="adaptWidth? 'table_new_header': 'table_new_header_notadapt'" :style="table_header_class">
           <div v-for="(item,index) in fields" v-show="item.checked" :key="index" class="header_title" 
@@ -29,7 +29,7 @@
         </div>
         <p style="text-align:center;">
           <!-- <i class="el-icon-arrow-down"></i> -->
-          <svg-icon icon-class="arrow-down" class="svg_box" @click="clickDownScroll"/>
+          <svg-icon icon-class="arrow-down" :style="{color: icon_color}" class="svg_box" @click="clickDownScroll"/>
         </p>
       </el-row>
     </div>
@@ -180,6 +180,8 @@
           titleWidth: '30%',
           contentWidth: '70%',
         },
+
+        icon_color: '#000000',
   
         adaptWidth: true,
       }
@@ -464,6 +466,7 @@
           console.log('是否触发此处修改------------2222222', customAttr)
           if (customAttr.color) {
             this.table_header_class.color = customAttr.color.tableFontColor
+            this.icon_color = customAttr.color.tableIconColor !== undefined? customAttr.color.tableIconColor : '#000000'
             if(customAttr.color.tableHeaderBgColor) {
               this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
             } else {
