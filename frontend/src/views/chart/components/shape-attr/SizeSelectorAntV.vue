@@ -206,6 +206,17 @@
         <el-form-item v-show="sizeForm.tableColumnMode === 'custom' && chart.type && !chart.type.includes('roll')" label="" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableColumnWidth" :min="10" :max="500" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
+
+        <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" label="图标字体大小" class="form-item">
+          <el-select v-model="sizeForm.tableIconFontSize" @change="changeBarSizeCase">
+            <el-option v-for="option in iconFontOption" :key="option.value" :label="option.name" :value="option.value"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" label="图标高度" class="form-item">
+          <el-select v-model="sizeForm.tableIconHeight" @change="changeBarSizeCase">
+            <el-option v-for="option in iconHeightOption" :key="option.value" :label="option.name" :value="option.value"></el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
 
       <el-form v-show="chart.type && chart.type.includes('gauge')" ref="sizeFormGauge" :model="sizeForm" label-width="100px" size="mini">
@@ -423,7 +434,9 @@ export default {
         {name: '上下排序,值在下',value: 'column-reverse'},
         {name: '左右排序,值在左',value: 'row'},
         {name: '左右排序,值在右',value: 'row-reverse'},
-      ]
+      ],
+      iconFontOption:[],
+      iconHeightOption: [],
     }
   },
   watch: {
@@ -482,6 +495,23 @@ export default {
         })
       }
       this.fontSize = arr
+
+      const arr1 = []
+      for(let i=40;i <=80; i=i+2) {
+        arr1.push({
+          name: i + '',
+          value: i + ''
+        })
+      }
+      this.iconFontOption = arr1
+      const arr2 = []
+      for(let i=20;i <=40; i=i+2) {
+        arr2.push({
+          name: i+'',
+          value: i+ ''
+        })
+      }
+      this.iconHeightOption = arr2
     },
     changeBarSizeCase(e, key) {
       console.log('this.sizeForm.automatic', this.sizeForm.automatic, e, key)

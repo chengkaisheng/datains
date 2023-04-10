@@ -3,8 +3,7 @@
       <el-row style="height: 100%;padding-bottom:10px">
         <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
         <p style="text-align:center;">
-          <!-- <i class="el-icon-arrow-up"></i> -->
-          <svg-icon icon-class="arrow-up" :style="{color: icon_color}" class="svg_box"  @click="clickUpScroll"/>
+          <svg-icon icon-class="arrow-up" :style="iconStyle" class="svg_box"  @click="clickUpScroll"/>
         </p>
         <div v-show="table_title_show" :class="adaptWidth? 'table_new_header': 'table_new_header_notadapt'" :style="table_header_class">
           <div v-for="(item,index) in fields" v-show="item.checked" :key="index" class="header_title" 
@@ -28,8 +27,7 @@
           </ul>
         </div>
         <p style="text-align:center;">
-          <!-- <i class="el-icon-arrow-down"></i> -->
-          <svg-icon icon-class="arrow-down" :style="{color: icon_color}" class="svg_box" @click="clickDownScroll"/>
+          <svg-icon icon-class="arrow-down" :style="iconStyle" class="svg_box" @click="clickDownScroll"/>
         </p>
       </el-row>
     </div>
@@ -181,7 +179,11 @@
           contentWidth: '70%',
         },
 
-        icon_color: '#000000',
+        iconStyle: {
+          color: '#000000',
+          fontSize: '80px',
+          height: '40px',
+        },
   
         adaptWidth: true,
       }
@@ -466,7 +468,7 @@
           console.log('是否触发此处修改------------2222222', customAttr)
           if (customAttr.color) {
             this.table_header_class.color = customAttr.color.tableFontColor
-            this.icon_color = customAttr.color.tableIconColor !== undefined? customAttr.color.tableIconColor : '#000000'
+            this.iconStyle.color = customAttr.color.tableIconColor !== undefined? hexColorToRGBA(customAttr.color.tableIconColor,customAttr.color.alphaG) : '#000000'
             if(customAttr.color.tableHeaderBgColor) {
               this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
             } else {
@@ -505,6 +507,8 @@
             this.scrollId.height = customAttr.size.tableItemHeight + 'px'
             this.table_item_class.textAlign = customAttr.size.tableItemAlign
             this.scrolleTime = customAttr.size.automaticTime
+            this.iconStyle.fontSize = customAttr.size.tableIconFontSize? customAttr.size.tableIconFontSize + 'px' : '80px'
+            this.iconStyle.height = customAttr.size.tableIconHeight? customAttr.size.tableIconHeight +'px' : '40px'
   
             console.log('widthData',customAttr.size.widthData)
             if(customAttr.size.widthData && customAttr.size.widthData.length) {
@@ -632,8 +636,6 @@
   <style lang="scss" scoped>
   .svg_box {
     cursor: pointer;
-    font-size: 128px;
-    height: 40px;
   }
   .box_over {
     overflow: hidden; //超出的文本隐藏

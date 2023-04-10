@@ -71,6 +71,8 @@ export const DEFAULT_SIZE = {
   tableColumnWidth: 100,
   tableHeaderAlign: 'left',
   tableItemAlign: 'right',
+  tableIconFontSize: 80,
+  tableIconHeight: 40,
 
   barBorderRadius: 0,
   barBorderValue: 0,

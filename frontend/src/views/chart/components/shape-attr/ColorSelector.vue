@@ -203,10 +203,11 @@
         </div>
 
         <div v-if="sourceType==='view' || sourceType==='panelTable'">
-          <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" label="图标颜色" class="form-item">
+          <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" :label="$t('chart.table_icon_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableIconColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll')||chart.type.includes('dialog'))) || sourceType==='panelTable'" :label="$t('chart.table_header_bg')" class="form-item">
+          <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll')||chart.type.includes('dialog'))) || sourceType==='panelTable'" 
+            :label="$t('chart.table_header_bg')" class="form-item">
             <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <!-- <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('vertical'))) || sourceType==='panelTable'" :label="'表格背景'" class="form-item">
@@ -239,7 +240,8 @@
           <!--              </el-form-item>-->
         </div>
 
-        <el-form-item v-show="chart.type && chart.type === 'bar-rate'" label="渐变透明度" class="form-item form-item-slider">
+        <el-form-item v-show="chart.type && (chart.type === 'bar-rate' || chart.type === 'roll-click-element')" 
+          :label="chart.type ==='bar-ratte'?'渐变透明度':'图标透明度'" class="form-item form-item-slider">
           <el-slider v-model="colorForm.alphaG" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase" />
         </el-form-item>
         <el-form-item v-show="chart.type && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.not_alpha')" class="form-item form-item-slider">

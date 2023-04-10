@@ -895,6 +895,7 @@ export default {
     table_title_fontsize: '表头字体大小',
     table_item_fontsize: '表格字体大小',
     table_Highlight: '表格高亮行',
+    table_icon_color: '图标颜色',
     table_header_bg: '表头背景',
     table_item_bg: '表格背景',
     table_item_font_color: '字体颜色',
