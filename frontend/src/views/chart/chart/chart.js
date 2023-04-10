@@ -156,6 +156,8 @@ export const DEFAULT_LABEL = {
   progressInside: true,
   strokeWidth: 20,
   progressColor: '#409EFF',
+  progressDataColor: '#000000',
+  progressDataFontSize: '14',
 
   dragEnable: false,
   layoutType: 'force',

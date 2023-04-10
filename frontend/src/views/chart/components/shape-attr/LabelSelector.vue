@@ -52,19 +52,6 @@
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
         </el-form-item>
-        <el-form-item  label="数值颜色" class="form-item">
-            <el-color-picker v-model="labelForm.progressLabelColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
-          </el-form-item>
-        <el-form-item label="数值大小" class="form-item">
-          <el-select v-model="labelForm.progressValueSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
-              <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
-            </el-select>
-        </el-form-item>
-        <el-form-item v-show="chart.type && chart.type === 'progress-loop'" label="数值粗细" class="form-item">
-          <el-select v-model="labelForm.progressValueWeight" size="mini" @change="changeLabelAttr">
-              <el-option v-for="option in fontWeight" :key="option.value" :label="option.name" :value="option.value" />
-            </el-select>
-        </el-form-item>
         <el-form-item v-show="chart.type && (chart.type === 'progress' || chart.type === 'progress-count')" 
           :label="$t('chart.text_position')" class="form-item">
           <el-radio-group v-model="labelForm.progressPosition" size="small" @change="changeLabelAttr">
@@ -72,6 +59,30 @@
             <el-radio-button label="parallel">平行</el-radio-button>
           </el-radio-group>
         </el-form-item>
+        <el-divider />
+        <el-form-item  :label="$t('chart.prog_value_color')" class="form-item">
+            <el-color-picker v-model="labelForm.progressLabelColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
+          </el-form-item>
+        <el-form-item :label="$t('chart.prog_value_font_size')" class="form-item">
+          <el-select v-model="labelForm.progressValueSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
+            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="chart.type && chart.type === 'progress-loop'" :label="$t('chart.prog_value_font_weight')" class="form-item">
+          <el-select v-model="labelForm.progressValueWeight" size="mini" @change="changeLabelAttr">
+            <el-option v-for="option in fontWeight" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-divider />
+        <el-form-item v-show="chart.type && chart.type === 'progress-count'" :label="$t('chart.prog_data_color')" class="form-item">
+          <el-color-picker v-model="labelForm.progressDataColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
+        </el-form-item>
+        <el-form-item v-show="chart.type && chart.type === 'progress-count'" :label="$t('chart.prog_data_font_size')" class="form-item">
+          <el-select v-model="labelForm.progressDataFontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
+            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
+        <el-divider v-show="chart.type && chart.type === 'progress-count'" />
         <el-form-item v-if="chart.type && (chart.type === 'progress' || chart.type === 'progress-count')" 
           :label="$t('chart.internal_display')" class="form-item" >
           <el-radio-group v-model="labelForm.progressInside" @change="changeLabelAttr">
@@ -225,6 +236,9 @@ export default {
 </script>
 
 <style scoped>
+  .el-divider--horizontal {
+    margin: 10px 0
+  }
   .shape-item{
     padding: 6px;
     border: none;

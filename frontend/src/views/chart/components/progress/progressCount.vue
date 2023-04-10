@@ -10,7 +10,7 @@
       <span v-if="chart.type" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
         {{ chart.title }}
       </span>
-      <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius,'height': title_show? 'calc(100% - 30px);' : '100%;'}">
+      <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: auto;" :style="box_chart">
         <el-row class="prog_box">
           <el-col v-for="item in progressData" :key="item.value" style="margin-bottom: 10px;">
             <el-col :span="progStyle.position === 'top'? 24 : 6" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
@@ -22,10 +22,10 @@
               :format="formatValue(item.value)" :style="labelStyle">
               </el-progress>
               <el-col>
-                <el-col :span="12" style="text-align: left;" class="prog_filed">
+                <el-col :span="12" style="text-align: left;" :style="dataStyle" class="prog_filed">
                   {{item.filed1}}
                 </el-col>
-                <el-col :span="12" style="text-align: right;padding-right:10%;" class="prog_filed">
+                <el-col :span="12" style="text-align: right;padding-right:10%;" :style="dataStyle" class="prog_filed">
                   {{item.filed2}}
                 </el-col>
               </el-col>
@@ -121,7 +121,15 @@
           color: '#000000',
           fontSize: '14px',
         },
+        box_chart: { 
+          borderRadius: '0px',
+          height: 'calc(100% - 30px)',
+        },
         progressLevel: 5,
+        dataStyle: {
+          color: '#000000',
+          fontSize: '14px',
+        },
       }
     },
     computed: {
@@ -267,10 +275,19 @@
             if (this.$refs.title) {
               this.$refs.title.style.fontSize = customStyle.text.fontSize + 'px'
             }
+
+            if(this.title_show) {
+              const height = this.$refs.title.offsetHeight
+              // console.log('高度',height)
+              this.box_chart.height = `calc(100% - ${height}px)`
+            } else {
+              this.box_chart.height = '100%'
+            }
           }
           if (customStyle.background) {
             this.title_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
             this.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
+            this.box_chart.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
           }
         }
   
@@ -287,6 +304,8 @@
           // this.customColor = customAttr.color.colors[0]
           this.labelStyle.color = customAttr.label.progressLabelColor? customAttr.label.progressLabelColor : '#000000'
           this.labelStyle.fontSize = customAttr.label.progressValueSize !== undefined? customAttr.label.progressValueSize + 'px' : '14px'
+          this.dataStyle.color = customAttr.label.progressDataColor? customAttr.label.progressDataColor : '#000000'
+          this.dataStyle.fontSize = customAttr.label.progressDataFontSize? customAttr.label.progressDataFontSize +'px': '14px'
         }
       },
   

@@ -2293,7 +2293,7 @@ export default {
       return this.chart.render
     },
     getDataEdit(param) {
-      console.log('getDataEdit::::', param)
+      // console.log('getDataEdit::::', param)
       this.$store.state.styleChangeTimes++
       if (param.type === 'propChange') {
         console.log('触发点-------------------------4')
