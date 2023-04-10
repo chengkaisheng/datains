@@ -43,6 +43,7 @@
       v-else-if="progressBarFlag"
       :ref="element.propValue.id"
       class="chart-class"
+      :element="element"
       :chart="chart"
       :track-menu="trackMenu"
       :search-count="searchCount"
@@ -53,6 +54,7 @@
     <progressCount
      v-else-if="progressCountFlag"
      :ref="element.propValue.id"
+     :element="element"
       class="chart-class"
       :chart="chart"
       :track-menu="trackMenu"

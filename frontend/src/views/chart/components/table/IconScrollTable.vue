@@ -1,30 +1,32 @@
 <template>
     <div ref="tableContainer" :style="bg_class" style="width: 100%;height: 100%;overflow: hidden;">
-      <el-row style="height: 100%;padding-bottom:10px">
+      <el-row style="height: 100%;">
         <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
         <p style="text-align:center;">
           <svg-icon icon-class="arrow-up" :style="iconStyle" class="svg_box"  @click="clickUpScroll"/>
         </p>
-        <div v-show="table_title_show" :class="adaptWidth? 'table_new_header': 'table_new_header_notadapt'" :style="table_header_class">
-          <div v-for="(item,index) in fields" v-show="item.checked" :key="index" class="header_title" 
-            :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
-            {{ item.name }}
+        <div :style="table_box" style="width: 100%;overflow: hidden;">
+          <div v-show="table_title_show" :class="adaptWidth? 'table_new_header': 'table_new_header_notadapt'" :style="table_header_class">
+            <div v-for="(item,index) in fields" v-show="item.checked" :key="index" class="header_title" 
+              :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
+              {{ item.name }}
+            </div>
           </div>
-        </div>
-        <div class="content">
-          <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
-            <li v-for="(items,inde) in dataInfo" v-show="inde<=tableRowsNumber-1" :key="inde" 
-              :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" 
-              class="table_bode_li" 
-            >
-              <div v-for="(item,index) in fields" v-show="item.checked" :key="index" 
-                :class="adaptWidth?'body_info': 'body_info1'" 
-                :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
-                <!-- {{ inde }} -->
-                {{ items[item.datainsName] }}
-              </div>
-            </li>
-          </ul>
+          <div class="content">
+            <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
+              <li v-for="(items,inde) in dataInfo" v-show="inde<=tableRowsNumber-1" :key="inde" 
+                :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" 
+                class="table_bode_li" 
+              >
+                <div v-for="(item,index) in fields" v-show="item.checked" :key="index" 
+                  :class="adaptWidth?'body_info': 'body_info1'" 
+                  :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
+                  <!-- {{ inde }} -->
+                  {{ items[item.datainsName] }}
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
         <p style="text-align:center;">
           <svg-icon icon-class="arrow-down" :style="iconStyle" class="svg_box" @click="clickDownScroll"/>
@@ -97,6 +99,9 @@
         //     background: hexColorToRGBA('#ffffff', 0),
         //     borderRadius: this.borderRadius
         //   },
+        table_box: {
+          height: 'calc(100% - 110px)',
+        },
         table_header_class: {
           fontSize: '12px',
           color: '#606266',
@@ -251,8 +256,8 @@
     },
     mounted() {
       // console.log('this.fields', this.fields)
-      console.log('获取边框数据', this.element)
-      console.log('this.chart---', this.chart)
+      console.log('获取边框数据111', this.element)
+      console.log('this.chart1111---', this.chart)
       // console.log('滚动表格',this.inScreen)
       // this.oldData = JSON.parse(JSON.stringify(this.chart))
   
@@ -434,18 +439,11 @@
         this.$nextTick(() => {
           if (this.$refs.tableContainer) {
             let pageHeight = 0
-            if (this.chart.type === 'table-info') {
-              pageHeight = 36
-            }
             const currentHeight = this.$refs.tableContainer.offsetHeight
             const tableMaxHeight = currentHeight - this.$refs.title.offsetHeight - 16 - pageHeight
             let tableHeight
             if (this.chart.data) {
-              if (this.chart.type === 'table-info') {
-                tableHeight = (this.currentPage.pageSize + 2) * 36 - pageHeight
-              } else {
-                tableHeight = (this.chart.data.tableRow.length + 2) * 36 - pageHeight
-              }
+              tableHeight = (this.chart.data.tableRow.length + 2) * 36 - pageHeight
             } else {
               tableHeight = 0
             }
@@ -509,7 +507,7 @@
             this.scrolleTime = customAttr.size.automaticTime
             this.iconStyle.fontSize = customAttr.size.tableIconFontSize? customAttr.size.tableIconFontSize + 'px' : '80px'
             this.iconStyle.height = customAttr.size.tableIconHeight? customAttr.size.tableIconHeight +'px' : '40px'
-  
+
             console.log('widthData',customAttr.size.widthData)
             if(customAttr.size.widthData && customAttr.size.widthData.length) {
               this.adaptWidth = customAttr.size.adaptWidth !== undefined? customAttr.size.adaptWidth : true
@@ -557,6 +555,14 @@
           if (customStyle.background) {
             this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
           }
+        }
+        if(this.title_show) {
+          let iconH = customAttr.size.tableIconHeight? customAttr.size.tableIconHeight : 40
+          let title = this.$refs.title.offsetHeight
+          this.table_box.height = `calc(100% - ${iconH*2+title}px)`
+        }else {
+          let iconH = customAttr.size.tableIconHeight? customAttr.size.tableIconHeight : 40
+          this.table_box.height = `calc(100% - ${iconH*2}px)`
         }
       },
       getRowStyle({ row, rowIndex }) {

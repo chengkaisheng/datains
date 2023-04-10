@@ -51,6 +51,10 @@ export default {
     ViewTrackBar
   },
   props: {
+    element: {
+      type: Object,
+      required: true
+    },
     chart: {
       type: Object,
       required: true
