@@ -61,7 +61,8 @@ export default {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: 'auto'
+        height: 'auto',
+        fontWeight: '300',
       },
       label_class: {
         margin: 0
@@ -147,6 +148,8 @@ export default {
           this.label_class.fontSize = customAttr.size.dimensionFontSize + 'px'
           this.label_content_class.fontSize = customAttr.size.quotaFontSize + 'px'
           this.content_class.flexDirection = customAttr.size.quotaArrayStatus !== undefined? customAttr.size.quotaArrayStatus : 'column'
+          this.content_class.fontWeight = customAttr.size.fontWeight !== undefined? customAttr.size.fontWeight : '300'
+
           if (!this.dimensionShow) {
             this.label_space.marginTop = '0px'
             this.label_space.marginBottom = '0px'

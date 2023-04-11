@@ -203,6 +203,11 @@
             <el-option v-for="item in quotaArrays" :key="item.value" :label="item.name" :value="item.value"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item :label="$t('panel.fontWeight')" class="form-item">
+          <el-select v-model="sizeForm.fontWeight" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
+            <el-option v-for="option in fontWeight" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
         <el-form-item :label="$t('chart.quota_font_size')" class="form-item">
           <el-select v-model="sizeForm.quotaFontSize" :placeholder="$t('chart.quota_font_size')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -433,6 +438,15 @@ export default {
         { name: '7秒', value: 7000 },
         { name: '8秒', value: 8000 },
         { name: '9秒', value: 9000 }
+      ],
+      fontWeight: [
+        { name: '300', value: '300' },
+        { name: '400', value: '400' },
+        { name: '500', value: '500' },
+        { name: '600', value: '600' },
+        { name: '700', value: '700' },
+        { name: '800', value: '800' },
+        { name: '900', value: '900' },
       ],
       liquidShapeOptions: [
         { name: this.$t('chart.liquid_shape_circle'), value: 'circle' },
