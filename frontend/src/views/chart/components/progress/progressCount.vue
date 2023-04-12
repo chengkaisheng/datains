@@ -270,9 +270,22 @@
             // console.log(arr1,arr2,colors)
             let arr = []
             for(let j=0;j<arr2.length;j++) {
+              let v = 0
+              if(parseFloat(arr2[j].value) <= 0) {
+                if(parseFloat(arr1[j].value) <= 0 ) {
+                  v = 0
+                } else {
+                  v = (parseFloat(arr1[j].value)*100).toFixed(2)
+                }
+              } else {
+                v =  parseFloat(
+                  ((parseFloat(arr1[j].value)/parseFloat(arr2[j].value))*100
+                ).toFixed(2))
+              }
+              
               let obj = {
                 name: arr1[j].name,
-                value: parseFloat(((parseFloat(arr1[j].value)/parseFloat(arr2[j].value))*100).toFixed(2)),
+                value: v,
                 filed1: name1+': '+arr1[j].value,
                 filed2: name2+': '+arr2[j].value,
                 color: colors,
