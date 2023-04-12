@@ -22,10 +22,10 @@
               :format="formatValue(item.value)" :style="labelStyle">
               </el-progress>
               <el-col :style="{marginTop: dataMargin}">
-                <el-col :span="12" style="text-align: left;" :style="dataStyle" class="prog_filed" :title="item.filed1">
+                <el-col :span="11" style="text-align: left;" :style="dataStyle" class="prog_filed" :title="item.filed1">
                   {{item.filed1}}
                 </el-col>
-                <el-col :span="12" style="text-align: right;padding-right:10%;" :style="dataStyle" class="prog_filed" :title="item.filed2">
+                <el-col :span="11" style="text-align: right;" :style="dataStyle" class="prog_filed" :title="item.filed2">
                   {{item.filed2}}
                 </el-col>
               </el-col>
@@ -207,6 +207,15 @@
       drawView() {
         const chart = this.chart
         console.log('chart数据',chart)
+        const xaxis = JSON.parse(chart.xaxis)
+        let fed = []
+        xaxis.map(item => {
+          if(item.checked){
+            fed.push(item.id)
+          }
+        })
+        console.log('feddd',fed)
+
         if(chart.data) {
           if(chart.data.fields.length && chart.data.series.length === 2) {
             this.show_Prog = true
@@ -225,8 +234,22 @@
             let arr1 = []
             for(let i=0;i<data1.length;i++) {
               let obj = data1[i]
+              let a = ""
+              let b = ""
+              if(fed.length === 2) {
+                a = obj.dimensionList[0].value
+                b = '/'+obj.dimensionList[1].value
+              } else if (fed.length === 1) {
+                if(fed.indexOf(obj.dimensionList[0].id) !== -1) {
+                  a = obj.dimensionList[0].value
+                  b = ''
+                } else {
+                  a = ''
+                  b = obj.dimensionList[1].value
+                }
+              }
               arr1.push({
-                name: obj.dimensionList[0].value,
+                name: a+''+b,
                 value: obj.value,
               })
             }
@@ -234,7 +257,6 @@
             for(let i=0;i<data2.length;i++) {
               let obj = data2[i]
               arr2.push({
-                name: obj.dimensionList[0].value,
                 value: obj.value,
               })
             }
@@ -258,7 +280,7 @@
               arr.push(obj)
             }
             this.progressData = arr
-            console.log(this.progressData)
+            console.log('progressData,,,',this.progressData)
           }
         }
       },

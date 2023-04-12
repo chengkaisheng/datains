@@ -1937,11 +1937,17 @@ export default {
           }
         }
       })
-      if (view.type === 'label' || view.type.includes('progress')) {
+      if (view.type === 'label' || (view.type.includes('progress') && view.type !== 'progress-count')) {
         if (view.xaxis.length > 1) {
           view.xaxis.splice(1, view.xaxis.length)
         }
       }
+      if(view.type === 'progress-count') {
+        if(view.xaxis.length > 2) {
+          view.xaxis.splice(2,1)
+        }
+      }
+
       if (view.type.startsWith('pie') || view.type.startsWith('funnel') ||
         (view.type.startsWith('text') && view.type !== 'text_popup') ||
         view.type.startsWith('gauge') || view.type === 'treemap' ||
@@ -2645,6 +2651,7 @@ export default {
       }
     },
     addXaxis(e) {
+      console.log('维度添加：',e,this.view)
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
       }
@@ -2655,7 +2662,7 @@ export default {
       this.calcData(true)
     },
     addXaxisExt(e) {
-      console.log('维度添加：', e, this.view)
+      console.log('维度ex添加：', e, this.view)
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
       }

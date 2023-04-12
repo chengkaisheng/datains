@@ -85,7 +85,7 @@
           <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
             <span>{{ $t('chart.delete') }}</span>
           </el-dropdown-item>
-          <el-dropdown-item divided v-if="viewType === 'roll-elemnt'">
+          <el-dropdown-item divided v-if="(viewType === 'roll-elemnt' || viewType === 'progress-count')">
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="checkeShow">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
