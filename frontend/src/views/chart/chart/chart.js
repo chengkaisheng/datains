@@ -160,6 +160,8 @@ export const DEFAULT_LABEL = {
   progressPosition: 'top',
   progressInside: true,
   strokeWidth: 20,
+  strokeMargin: 10,
+  dataMargin: 0,
   progressColor: '#409EFF',
   progressDataColor: '#000000',
   progressDataFontSize: '14',

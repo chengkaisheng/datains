@@ -815,6 +815,8 @@ export default {
     prog_data_font_size: '数据大小',
     internal_display: '百分比内显',
     progress_width: '进度条宽度',
+    progress_margin: '进度条间距',
+    prog_data_margin: '数据间距',
     graphic_color: '图形颜色',
     box_background: '背景颜色',
     box_background_opacity: '背景透明度',

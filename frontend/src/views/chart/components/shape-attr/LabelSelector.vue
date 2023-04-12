@@ -82,6 +82,10 @@
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
+        <el-form-item v-show="chart.type && chart.type === 'progress-count'"
+          :label="$t('chart.prog_data_margin')" class="form-item">
+          <el-slider v-model="labelForm.dataMargin" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeLabelAttr" />
+        </el-form-item>
         <el-divider v-show="chart.type && chart.type === 'progress-count'" />
         <el-form-item v-if="chart.type && (chart.type === 'progress' || chart.type === 'progress-count')" 
           :label="$t('chart.internal_display')" class="form-item" >
@@ -96,6 +100,10 @@
         <!-- <el-form-item :label="$t('chart.graphic_color')" class="form-item">
           <el-color-picker v-model="labelForm.progressColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
         </el-form-item> -->
+        <el-form-item v-show="chart.type && (chart.type === 'progress' || chart.type === 'progress-count')"
+          :label="$t('chart.progress_margin')" class="form-item">
+          <el-slider v-model="labelForm.strokeMargin" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeLabelAttr" />
+        </el-form-item>
       </el-form>
 
       <el-form v-show="chart.type && chart.type.includes('gauge')" ref="labelForm" :model="labelForm" label-width="80px" size="mini">

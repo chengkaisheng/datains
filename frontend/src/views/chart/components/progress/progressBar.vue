@@ -12,9 +12,9 @@
     </span>
     <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: auto;" :style="box_chart">
       <el-row class="prog_box">
-        <el-col v-for="item in progressData" :key="item.value" style="margin-bottom: 10px;">
+        <el-col v-for="item in progressData" :key="item.value" :style="{marginBottom: colMargin}">
           <el-col :span="progStyle.position === 'top'? 24 : 6" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
-            <div class="prog_title" >{{item.name}}</div>
+            <div class="prog_title" :title="item.name">{{item.name}}</div>
           </el-col>
           <el-col :span="progStyle.position === 'top'? 24 : 18">
             <el-progress :text-inside="progStyle.inside" :color="item.color" 
@@ -129,7 +129,8 @@ export default {
       box_chart: { 
         borderRadius: '0px',
         height: 'calc(100% - 30px)',
-      }
+      },
+      colMargin: '10px',
     }
   },
   computed: {
@@ -276,6 +277,7 @@ export default {
         // this.customColor = customAttr.color.colors[0]
         this.labelStyle.color = customAttr.label.progressLabelColor? customAttr.label.progressLabelColor : '#000000'
         this.labelStyle.fontSize = customAttr.label.progressValueSize !== undefined? customAttr.label.progressValueSize + 'px' : '14px'
+        this.colMargin = customAttr.label.strokeMargin? customAttr.label.strokeMargin+'px' : '10px'
       }
     },
 

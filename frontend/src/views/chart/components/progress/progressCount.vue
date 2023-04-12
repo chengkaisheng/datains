@@ -12,20 +12,20 @@
       </span>
       <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: auto;" :style="box_chart">
         <el-row class="prog_box">
-          <el-col v-for="item in progressData" :key="item.value" style="margin-bottom: 10px;">
+          <el-col v-for="item in progressData" :key="item.value" :style="{marginBottom: colMargin}">
             <el-col :span="progStyle.position === 'top'? 24 : 6" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
-              <div class="prog_title" >{{item.name}}</div>
+              <div class="prog_title" :title="item.name">{{item.name}}</div>
             </el-col>
             <el-col :span="progStyle.position === 'top'? 24 : 18">
               <el-progress :text-inside="progStyle.inside" :color="item.color" 
                 :stroke-width="progStyle.strokeWidth" :percentage="item.value>100?100:item.value" 
               :format="formatValue(item.value)" :style="labelStyle">
               </el-progress>
-              <el-col>
-                <el-col :span="12" style="text-align: left;" :style="dataStyle" class="prog_filed">
+              <el-col :style="{marginTop: dataMargin}">
+                <el-col :span="12" style="text-align: left;" :style="dataStyle" class="prog_filed" :title="item.filed1">
                   {{item.filed1}}
                 </el-col>
-                <el-col :span="12" style="text-align: right;padding-right:10%;" :style="dataStyle" class="prog_filed">
+                <el-col :span="12" style="text-align: right;padding-right:10%;" :style="dataStyle" class="prog_filed" :title="item.filed2">
                   {{item.filed2}}
                 </el-col>
               </el-col>
@@ -134,6 +134,8 @@
           color: '#000000',
           fontSize: '14px',
         },
+        dataMargin: '0px',
+        colMargin: '10px',
       }
     },
     computed: {
@@ -310,6 +312,8 @@
           this.labelStyle.fontSize = customAttr.label.progressValueSize !== undefined? customAttr.label.progressValueSize + 'px' : '14px'
           this.dataStyle.color = customAttr.label.progressDataColor? customAttr.label.progressDataColor : '#000000'
           this.dataStyle.fontSize = customAttr.label.progressDataFontSize? customAttr.label.progressDataFontSize +'px': '14px'
+          this.dataMargin = customAttr.label.dataMargin? customAttr.label.dataMargin+'px' : '0px'
+          this.colMargin = customAttr.label.strokeMargin? customAttr.label.strokeMargin+'px' : '10px'
         }
       },
   
@@ -348,12 +352,12 @@
   }
   
 .prog_box ::v-deep .el-progress-bar {
-  width: 95%;
+  width: 90%;
 }
   .prog_box ::v-deep .el-progress__text {
     color: inherit !important;
     font-size: inherit !important;
-    margin-left: 5px;
+    margin-left: 10px;
   }
   .prog_box ::v-deep .el-progress-bar__innerText {
     color: inherit !important;
