@@ -195,7 +195,7 @@
         <div class="zoom_control">
           画布缩放控制器
           <div>
-            <el-slider v-model="scaleValue" :min="30" :max="100" @change="changeScale" />
+            <el-slider v-model="scaleValue" :min="30" :max="200" @change="changeScale" />
           </div>
 
         </div>

@@ -196,7 +196,7 @@ export default {
             }
           }
         }
-
+        style.fontWeight = this.element.options.fontWeight?this.element.options.fontWeight : '300'
         style.lineHeight = this.element.style.height + 'px'
         style.backgroundRepeat = 'no-repeat'
         style.backgroundSize = '100% 100%'

@@ -115,6 +115,11 @@
         <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" :label="$t('chart.table_title_show')" class="form-item">
           <el-checkbox v-model="sizeForm.tableTitleShow" @change="changeBarSizeCase"></el-checkbox>
         </el-form-item>
+        <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" label="字体粗细" class="form-item">
+          <el-select v-model="sizeForm.tableFontWeight" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase">
+            <el-option v-for="option in fontWeight" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
         <el-form-item :label="$t('chart.table_title_fontsize')" class="form-item">
           <el-select v-model="sizeForm.tableTitleFontSize" :placeholder="$t('chart.table_title_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -206,7 +211,9 @@
         <el-form-item v-show="sizeForm.tableColumnMode === 'custom' && chart.type && !chart.type.includes('roll')" label="" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableColumnWidth" :min="10" :max="500" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
-
+        <el-form-item label="表格下间距" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.tableMargin" :min="0" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+        </el-form-item>
         <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" label="图标字体大小" class="form-item">
           <el-select v-model="sizeForm.tableIconFontSize" @change="changeBarSizeCase">
             <el-option v-for="option in iconFontOption" :key="option.value" :label="option.name" :value="option.value"></el-option>

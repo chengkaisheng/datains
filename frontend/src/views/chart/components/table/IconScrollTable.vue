@@ -107,20 +107,23 @@
           color: '#606266',
           background: '#E1EAFF',
           height: '36px',
-          textAlign: 'left'
+          textAlign: 'left',
+          fontWeight: '300',
         },
         table_item_class: {
           fontSize: '12px',
           color: '#606266',
           background: '#ffffff',
           // height: '36px',a
-          textAlign: 'left'
+          textAlign: 'left',
+          fontWeight: '300'
         },
         table_item_class_stripe: {
           fontSize: '12px',
           color: '#606266',
           background: '#ffffff',
-          height: '36px'
+          height: '36px',
+          fontWeight: '300'
         },
         widthData: [],
         title_show: true,
@@ -142,7 +145,8 @@
           backgroundColor: '#fff',
           opacity: 1,
           height: '30px',
-          fontSize: 12
+          fontSize: 12,
+          marginBottom: '0px'
         },
         highlight: 2,
         bodyHeight: 30,
@@ -204,6 +208,10 @@
       newHeight() {
         const style = {}
         style.height = this.bodyHeight + 'px'
+        if (this.chart.customAttr) {
+          const customAttr = JSON.parse(this.chart.customAttr)
+          style.marginBottom = customAttr.size.tableMargin? customAttr.size.tableMargin +'px': '0px'
+        }
         return style
       },
       classOption() {
@@ -461,8 +469,8 @@
         }, 100)
       },
       initStyle() {
+        const customAttr = JSON.parse(this.chart.customAttr)
         if (this.chart.customAttr) {
-          const customAttr = JSON.parse(this.chart.customAttr)
           console.log('是否触发此处修改------------2222222', customAttr)
           if (customAttr.color) {
             this.table_header_class.color = customAttr.color.tableFontColor
@@ -489,7 +497,9 @@
             // this.table_header_class.fontSize = ((customAttr.size.tableTitleFontSize - 4) * this.previewCanvasScale.scalePointWidth) + 'px'
             // this.table_item_class.fontSize = ((customAttr.size.tableItemFontSize - 4) * this.previewCanvasScale.scalePointWidth) + 'px'
             this.table_title_show = customAttr.size.tableTitleShow !== undefined? customAttr.size.tableTitleShow : true
+            this.table_header_class.fontWeight = customAttr.size.tableFontWeight !== undefined? customAttr.size.tableFontWeight : '300'
             this.table_header_class.fontSize = (customAttr.size.tableTitleFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
+            this.table_item_class.fontWeight = customAttr.size.tableFontWeight !== undefined? customAttr.size.tableFontWeight : '300'
             this.table_item_class.fontSize = (customAttr.size.tableItemFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
             this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
             this.highlight = customAttr.size.highlightNumber ? customAttr.size.highlightNumber : 2
@@ -497,6 +507,7 @@
             // this.scrollId.fontSize = (Math.ceil(+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth)) + 'px'
             // console.log('customAttr.size.heightLightFontSize', customAttr.size.heightLightFontSize, this.previewCanvasScale.scalePointWidth)
             this.scrollId.fontSize = (+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
+            this.scrollId.marginBottom = customAttr.size.tableMargin? customAttr.size.tableMargin +'px': '0px'
             this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
             this.setStyle.height = customAttr.size.tableItemHeight + 'px'
             this.rollingRate = customAttr.size.tableRollingRate

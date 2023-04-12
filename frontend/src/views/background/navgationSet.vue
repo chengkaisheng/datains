@@ -103,6 +103,16 @@
           <el-color-picker v-model="curComponent.options.highlight" />
         </el-col>
       </el-row>
+      <el-row>
+        <el-col :span="4">
+          <span class="params-title">{{ '字体粗细' }}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-select v-model="curComponent.options.fontWeight" :placeholder="$t('chart.table_item_align')">
+            <el-option v-for="option in fontWeight" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-col>
+      </el-row>
       <!-- <el-row>
         <el-col :span="4">
           <span class="params-title">{{ '高亮背景颜色' }}</span>
@@ -504,7 +514,16 @@ export default {
       }, {
         value: 5000,
         label: '北京烤鸭'
-      }]
+      }],
+      fontWeight: [
+        { name: '300', value: '300' },
+        { name: '400', value: '400' },
+        { name: '500', value: '500' },
+        { name: '600', value: '600' },
+        { name: '700', value: '700' },
+        { name: '800', value: '800' },
+        { name: '900', value: '900' },
+      ],
     }
   },
   computed: {

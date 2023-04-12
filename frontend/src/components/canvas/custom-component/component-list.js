@@ -556,6 +556,7 @@ const list = [
       defaultBg: '',
       highlightType: 'color',
       highlight: '#333333',
+      fontWeight: '300',
       highlightBg: '',
       heightBgImg: '',
       spacing: 0,
