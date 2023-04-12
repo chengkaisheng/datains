@@ -254,7 +254,9 @@ export const DEFAULT_TITLE_STYLE = {
 export const DEFAULT_LEGEND_STYLE = {
   show: true,
   hPosition: 'center',
+  hPadding: 8,
   vPosition: 'bottom',
+  vPadding: 8,
   orient: 'horizontal',
   icon: 'circle',
   textStyle: {

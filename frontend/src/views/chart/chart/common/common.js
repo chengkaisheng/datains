@@ -36,17 +36,17 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.legend.show = customStyle.legend.show
       // 水平方向
       if (customStyle.legend.hPosition === 'left') {
-        chart_option.legend.left = padding
+        chart_option.legend.left = customStyle.legend.hPadding? customStyle.legend.hPadding : padding
       } else if (customStyle.legend.hPosition === 'right') {
-        chart_option.legend.right = padding
+        chart_option.legend.right = customStyle.legend.hPadding? customStyle.legend.hPadding : padding
       } else {
         chart_option.legend.left = customStyle.legend.hPosition
       }
       // 垂直方向
       if (customStyle.legend.vPosition === 'top') {
-        chart_option.legend.top = padding
+        chart_option.legend.top = customStyle.legend.vPadding? customStyle.legend.vPadding : padding
       } else if (customStyle.legend.vPosition === 'bottom') {
-        chart_option.legend.bottom = padding
+        chart_option.legend.bottom = customStyle.legend.vPadding? customStyle.legend.vPadding : padding
       } else {
         chart_option.legend.top = customStyle.legend.vPosition
       }
