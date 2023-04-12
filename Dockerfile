@@ -1,4 +1,4 @@
-FROM registry.cn-qingdao.aliyuncs.com/dataease/fabric8-java-alpine-openjdk8-jre:edge-chromium
+FROM registry.cn-qingdao.aliyuncs.com/datains/fabric8-java-alpine-openjdk8-jre:edge-chromium
 
 ARG IMAGE_TAG
 
