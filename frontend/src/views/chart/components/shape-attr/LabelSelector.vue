@@ -59,6 +59,12 @@
             <el-radio-button label="parallel">平行</el-radio-button>
           </el-radio-group>
         </el-form-item>
+        <el-form-item v-show="chart.type && (chart.type === 'progress' || chart.type === 'progress-count') && labelForm.progressPosition === 'parallel'" 
+          label="标签栅格数" class="form-item">
+          <el-select v-model="labelForm.progressWidth" @change="changeLabelAttr">
+            <el-option v-for="option in spacing" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select>
+        </el-form-item>
         <el-divider />
         <el-form-item  :label="$t('chart.prog_value_color')" class="form-item">
             <el-color-picker v-model="labelForm.progressLabelColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
@@ -150,6 +156,7 @@ export default {
     return {
       labelForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
       fontSize: [],
+      spacing: [],
       isSetting: false,
       labelPosition: [],
       labelPositionPie: [
@@ -220,6 +227,15 @@ export default {
         })
       }
       this.fontSize = arr
+
+      const arr1 = []
+      for(let i=1;i<=12;i++) {
+        arr1.push({
+          name: i+'',
+          value: i
+        })
+      }
+      this.spacing = arr1
     },
     changeLabelAttr() {
       if (!this.labelForm.show) {

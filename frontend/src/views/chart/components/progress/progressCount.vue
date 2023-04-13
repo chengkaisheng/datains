@@ -12,20 +12,20 @@
       </span>
       <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: auto;" :style="box_chart">
         <el-row class="prog_box">
-          <el-col v-for="item in progressData" :key="item.value" :style="{marginBottom: colMargin}">
-            <el-col :span="progStyle.position === 'top'? 24 : 6" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
+          <el-col v-for="(item,index) in progressData" :key="index" :style="{marginBottom: colMargin}">
+            <el-col :span="progStyle.position === 'top'? 24 : progWidth.label" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
               <div class="prog_title" :title="item.name">{{item.name}}</div>
             </el-col>
-            <el-col :span="progStyle.position === 'top'? 24 : 18">
+            <el-col :span="progStyle.position === 'top'? 24 : progWidth.bar">
               <el-progress :text-inside="progStyle.inside" :color="item.color" 
                 :stroke-width="progStyle.strokeWidth" :percentage="item.value>100?100:item.value" 
               :format="formatValue(item.value)" :style="labelStyle">
               </el-progress>
-              <el-col :style="{marginTop: dataMargin}">
-                <el-col :span="11" style="text-align: left;" :style="dataStyle" class="prog_filed" :title="item.filed1">
+              <el-col :style="{marginTop: dataMargin}" style="width: 90%;padding-right: 50px;">
+                <el-col :span="12" style="text-align: left;" :style="dataStyle" class="prog_filed" :title="item.filed1">
                   {{item.filed1}}
                 </el-col>
-                <el-col :span="11" style="text-align: right;" :style="dataStyle" class="prog_filed" :title="item.filed2">
+                <el-col :span="12" style="text-align: right;" :style="dataStyle" class="prog_filed" :title="item.filed2">
                   {{item.filed2}}
                 </el-col>
               </el-col>
@@ -136,6 +136,10 @@
         },
         dataMargin: '0px',
         colMargin: '10px',
+        progWidth: {
+          label: 6,
+          bar: 18
+        }
       }
     },
     computed: {
@@ -349,6 +353,10 @@
           this.dataStyle.fontSize = customAttr.label.progressDataFontSize? customAttr.label.progressDataFontSize +'px': '14px'
           this.dataMargin = customAttr.label.dataMargin? customAttr.label.dataMargin+'px' : '0px'
           this.colMargin = customAttr.label.strokeMargin? customAttr.label.strokeMargin+'px' : '10px'
+          if(customAttr.label.progressWidth) {
+            this.progWidth.label = customAttr.label.progressWidth
+            this.progWidth.bar = (24 - customAttr.label.progressWidth)
+          }
         }
       },
   

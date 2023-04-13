@@ -151,6 +151,7 @@ export const DEFAULT_LABEL = {
   xHc: 0,
   yHc: 0,
 
+  progressWidth: 6,
   progressShow: true,
   progressLabelColor: '#000000',
   progressFontSize: '14',

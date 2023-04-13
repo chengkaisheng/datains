@@ -13,10 +13,10 @@
     <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: auto;" :style="box_chart">
       <el-row class="prog_box">
         <el-col v-for="item in progressData" :key="item.value" :style="{marginBottom: colMargin}">
-          <el-col :span="progStyle.position === 'top'? 24 : 6" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
+          <el-col :span="progStyle.position === 'top'? 24 : progWidth.label" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
             <div class="prog_title" :title="item.name">{{item.name}}</div>
           </el-col>
-          <el-col :span="progStyle.position === 'top'? 24 : 18">
+          <el-col :span="progStyle.position === 'top'? 24 : progWidth.bar">
             <el-progress :text-inside="progStyle.inside" :color="item.color" 
               :stroke-width="progStyle.strokeWidth" :percentage="item.value>100?100:item.value" 
               :format="formatValue(item.value)" :style="labelStyle">
@@ -131,6 +131,10 @@ export default {
         height: 'calc(100% - 30px)',
       },
       colMargin: '10px',
+      progWidth: {
+        label: 6,
+        bar: 18
+      }
     }
   },
   computed: {
@@ -278,6 +282,10 @@ export default {
         this.labelStyle.color = customAttr.label.progressLabelColor? customAttr.label.progressLabelColor : '#000000'
         this.labelStyle.fontSize = customAttr.label.progressValueSize !== undefined? customAttr.label.progressValueSize + 'px' : '14px'
         this.colMargin = customAttr.label.strokeMargin? customAttr.label.strokeMargin+'px' : '10px'
+        if(customAttr.label.progressWidth) {
+          this.progWidth.label = customAttr.label.progressWidth
+          this.progWidth.bar = (24 - customAttr.label.progressWidth)
+        }
       }
     },
 
