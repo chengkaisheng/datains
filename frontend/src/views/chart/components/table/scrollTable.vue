@@ -435,7 +435,13 @@ export default {
         //   this.dataInfo.push(data)
         // }, 101)
         // console.log('存储数据', this.dataInfo[3])
-        const keyObj = this.dataInfo[this.highlight]
+        let keyObj = {}
+        if(this.highlight >this.dataInfo.length){
+          keyObj = this.dataInfo[this.dataInfo.length -1]
+        } else {
+          keyObj = this.dataInfo[this.highlight]
+        }
+        // console.log('keyObj',keyObj)
         // const objArr = []
         // for (const key in keyObj) {
         //   console.log('数据', key, keyObj[key])
@@ -687,7 +693,7 @@ export default {
 
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
-        if(this.fields.length){
+        if(this.dataInfo.length){
           // 页面mounted()时候调用一次
           this.getDetailsInfo(this.dataInfo)
 

@@ -802,6 +802,9 @@ export default {
   beforeDestroy() {
     const elx = this.$refs.rightPanel
     elx && elx.remove()
+    // const tool = this.$refs.toolbar
+    // console.log('toolllllllllll',tool)
+    // tool && tool.save(true)
   },
   methods: {
     changeScale(e) {
