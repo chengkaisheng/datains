@@ -70,6 +70,14 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_table_pivot',
     icon: 'table-pivot'
   },
+  // 进度表格
+  // {
+  //   render: 'antv',
+  //   category: 'chart.chart_type_table',
+  //   value: 'table-prog',
+  //   title: 'chart.chart_table_prog',
+  //   icon: 'table-prog'
+  // },
 
   {
     render: 'antv',

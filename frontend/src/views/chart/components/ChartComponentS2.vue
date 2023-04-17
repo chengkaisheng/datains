@@ -27,6 +27,7 @@
           @size-change="pageChange"
         /> -->
       </el-row>
+      <div v-if="chart.type === 'table-prog'" :id="chartId" style="width: 100%;height: 100%;overflow: hidden;" />
     </div>
   </div>
 </template>
@@ -36,7 +37,7 @@ import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { baseTableInfo, baseTableNormal, baseTablePivot } from '@/views/chart/chart/table/table-info'
+import { baseTableInfo, baseTableNormal, baseTablePivot,baseTableProg } from '@/views/chart/chart/table/table-info'
 // import { json } from 'stream/consumers'
 
 export default {
@@ -209,6 +210,8 @@ export default {
       } else if (chart.type === 'table-pivot') {
         // console.log('触发点-------33333333333')
         this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.canvasStyleData.fontFamily)
+      } else if (chart.type === 'table-prog') {
+        this.myChart = baseTableProg(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.canvasStyleData.fontFamily)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false

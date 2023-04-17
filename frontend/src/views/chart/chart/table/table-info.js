@@ -81,7 +81,10 @@ export function baseTableInfo(s2, container, chart, action, tableData, fontFamil
     width: containerDom.offsetWidth,
     height: containerDom.offsetHeight,
     // showSeriesNumber: true
-    style: getSize(chart)
+    style: getSize(chart),
+    // conditions: {
+
+    // }
   }
 
   // 开始渲染
@@ -323,6 +326,162 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
     s2.destroy()
   }
   s2 = new PivotSheet(containerDom, s2DataConfig, s2Options)
+
+  // click
+  s2.on(S2Event.DATA_CELL_CLICK, action)
+
+  // theme
+  const customTheme = getCustomTheme(chart, fontFamily)
+  s2.setThemeCfg({ theme: customTheme })
+
+  return s2
+}
+
+export function baseTableProg(s2, container, chart, action, tableData, fontFamily = '') {
+  console.log('进度表',s2, container, chart, tableData, fontFamily)
+  const containerDom = document.getElementById(container)
+  // fields
+  const fields = chart.data.fields
+  // console.log('fieldsssss,',fields)
+  if (!fields || fields.length === 0) {
+    if (s2) {
+      s2.destroy()
+    }
+    return
+  }
+  const foce = []
+  const yaxis = JSON.parse(chart.yaxis)
+  yaxis.map(item => {
+    foce.push({name: item.name,originName: item.originName,progress: item.progress,datainsName: item.datainsName})
+  })
+
+  const columns = []
+  const meta = []
+  const hField = []
+
+  // add drill list
+  if (chart.drill) {
+    let drillFields = []
+    try {
+      drillFields = JSON.parse(chart.drillFields)
+    } catch (err) {
+      drillFields = JSON.parse(JSON.stringify(chart.drillFields))
+    }
+
+    const drillField = drillFields[chart.drillFilters.length]
+
+    const drillFilters = JSON.parse(JSON.stringify(chart.drillFilters))
+    const drillExp = drillFilters[drillFilters.length - 1].datasetTableField
+
+    // 移除所有下钻字段
+    const removeField = []
+    for (let i = 0; i < chart.drillFilters.length; i++) {
+      const ele = chart.drillFilters[i].datasetTableField
+      removeField.push(ele.datainsName)
+    }
+
+    // build field
+    fields.forEach(ele => {
+      if (removeField.indexOf(ele.datainsName) < 0) {
+        // 用下钻字段替换当前字段
+        if (drillExp.datainsName === ele.datainsName) {
+          columns.push(drillField.datainsName)
+          meta.push({
+            field: drillField.datainsName,
+            name: drillField.name
+          })
+        } else {
+          columns.push(ele.datainsName)
+          meta.push({
+            field: ele.datainsName,
+            name: ele.name
+          })
+        }
+      }
+    })
+
+    foce.forEach(item => {
+      if(item.progress) {
+        hField.push({
+          field: item.originName,
+          mapping(value) {
+            return {
+              fill: '#800bFF',
+              isCompare: true,
+              maxValue: 100,
+              minValue: 0,
+              fieldValue: value > 100? 100 : value,
+            }
+          }
+        })
+      }
+    })
+  } else {
+    fields.forEach(ele => {
+      columns.push(ele.datainsName)
+      meta.push({
+        field: ele.datainsName,
+        name: ele.name
+      })
+    })
+
+    foce.forEach(item => {
+      if(item.progress) {
+        hField.push({
+          field: item.originName,
+          mapping(value) {
+            return {
+              fill: '#800bFF',
+              isCompare: true,
+              maxValue: 100,
+              minValue: 0,
+              fieldValue: value > 100? 100 : value,
+            }
+          }
+        })
+      }
+    })
+  }
+
+  // data config
+  const s2DataConfig = {
+    fields: {
+      columns: columns
+    },
+    meta: meta,
+    data: tableData
+  }
+
+  // options
+  const s2Options = {
+    width: containerDom.offsetWidth,
+    height: containerDom.offsetHeight,
+    style: getSize(chart),
+    interaction: {
+      hoverHighlight: false,
+    },
+    conditions: {
+      // interval: hField
+      interval: [
+        {
+          field: 'sort',
+          mapping: () => {
+            return {
+              fill: '#800bFF',
+            }
+          }
+        }
+      ]
+    }
+  }
+  console.log('s2Optionssss',s2Options)
+
+  // 开始渲染
+  if (s2) {
+    s2.destroy()
+  }
+  s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
+  // s2.facet.setScrollOffset(1)
 
   // click
   s2.on(S2Event.DATA_CELL_CLICK, action)

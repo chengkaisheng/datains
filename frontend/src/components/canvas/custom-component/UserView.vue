@@ -1844,6 +1844,9 @@ export default {
         if (ele.relation === undefined) {
           ele.relation = true
         }
+        // if (ele.progress === undefined) {
+        //   ele.progress = true
+        // }
       })
       if (view.type === 'table-pivot') {
         view.xaxisExt.forEach(function(ele) {
@@ -1886,6 +1889,9 @@ export default {
         }
         if (ele.relation === undefined) {
           ele.relation = true
+        }
+        if (ele.progress === undefined) {
+          ele.progress = true
         }
       })
       if (view.type === 'chart-mix') {

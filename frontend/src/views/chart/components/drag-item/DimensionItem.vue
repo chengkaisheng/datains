@@ -125,6 +125,26 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
+          <!-- <el-dropdown-item divided v-if="viewType === 'table-prog'">
+            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="progressShow">
+              <span class="el-dropdown-link inner-dropdown-menu">
+                <span>
+                  <i class="el-icon-view" />
+                  <span>{{$t('chart.progress_show')}}</span>
+                  <span class="summary-span-item">
+                    (
+                    <span v-if="item.progress">展示</span>
+                    <span v-else>隐藏</span>
+                    )
+                  </span>
+                </span>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="beforeProgress(true)">展示</el-dropdown-item>
+                <el-dropdown-item :command="beforeProgress(false)">隐藏</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item> -->
         </el-dropdown-menu>
       </span>
     </el-dropdown>
@@ -245,6 +265,15 @@ export default {
       this.$emit('onDimensionItemChange',this.item)
     },
     beforeRelation(type) {
+      return {
+        type: type
+      }
+    },
+    progressShow(param) {
+      this.item.progress = param.type
+      this.$emit('onDimensionItemChange',this.item)
+    },
+    beforeProgress(type) {
       return {
         type: type
       }
