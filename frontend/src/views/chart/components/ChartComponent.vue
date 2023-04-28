@@ -252,7 +252,7 @@ export default {
         })
 
         // 获取饼图的数据项数组
-        var originalSeriesData = myChart.getOption().series[0].data;
+        var originalSeriesData = this.myChart.getOption().series[0].data;
         // 复制一份原始数据，用于计算饼图占比
         var seriesData = originalSeriesData.map(function(item) {
           return Object.assign({}, item);
