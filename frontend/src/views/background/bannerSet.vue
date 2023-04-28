@@ -319,7 +319,7 @@ export default {
             _this.curComponent.options.bannerImgList.push({
               url: reader.result,
               imgTitle: '',
-              imgContent: '', // 有点问题这里
+              imgContent: '', 
               imgFontSize: 10,
               imgFontColor: '#000000',
               imgBackgroundColor: '#ffffff',
@@ -344,7 +344,12 @@ export default {
     onChange(file, fileList) {
       if (file.size / 1024 / 1024 > 10) {
         this.$message.error('上传的文件大小不能超过 10MB!')
-        this.fileList = []
+        if(fileList.length){
+          fileList.splice((fileList.length-1),1)
+          this.fileList = fileList
+        } else {
+          this.fileList = []
+        }
         return
       }
       console.log('file, fileList', file, fileList)

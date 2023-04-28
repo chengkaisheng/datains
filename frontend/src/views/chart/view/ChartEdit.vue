@@ -843,6 +843,17 @@
                       @onSizeChange="onSizeChange"
                     />
                   </el-collapse-item>
+                  <el-collapse-item
+                    v-show="view.render && view.render === 'antv' && view.type === 'roll-elemnt'"
+                    :title="$t('chart.pic_carousel_set')"
+                  >
+                    <pic-selector-ant-v 
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onSizeChange="onSizeChange"
+                    />
+                  </el-collapse-item>
                   <!-- <el-collapse-item
                     v-show="view.render && view.render === 'antv' && view.type.includes('roll')"
                     :title="$t('chart.pop_config')"
@@ -1455,6 +1466,7 @@ import YAxisExtSelectorAntV from '@/views/chart/components/component-style/YAxis
 import SizeSelectorAntV from '@/views/chart/components/shape-attr/SizeSelectorAntV'
 import PopSelectorAntV from '@/views/chart/components/shape-attr/PopSelectorAntV'
 import WidthSelectorAntV from '@/views/chart/components/shape-attr/WidthSelectorAntV.vue'
+import PicSelectorAntV from '@/views/chart/components/shape-attr/PicSelectorAntV.vue'
 import SplitSelectorAntV from '@/views/chart/components/component-style/SplitSelectorAntV'
 import CompareEdit from '@/views/chart/components/compare/CompareEdit'
 import { compareItem } from '@/views/chart/chart/compare'
@@ -1491,6 +1503,7 @@ export default {
     SizeSelectorAntV,
     PopSelectorAntV,
     WidthSelectorAntV,
+    PicSelectorAntV,
     YAxisExtSelectorAntV,
     YAxisSelectorAntV,
     XAxisSelectorAntV,

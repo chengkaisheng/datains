@@ -130,6 +130,9 @@ export const DEFAULT_SIZE = {
   adaptWidth: true,
   widthData: [],
 
+  carouselValue: false,
+  carouselPics: [],
+
   hc3dWidth: 80,
   hc3dHeight: 80,
   hc3dNeckWidth: 30,

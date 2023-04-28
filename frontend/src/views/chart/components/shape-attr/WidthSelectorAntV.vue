@@ -53,7 +53,7 @@ export default {
   },
   methods: {
     initData() {
-      console.log('widthStyle,,,',this.chart,this.curComponent)
+      // console.log('widthStyle,,,',this.chart,this.curComponent)
       const chart = JSON.parse(JSON.stringify(this.chart))
       if (chart.customAttr) {
         let customAttr = null
@@ -62,7 +62,7 @@ export default {
         } else {
           customAttr = JSON.parse(chart.customAttr)
         }
-        console.log('customAttr',customAttr)
+        // console.log('customAttr',customAttr)
         if(customAttr.size) {
           this.widthForm = customAttr.size
 
@@ -93,13 +93,13 @@ export default {
           let avg = 100;
           if(this.curComponent && this.curComponent.style &&this.curComponent.style.width) {
             avg = parseFloat(this.curComponent.style.width / arr.length).toFixed(2)
-            console.log('avgggggggggggg',avg)
+            // console.log('avgggggggggggg',avg)
           }
           arr.map(item => {
             item.value = avg
           })
 
-          console.log('arrrrrrrrr',arr)
+          // console.log('arrrrrrrrr',arr)
 
           if(this.widthForm.widthData === undefined || this.widthForm.widthData.length === 0) {
             this.widthForm.widthData = arr
@@ -114,7 +114,7 @@ export default {
                   arr1.push({value: avg})
                 }
               })
-              console.log('arr11111111111111',arr1)
+              // console.log('arr11111111111111',arr1)
               this.widthForm.widthData = arr1
 
               this.changeBarSizeCase()
@@ -124,7 +124,7 @@ export default {
       }
     },
     changeBarSizeCase() {
-      console.log('wwwwww-----', this.widthForm)
+      // console.log('wwwwww-----', this.widthForm)
       this.$emit('onSizeChange', this.widthForm)
     }
   }

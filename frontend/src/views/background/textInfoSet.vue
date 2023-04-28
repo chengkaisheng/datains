@@ -38,6 +38,12 @@
             <el-input-number v-model="curComponent.options.valueWidth" :min="1" :max="100" size="mini" style="width: 100px;margin-right: 10px;"></el-input-number>
           </el-col>
         </el-col>
+        <el-col style="margin-bottom: 10px;">
+          <el-col :span="4">图片高度(px)</el-col>
+          <el-col :span="18">
+            <el-input-number v-model="curComponent.options.imgHeight" :min="50" :max="500" size="mini" style="width: 100px;margin-right: 10px;"></el-input-number>
+          </el-col>
+        </el-col>
       </el-row>
     </div>
     <el-row class="root-class">

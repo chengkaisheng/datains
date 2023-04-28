@@ -712,6 +712,7 @@ const list = [
       nameWidth: '30',
       valueWidth: '70',
       fontSize: '14',
+      imgHeight: 100,
     },
     x: 1,
     y: 1,

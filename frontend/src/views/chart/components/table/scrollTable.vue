@@ -107,6 +107,8 @@ export default {
       timer: null,
       info: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       dataInfo: [],
+      picInfo: [],
+      carouselValue: false,
       height: 'auto',
       title_class: {
         margin: '0 0',
@@ -439,15 +441,8 @@ export default {
         if(this.highlight >this.dataInfo.length){
           keyObj = this.dataInfo[this.dataInfo.length -1]
         } else {
-          keyObj = this.dataInfo[this.highlight]
+          keyObj = this.dataInfo[this.highlight -1]
         }
-        // console.log('keyObj',keyObj)
-        // const objArr = []
-        // for (const key in keyObj) {
-        //   console.log('数据', key, keyObj[key])
-        //   objArr.push(keyObj[key])
-        // }
-        // console.log('objArr', objArr)
         const keyValue = []
         // let keys = this.chart.data.fields[0].datainsName
         keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
@@ -469,7 +464,9 @@ export default {
       this.$store.commit('addViewFilter', param)
     },
     getDetailsInfo(data) { // 设置详情信息
+      // console.log('详情数据和index',data,this.picInfo)
       let arr = []
+      let url  = ''
       data.map((item,index) => {
         if(index === (this.highlight-1)) {
           this.axisList.map(obj => {
@@ -480,17 +477,30 @@ export default {
               })
             }
           })
+
+          if(this.picInfo.length) {
+            this.picInfo.forEach(ele => {
+              if(item.isClick === ele.number) {
+                url = ele.url
+              }
+            })
+          }
         }
       })
       // console.log('arrrrrrrrr',arr,this.chart)
       let objs = {
         id: this.chart.id,
-        data: arr
+        data: arr,
+        show: this.carouselValue,
+        url: url,
       }
       this.$store.commit('setDetailsViews',objs)
     },
     prossData() {
       this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
+
+      const customAttr = JSON.parse(this.chart.customAttr)
+      // console.log('customAttr11111',customAttr)
       
       let axis = []
       JSON.parse(this.chart.xaxis).forEach(item => {
@@ -513,6 +523,14 @@ export default {
       this.dataInfo = arr
       console.log('有数据才会去执行操作---------', this.dataInfo)
       // this.initStyle()
+      if(customAttr.size) {
+        if(customAttr.size.carouselPics !== undefined) {
+          this.picInfo = customAttr.size.carouselPics
+        }
+        if(customAttr.size.carouselValue !== undefined) {
+          this.carouselValue = customAttr.size.carouselValue
+        }
+      }
 
       this.$nextTick(() => {
         this.initStyle()

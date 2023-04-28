@@ -1,13 +1,18 @@
 <template>
   <div>
     <el-row class="row_box" style="padding:10px;overflow:auto;" :style="textStyle">
-      <el-col v-for="(item,index) in setInfo" :key="index" style="margin-bottom: 10px;">
-        <el-row>
-          <el-col :style="nameStyle">{{item.name}}:</el-col>
-          <el-col :style="valueStyle" class="value_box">
-            {{item.value}}
-          </el-col>
-        </el-row>
+      <el-col ref="infobox">
+        <el-col v-for="(item,index) in setInfo" :key="index" style="margin-bottom: 10px;">
+          <el-row>
+            <el-col :style="nameStyle">{{item.name}}:</el-col>
+            <el-col :style="valueStyle" class="value_box">
+              {{item.value}}
+            </el-col>
+          </el-row>
+        </el-col>
+      </el-col>
+      <el-col v-if="carouseObj.show">
+        <img :src="carouseObj.url"  style="width: 100%;" :style="{height: imgHeight}"/>
       </el-col>
     </el-row>
   </div>
@@ -27,6 +32,11 @@ export default {
     return {
       loop: null,
       setInfo: [],
+      carouseObj: {
+        show: false,
+        url: '',
+        height: '100px',
+      },
       scrollInfo: {}, // 滚动表格数据信息
       oldInfo: {}, // 
       handleScroll: {}, // 处理后的滚动表格信息
@@ -75,6 +85,16 @@ export default {
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
+    imgHeight() {
+      let value = '100px'
+      if(this.element.options.imgHeight) {
+        value = this.element.options.imgHeight + 'px'
+      }
+      return value
+    }
+  },
+  watch: {
+    
   },
   mounted() {
     console.log('detextInfo')
@@ -92,11 +112,14 @@ export default {
         this.detailsViews.map(item => {
           if(item.id === this.element.options.viewId) {
             arr = item.data
+            this.carouseObj.show = item.show
+            this.carouseObj.url = item.url
           }
         })
         this.setInfo = arr
         // console.log('详情信息，，',arr)
       },100)
+      
     },
   }
 }
