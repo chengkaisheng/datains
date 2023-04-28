@@ -251,31 +251,41 @@ export default {
           }
         })
 
-        this.myChart.on('legendselectchanged',function(params){
-          console.log('图例点击',params)
-          // 获取当前选中的图例名称
-          let selectedName = params.name;
-          let options = that.myChart.getOption()
-          let series = options.series
+        that.myChart.on('legendselectchanged',function(params){
+          // console.log('图例点击',params)
+          if (that.myChart.getOption().series[0].type !== 'pie') {
+            return;
+          }
+          // 获取被选中的图例名称
+          var selectedLegendName = params.name;
 
-          // 遍历饼图系列，根据选中状态重新计算数据
-          for(let i=0;i<series.length;i++) {
-            if(series[i].type === 'pie') {
-              let data = series[i].data
-              for(let j=0;j<data.length;j++) {
-                let item = data[j]
-                if(item.name === selectedName) {
-                  item.selected = true;
-                } else {
-                  item.selected = false;
-                }
-              }
+          // 获取饼图当前的option对象
+          var option = that.myChart.getOption();
+          // console.log('option',option)
+
+          // 获取饼图的数据项数组
+          var seriesData = option.series[0].data;
+
+          // 遍历数据项，计算选中图例对应的数据项占总数据的百分比，并更新对应的value值
+          var totalValue = 0;
+          var selectedValue = 0;
+          for (var i = 0; i < seriesData.length; i++) {
+            totalValue += seriesData[i].value;
+            if (seriesData[i].name === selectedLegendName) {
+              selectedValue = seriesData[i].value;
             }
           }
-          console.log('series:',series)
+          var selectedPercent = selectedValue / totalValue * 100;
+          seriesData.forEach(function(item) {
+            if (item.name !== selectedLegendName) {
+              item.value = parseFloat((item.value / (totalValue - selectedValue) * (100 - selectedPercent)).toFixed(2));
+            } else {
+              item.value = parseFloat(selectedPercent.toFixed(2));
+            }
+          });
 
-          // 重新设置数据和图案
-          that.myChart.setOption(options)
+          // 更新饼图的option对象，并重新渲染图表
+          that.myChart.setOption(option)
         })
       })
     },
@@ -409,6 +419,8 @@ export default {
         })
         return
       }
+
+      
       this.myEcharts(chart_option)
     },
     registerDynamicMap(areaCode) {
