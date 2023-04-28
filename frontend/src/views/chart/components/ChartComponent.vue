@@ -251,20 +251,20 @@ export default {
           }
         })
 
-        that.myChart.on('legendselectchanged',function(params){
+        // 获取饼图的数据项数组
+        var originalSeriesData = myChart.getOption().series[0].data;
+        // 复制一份原始数据，用于计算饼图占比
+        var seriesData = originalSeriesData.map(function(item) {
+          return Object.assign({}, item);
+        });
+
+        this.myChart.on('legendselectchanged',function(params){
           // console.log('图例点击',params)
           if (that.myChart.getOption().series[0].type !== 'pie') {
             return;
           }
           // 获取被选中的图例名称
           var selectedLegendName = params.name;
-
-          // 获取饼图当前的option对象
-          var option = that.myChart.getOption();
-          // console.log('option',option)
-
-          // 获取饼图的数据项数组
-          var seriesData = option.series[0].data;
 
           // 遍历数据项，计算选中图例对应的数据项占总数据的百分比，并更新对应的value值
           var totalValue = 0;
@@ -278,15 +278,19 @@ export default {
           var selectedPercent = selectedValue / totalValue * 100;
           seriesData.forEach(function(item) {
             if (item.name !== selectedLegendName) {
-              item.value = parseFloat((item.value / (totalValue - selectedValue) * (100 - selectedPercent)).toFixed(2));
+              item.percent = parseFloat((item.value / (totalValue - selectedValue) * (100 - selectedPercent)).toFixed(2));
             } else {
-              item.value = parseFloat(selectedPercent.toFixed(2));
+              item.percent = parseFloat(selectedPercent.toFixed(2));
             }
           });
 
           // 更新饼图的option对象，并重新渲染图表
-          that.myChart.setOption(option)
-        })
+          that.myChart.setOption({
+            series:[{
+              data: seriesData
+            }]
+          })
+        });
       })
     },
     drawEcharts() {
