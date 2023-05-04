@@ -311,7 +311,7 @@ export default {
   color: inherit;
   font-size: inherit;
 }
-.deSelect ::V-deep  .el-input--medium  {
+.deSelect ::v-deep  .el-input--medium  {
   font-size: inherit;
 }
 .deSelect ::v-deep .el-input{
