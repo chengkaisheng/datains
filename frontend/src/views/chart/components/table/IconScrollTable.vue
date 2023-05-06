@@ -2,9 +2,9 @@
     <div ref="tableContainer" :style="bg_class" style="width: 100%;height: 100%;overflow: hidden;">
       <el-row style="height: 100%;">
         <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
-        <p style="text-align:center;">
+        <div style="text-align:center;">
           <svg-icon icon-class="arrow-up" :style="iconStyle" class="svg_box"  @click="clickUpScroll"/>
-        </p>
+        </div>
         <div :style="table_box" style="width: 100%;overflow: hidden;">
           <div v-show="table_title_show" :class="adaptWidth? 'table_new_header': 'table_new_header_notadapt'" :style="table_header_class">
             <div v-for="(item,index) in fields" v-show="item.checked" :key="index" class="header_title" 
@@ -28,9 +28,9 @@
             </ul>
           </div>
         </div>
-        <p style="text-align:center;">
+        <div style="text-align:center;">
           <svg-icon icon-class="arrow-down" :style="iconStyle" class="svg_box" @click="clickDownScroll"/>
-        </p>
+        </div>
       </el-row>
     </div>
   </template>

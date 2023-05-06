@@ -115,14 +115,14 @@
         customColor: '#409eff',
         progStyle: {
           fontSize: '14px',
-          color: '#000000',
+          color: '#ffffff',
           fontFamily: '',
           inside: true,
           strokeWidth: 20,
           position: 'top'
         },
         labelStyle: {
-          color: '#000000',
+          color: '#ffffff',
           fontSize: '14px',
         },
         box_chart: { 
@@ -347,9 +347,9 @@
           this.progStyle.strokeWidth = customAttr.label.strokeWidth !== undefined? customAttr.label.strokeWidth : 20
           this.progStyle.position = customAttr.label.progressPosition !== undefined? customAttr.label.progressPosition : 'top'
           // this.customColor = customAttr.color.colors[0]
-          this.labelStyle.color = customAttr.label.progressLabelColor? customAttr.label.progressLabelColor : '#000000'
+          this.labelStyle.color = customAttr.label.progressLabelColor? customAttr.label.progressLabelColor : '#ffffff'
           this.labelStyle.fontSize = customAttr.label.progressValueSize !== undefined? customAttr.label.progressValueSize + 'px' : '14px'
-          this.dataStyle.color = customAttr.label.progressDataColor? customAttr.label.progressDataColor : '#000000'
+          this.dataStyle.color = customAttr.label.progressDataColor? customAttr.label.progressDataColor : '#ffffff'
           this.dataStyle.fontSize = customAttr.label.progressDataFontSize? customAttr.label.progressDataFontSize +'px': '14px'
           this.dataMargin = customAttr.label.dataMargin? customAttr.label.dataMargin+'px' : '0px'
           this.colMargin = customAttr.label.strokeMargin? customAttr.label.strokeMargin+'px' : '10px'

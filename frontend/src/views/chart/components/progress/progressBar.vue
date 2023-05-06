@@ -123,7 +123,7 @@ export default {
         position: 'top'
       },
       labelStyle: {
-        color: '#000000',
+        color: '#ffffff',
         fontSize: '14px',
       },
       box_chart: { 
@@ -279,7 +279,7 @@ export default {
         this.progStyle.strokeWidth = customAttr.label.strokeWidth !== undefined? customAttr.label.strokeWidth : 20
         this.progStyle.position = customAttr.label.progressPosition !== undefined? customAttr.label.progressPosition : 'top'
         // this.customColor = customAttr.color.colors[0]
-        this.labelStyle.color = customAttr.label.progressLabelColor? customAttr.label.progressLabelColor : '#000000'
+        this.labelStyle.color = customAttr.label.progressLabelColor? customAttr.label.progressLabelColor : '#ffffff'
         this.labelStyle.fontSize = customAttr.label.progressValueSize !== undefined? customAttr.label.progressValueSize + 'px' : '14px'
         this.colMargin = customAttr.label.strokeMargin? customAttr.label.strokeMargin+'px' : '10px'
         if(customAttr.label.progressWidth) {
