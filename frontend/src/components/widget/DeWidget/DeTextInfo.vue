@@ -11,7 +11,7 @@
           </el-row>
         </el-col>
       </el-col>
-      <el-col v-if="carouseObj.show">
+      <el-col v-if="carouseObj.show && carouseObj.url !== ''">
         <img :src="carouseObj.url"  style="width: 100%;" :style="{height: imgHeight}"/>
       </el-col>
     </el-row>
@@ -35,7 +35,6 @@ export default {
       carouseObj: {
         show: false,
         url: '',
-        height: '100px',
       },
       scrollInfo: {}, // 滚动表格数据信息
       oldInfo: {}, // 
