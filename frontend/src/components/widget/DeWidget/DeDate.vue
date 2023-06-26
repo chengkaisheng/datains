@@ -1,9 +1,9 @@
 <template>
   <el-date-picker
-    class="deDate"
     v-if="element.options!== null && element.options.attrs!==null"
     ref="dateRef"
     v-model="values"
+    class="deDate"
     :type="element.options.attrs.type"
     :range-separator="$t(element.options.attrs.rangeSeparator)"
     :start-placeholder="$t(element.options.attrs.startPlaceholder)"
@@ -13,10 +13,10 @@
     value-format="timestamp"
     :size="size"
     :editable="false"
+    :style="dateStyle"
     @change="dateChange"
     @focus="toFocus"
     @blur="onBlur"
-    :style="dateStyle"
   />
 </template>
 
@@ -33,7 +33,7 @@ export default {
   props: {
     element: {
       type: Object,
-      default: null
+      default: () => ({})
     },
     inDraw: {
       type: Boolean,
@@ -73,7 +73,7 @@ export default {
     dateStyle() {
       const style = {}
       // console.log('日期颜色。',this.element)
-      if(this.element.commonSelectFrame.fontColor !== undefined) {
+      if (this.element.commonSelectFrame.fontColor !== undefined) {
         style.color = this.element.commonSelectFrame.fontColor
       }
       return style
@@ -229,7 +229,7 @@ export default {
   .deDate ::v-deep .el-range-editor .el-range-input {
     background-color: transparent;
   }
-  
+
   .deDate ::v-deep .el-range-input {
     background-color: transparent;
     color: inherit;

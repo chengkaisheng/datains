@@ -126,7 +126,7 @@ export default {
 
     element: {
       type: Object,
-      default: null
+      default: () => ({})
     }
   },
   data() {

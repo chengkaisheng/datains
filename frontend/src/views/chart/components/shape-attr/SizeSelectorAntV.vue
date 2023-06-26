@@ -113,7 +113,7 @@
           </el-select>
         </el-form-item>
         <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" :label="$t('chart.table_title_show')" class="form-item">
-          <el-checkbox v-model="sizeForm.tableTitleShow" @change="changeBarSizeCase"></el-checkbox>
+          <el-checkbox v-model="sizeForm.tableTitleShow" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" label="字体粗细" class="form-item">
           <el-select v-model="sizeForm.tableFontWeight" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase">
@@ -192,7 +192,7 @@
         <el-form-item :label="$t('chart.table_item_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableItemHeight" :min="20" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item :label="$t('chart.table_column_width_config')" class="form-item" v-if="chart.type && !chart.type.includes('roll')">
+        <el-form-item v-if="chart.type && !chart.type.includes('roll')" :label="$t('chart.table_column_width_config')" class="form-item">
           <el-radio-group v-model="sizeForm.tableColumnMode" @change="changeBarSizeCase">
             <el-radio label="adapt"><span>{{ $t('chart.table_column_adapt') }}</span></el-radio>
             <el-radio label="custom">
@@ -216,12 +216,12 @@
         </el-form-item>
         <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" label="图标字体大小" class="form-item">
           <el-select v-model="sizeForm.tableIconFontSize" @change="changeBarSizeCase">
-            <el-option v-for="option in iconFontOption" :key="option.value" :label="option.name" :value="option.value"></el-option>
+            <el-option v-for="option in iconFontOption" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
         <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" label="图标高度" class="form-item">
           <el-select v-model="sizeForm.tableIconHeight" @change="changeBarSizeCase">
-            <el-option v-for="option in iconHeightOption" :key="option.value" :label="option.name" :value="option.value"></el-option>
+            <el-option v-for="option in iconHeightOption" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -244,7 +244,7 @@
       <el-form v-show="chart.type && (chart.type.includes('text') || chart.type === 'label')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item label="排列格式" class="form-item">
           <el-select v-model="sizeForm.quotaArrayStatus" placeholder="请选择" @change="changeBarSizeCase">
-            <el-option v-for="item in quotaArrays" :key="item.value" :label="item.name" :value="item.value"></el-option>
+            <el-option v-for="item in quotaArrays" :key="item.value" :label="item.name" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('panel.fontWeight')" class="form-item">
@@ -437,7 +437,7 @@ export default {
         { name: '600', value: '600' },
         { name: '700', value: '700' },
         { name: '800', value: '800' },
-        { name: '900', value: '900' },
+        { name: '900', value: '900' }
       ],
       heightLightLineOps: [
         { name: '第一行', value: 0 },
@@ -451,13 +451,13 @@ export default {
         { name: '第九行', value: 8 }
       ],
       quotaArrays: [
-        {name: '上下排序,值在上',value: 'column'},
-        {name: '上下排序,值在下',value: 'column-reverse'},
-        {name: '左右排序,值在左',value: 'row'},
-        {name: '左右排序,值在右',value: 'row-reverse'},
+        { name: '上下排序,值在上', value: 'column' },
+        { name: '上下排序,值在下', value: 'column-reverse' },
+        { name: '左右排序,值在左', value: 'row' },
+        { name: '左右排序,值在右', value: 'row-reverse' }
       ],
-      iconFontOption:[],
-      iconHeightOption: [],
+      iconFontOption: [],
+      iconHeightOption: []
     }
   },
   watch: {
@@ -518,7 +518,7 @@ export default {
       this.fontSize = arr
 
       const arr1 = []
-      for(let i=40;i <=80; i=i+2) {
+      for (let i = 40; i <= 80; i = i + 2) {
         arr1.push({
           name: i + '',
           value: i + ''
@@ -526,10 +526,10 @@ export default {
       }
       this.iconFontOption = arr1
       const arr2 = []
-      for(let i=20;i <=40; i=i+2) {
+      for (let i = 20; i <= 40; i = i + 2) {
         arr2.push({
-          name: i+'',
-          value: i+ ''
+          name: i + '',
+          value: i + ''
         })
       }
       this.iconHeightOption = arr2
