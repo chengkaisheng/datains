@@ -174,7 +174,7 @@ export default {
       } else if (chart.type === 'waterfall') {
         this.myChart = baseWaterfallOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData)
       } else if (chart.type === 'word-cloud') {
-        this.myChart = baseWordCloudOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData,this.previewCanvasScale.scalePointWidth)
+        this.myChart = baseWordCloudOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.canvasStyleData, this.previewCanvasScale.scalePointWidth)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false
@@ -264,7 +264,7 @@ export default {
           this.title_class.textAlign = customStyle.text.hPosition
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
-          this.title_class.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily : this.canvasStyleData.fontFamily
+          this.title_class.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : this.canvasStyleData.fontFamily
         }
         if (customStyle.background) {
           this.title_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)

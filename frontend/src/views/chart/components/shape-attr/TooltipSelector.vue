@@ -6,7 +6,7 @@
           <el-checkbox v-model="tooltipForm.show" @change="changeTooltipAttr">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="tooltipForm.show">
-          <el-form-item :label="$t('chart.trigger_position')" class="form-item" v-if="chart.type && !chart.type.includes('pie') && chart.render !== 'highcharts'"> <!--  && !chart.type.includes('funnel') && chart.type !== '3dsurface' && chart.type !== '3d-scatter' -->
+          <el-form-item v-if="chart.type && !chart.type.includes('pie') && chart.render !== 'highcharts'" :label="$t('chart.trigger_position')" class="form-item"> <!--  && !chart.type.includes('funnel') && chart.type !== '3dsurface' && chart.type !== '3d-scatter' -->
             <el-radio-group v-model="tooltipForm.trigger" size="mini" @change="changeTooltipAttr">
               <el-radio-button label="item">{{ $t('chart.tooltip_item') }}</el-radio-button>
               <el-radio-button label="axis">{{ $t('chart.tooltip_axis') }}</el-radio-button>
@@ -88,7 +88,7 @@ export default {
   mounted() {
     this.init()
     this.initData()
-    console.log('TooltipSelector--------',this.tooltipForm,this.chart)
+    console.log('TooltipSelector--------', this.tooltipForm, this.chart)
   },
   methods: {
     initData() {
@@ -107,7 +107,7 @@ export default {
     },
     init() {
       const arr = []
-      for (let i = 10; i <= 20; i = i + 2) {
+      for (let i = 10; i <= 100; i = i + 2) {
         arr.push({
           name: i + '',
           value: i + ''

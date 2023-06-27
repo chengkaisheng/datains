@@ -17,7 +17,7 @@
           <el-form-item :label="$t('chart.text_color')" class="form-item">
             <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
           </el-form-item>
-          
+
           <el-form-item v-show="chart.type && (chart.type.includes('3dcolumn') || chart.type === '3dcylinder')" :label="$t('chart.label_position')" class="form-item">
             <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr">
               <el-option v-for="option in labelPosition" :key="option.value" :label="option.name" :value="option.value" />
@@ -52,7 +52,7 @@
           </el-form-item>
         </div>
       </el-form>
-      
+
     </el-col>
   </div>
 </template>
@@ -83,8 +83,8 @@ export default {
         { name: this.$t('chart.text_pos_bottom'), value: 'bottom' }
       ],
       labelPosition1: [
-        {name: '左边',value: 'left'},
-        {name: '右边',value: 'right'},
+        { name: '左边', value: 'left' },
+        { name: '右边', value: 'right' }
       ],
       predefineColors: COLOR_PANEL
     }
@@ -122,7 +122,7 @@ export default {
     },
     init() {
       const arr = []
-      for (let i = 10; i <= 40; i = i + 2) {
+      for (let i = 10; i <= 100; i = i + 2) {
         arr.push({
           name: i + '',
           value: i + ''
@@ -135,7 +135,7 @@ export default {
         this.isSetting = false
       }
       this.$emit('onLabelChange', this.labelForm)
-    },
+    }
   }
 }
 </script>

@@ -128,7 +128,7 @@ const data = {
     // 仪表板视图明细
     panelViewDetailsInfo: {},
     // 全屏状态
-    screenStatus: false,
+    screenStatus: false
   },
   mutations: {
     ...animation.mutations,
@@ -144,7 +144,7 @@ const data = {
       state.isClickComponent = status
     },
 
-    setCopyToPaste(state,status) {
+    setCopyToPaste(state, status) {
       state.isCopyToPaste = status
     },
 
@@ -161,14 +161,14 @@ const data = {
       state.canvasStyleData = style
     },
 
-    setScreenStatus(state,status) {
+    setScreenStatus(state, status) {
       state.screenStatus = status
     },
 
-    setPanelStatus(state,status) {
+    setPanelStatus(state, status) {
       state.isPanelStyle = status
     },
-    setPanelStyleData(state,style) {
+    setPanelStyleData(state, style) {
       state.panelStyleData = style
     },
 
@@ -195,14 +195,13 @@ const data = {
       state.curComponentIndex = index
     },
 
-    
     setDetailsViews(state, data) {
-      let arr = state.detailsViews.map(item => {return item.id})
+      const arr = state.detailsViews.map(item => { return item.id })
       // console.log('已有哪些',arr,data)
-      if(arr.indexOf(data.id) !== -1) {
-        for(let i=0;i<state.detailsViews.length;i++) {
+      if (arr.indexOf(data.id) !== -1) {
+        for (let i = 0; i < state.detailsViews.length; i++) {
           const el = state.detailsViews[i]
-          if(el.id === data.id) {
+          if (el.id === data.id) {
             state.detailsViews[i] = data
             // console.log('11111111',state.detailsViews[i])
           }
@@ -221,7 +220,7 @@ const data = {
       state.scrollVisible = status
     },
 
-    setScrollFilters(state,data) {
+    setScrollFilters(state, data) {
       state.scrollFilters = data
     },
 
@@ -512,7 +511,7 @@ const data = {
       state.isUniformity = status
     },
     setNowPanelTrackInfo(state, trackInfo) {
-      console.log('联动信息，，',trackInfo)
+      console.log('联动信息，，', trackInfo)
       state.nowPanelTrackInfo = trackInfo
     },
     setNowPanelJumpInfo(state, jumpInfo) {

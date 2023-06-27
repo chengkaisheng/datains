@@ -37,7 +37,7 @@
       <el-form-item :label="$t('panel.content_style')+':'">
         <div v-if="curComponent.type==='v-text'" style="width: 100%;max-height: 400px;overflow: auto">
           <VText
-            style="border: 1px solid #dcdfe6;border-radius:4px;background-color: #f7f8fa;"
+            style="border: 1px solid #dcdfe6;border-radius:4px;background-color: #f7f8fa;word-break: break-all;"
             :prop-value="curComponent.propValue"
             :element="curComponent"
             :edit-mode="'edit'"

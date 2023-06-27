@@ -685,9 +685,9 @@
                     </el-row>
                     <!-- drillFields -->
                     <el-row
-                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') 
-                        && !view.type.includes('text') && !view.type.includes('gauge') 
-                        && view.type !== 'liquid' && view.type !== 'word-cloud' 
+                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts')
+                        && !view.type.includes('text') && !view.type.includes('gauge')
+                        && view.type !== 'liquid' && view.type !== 'word-cloud'
                         && view.type !== 'table-pivot' && view.type !=='label'
                         && view.type !== 'roll-elemnt'"
                       class="padding-lr"
@@ -768,11 +768,11 @@
                   </el-collapse-item>
                   <!-- echarts相关 ↓↓↓↓-->
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick' 
-                        && view.type !== 'contrast-funnel' && view.type !== 'map' 
-                        && !view.type.includes('progress') && view.type !== 'waterfall' 
-                        && view.type !== 'graph' && view.type !== '3d-column' && view.type !== 'boxplot'
-                        && view.type !== '3dsurface' && view.type !== '3d-scatter'"
+                    v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick'
+                      && view.type !== 'contrast-funnel' && view.type !== 'map'
+                      && !view.type.includes('progress') && view.type !== 'waterfall'
+                      && view.type !== 'graph' && view.type !== '3d-column' && view.type !== 'boxplot'
+                      && view.type !== '3dsurface' && view.type !== '3d-scatter'"
                     name="size"
                     :title="$t('chart.size')"
                   >
@@ -825,7 +825,7 @@
                     v-show="view.render && view.render === 'antv' && (view.type.includes('roll') && view.type !== 'roll-click-element')"
                     :title="$t('chart.pop_config')"
                   >
-                    <pop-selector-ant-v 
+                    <pop-selector-ant-v
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -836,7 +836,7 @@
                     v-show="view.render && view.render === 'antv' && view.type.includes('roll') "
                     :title="$t('chart.table_width_set')"
                   >
-                    <width-selector-ant-v 
+                    <width-selector-ant-v
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -847,7 +847,7 @@
                     v-show="view.render && view.render === 'antv' && view.type === 'roll-elemnt'"
                     :title="$t('chart.pic_carousel_set')"
                   >
-                    <pic-selector-ant-v 
+                    <pic-selector-ant-v
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -858,7 +858,7 @@
                     v-show="view.render && view.render === 'antv' && view.type.includes('roll')"
                     :title="$t('chart.pop_config')"
                   >
-                    <roll-selector 
+                    <roll-selector
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -883,7 +883,7 @@
                     name="size"
                     :title="$t('chart.size')"
                   >
-                    <size-selector-hc 
+                    <size-selector-hc
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -893,9 +893,9 @@
                   <!-- label ↓↓↓↓ -->
                   <el-collapse-item
                     v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')
-                        &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' 
-                        && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'
-                        && view.type !== 'map_bubble' && view.type !== 'boxplot' && !view.type.includes('roll')"
+                      &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud'
+                      && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'
+                      && view.type !== 'map_bubble' && view.type !== 'boxplot' && !view.type.includes('roll')"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -924,9 +924,9 @@
                   <!-- tooltipr ↓↓↓↓ -->
                   <el-collapse-item
                     v-show="view.type &&!view.type.includes('vertical') && !view.type.includes('roll')
-                      &&!view.type.includes('dialog') && !view.type.includes('table') 
-                      && !view.type.includes('progress') && !view.type.includes('text') 
-                      && view.type !== 'liquid' && view.type !== 'gauge' 
+                      &&!view.type.includes('dialog') && !view.type.includes('table')
+                      && !view.type.includes('progress') && !view.type.includes('text')
+                      && view.type !== 'liquid' && view.type !== 'gauge'
                       && view.type !== 'label' && view.type !== 'calendar'
                       && view.type !== 'map_bubble' && view.type !== 'bar-rate'"
                     name="tooltip"
@@ -966,9 +966,9 @@
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
                   <el-collapse-item
                     v-show="view.type
-                      && ((view.type.includes('bar') &&  view.type !== 'bar-rate') || view.type.includes('line')
-                      || view.type.includes('scatter') || view.type === 'chart-mix' 
-                      || view.type === 'waterfall' || view.type === '3dcolumn' 
+                      && ((view.type.includes('bar') && view.type !== 'bar-rate') || view.type.includes('line')
+                      || view.type.includes('scatter') || view.type === 'chart-mix'
+                      || view.type === 'waterfall' || view.type === '3dcolumn'
                       || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
                     name="xAxis"
                     :title="$t('chart.xAxis')"
@@ -998,8 +998,8 @@
                   <el-collapse-item
                     v-show="view.type
                       && (view.type.includes('bar') || view.type.includes('line')
-                      || view.type.includes('scatter') || view.type === 'chart-mix' 
-                      || view.type === 'waterfall' || view.type === '3dcolumn' 
+                      || view.type.includes('scatter') || view.type === 'chart-mix'
+                      || view.type === 'waterfall' || view.type === '3dcolumn'
                       || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
                     name="yAxis"
                     :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')"
@@ -1104,7 +1104,7 @@
                       && !view.type.includes('text') && view.type !== 'label'
                       && (view.type !== 'treemap' || view.render === 'antv')
                       && view.type !== 'liquid' && view.type !== 'waterfall'
-                      && view.type !== 'gauge' && view.type !== 'word-cloud' 
+                      && view.type !== 'gauge' && view.type !== 'word-cloud'
                       && !view.type.includes('progress') && view.type !== 'map_bubble'
                       && view.type !== 'graph' && view.type !== 'candlestick'
                       && view.type !== '3dsurface' && view.type !== '3d-column'
@@ -1961,9 +1961,9 @@ export default {
           view.xaxis.splice(1, view.xaxis.length)
         }
       }
-      if(view.type === 'progress-count') {
-        if(view.xaxis.length > 2) {
-          view.xaxis.splice(2,1)
+      if (view.type === 'progress-count') {
+        if (view.xaxis.length > 2) {
+          view.xaxis.splice(2, 1)
         }
       }
 
@@ -1972,21 +1972,21 @@ export default {
         view.type.startsWith('gauge') || view.type === 'treemap' ||
         view.type === 'liquid' || view.type === 'word-cloud' ||
         view.type === 'waterfall' || view.type === 'contrast-funnel' ||
-        (view.type.includes('progress') && view.type !== 'progress-count') 
-        || view.type === 'bar-rate'
+        (view.type.includes('progress') && view.type !== 'progress-count') ||
+        view.type === 'bar-rate'
       ) {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
       }
-      if( view.type === 'progress-count') {
-        if(view.yaxis.length > 2) {
-          view.yaxis.splice(2,1)
+      if (view.type === 'progress-count') {
+        if (view.yaxis.length > 2) {
+          view.yaxis.splice(2, 1)
         }
       }
-      if(view.type === '3d-column' || view.type === '3d-scatter' || view.type === 'map_bubble') {
+      if (view.type === '3d-column' || view.type === '3d-scatter' || view.type === 'map_bubble') {
         if (view.yaxis.length > 3) {
-          view.yaxis.splice(3,1)
+          view.yaxis.splice(3, 1)
         }
       }
       // if( view.type === 'contrast-funnel') {
@@ -2670,7 +2670,7 @@ export default {
       }
     },
     addXaxis(e) {
-      console.log('维度添加：',e,this.view)
+      console.log('维度添加：', e, this.view)
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
       }

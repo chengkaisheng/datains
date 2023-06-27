@@ -9,7 +9,7 @@ import {
 import { Pie, Rose } from '@antv/g2plot'
 
 export function basePieOptionAntV(plot, container, chart, action) {
-  console.log('饼1',plot,container,chart)
+  console.log('饼1', plot, container, chart)
   // theme
   const theme = getTheme(chart)
   // attr

@@ -52,9 +52,9 @@
       @onJumpClick="jumpClick"
     />
     <progressCount
-     v-else-if="progressCountFlag"
-     :ref="element.propValue.id"
-     :element="element"
+      v-else-if="progressCountFlag"
+      :ref="element.propValue.id"
+      :element="element"
       class="chart-class"
       :chart="chart"
       :track-menu="trackMenu"
@@ -62,7 +62,7 @@
       :terminal-type="scaleCoefficientType"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
-    ></progressCount>
+    />
     <progressLoop
       v-else-if="progressLoopFlag"
       :ref="element.propValue.id"
@@ -149,10 +149,10 @@
       :in-screen="inScreen"
       class="table-class"
     />
-    <!-- 
+    <!--
       :filter="filter"
       :is-edit="isEdit" -->
-    <textPopup 
+    <textPopup
       v-else-if="textPopupFlag"
       :ref="element.propValue.id"
       :element="element"
@@ -295,7 +295,7 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    },
+    }
   },
   data() {
     return {
@@ -517,7 +517,7 @@ export default {
     },
     linkageFilters() {
       // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
-      console.log('这里赋值？',this.element)
+      console.log('这里赋值？', this.element)
       if (!this.element.linkageFilters) return []
       return JSON.parse(JSON.stringify(this.element.linkageFilters))
     },
@@ -629,9 +629,9 @@ export default {
     },
     linkageFilters: {
       handler(newVal, oldVal) {
-        console.log('触发，linkage',newVal,oldVal)
+        console.log('触发，linkage', newVal, oldVal)
         if (isChange(newVal, oldVal)) {
-          console.log('触发点-------------------------6',newVal,this.element)
+          console.log('触发点-------------------------6', newVal, this.element)
           this.getData(this.element.propValue.viewId)
         }
       },
@@ -879,8 +879,9 @@ export default {
                   if (response.data.render === 'antv') {
                     if (response.data.data) {
                       if (response.data.xaxis) {
-                        const axisList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'M')
-                        console.log('antv,axisList',axisList)
+                        const axisList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE' || item.type === 'VARCHAR') && item.dateStyle === 'M')
+                        console.log('antv,axisList', axisList)
+
                         if (axisList.length > 0) {
                           const arr = []
                           const list = deepCopy(response.data.data.datas)
@@ -953,14 +954,14 @@ export default {
                           response.data.data.datas = arr
                         }
 
-                        const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'y_Q')
-                        console.log('antv,qList',qList)
+                        const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE' || item.type === 'VARCHAR') && item.dateStyle === 'y_Q')
+                        console.log('antv,qList', qList)
                         if (qList.length > 0) {
                           const arr = []
                           const list = deepCopy(response.data.data.datas)
                           list.forEach(item => {
                             const obj = item
-                            if(
+                            if (
                               (new Date(item.field).getMonth() + 1) === 1 ||
                               (new Date(item.field).getMonth() + 1) === 2 ||
                               (new Date(item.field).getMonth() + 1) === 3
@@ -1000,37 +1001,37 @@ export default {
 
                             arr.push(obj)
                           })
-                          console.log('这个。。。',arr)
+                          console.log('这个。。。', arr)
                           response.data.data.datas = arr
                         }
 
                         const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
-                        console.log('antv,xaisList,,,,',xaisList)
-                        if(xaisList.length) {
-                          if(xaisList[0].sort === 'asc') {
+                        console.log('antv,xaisList,,,,', xaisList)
+                        if (xaisList.length) {
+                          if (xaisList[0].sort === 'asc') {
                             const datas = deepCopy(response.data.data.datas)
-                            let objs = {
+                            const objs = {
                               '第一季度': [],
                               '第二季度': [],
                               '第三季度': [],
-                              '第四季度': [],
+                              '第四季度': []
                             }
                             datas.map(item => {
-                              if(item.field === '第一季度') {
-                                objs['第一季度'].push({...item})
+                              if (item.field === '第一季度') {
+                                objs['第一季度'].push({ ...item })
                               } else if (item.field === '第二季度') {
-                                objs['第二季度'].push({...item})
+                                objs['第二季度'].push({ ...item })
                               } else if (item.field === '第三季度') {
-                                objs['第三季度'].push({...item})
+                                objs['第三季度'].push({ ...item })
                               } else if (item.field === '第四季度') {
-                                objs['第四季度'].push({...item})
-                              } 
+                                objs['第四季度'].push({ ...item })
+                              }
                             })
 
-                            let arr = ['第一季度','第二季度','第三季度','第四季度']
-                            let arr1 = []
-                            for(let i=0;i<arr.length;i++) {
-                              let a = objs[arr[i]]
+                            const arr = ['第一季度', '第二季度', '第三季度', '第四季度']
+                            const arr1 = []
+                            for (let i = 0; i < arr.length; i++) {
+                              const a = objs[arr[i]]
                               a.map(obj => {
                                 arr1.push(obj)
                               })
@@ -1038,28 +1039,28 @@ export default {
                             response.data.data.datas = arr1
                           } else if (xaisList[0].sort === 'desc') {
                             const datas = deepCopy(response.data.data.datas)
-                            let objs = {
+                            const objs = {
                               '第一季度': [],
                               '第二季度': [],
                               '第三季度': [],
-                              '第四季度': [],
+                              '第四季度': []
                             }
                             datas.map(item => {
-                              if(item.field === '第一季度') {
-                                objs['第一季度'].push({...item})
+                              if (item.field === '第一季度') {
+                                objs['第一季度'].push({ ...item })
                               } else if (item.field === '第二季度') {
-                                objs['第二季度'].push({...item})
+                                objs['第二季度'].push({ ...item })
                               } else if (item.field === '第三季度') {
-                                objs['第三季度'].push({...item})
+                                objs['第三季度'].push({ ...item })
                               } else if (item.field === '第四季度') {
-                                objs['第四季度'].push({...item})
-                              } 
+                                objs['第四季度'].push({ ...item })
+                              }
                             })
 
-                            let arr = ['第四季度','第三季度','第二季度','第一季度']
-                            let arr1 = []
-                            for(let i=0;i<arr.length;i++) {
-                              let a = objs[arr[i]]
+                            const arr = ['第四季度', '第三季度', '第二季度', '第一季度']
+                            const arr1 = []
+                            for (let i = 0; i < arr.length; i++) {
+                              const a = objs[arr[i]]
                               a.map(obj => {
                                 arr1.push(obj)
                               })
@@ -1074,7 +1075,7 @@ export default {
                     if (response.data.data) {
                       if (response.data.xaxis) {
                         const axisList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'M')
-                        console.log('echarts,axisList',axisList)
+                        console.log('echarts,axisList', axisList)
                         if (axisList.length > 0) {
                           const arr = []
                           const list = deepCopy(response.data.data.x)
@@ -1112,13 +1113,13 @@ export default {
                         }
 
                         const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'y_Q')
-                        console.log('echarts,qList',qList)
+                        console.log('echarts,qList', qList)
                         if (qList.length > 0) {
                           const arr = []
                           const list = deepCopy(response.data.data.x)
                           list.forEach(item => {
                             let obj = item
-                            if(
+                            if (
                               (new Date(item).getMonth() + 1) === 1 ||
                               (new Date(item).getMonth() + 1) === 2 ||
                               (new Date(item).getMonth() + 1) === 3
@@ -1136,7 +1137,7 @@ export default {
                               (new Date(item).getMonth() + 1) === 9
                             ) {
                               obj = '第三季度'
-                            }  else if (
+                            } else if (
                               (new Date(item).getMonth() + 1) === 10 ||
                               (new Date(item).getMonth() + 1) === 11 ||
                               (new Date(item).getMonth() + 1) === 12
@@ -1146,104 +1147,103 @@ export default {
 
                             arr.push(obj)
                           })
-                          
-                          console.log('ec,,,,',arr)
+
+                          console.log('ec,,,,', arr)
 
                           response.data.data.x = arr
                         }
 
                         const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
-                        console.log('echarts,xaisList',xaisList)
-                        if(xaisList.length) {
-                          if(xaisList[0].sort === 'asc') { // 升序
+                        console.log('echarts,xaisList', xaisList)
+                        if (xaisList.length) {
+                          if (xaisList[0].sort === 'asc') { // 升序
                             const datas = JSON.parse(JSON.stringify(response.data.data))
-                            let arr = []
-                            let x = JSON.parse(JSON.stringify(datas.x))
-                            x.map((item,index) => {
-                              if(item === '第一季度') {
+                            const arr = []
+                            const x = JSON.parse(JSON.stringify(datas.x))
+                            x.map((item, index) => {
+                              if (item === '第一季度') {
                                 arr.push({
                                   name: item,
                                   oldNum: index,
-                                  newNum: 1,
+                                  newNum: 1
                                 })
                               } else if (item === '第二季度') {
                                 arr.push({
                                   name: item,
                                   oldNum: index,
-                                  newNum: 2,
+                                  newNum: 2
                                 })
                               } else if (item === '第三季度') {
                                 arr.push({
                                   name: item,
                                   oldNum: index,
-                                  newNum: 3,
+                                  newNum: 3
                                 })
                               } else if (item === '第四季度') {
                                 arr.push({
                                   name: item,
                                   oldNum: index,
-                                  newNum: 4,
+                                  newNum: 4
                                 })
                               }
                             })
-                            let arr1 = arr.sort((a,b) => a.newNum - b.newNum)
+                            const arr1 = arr.sort((a, b) => a.newNum - b.newNum)
 
-                            for(let i=0;i<datas.series.length;i++) {
+                            for (let i = 0; i < datas.series.length; i++) {
                               const obj = JSON.parse(JSON.stringify(datas.series[i]))
-                              let arr2 = []
+                              const arr2 = []
                               arr1.map(item => {
                                 arr2.push(obj.data[item.oldNum])
                               })
                               datas.series[i].data = arr2
                             }
-                            datas.x = ['第一季度','第二季度','第三季度','第四季度']
+                            datas.x = ['第一季度', '第二季度', '第三季度', '第四季度']
                             response.data.data = datas
                           } else if (xaisList[0].sort === 'desc') { // 降序
                             const datas = JSON.parse(JSON.stringify(response.data.data))
-                            let arr = []
-                            let x = JSON.parse(JSON.stringify(datas.x))
-                            x.map((item,index) => {
-                              if(item === '第一季度') {
+                            const arr = []
+                            const x = JSON.parse(JSON.stringify(datas.x))
+                            x.map((item, index) => {
+                              if (item === '第一季度') {
                                 arr.push({
                                   name: item,
                                   oldNum: index,
-                                  newNum: 1,
+                                  newNum: 1
                                 })
                               } else if (item === '第二季度') {
                                 arr.push({
                                   name: item,
                                   oldNum: index,
-                                  newNum: 2,
+                                  newNum: 2
                                 })
                               } else if (item === '第三季度') {
                                 arr.push({
                                   name: item,
                                   oldNum: index,
-                                  newNum: 3,
+                                  newNum: 3
                                 })
                               } else if (item === '第四季度') {
                                 arr.push({
                                   name: item,
                                   oldNum: index,
-                                  newNum: 4,
+                                  newNum: 4
                                 })
                               }
                             })
-                            let arr1 = arr.sort((a,b) => b.newNum - a.newNum)
+                            const arr1 = arr.sort((a, b) => b.newNum - a.newNum)
 
-                            for(let i=0;i<datas.series.length;i++) {
+                            for (let i = 0; i < datas.series.length; i++) {
                               const obj = JSON.parse(JSON.stringify(datas.series[i]))
-                              let arr2 = []
+                              const arr2 = []
                               arr1.map(item => {
                                 arr2.push(obj.data[item.oldNum])
                               })
                               datas.series[i].data = arr2
                             }
-                            datas.x = ['第四季度','第三季度','第二季度','第一季度']
+                            datas.x = ['第四季度', '第三季度', '第二季度', '第一季度']
                             response.data.data = datas
                           }
                         }
-                        
                       }
                     }
                     this.chart = response.data
@@ -1414,13 +1414,13 @@ export default {
                             }
 
                             const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'y_Q')
-                            console.log('antv,qList',qList)
+                            console.log('antv,qList', qList)
                             if (qList.length > 0) {
                               const arr = []
                               const list = deepCopy(response.data.data.datas)
                               list.forEach(item => {
                                 const obj = item
-                                if(
+                                if (
                                   (new Date(item.field).getMonth() + 1) === 1 ||
                                   (new Date(item.field).getMonth() + 1) === 2 ||
                                   (new Date(item.field).getMonth() + 1) === 3
@@ -1460,37 +1460,37 @@ export default {
 
                                 arr.push(obj)
                               })
-                              console.log('这个。。。',arr)
+                              console.log('这个。。。', arr)
                               response.data.data.datas = arr
                             }
 
                             const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
-                            console.log('antv,xaisList,,,,',xaisList)
-                            if(xaisList.length) {
-                              if(xaisList[0].sort === 'asc') {
+                            console.log('antv,xaisList,,,,', xaisList)
+                            if (xaisList.length) {
+                              if (xaisList[0].sort === 'asc') {
                                 const datas = deepCopy(response.data.data.datas)
-                                let objs = {
+                                const objs = {
                                   '第一季度': [],
                                   '第二季度': [],
                                   '第三季度': [],
-                                  '第四季度': [],
+                                  '第四季度': []
                                 }
                                 datas.map(item => {
-                                  if(item.field === '第一季度') {
-                                    objs['第一季度'].push({...item})
+                                  if (item.field === '第一季度') {
+                                    objs['第一季度'].push({ ...item })
                                   } else if (item.field === '第二季度') {
-                                    objs['第二季度'].push({...item})
+                                    objs['第二季度'].push({ ...item })
                                   } else if (item.field === '第三季度') {
-                                    objs['第三季度'].push({...item})
+                                    objs['第三季度'].push({ ...item })
                                   } else if (item.field === '第四季度') {
-                                    objs['第四季度'].push({...item})
-                                  } 
+                                    objs['第四季度'].push({ ...item })
+                                  }
                                 })
 
-                                let arr = ['第一季度','第二季度','第三季度','第四季度']
-                                let arr1 = []
-                                for(let i=0;i<arr.length;i++) {
-                                  let a = objs[arr[i]]
+                                const arr = ['第一季度', '第二季度', '第三季度', '第四季度']
+                                const arr1 = []
+                                for (let i = 0; i < arr.length; i++) {
+                                  const a = objs[arr[i]]
                                   a.map(obj => {
                                     arr1.push(obj)
                                   })
@@ -1498,28 +1498,28 @@ export default {
                                 response.data.data.datas = arr1
                               } else if (xaisList[0].sort === 'desc') {
                                 const datas = deepCopy(response.data.data.datas)
-                                let objs = {
+                                const objs = {
                                   '第一季度': [],
                                   '第二季度': [],
                                   '第三季度': [],
-                                  '第四季度': [],
+                                  '第四季度': []
                                 }
                                 datas.map(item => {
-                                  if(item.field === '第一季度') {
-                                    objs['第一季度'].push({...item})
+                                  if (item.field === '第一季度') {
+                                    objs['第一季度'].push({ ...item })
                                   } else if (item.field === '第二季度') {
-                                    objs['第二季度'].push({...item})
+                                    objs['第二季度'].push({ ...item })
                                   } else if (item.field === '第三季度') {
-                                    objs['第三季度'].push({...item})
+                                    objs['第三季度'].push({ ...item })
                                   } else if (item.field === '第四季度') {
-                                    objs['第四季度'].push({...item})
-                                  } 
+                                    objs['第四季度'].push({ ...item })
+                                  }
                                 })
 
-                                let arr = ['第四季度','第三季度','第二季度','第一季度']
-                                let arr1 = []
-                                for(let i=0;i<arr.length;i++) {
-                                  let a = objs[arr[i]]
+                                const arr = ['第四季度', '第三季度', '第二季度', '第一季度']
+                                const arr1 = []
+                                for (let i = 0; i < arr.length; i++) {
+                                  const a = objs[arr[i]]
                                   a.map(obj => {
                                     arr1.push(obj)
                                   })
@@ -1572,13 +1572,13 @@ export default {
                             }
 
                             const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'y_Q')
-                            console.log('echarts,qList',qList)
+                            console.log('echarts,qList', qList)
                             if (qList.length > 0) {
                               const arr = []
                               const list = deepCopy(response.data.data.x)
                               list.forEach(item => {
                                 let obj = item
-                                if(
+                                if (
                                   (new Date(item).getMonth() + 1) === 1 ||
                                   (new Date(item).getMonth() + 1) === 2 ||
                                   (new Date(item).getMonth() + 1) === 3
@@ -1596,7 +1596,7 @@ export default {
                                   (new Date(item).getMonth() + 1) === 9
                                 ) {
                                   obj = '第三季度'
-                                }  else if (
+                                } else if (
                                   (new Date(item).getMonth() + 1) === 10 ||
                                   (new Date(item).getMonth() + 1) === 11 ||
                                   (new Date(item).getMonth() + 1) === 12
@@ -1606,100 +1606,100 @@ export default {
 
                                 arr.push(obj)
                               })
-                              
-                              console.log('ec,,,,',arr)
+
+                              console.log('ec,,,,', arr)
 
                               response.data.data.x = arr
                             }
 
                             const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
-                            console.log('echarts,xaisList',xaisList)
-                            if(xaisList.length) {
-                              if(xaisList[0].sort === 'asc') { // 升序
+                            console.log('echarts,xaisList', xaisList)
+                            if (xaisList.length) {
+                              if (xaisList[0].sort === 'asc') { // 升序
                                 const datas = JSON.parse(JSON.stringify(response.data.data))
-                                let arr = []
-                                let x = JSON.parse(JSON.stringify(datas.x))
-                                x.map((item,index) => {
-                                  if(item === '第一季度') {
+                                const arr = []
+                                const x = JSON.parse(JSON.stringify(datas.x))
+                                x.map((item, index) => {
+                                  if (item === '第一季度') {
                                     arr.push({
                                       name: item,
                                       oldNum: index,
-                                      newNum: 1,
+                                      newNum: 1
                                     })
                                   } else if (item === '第二季度') {
                                     arr.push({
                                       name: item,
                                       oldNum: index,
-                                      newNum: 2,
+                                      newNum: 2
                                     })
                                   } else if (item === '第三季度') {
                                     arr.push({
                                       name: item,
                                       oldNum: index,
-                                      newNum: 3,
+                                      newNum: 3
                                     })
                                   } else if (item === '第四季度') {
                                     arr.push({
                                       name: item,
                                       oldNum: index,
-                                      newNum: 4,
+                                      newNum: 4
                                     })
                                   }
                                 })
-                                let arr1 = arr.sort((a,b) => a.newNum - b.newNum)
+                                const arr1 = arr.sort((a, b) => a.newNum - b.newNum)
 
-                                for(let i=0;i<datas.series.length;i++) {
+                                for (let i = 0; i < datas.series.length; i++) {
                                   const obj = JSON.parse(JSON.stringify(datas.series[i]))
-                                  let arr2 = []
+                                  const arr2 = []
                                   arr1.map(item => {
                                     arr2.push(obj.data[item.oldNum])
                                   })
                                   datas.series[i].data = arr2
                                 }
-                                datas.x = ['第一季度','第二季度','第三季度','第四季度']
+                                datas.x = ['第一季度', '第二季度', '第三季度', '第四季度']
                                 response.data.data = datas
                               } else if (xaisList[0].sort === 'desc') { // 降序
                                 const datas = JSON.parse(JSON.stringify(response.data.data))
-                                let arr = []
-                                let x = JSON.parse(JSON.stringify(datas.x))
-                                x.map((item,index) => {
-                                  if(item === '第一季度') {
+                                const arr = []
+                                const x = JSON.parse(JSON.stringify(datas.x))
+                                x.map((item, index) => {
+                                  if (item === '第一季度') {
                                     arr.push({
                                       name: item,
                                       oldNum: index,
-                                      newNum: 1,
+                                      newNum: 1
                                     })
                                   } else if (item === '第二季度') {
                                     arr.push({
                                       name: item,
                                       oldNum: index,
-                                      newNum: 2,
+                                      newNum: 2
                                     })
                                   } else if (item === '第三季度') {
                                     arr.push({
                                       name: item,
                                       oldNum: index,
-                                      newNum: 3,
+                                      newNum: 3
                                     })
                                   } else if (item === '第四季度') {
                                     arr.push({
                                       name: item,
                                       oldNum: index,
-                                      newNum: 4,
+                                      newNum: 4
                                     })
                                   }
                                 })
-                                let arr1 = arr.sort((a,b) => b.newNum - a.newNum)
+                                const arr1 = arr.sort((a, b) => b.newNum - a.newNum)
 
-                                for(let i=0;i<datas.series.length;i++) {
+                                for (let i = 0; i < datas.series.length; i++) {
                                   const obj = JSON.parse(JSON.stringify(datas.series[i]))
-                                  let arr2 = []
+                                  const arr2 = []
                                   arr1.map(item => {
                                     arr2.push(obj.data[item.oldNum])
                                   })
                                   datas.series[i].data = arr2
                                 }
-                                datas.x = ['第四季度','第三季度','第二季度','第一季度']
+                                datas.x = ['第四季度', '第三季度', '第二季度', '第一季度']
                                 response.data.data = datas
                               }
                             }

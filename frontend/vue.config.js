@@ -28,14 +28,15 @@ module.exports = {
         // target: 'http://122.9.188.217:8082/',
         // target: 'http://183.194.64.166:10080/',
         // target: 'http://192.168.3.223/',
-        // target: 'http://183.194.65.250:9091/',
+        //   target: 'http://183.194.65.250:9091/',
         // http://183.194.64.166:9091/
-         target: 'http://192.168.3.67/',
-        // target: 'http://183.194.65.250:9091/', //外网访问
+        //   target: 'http://192.168.3.67/',
+        //   http://183.194.65.250:9091/
+        target: 'http://183.194.65.250:9091/', // 外网访问
         // target: 'http://183.194.64.166:9091/',  // 服务器
         // target: 'http://192.168.3.223/',
         // target: 'http://ofmfa31n5roz.ngrok.xiaomiqiu123.top', // 张庆
-        // target: 'http://183.194.64.166:9527', // 张庆
+        //   target: 'http://183.194.64.166:9527', // 张庆
         ws: false
       }
     },
@@ -86,6 +87,14 @@ module.exports = {
       .options({
         symbolId: 'icon-[name]'
       })
+    //  config.optimization.minimizer('terser').tap((args) => {
+    //    args[0].terserOptions.compress.drop_console = true
+    //    return args
+    //  })
+    //  config.optimization.minimizer[0].options.terserOptions.compress.warnings = false
+    //  config.optimization.minimizer[0].options.terserOptions.compress.drop_console = false
+    //  config.optimization.minimizer[0].options.terserOptions.compress.drop_debugger = false
+
     if (process.env.NODE_ENV === 'production') {
       /* config.plugin('compressionPlugin').use(new CompressionPlugin({
         test: /\.(js|css|less)$/, // 匹配文件名

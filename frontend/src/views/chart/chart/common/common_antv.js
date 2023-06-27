@@ -36,19 +36,19 @@ export function getTheme(chart) {
     }
   }
 
-  if(chart.data.fields && chart.data.fields.length) {
-    let fields = chart.data.fields
-    let arr = []
+  if (chart.data.fields && chart.data.fields.length) {
+    const fields = chart.data.fields
+    const arr = []
     for (let i = 0; i < fields.length; i++) {
-        if(fields[i].chartType) {
-          arr.push(fields[i])
-        }
+      if (fields[i].chartType) {
+        arr.push(fields[i])
+      }
     }
     for (let i = 0; i < arr.length; i++) {
-      if(customAttr.color && customAttr.color.variety) {
+      if (customAttr.color && customAttr.color.variety) {
         // 定义柱状图渐变色
-        let a = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
-        let b = hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+        const a = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        const b = hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
         if (chart.type === 'bar' || chart.type === 'line-stack') { // 柱状图
           gColors.push(`l(270) 0:${a} 1:${b}`)
         } else if (chart.type === 'bar-horizontal') { // 横向柱状图
@@ -56,7 +56,7 @@ export function getTheme(chart) {
         }
       }
     }
-    console.log('gColors...',gColors)
+    console.log('gColors...', gColors)
   }
 
   let customStyle
@@ -133,9 +133,9 @@ export function getLabel(chart) {
     // label
     if (customAttr.label) {
       const l = JSON.parse(JSON.stringify(customAttr.label))
-      let fn = ""
-      if(l.antvFormatter !== undefined && l.antvFormatter !== '') {
-        fn = "`"+((l.antvFormatter.replace(/{a}/g,"${text.field}")).replace(/{b}/g,"${text.value}"))+"`"
+      let fn = ''
+      if (l.antvFormatter !== undefined && l.antvFormatter !== '') {
+        fn = '`' + ((l.antvFormatter.replace(/{a}/g, '${text.field}')).replace(/{b}/g, '${text.value}')) + '`'
       }
       // console.log('内容格式',fn)
 
@@ -161,9 +161,9 @@ export function getLabel(chart) {
         }
 
         // formatter
-        if(l.antvFormatter !== undefined && l.antvFormatter !== '') {
-          label.formatter = function(text){
-            return fn?eval("("+fn+")") : ''
+        if (l.antvFormatter !== undefined && l.antvFormatter !== '') {
+          label.formatter = function(text) {
+            return fn ? eval('(' + fn + ')') : ''
           }
         }
       } else {
@@ -184,34 +184,34 @@ export function getTooltip(chart) {
       const t = JSON.parse(JSON.stringify(customAttr.tooltip))
       // console.log('浮窗数据',t)
       if (t.show) {
-        if (t.antvFormatter !== undefined){
-          if(t.antvFormatter === '') {
+        if (t.antvFormatter !== undefined) {
+          if (t.antvFormatter === '') {
             tooltip = {}
           } else {
             tooltip = {
-              customContent: (title,items) => {
+              customContent: (title, items) => {
                 // title是当前移入是对应的x轴数据；items是[{...}]形式的，
                 // console.log(title,items)
-                let str = ""
+                let str = ''
                 str += `<div style="padding: 5px;color:${t.textStyle.color};font-size:${t.textStyle.fontSize}">`
-  
-                if(t.antvFormatter.indexOf('{b}') !== -1) {
+
+                if (t.antvFormatter.indexOf('{b}') !== -1) {
                   str += `<div style="margin-bottom: 10px;">${title}</div>`
                 }
                 items.forEach(obj => {
                   str += '<div style="margin-bottom:10px;">'
-                  if(t.antvFormatter.indexOf('{a}') !== -1) {
+                  if (t.antvFormatter.indexOf('{a}') !== -1) {
                     str += `<span>${obj.name}</span>&nbsp;&nbsp;`
                   }
-                  if(t.antvFormatter.indexOf('{a}') !== -1 && t.antvFormatter.indexOf('{c}') !== -1){
-                    str +=': '
+                  if (t.antvFormatter.indexOf('{a}') !== -1 && t.antvFormatter.indexOf('{c}') !== -1) {
+                    str += ': '
                   }
-                  if(t.antvFormatter.indexOf('{c}') !== -1) {
+                  if (t.antvFormatter.indexOf('{c}') !== -1) {
                     str += `<span>${obj.value}</span>`
                   }
-                  str +='</div>'
+                  str += '</div>'
                 })
-                str +='</div>'
+                str += '</div>'
                 // console.log('展示情况：',str)
                 return str
               }
@@ -220,7 +220,6 @@ export function getTooltip(chart) {
         } else {
           tooltip = {}
         }
-        
       } else {
         tooltip = false
       }
@@ -237,7 +236,7 @@ export function getLegend(chart) {
     // legend
     if (customStyle.legend) {
       const l = JSON.parse(JSON.stringify(customStyle.legend))
-      console.log('lllllllllll',l)
+      console.log('lllllllllll', l)
       if (l.show) {
         let offsetX, offsetY, position, itemSpacing
         const orient = l.orient
@@ -294,7 +293,7 @@ export function getLegend(chart) {
             offsetY = 0
           }
         }
-        
+
         if (l.itemGap) {
           itemSpacing = l.itemGap
         } else {
@@ -330,8 +329,8 @@ export function getXAxis(chart, cstyle = {}) {
       if (a && a.show) {
         const title = (a.name && a.name !== '') ? {
           text: a.name,
-          position: a.nameLocation? a.nameLocation : 'center',
-          offset: a.nameGap? a.nameGap : 20,
+          position: a.nameLocation ? a.nameLocation : 'center',
+          offset: a.nameGap ? a.nameGap : 20,
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
@@ -397,12 +396,12 @@ export function getYAxis(chart, cstyle = {}) {
       if (a.show) {
         const title = (a.name && a.name !== '') ? {
           text: a.name,
-          position: a.nameLocation? a.nameLocation : 'center',
-          offset: a.nameGap? a.nameGap : 20,
+          position: a.nameLocation ? a.nameLocation : 'center',
+          offset: a.nameGap ? a.nameGap : 20,
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
-            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif',
+            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif'
             // x: a.nameLeft? a.nameLeft : 10,
             // y: a.nameTop? a.nameTop : 10,
           },

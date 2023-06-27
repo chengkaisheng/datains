@@ -6,8 +6,13 @@
         <el-table-column v-for="(item,index) in fields" :key="index" :prop="item.datainsName" :label="item.name" />
       </el-table> -->
       <div :class="adaptWidth? 'table_new_header': 'table_new_header_notadapt'" :style="table_header_class">
-        <div v-for="(item,index) in fields" v-show="item.checked" :key="index" class="header_title" 
-          :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
+        <div
+          v-for="(item,index) in fields"
+          v-show="item.checked"
+          :key="index"
+          class="header_title"
+          :style="{'width': adaptWidth?'': widthData[index].value + 'px'}"
+        >
           {{ item.name }}
         </div>
       </div>
@@ -20,9 +25,9 @@
             :disabled="!isPopShow"
             :placement="popOpen.position"
             popper-class="scroll_pop"
+            :append-to-body="inScreen"
             @show="popShow"
             @hide="popHide"
-            :append-to-body="inScreen"
           >
             <p :style="pop_title" style="margin: 0px;position: relative;">
               <span>详情</span>
@@ -37,14 +42,21 @@
             <div slot="reference" class="pop_position" :style="{left: popOpen.left,top: popOpen.top}" />
           </el-popover>
 
-          <li v-for="(items,inde) in dataInfo" v-show="inde<=tableRowsNumber-1" :key="inde" 
-            :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" 
-            class="table_bode_li" 
+          <li
+            v-for="(items,inde) in dataInfo"
+            v-show="inde<=tableRowsNumber-1"
+            :key="inde"
+            :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight"
+            class="table_bode_li"
             @click.stop="showDialogInfo(items,inde)"
           >
-            <div v-for="(item,index) in fields" v-show="item.checked" :key="index" 
-              :class="adaptWidth?'body_info': 'body_info1'" 
-              :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
+            <div
+              v-for="(item,index) in fields"
+              v-show="item.checked"
+              :key="index"
+              :class="adaptWidth?'body_info': 'body_info1'"
+              :style="{'width': adaptWidth?'': widthData[index].value + 'px'}"
+            >
               <!-- {{ inde }} -->
               {{ items[item.datainsName] }}
             </div>
@@ -63,7 +75,7 @@ import vueSeamlessScroll from 'vue-seamless-scroll'
 import eventBus from '@/components/canvas/utils/eventBus'
 
 export default {
-  name: 'scrollTable',
+  name: 'ScrollTable',
   components: {
     vueSeamlessScroll
   },
@@ -97,7 +109,7 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    },
+    }
   },
   data() {
     return {
@@ -187,7 +199,7 @@ export default {
         backgroundColor: '#082456',
         lineHeight: '30px',
         color: '#ffffff',
-        fontSize: '14px',
+        fontSize: '14px'
       },
 
       pop_content: {
@@ -197,14 +209,14 @@ export default {
         lineHeight: '25px',
         borderBottomStyle: 'dashed',
         borderBottomWidth: '1px',
-        borderBottomColor: '#ffffff',
+        borderBottomColor: '#ffffff'
       },
       pop_content_width: {
         titleWidth: '30%',
-        contentWidth: '70%',
+        contentWidth: '70%'
       },
 
-      adaptWidth: true,
+      adaptWidth: true
     }
   },
   computed: {
@@ -238,7 +250,7 @@ export default {
         background: hexColorToRGBA('#ffffff', 0),
         borderRadius: this.borderRadius
       }
-    },
+    }
     // adaptWidth() {
     //   if(this.chart.customAttr) {
     //     const customAttr = JSON.parse(this.chart.customAttr)
@@ -253,7 +265,7 @@ export default {
   },
   watch: {
     chart: function() {
-      console.log('this.chart.data----------2222', this.chart,this.timer)
+      console.log('this.chart.data----------2222', this.chart, this.timer)
 
       if (this.chart.data) {
         clearInterval(this.timer)
@@ -323,10 +335,10 @@ export default {
       this.numberLine = num
 
       const arr = []
-      for(const k in info) {
+      for (const k in info) {
         const a = k
-        this.fields.map((item,index) => {
-          if(a === item.datainsName) {
+        this.fields.map((item, index) => {
+          if (a === item.datainsName) {
             arr.push({
               name: item.name,
               value: info[a],
@@ -368,28 +380,29 @@ export default {
       // this.infoForm = arr
     },
     setLinkViews(info) { // 设置联动的弹窗展示出来
-      console.log('点击的数据',info)
+      console.log('点击的数据', info)
       let sarr = []
-      let arrVal = []
-      if(this.chart.data && this.chart.data.sourceFields) {
+      const arrVal = []
+      if (this.chart.data && this.chart.data.sourceFields) {
         this.chart.data.sourceFields.forEach(item => {
           const sourceInfo = this.chart.id + '#' + item.id
-          if(this.nowPanelTrackInfo[sourceInfo]) {
+          if (this.nowPanelTrackInfo[sourceInfo]) {
             sarr = this.nowPanelTrackInfo[sourceInfo]
-            arrVal.push(info[item.datainsName]) 
+            arrVal.push(info[item.datainsName])
           }
         })
-        
-        this.$store.commit('setScrollViews',sarr)  // 联动的组件id和字段id
-        this.$store.commit('setScrollVisible',true) // 展示弹窗
-        this.$store.commit('setScrollFilters',arrVal) // 过滤弹窗展示的数据
+
+        this.$store.commit('setScrollViews', sarr) // 联动的组件id和字段id
+        this.$store.commit('setScrollVisible', true) // 展示弹窗
+        this.$store.commit('setScrollFilters', arrVal) // 过滤弹窗展示的数据
       }
     },
     closePop() {
       this.isVisible = false
-      this.$store.commit('setScrollVisible',false)
+      this.$store.commit('setScrollVisible', false)
     },
     scorllEvent() {
+      // debugger
       var isScroll = true // 也可以定义到data里
       this.$nextTick(() => {
         const div = document.getElementsByClassName('el-table__body-wrapper')[0]
@@ -425,6 +438,8 @@ export default {
           fieldId: this.chart.data.fields[0].id,
           viewIds: []
         }, manualModify: true }
+        debugger
+        console.log(this.dataInfo)
         const data = JSON.parse(JSON.stringify(this.dataInfo))
         const obj = data.shift()
         data.push(obj)
@@ -437,23 +452,36 @@ export default {
         //   this.dataInfo.push(data)
         // }, 101)
         // console.log('存储数据', this.dataInfo[3])
+        debugger
+        console.log(this.dataInfo)
         let keyObj = {}
-        if(this.highlight >this.dataInfo.length){
-          keyObj = this.dataInfo[this.dataInfo.length -1]
+        if (this.highlight > this.dataInfo.length) {
+          keyObj = this.dataInfo[this.dataInfo.length - 1]
         } else {
-          keyObj = this.dataInfo[this.highlight -1]
+          keyObj = this.dataInfo[this.highlight - 1]
         }
         const keyValue = []
+        debugger
+        console.log(keyObj)
         // let keys = this.chart.data.fields[0].datainsName
         keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
-        // console.log('keyValue', keyValue)
+        debugger
+        console.log(keyValue)
+        console.log('bannerLinkageKey', this.bannerLinkageKey)
         if (this.bannerLinkageKey === true) {
           this.setCondition(keyValue)
+        } else {
+          this.delTimer()
+          this.$once('hook:beforeDestroy', () => {
+            clearInterval(this.timer)
+          })
         }
         // console.log('字段是？',this.fields)
         this.getDetailsInfo(this.dataInfo)
-        
       }, this.scrolleTime) // 滚动速度
+    },
+    delTimer() {
+      clearInterval(this.timer)
     },
     setCondition(key) {
       const param = {
@@ -465,12 +493,12 @@ export default {
     },
     getDetailsInfo(data) { // 设置详情信息
       // console.log('详情数据和index',data,this.picInfo)
-      let arr = []
-      let url  = ''
-      data.map((item,index) => {
-        if(index === (this.highlight-1)) {
+      const arr = []
+      let url = ''
+      data.map((item, index) => {
+        if (index === (this.highlight - 1)) {
           this.axisList.map(obj => {
-            if(obj.relation) {
+            if (obj.relation) {
               arr.push({
                 name: obj.name,
                 value: item[obj.datainsName]
@@ -478,9 +506,9 @@ export default {
             }
           })
 
-          if(this.picInfo.length) {
+          if (this.picInfo.length) {
             this.picInfo.forEach(ele => {
-              if(item.isClick === ele.number) {
+              if (item.isClick === ele.number) {
                 url = ele.url
               }
             })
@@ -488,21 +516,21 @@ export default {
         }
       })
       // console.log('arrrrrrrrr',arr,this.chart)
-      let objs = {
+      const objs = {
         id: this.chart.id,
         data: arr,
         show: this.carouselValue,
-        url: url,
+        url: url
       }
-      this.$store.commit('setDetailsViews',objs)
+      this.$store.commit('setDetailsViews', objs)
     },
     prossData() {
       this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
 
       const customAttr = JSON.parse(this.chart.customAttr)
       // console.log('customAttr11111',customAttr)
-      
-      let axis = []
+
+      const axis = []
       JSON.parse(this.chart.xaxis).forEach(item => {
         axis.push(item)
       })
@@ -523,11 +551,11 @@ export default {
       this.dataInfo = arr
       console.log('有数据才会去执行操作---------', this.dataInfo)
       // this.initStyle()
-      if(customAttr.size) {
-        if(customAttr.size.carouselPics !== undefined) {
+      if (customAttr.size) {
+        if (customAttr.size.carouselPics !== undefined) {
           this.picInfo = customAttr.size.carouselPics
         }
-        if(customAttr.size.carouselValue !== undefined) {
+        if (customAttr.size.carouselValue !== undefined) {
           this.carouselValue = customAttr.size.carouselValue
         }
       }
@@ -641,16 +669,16 @@ export default {
         console.log('是否触发此处修改------------2222222', customAttr)
         if (customAttr.color) {
           this.table_header_class.color = customAttr.color.tableFontColor
-          if(customAttr.color.tableHeaderBgColor) {
+          if (customAttr.color.tableHeaderBgColor) {
             this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
           } else {
             this.table_header_class.background = hexColorToRGBA('#ffffff', 0)
-          } 
+          }
           this.table_item_class.color = customAttr.color.tableInfoFontColor
-          if(customAttr.color.tableItemBgColor) {
+          if (customAttr.color.tableItemBgColor) {
             this.table_item_class.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha)
           } else {
-            this.table_item_class.background = hexColorToRGBA('#ffffff',0)
+            this.table_item_class.background = hexColorToRGBA('#ffffff', 0)
           }
           this.scrollId.backgroundColor = customAttr.color.tableHeightColor
           this.scrollId.color = customAttr.color.tableHeightFontColor
@@ -679,9 +707,9 @@ export default {
           this.table_item_class.textAlign = customAttr.size.tableItemAlign
           this.scrolleTime = customAttr.size.automaticTime
 
-          console.log('widthData',customAttr.size.widthData)
-          if(customAttr.size.widthData && customAttr.size.widthData.length) {
-            this.adaptWidth = customAttr.size.adaptWidth !== undefined? customAttr.size.adaptWidth : true
+          console.log('widthData', customAttr.size.widthData)
+          if (customAttr.size.widthData && customAttr.size.widthData.length) {
+            this.adaptWidth = customAttr.size.adaptWidth !== undefined ? customAttr.size.adaptWidth : true
             this.widthData = customAttr.size.widthData
           } else {
             this.adaptWidth = true
@@ -691,14 +719,14 @@ export default {
           // console.log('label数据，，，，，', customAttr.label)
           this.isPopShow = customAttr.label.popShow
           this.popOpen.position = customAttr.label.popOpen
-          this.popOpen.left = customAttr.label.popLeft? customAttr.label.popLeft + 'px' : '0px'
-          this.popOpen.top = customAttr.label.popTop? customAttr.label.popTop + 'px' : '0px'
-          this.pop_title.fontSize = customAttr.label.popTitleFontSize? customAttr.label.popTitleFontSize + 'px' : '14px'
-          this.pop_title.color = customAttr.label.popTitleColor? customAttr.label.popTitleColor : '#082456'
+          this.popOpen.left = customAttr.label.popLeft ? customAttr.label.popLeft + 'px' : '0px'
+          this.popOpen.top = customAttr.label.popTop ? customAttr.label.popTop + 'px' : '0px'
+          this.pop_title.fontSize = customAttr.label.popTitleFontSize ? customAttr.label.popTitleFontSize + 'px' : '14px'
+          this.pop_title.color = customAttr.label.popTitleColor ? customAttr.label.popTitleColor : '#082456'
           this.pop_title.backgroundColor = customAttr.label.popTitleBackground
           this.pop_title.textAlign = customAttr.label.popPosition
           this.pop_title.lineHeight = customAttr.label.popHeight + 'px'
-          this.pop_content.fontSize = customAttr.label.popContentFontSize? customAttr.label.popContentFontSize + 'px' : '14px'
+          this.pop_content.fontSize = customAttr.label.popContentFontSize ? customAttr.label.popContentFontSize + 'px' : '14px'
           this.pop_content.color = customAttr.label.popContentColor
           this.pop_content.backgroundColor = customAttr.label.popContentBackground
           this.pop_content.lineHeight = customAttr.label.popContentHeight + 'px'
@@ -706,23 +734,22 @@ export default {
           // this.pop_content.borderBottomWidth = customAttr.label.popContentBorderBottomWidth + 'px'
           this.pop_content.borderBottomColor = customAttr.label.popContentBorderBottomColor
 
-          this.pop_content_width.titleWidth = customAttr.label.popContentLeft? customAttr.label.popContentLeft+'%' : '30%'
-          this.pop_content_width.contentWidth = customAttr.label.popContentRight? customAttr.label.popContentRight+'%' : '70%'
-
+          this.pop_content_width.titleWidth = customAttr.label.popContentLeft ? customAttr.label.popContentLeft + '%' : '30%'
+          this.pop_content_width.contentWidth = customAttr.label.popContentRight ? customAttr.label.popContentRight + '%' : '70%'
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
-        if(this.dataInfo.length){
+        if (this.dataInfo.length) {
           // 页面mounted()时候调用一次
           this.getDetailsInfo(this.dataInfo)
 
-          if(!this.isVisible) { // 判断弹窗是否显示了，显示不让其滚动
+          if (!this.isVisible) { // 判断弹窗是否显示了，显示不让其滚动
             this.tableScroll()// 表格滚动
           }
         }
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
-        console.log('customStyle',customStyle)
+        console.log('customStyle', customStyle)
         if (customStyle.text) {
           this.title_show = customStyle.text.show
           this.title_class.fontSize = (customStyle.text.fontSize * this.previewCanvasScale.scalePointWidth) + 'px'

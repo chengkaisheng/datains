@@ -6,7 +6,7 @@ import img2 from '../../../../assets/Funnel2.png'
 import img3 from '../../../../assets/Funnel3.png'
 
 export function baseBarOption(chart_option, chart, cstyle = {}) {
-  console.log('chart,,,,',chart)
+  console.log('chart,,,,', chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -16,7 +16,7 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
     }
     // tooltip
     if (customAttr.tooltip) {
-      console.log('这个悬浮',customAttr.tooltip)
+      console.log('这个悬浮', customAttr.tooltip)
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
@@ -57,7 +57,7 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
           barBorderRadius: barBorderRadiusArr,
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       } else {
         y.itemStyle = {
@@ -65,7 +65,7 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
           barBorderRadius: barBorderRadiusArr,
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       }
 
@@ -145,7 +145,7 @@ export function contrastBarOption(chart_option, chart, cstyle = {}) {
           barBorderRadius: barBorderRadiusArr,
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       } else {
         y.itemStyle = {
@@ -153,7 +153,7 @@ export function contrastBarOption(chart_option, chart, cstyle = {}) {
           barBorderRadius: barBorderRadiusArr,
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       }
 
@@ -270,7 +270,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
           barBorderRadius: barBorderRadiusArr,
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       } else {
         y.itemStyle = {
@@ -278,7 +278,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
           barBorderRadius: barBorderRadiusArr,
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       }
 
@@ -347,12 +347,12 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     nameTextStyle: {
       ...customStyle.xAxis.nameTextStyle,
       lineHeight: 20,
-      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+      fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : '',
       padding: [
-        customStyle.xAxis.paddingTop !== undefined? customStyle.xAxis.paddingTop : 0,
-        customStyle.xAxis.paddingRight !== undefined? customStyle.xAxis.paddingRight : 0,
-        customStyle.xAxis.paddingBottom !== undefined? customStyle.xAxis.paddingBottom : 0,
-        customStyle.xAxis.paddingLeft !== undefined? customStyle.xAxis.paddingLeft : 0,
+        customStyle.xAxis.paddingTop !== undefined ? customStyle.xAxis.paddingTop : 0,
+        customStyle.xAxis.paddingRight !== undefined ? customStyle.xAxis.paddingRight : 0,
+        customStyle.xAxis.paddingBottom !== undefined ? customStyle.xAxis.paddingBottom : 0,
+        customStyle.xAxis.paddingLeft !== undefined ? customStyle.xAxis.paddingLeft : 0
       ]
     },
     inverse: true,
@@ -368,14 +368,14 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     position: customStyle.xAxis.position,
     axisLabel: {
       ...customStyle.xAxis.axisLabel,
-      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
-    },
+      fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
+    }
     // max: !customStyle.xAxis.axisValue.auto? customStyle.axisValue.xAxis.max : null,
     // min: !customStyle.xAxis.axisValue.auto? customStyle.axisValue.xAxis.min : null,
     // interval: !customStyle.xAxis.axisValue.auto? customStyle.axisValue.xAxis.split : null,
   }, {
     gridIndex: 1,
-    show: false,
+    show: false
   }, {
     show: customStyle.xAxis.show,
     name: customStyle.xAxis.name,
@@ -383,12 +383,12 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     nameTextStyle: {
       ...customStyle.xAxis.nameTextStyle,
       lineHeight: 20,
-      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+      fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : '',
       padding: [
-        customStyle.xAxis.paddingTop !== undefined? customStyle.xAxis.paddingTop : 0,
-        customStyle.xAxis.paddingRight !== undefined? customStyle.xAxis.paddingRight : 0,
-        customStyle.xAxis.paddingBottom !== undefined? customStyle.xAxis.paddingBottom : 0,
-        customStyle.xAxis.paddingLeft !== undefined? customStyle.xAxis.paddingLeft : 0,
+        customStyle.xAxis.paddingTop !== undefined ? customStyle.xAxis.paddingTop : 0,
+        customStyle.xAxis.paddingRight !== undefined ? customStyle.xAxis.paddingRight : 0,
+        customStyle.xAxis.paddingBottom !== undefined ? customStyle.xAxis.paddingBottom : 0,
+        customStyle.xAxis.paddingLeft !== undefined ? customStyle.xAxis.paddingLeft : 0
       ]
     },
     gridIndex: 2,
@@ -404,8 +404,8 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     position: customStyle.xAxis.position,
     axisLabel: {
       ...customStyle.xAxis.axisLabel,
-      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
-    },
+      fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
+    }
   }]
   chart_option.yAxis = []
   chart_option.yAxis = [{
@@ -431,12 +431,12 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     nameTextStyle: {
       ...customStyle.yAxis.nameTextStyle,
       lineHeight: 20,
-      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+      fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : '',
       padding: [
-        customStyle.yAxis.paddingTop !== undefined? customStyle.yAxis.paddingTop : 0,
-        customStyle.yAxis.paddingRight !== undefined? customStyle.yAxis.paddingRight : 0,
-        customStyle.yAxis.paddingBottom !== undefined? customStyle.yAxis.paddingBottom : 0,
-        customStyle.yAxis.paddingLeft !== undefined? customStyle.yAxis.paddingLeft : 0,
+        customStyle.yAxis.paddingTop !== undefined ? customStyle.yAxis.paddingTop : 0,
+        customStyle.yAxis.paddingRight !== undefined ? customStyle.yAxis.paddingRight : 0,
+        customStyle.yAxis.paddingBottom !== undefined ? customStyle.yAxis.paddingBottom : 0,
+        customStyle.yAxis.paddingLeft !== undefined ? customStyle.yAxis.paddingLeft : 0
       ]
     },
     gridIndex: 1,
@@ -451,7 +451,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     },
     axisLabel: {
       ...customStyle.yAxis.axisLabel,
-      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+      fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : '',
       align: 'center'
 
     },
@@ -473,7 +473,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     },
     data: chart.data.x
   }]
-  console.log('double,,,,',chart_option)
+  console.log('double,,,,', chart_option)
   // var lastYearData = [3, 20, 62, 34, 55, 65, 33];
   // var thisYearData = [11, 38, 23, 39, 66, 66, 79];
   const option = {
@@ -574,7 +574,7 @@ export function rankingBarOption(chart_option, chart, cstyle = {}) {
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
           barBorderRadius: barBorderRadiusArr,
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       } else {
         y.itemStyle = {
@@ -582,7 +582,7 @@ export function rankingBarOption(chart_option, chart, cstyle = {}) {
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
           barBorderRadius: barBorderRadiusArr,
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       }
 
@@ -687,7 +687,7 @@ export function polarStackBarOption(chart_option, chart, cstyle = {}) {
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
           barBorderRadius: barBorderRadiusArr,
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       } else {
         y.itemStyle = {
@@ -695,7 +695,7 @@ export function polarStackBarOption(chart_option, chart, cstyle = {}) {
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
           barBorderRadius: barBorderRadiusArr,
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       }
 
@@ -1116,7 +1116,7 @@ export function annularBarOption(chart_option, chart, cstyle = {}) {
           barBorderRadius: barBorderRadiusArr,
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       } else {
         y.itemStyle = {
@@ -1124,7 +1124,7 @@ export function annularBarOption(chart_option, chart, cstyle = {}) {
           barBorderRadius: barBorderRadiusArr,
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       }
 
@@ -1529,7 +1529,7 @@ export function stackBarPartOption(chart_option, chart, cstyle = {}) {
       s.yAxisIndex = 0
     }
   })
-  console.log('部分堆叠',chart_option)
+  console.log('部分堆叠', chart_option)
   return chart_option
 }
 
@@ -1538,7 +1538,7 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
-    console.log('customArr,横向,,,,',customAttr)
+    console.log('customArr,横向,,,,', customAttr)
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
@@ -1584,7 +1584,7 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
           barBorderRadius: barBorderRadiusArr,
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       } else {
         y.itemStyle = {
@@ -1592,7 +1592,7 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
           barBorderRadius: barBorderRadiusArr,
-          borderType: customAttr.size.borderType,
+          borderType: customAttr.size.borderType
         }
       }
       // size
@@ -1695,8 +1695,10 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
     }
     // label
 	  if (customAttr.label) {
-      console.log('标签的数据：',customAttr.label)
+      // debugger
+      console.log('标签的数据：', customAttr.label)
       // y.label = customAttr.label
+      // y.z = 10000000000
       y.label = {
         show: customAttr.label.show,
         position: [customAttr.size.barWidth / 2, -(customAttr.size.barWidth + 20)],
@@ -1707,7 +1709,7 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
       }
     }
     y.type = 'bar'
-    y.z = 2
+    y.z = 3
 
     const arr = []
     y.data.map(item => {
@@ -1843,8 +1845,8 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
   return chart_option
 }
 
-export  function base3DColumnOption(chart_option, chart, cstyle = {}) {
-  console.log('3d柱状图',chart)
+export function base3DColumnOption(chart_option, chart, cstyle = {}) {
+  console.log('3d柱状图', chart)
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
@@ -1861,46 +1863,46 @@ export  function base3DColumnOption(chart_option, chart, cstyle = {}) {
     }
   }
 
-  //data
-  if(chart.data) {
+  // data
+  if (chart.data) {
     chart_option.title.text = chart.title
-    
-    if(chart.data.series.length) {
-      let  arr = []
-      for(let i = 0; i< chart.data.series.length; i++) {
+
+    if (chart.data.series.length) {
+      const arr = []
+      for (let i = 0; i < chart.data.series.length; i++) {
         const y = chart.data.series[i]
-        let arr1 = []
-        y.data.map((item,index) => {
+        const arr1 = []
+        y.data.map((item, index) => {
           arr1.push(item.value)
         })
         arr.push(arr1)
       }
-      console.log('bbbarr',arr)
+      console.log('bbbarr', arr)
 
-      let s = new Array(Math.max(... arr.map(item => item.length)));
-      for(let index = 0;index < s.length;index ++) {
-        for(let key in arr) {
-          if(!s[index]) {
+      const s = new Array(Math.max(... arr.map(item => item.length)))
+      for (let index = 0; index < s.length; index++) {
+        for (const key in arr) {
+          if (!s[index]) {
             s[index] = [arr[key][index]]
-          }else {
+          } else {
             s[index][key] = arr[key][index]
           }
-        } 
+        }
       }
-      console.log('3dbar数据',s)
+      console.log('3dbar数据', s)
 
       chart_option.series[0].data = s
 
       chart_option.series[0].label = customAttr.label
     }
   }
-  componentStyle(chart_option,chart,cstyle)
+  componentStyle(chart_option, chart, cstyle)
   return chart_option
 }
 
 // 横向进度图
 export function barRateOption(chart_option, chart, cstyle = {}) {
-  console.log('进度图',chart)
+  console.log('进度图', chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -1923,25 +1925,25 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
   }
   // 处理data
   if (chart.data) {
-    console.log('数据，，',chart.data)
+    console.log('数据，，', chart.data)
     chart_option.title.text = chart.title
     chart_option.yAxis[0].data = chart.data.x
-    
-    let arr = []
-    let arr1 = []
-    let arr2 = []
-    let arr3 = []
-    let datas = chart.data.series[0].data
-    let max = Math.max(...datas.map(item => {return item.value}))
+
+    const arr = []
+    const arr1 = []
+    const arr2 = []
+    const arr3 = []
+    const datas = chart.data.series[0].data
+    const max = Math.max(...datas.map(item => { return item.value }))
     // console.log(max)
-    for(let i=0;i<datas.length;i++) {
-      let obj = {
-        value: datas[i].value,
+    for (let i = 0; i < datas.length; i++) {
+      const obj = {
+        value: datas[i].value
       }
-      let obj1 = {
-        value: datas[i].value,
+      const obj1 = {
+        value: datas[i].value
       }
-      let obj2 = {
+      const obj2 = {
         value: max
       }
       if (customAttr.color.variety) {
@@ -1961,13 +1963,13 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
             }],
             global: false // 缺省为 false
           },
-          barBorderRadius: customAttr.size.barDefault? 5 : parseInt(customAttr.size.barWidth/2),
+          barBorderRadius: customAttr.size.barDefault ? 5 : parseInt(customAttr.size.barWidth / 2)
           // barBorderWidth: customAttr.size.barBorderValue,
           // barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
           // borderType: customAttr.size.borderType,
         }
         obj1.itemStyle = {
-          color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha),
+          color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
         }
         obj2.itemStyle = {
           color: {
@@ -1978,54 +1980,53 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
             y2: 0,
             colorStops: [{
               offset: 0, // 0% 的颜色
-              color: hexColorToRGBA('#1c80d5', (customAttr.color.alphaG-80<0)? 0 : customAttr.color.alphaG-80)
+              color: hexColorToRGBA('#1c80d5', (customAttr.color.alphaG - 80 < 0) ? 0 : customAttr.color.alphaG - 80)
             }, {
-              offset: parseFloat(datas[i].value/max), // 100% 的颜色
-              color: hexColorToRGBA('#1c80d5', (customAttr.color.alpha-80<0)? 0 : customAttr.color.alpha-80)
+              offset: parseFloat(datas[i].value / max), // 100% 的颜色
+              color: hexColorToRGBA('#1c80d5', (customAttr.color.alpha - 80 < 0) ? 0 : customAttr.color.alpha - 80)
             }],
             global: false // 缺省为 false
           },
-          barBorderRadius: customAttr.size.barDefault? 5 : parseInt(customAttr.size.barWidth/2),
+          barBorderRadius: customAttr.size.barDefault ? 5 : parseInt(customAttr.size.barWidth / 2)
         }
-
       } else {
         obj.itemStyle = {
           color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
-          barBorderRadius: customAttr.size.barDefault? 5 : parseInt(customAttr.size.barWidth/2),
+          barBorderRadius: customAttr.size.barDefault ? 5 : parseInt(customAttr.size.barWidth / 2)
           // barBorderWidth: customAttr.size.barBorderValue,
           // barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
           // borderType: customAttr.size.borderType,
         }
         obj1.itemStyle = {
-          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
         }
         obj2.itemStyle = {
-          color: hexColorToRGBA('#1c80d5', (customAttr.color.alpha-80<0)? 0 : customAttr.color.alpha-80),
-          barBorderRadius: customAttr.size.barDefault? 5 : parseInt(customAttr.size.barWidth/2),
+          color: hexColorToRGBA('#1c80d5', (customAttr.color.alpha - 80 < 0) ? 0 : customAttr.color.alpha - 80),
+          barBorderRadius: customAttr.size.barDefault ? 5 : parseInt(customAttr.size.barWidth / 2)
         }
       }
-      
+
       arr.push(obj)
       arr1.push(obj1)
       arr2.push(obj2)
       arr3.push(datas[i].value)
     }
     chart_option.yAxis[1].data = arr3
-    
+
     chart_option.series[0] = {
       name: '条',
       type: 'bar',
       stack: '圆',
-      barWidth: customAttr.size.barDefault?8: customAttr.size.barWidth,
+      barWidth: customAttr.size.barDefault ? 8 : customAttr.size.barWidth,
       yAxisIndex: 0,
       data: arr,
-      z: 2,
+      z: 2
     }
     chart_option.series[1] = {
       name: 'xxx',
       type: 'effectScatter',
       effectType: 'ripple',
-      symbolSize: customAttr.size.barDefault? 10: customAttr.size.barWidth+2,
+      symbolSize: customAttr.size.barDefault ? 10 : customAttr.size.barWidth + 2,
       symbolPosition: 'end',
       // symbolOffset: [20,0],
       label: customAttr.label,
@@ -2035,9 +2036,9 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
     chart_option.series[2] = {
       name: '背景',
       type: 'bar',
-      barWidth: customAttr.size.barDefault?8: customAttr.size.barWidth,
+      barWidth: customAttr.size.barDefault ? 8 : customAttr.size.barWidth,
       barGap: '-100%',
-      data: arr2,
+      data: arr2
       // itemStyle:{}
     }
   }

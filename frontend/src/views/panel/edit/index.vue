@@ -195,7 +195,7 @@
         <div class="zoom_control">
           画布缩放控制器
           <div>
-            <el-slider v-model="scaleValue" :min="30" :max="200" @change="changeScale" />
+            <el-slider v-model="scaleValue" :min="10" :max="200" @change="changeScale" />
           </div>
 
         </div>
@@ -657,10 +657,10 @@ export default {
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {
-          let rgba = hexColorToRGBA(this.canvasStyleData.panel.color,this.canvasStyleData.panel.alpha !== undefined? this.canvasStyleData.panel.alpha : 100)
+          const rgba = hexColorToRGBA(this.canvasStyleData.panel.color, this.canvasStyleData.panel.alpha !== undefined ? this.canvasStyleData.panel.alpha : 100)
           style = {
             ...style,
-            background: rgba,
+            background: rgba
           }
         }
       }
@@ -747,7 +747,7 @@ export default {
       this.restore()
     },
     previewVisible: {
-      handler(val1,val2) {
+      handler(val1, val2) {
         console.log('全屏状态改变', val1)
       }
     }
@@ -912,15 +912,13 @@ export default {
       const _this = this
       _this.initHasStar()
       if (panelId) {
-
-        if(this.isPanelStyle) {
+        if (this.isPanelStyle) {
           const requestInfo = {
             id: panelId,
             panelStyle: JSON.stringify(this.canvasStyleData),
-            panelData: "[]"
+            panelData: '[]'
           }
           panelSave(requestInfo).then(response => {
-
             initPanelData(panelId, function() {
               // 初始化视图缓存
               initViewCache(panelId)
@@ -930,7 +928,7 @@ export default {
               }, 500)
             })
           })
-        }else {
+        } else {
           initPanelData(panelId, function() {
             // 初始化视图缓存
             initViewCache(panelId)
@@ -1105,16 +1103,16 @@ export default {
         this.currentFilterCom.mobileStyle = BASE_MOBILE_STYLE
         this.currentFilterCom.commonBackground = this.currentFilterCom.commonBackground || deepCopy(COMMON_BACKGROUND)
 
-        if(
-          this.dragComponentInfo.component === 'de-select' 
-          || this.dragComponentInfo.component === 'de-input-search' 
-          || this.dragComponentInfo.component === 'de-select-grid' 
-          || this.dragComponentInfo.component === 'de-date'
-        ){ 
+        if (
+          this.dragComponentInfo.component === 'de-select' ||
+          this.dragComponentInfo.component === 'de-input-search' ||
+          this.dragComponentInfo.component === 'de-select-grid' ||
+          this.dragComponentInfo.component === 'de-date'
+        ) {
           this.currentFilterCom.commonSelectFrame = this.currentFilterCom.commonSelectFrame || deepCopy(COMMON_SELECT_FRAME)
         }
-        
-        console.log('视图信息,,,handleDrop',this.currentFilterCom)
+
+        console.log('视图信息,,,handleDrop', this.currentFilterCom)
         if (this.currentWidget.filterDialog) {
           this.show = false
           this.openFilterDialog(true)

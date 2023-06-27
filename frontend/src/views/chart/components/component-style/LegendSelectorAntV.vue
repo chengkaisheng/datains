@@ -45,7 +45,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item :label="$t('chart.text_margin')" class="form-item">
-            <el-input-number v-model="legendForm.itemGap" :min="1" :max="100" size="mini"  @change="changeLegendStyle"></el-input-number>
+            <el-input-number v-model="legendForm.itemGap" :min="1" :max="100" size="mini" @change="changeLegendStyle" />
           </el-form-item>
         </div>
       </el-form>
@@ -110,7 +110,7 @@ export default {
     },
     init() {
       const arr = []
-      for (let i = 10; i <= 60; i = i + 2) {
+      for (let i = 10; i <= 100; i = i + 2) {
         arr.push({
           name: i + '',
           value: i + ''

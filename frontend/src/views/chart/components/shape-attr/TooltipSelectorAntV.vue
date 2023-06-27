@@ -85,7 +85,7 @@ export default {
     },
     init() {
       const arr = []
-      for (let i = 10; i <= 20; i = i + 2) {
+      for (let i = 10; i <= 100; i = i + 2) {
         arr.push({
           name: i + '',
           value: i + ''

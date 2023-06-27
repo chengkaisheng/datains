@@ -4,9 +4,9 @@
       <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
       <div>
         <el-popover
+          v-model="visible"
           width="400"
           trigger="manual"
-          v-model="visible"
           :append-to-body="inScreen"
           popper-class="pop_box"
         >
@@ -17,20 +17,24 @@
             </p> -->
             <div>
               <el-row :style="{backgroundColor: box_style.popupBackColor,padding: '10px'}">
-                <el-col v-for="(item,index) in infoData" :key="index" :style="{
-                  backgroundColor: box_style.backgroundColor,
-                  marginBottom: index<(infoData.length-1)? '10px': ''
-                }">
+                <el-col
+                  v-for="(item,index) in infoData"
+                  :key="index"
+                  :style="{
+                    backgroundColor: box_style.backgroundColor,
+                    marginBottom: index<(infoData.length-1)? '10px': ''
+                  }"
+                >
                   <el-col v-for="(obj,ind) in item" :key="ind">
-                    <el-col :span="6" class="box_auto" :style="{color: box_style.nameColor,textAlign: 'center'}">{{obj.name}}:</el-col>
-                    <el-col :span="18" class="box_auto" :style="{color: box_style.valColor}">{{obj.value}}</el-col>
+                    <el-col :span="6" class="box_auto" :style="{color: box_style.nameColor,textAlign: 'center'}">{{ obj.name }}:</el-col>
+                    <el-col :span="18" class="box_auto" :style="{color: box_style.valColor}">{{ obj.value }}</el-col>
                   </el-col>
                 </el-col>
               </el-row>
             </div>
           </div>
           <div slot="reference">
-            <div :style="popStyle" @click.stop="clickPop"></div>
+            <div :style="popStyle" @click.stop="clickPop" />
           </div>
         </el-popover>
       </div>
@@ -43,7 +47,7 @@ import { mapState } from 'vuex'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
-  name: 'textPopup',
+  name: 'TextPopup',
   props: {
     element: {
       type: Object,
@@ -69,7 +73,7 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    },
+    }
   },
   data() {
     return {
@@ -114,17 +118,11 @@ export default {
     },
     popStyle() {
       const style = {}
-      if(this.element.style) {
+      if (this.element.style) {
         style.width = this.element.style.width + 'px'
-        style.height = this.element.style.height  + 'px'
+        style.height = this.element.style.height + 'px'
       }
       return style
-    },
-  },
-  mounted() {
-    console.log('element,chart',this.chart,this.element)
-    if (this.chart.data) {
-      this.initData()
     }
   },
   watch: {
@@ -137,17 +135,17 @@ export default {
       }
     },
     scrollVisible: { // 展示弹窗用
-      handler(val1,val2) {
-        console.log('val11111111111',val1)
-        
-        if(this.chart.data && this.chart.data.sourceFields) {
+      handler(val1, val2) {
+        console.log('val11111111111', val1)
+
+        if (this.chart.data && this.chart.data.sourceFields) {
           this.chart.data.sourceFields.forEach(item => {
             const sourceInfo = this.chart.id + '#' + item.id
             this.scrollViews.forEach(el => {
-              if(sourceInfo === el) {
+              if (sourceInfo === el) {
                 this.visible = this.scrollVisible
                 this.associateFiled = item.datainsName
-                if(this.visible) {
+                if (this.visible) {
                   this.setData()
                 }
               }
@@ -157,18 +155,24 @@ export default {
       }
     }
   },
+  mounted() {
+    console.log('element,chart', this.chart, this.element)
+    if (this.chart.data) {
+      this.initData()
+    }
+  },
   methods: {
     initData() {
-      let fields = this.chart.data.fields
-      let data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-      let d = []
-      for(let i=0;i<data.length;i++) {
+      const fields = this.chart.data.fields
+      const data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+      const d = []
+      for (let i = 0; i < data.length; i++) {
         const obj = data[i]
-        let arr = []
-        for(let k in obj) {
+        const arr = []
+        for (const k in obj) {
           const a = k
           fields.map(item => {
-            if(a === item.datainsName) {
+            if (a === item.datainsName) {
               arr.push({
                 name: item.name,
                 value: obj[a]
@@ -178,16 +182,16 @@ export default {
         }
         d.push(arr)
       }
-      console.log('数据，，，',d)
+      console.log('数据，，，', d)
       this.infoData = d
 
       this.initStyle()
     },
     initStyle() {
-      if(this.chart.customAttr) {
+      if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
 
-        if(customAttr.color) {
+        if (customAttr.color) {
           this.box_style.valColor = customAttr.color.quotaColor
           this.box_style.nameColor = customAttr.color.dimensionColor
           this.box_style.backgroundColor = customAttr.color.textPopBackColor
@@ -195,10 +199,10 @@ export default {
         }
       }
 
-      if(this.chart.customStyle) {
+      if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
-        
-        if(customStyle.text) {
+
+        if (customStyle.text) {
           this.title_show = customStyle.text.show
 
           this.title_class.fontSize = (customStyle.text.fontSize * this.previewCanvasScale.scalePointWidth) + 'px'
@@ -214,17 +218,17 @@ export default {
       }
     },
     setData() { // 点击滚动表格，获取到联动点击的值过滤
-      let fields = this.chart.data.fields
-      let data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+      const fields = this.chart.data.fields
+      const data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
       // console.log(fields,data,this.associateFiled,this.scrollFilters)
-      let d = []
-      for(let i=0;i<data.length;i++) {
+      const d = []
+      for (let i = 0; i < data.length; i++) {
         const obj = data[i]
-        let arr = []
-        for(let k in obj) {
+        const arr = []
+        for (const k in obj) {
           const a = k
           fields.map(item => {
-            if(a === item.datainsName) {
+            if (a === item.datainsName) {
               arr.push({
                 name: item.name,
                 value: obj[a]
@@ -232,7 +236,7 @@ export default {
             }
           })
         }
-        if(obj[this.associateFiled] === this.scrollFilters[0]) {
+        if (obj[this.associateFiled] === this.scrollFilters[0]) {
           d.push(arr)
         }
       }
@@ -248,7 +252,7 @@ export default {
       this.height = 100
     },
     clickPop() {
-      console.log('点击，，，',this.chart)
+      console.log('点击，，，', this.chart)
       // this.visible = true
     },
     closePop() {

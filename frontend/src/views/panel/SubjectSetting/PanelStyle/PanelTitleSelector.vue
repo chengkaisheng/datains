@@ -17,7 +17,7 @@
                   <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
                 </el-select>
               </el-form-item>
-              <el-form-item  :label="$t('chart.text_style')" class="form-item">
+              <el-form-item :label="$t('chart.text_style')" class="form-item">
                 <el-select v-model="titleForm.fontFamily" placeholder="请选择" size="mini" @change="onTitleChange">
                   <el-option
                     v-for="item in fontOptions"
@@ -110,7 +110,7 @@ export default {
     },
     init() {
       const arr = []
-      for (let i = 10; i <= 60; i = i + 2) {
+      for (let i = 10; i <= 100; i = i + 2) {
         arr.push({
           name: i + '',
           value: i + ''
@@ -123,7 +123,7 @@ export default {
     },
     inputOnInput: function(e) {
       this.$forceUpdate()
-    },
+    }
   }
 }
 </script>

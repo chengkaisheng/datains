@@ -81,10 +81,10 @@ import {
   heatMapOption
 } from '../chart/line/line'
 import {
-  candlestickOption,
+  candlestickOption
 } from '../chart/other/candlestick'
 import {
-  baseBoxPlotOption,
+  baseBoxPlotOption
 } from '../chart/other/boxPlot'
 import {
   baseSankeyOption
@@ -252,45 +252,45 @@ export default {
         })
 
         // 获取饼图的数据项数组
-        var originalSeriesData = this.myChart.getOption().series[0].data;
+        var originalSeriesData = this.myChart.getOption().series[0].data
         // 复制一份原始数据，用于计算饼图占比
         var seriesData = originalSeriesData.map(function(item) {
-          return Object.assign({}, item);
-        });
+          return Object.assign({}, item)
+        })
 
-        this.myChart.on('legendselectchanged',function(params){
+        this.myChart.on('legendselectchanged', function(params) {
           // console.log('图例点击',params)
           if (that.myChart.getOption().series[0].type !== 'pie') {
-            return;
+            return
           }
           // 获取被选中的图例名称
-          var selectedLegendName = params.name;
+          var selectedLegendName = params.name
 
           // 遍历数据项，计算选中图例对应的数据项占总数据的百分比，并更新对应的value值
-          var totalValue = 0;
-          var selectedValue = 0;
+          var totalValue = 0
+          var selectedValue = 0
           for (var i = 0; i < seriesData.length; i++) {
-            totalValue += seriesData[i].value;
+            totalValue += seriesData[i].value
             if (seriesData[i].name === selectedLegendName) {
-              selectedValue = seriesData[i].value;
+              selectedValue = seriesData[i].value
             }
           }
-          var selectedPercent = selectedValue / totalValue * 100;
+          var selectedPercent = selectedValue / totalValue * 100
           seriesData.forEach(function(item) {
             if (item.name !== selectedLegendName) {
-              item.percent = parseFloat((item.value / (totalValue - selectedValue) * (100 - selectedPercent)).toFixed(2));
+              item.percent = parseFloat((item.value / (totalValue - selectedValue) * (100 - selectedPercent)).toFixed(2))
             } else {
-              item.percent = parseFloat(selectedPercent.toFixed(2));
+              item.percent = parseFloat(selectedPercent.toFixed(2))
             }
-          });
+          })
 
           // 更新饼图的option对象，并重新渲染图表
           that.myChart.setOption({
-            series:[{
+            series: [{
               data: seriesData
             }]
           })
-        });
+        })
       })
     },
     drawEcharts() {
@@ -326,7 +326,7 @@ export default {
       } else if (chart.type === 'bar-stack-part') {
         chart_option = stackBarPartOption(JSON.parse(JSON.stringify(BASE_BAR_PART)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-rate') {
-        chart_option = barRateOption(JSON.parse(JSON.stringify(BASE_BAR_RATE)),chart,this.$store.state.canvasStyleData)
+        chart_option = barRateOption(JSON.parse(JSON.stringify(BASE_BAR_RATE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-polarStack') {
         chart_option = polarStackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-horizontal') {
@@ -339,6 +339,7 @@ export default {
       } else if (chart.type === 'line-polar') {
         chart_option = polarLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line-stack') {
+      //   debugger
         chart_option = stackLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie') {
         chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
@@ -406,7 +407,7 @@ export default {
           return
         }
         const cCode = this.dynamicAreaCode || customAttr.areaCode
-        console.log('选择区域，',cCode)
+        console.log('选择区域，', cCode)
         if (this.$store.getters.geoMap[cCode]) {
           const json = this.$store.getters.geoMap[cCode]
           this.initMapChart(json, chart)
@@ -424,7 +425,6 @@ export default {
         return
       }
 
-      
       this.myEcharts(chart_option)
     },
     registerDynamicMap(areaCode) {
@@ -560,7 +560,7 @@ export default {
     padding: 2px;
     border-radius: 5px
   }
-  
+
   /* 去掉百度地图的logo */
   .anchorBL {
     display: none !important;
