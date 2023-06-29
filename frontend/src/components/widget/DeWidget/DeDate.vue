@@ -75,6 +75,7 @@ export default {
       // console.log('日期颜色。',this.element)
       if (this.element.commonSelectFrame.fontColor !== undefined) {
         style.color = this.element.commonSelectFrame.fontColor
+        style['--text-color'] = this.element.commonSelectFrame.fontColor
       }
       return style
     }
@@ -220,6 +221,7 @@ export default {
   }
   .deDate ::v-deep .el-input__inner {
     background-color: transparent;
+    color: var(--text-color);
   }
 
   .deDate ::v-deep .el-range-editor.el-input__inner {

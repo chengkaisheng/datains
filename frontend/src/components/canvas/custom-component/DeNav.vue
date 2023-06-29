@@ -2,37 +2,41 @@
   <div>
     <div v-show="element.options.pattern !=='scroll'" class="nav_calss" :style="navStyleSet">
 
-      <div v-show="!element.options.isFloat" v-for="(item,index) in navList" :key="index" class="nav_info" :style="boxStyle">
+      <div v-for="(item,index) in navList" v-show="!element.options.isFloat" :key="index" class="nav_info" :style="boxStyle">
         <div :style="setStyle(item)">
           <span class="title_class" :style="{color:heightlight(item)}" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
         </div>
       </div>
-      <div v-show="element.options.isFloat" style="width: 100%;position: relative;" > <!--@mouseover="popOver"-->
+      <div v-show="element.options.isFloat" style="width: 100%;position: relative;"> <!--@mouseover="popOver"-->
         <el-popover
+          v-model="isVisible"
           placement="bottom"
           trigger="click"
           popper-class="float_pop"
-          v-model="isVisible"
           :append-to-body="inScreen"
-        > 
+        >
           <div class="nav_calss">
             <div v-for="(item,index) in navList" :key="index" class="nav_info" :style="boxStyle1">
               <div :style="setStyle1(item)">
-                <span class="title_class" :style="{
-                  color:heightlight(item),
-                  fontSize: floatSize  
-                }" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
+                <span
+                  class="title_class"
+                  :style="{
+                    color:heightlight(item),
+                    fontSize: floatSize
+                  }"
+                  @mousedown="baseMoseDownEven"
+                  @click.stop="toggleNav(item)"
+                >{{ item.name }}</span>
               </div>
             </div>
           </div>
-          <div slot="reference" class="nav_pop_pos" :style="floatPosition"></div>
+          <div slot="reference" class="nav_pop_pos" :style="floatPosition" />
         </el-popover>
         <p :style="floatStyle" style="width: 100%;margin: 0px;">
-          <span class="title_class" @mousedown="baseMoseDownEven" @click.stop="popClick">{{element.options.floatName}}</span>
+          <span class="title_class" @mousedown="baseMoseDownEven" @click.stop="popClick">{{ element.options.floatName }}</span>
         </p>
       </div>
-    
-    
+
     </div>
 
     <!-- <div v-show="element.options.pattern=='scroll'&&element.options.vertical=='elementKey'" class="scroll_box">
@@ -69,7 +73,7 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    },
+    }
   },
 
   data() {
@@ -97,7 +101,7 @@ export default {
           slideShadows: true // 开启slide阴影。默认 true。
         }
       },
-      isVisible: false,
+      isVisible: false
     }
   },
   computed: {
@@ -146,8 +150,8 @@ export default {
       const style = {}
       style.paddingLeft = this.element.options.spacing + 'px'
       style.paddingRight = this.element.options.spacing + 'px'
-      style.width = (this.element.options.floatWidth? this.element.options.floatWidth : '100') + 'px'
-      style.height = (this.element.options.floatHeight? this.element.options.floatHeight : '30') + 'px'
+      style.width = (this.element.options.floatWidth ? this.element.options.floatWidth : '100') + 'px'
+      style.height = (this.element.options.floatHeight ? this.element.options.floatHeight : '30') + 'px'
       return style
     },
     setStyle() {
@@ -158,17 +162,16 @@ export default {
           if (this.canvasStyleData.navShowKey === value.name) {
             // return this.element.options.highlight
             // return this.element.options.color
-            if(this.element.options.highlightType === 'color') {
+            if (this.element.options.highlightType === 'color') {
               style.backgroundColor = this.element.options.highlightBg
             } else {
               if (this.element.options.heightBgImg) {
                 style.backgroundImage = `url(${this.element.options.heightBgImg})`
               }
             }
-            
           } else {
           // return this.element.options.color
-            if(this.element.options.defaultType === 'color') {
+            if (this.element.options.defaultType === 'color') {
               style.backgroundColor = this.element.options.defaultColor
             } else {
               if (this.element.options.defaultBg) {
@@ -185,7 +188,6 @@ export default {
                 style.backgroundImage = `url(${this.element.options.heightBgImg})`
               }
             }
-            
           } else {
             if (this.element.options.defaultType === 'color') {
               style.backgroundColor = this.element.options.defaultColor
@@ -196,7 +198,7 @@ export default {
             }
           }
         }
-        style.fontWeight = this.element.options.fontWeight?this.element.options.fontWeight : '300'
+        style.fontWeight = this.element.options.fontWeight ? this.element.options.fontWeight : '300'
         style.lineHeight = this.element.style.height + 'px'
         style.backgroundRepeat = 'no-repeat'
         style.backgroundSize = '100% 100%'
@@ -212,17 +214,16 @@ export default {
           if (this.canvasStyleData.navShowKey === value.name) {
             // return this.element.options.highlight
             // return this.element.options.color
-            if(this.element.options.highlightType === 'color') {
+            if (this.element.options.highlightType === 'color') {
               style.backgroundColor = this.element.options.highlightBg
             } else {
               if (this.element.options.heightBgImg) {
                 style.backgroundImage = `url(${this.element.options.heightBgImg})`
               }
             }
-            
           } else {
           // return this.element.options.color
-            if(this.element.options.defaultType === 'color') {
+            if (this.element.options.defaultType === 'color') {
               style.backgroundColor = this.element.options.defaultColor
             } else {
               if (this.element.options.defaultBg) {
@@ -250,35 +251,35 @@ export default {
           }
         }
 
-        style.lineHeight = (this.element.options.floatHeight? this.element.options.floatHeight : 30) + 'px'
+        style.lineHeight = (this.element.options.floatHeight ? this.element.options.floatHeight : 30) + 'px'
         style.backgroundRepeat = 'no-repeat'
         style.backgroundSize = '100% 100%'
         style.textAlign = this.element.options.horizontal
-        console.log('setStyle1',style)
+        console.log('setStyle1', style)
         return style
       }
     },
     floatPosition() {
       const style = {}
-      style.left = (this.element.options.floatLevel? parseInt(this.element.options.floatLevel) : 0) + 'px'
-      style.top = (this.element.options.floatVertical? parseInt(this.element.options.floatVertical) : 0) + 'px'
+      style.left = (this.element.options.floatLevel ? parseInt(this.element.options.floatLevel) : 0) + 'px'
+      style.top = (this.element.options.floatVertical ? parseInt(this.element.options.floatVertical) : 0) + 'px'
       // console.log('修改后会进吗？',this.element.options)
       return style
     },
     floatSize() {
-      return (this.element.options.floatSize? this.element.options.floatSize : 12) + 'px'
+      return (this.element.options.floatSize ? this.element.options.floatSize : 12) + 'px'
     },
     floatStyle() {
       const style = {}
-      let arr = []
-      
-      if(this.element.options && this.element.options.navTabList && this.element.options.navTabList.length) {
+      const arr = []
+
+      if (this.element.options && this.element.options.navTabList && this.element.options.navTabList.length) {
         this.element.options.navTabList.map(item => {
           arr.push(item.name)
         })
       }
-      if(arr.indexOf(this.canvasStyleData.navShowKey) === -1) {
-        if(this.element.options.floatImg !== '') {
+      if (arr.indexOf(this.canvasStyleData.navShowKey) === -1) {
+        if (this.element.options.floatImg !== '') {
           style.backgroundImage = `url(${this.element.options.floatImg})`
         }
       } else {
@@ -290,18 +291,18 @@ export default {
         //     style.backgroundImage = `url(${this.element.options.heightBgImg})`
         //   }
         // }
-        if(this.element.options.floatHighImg) {
+        if (this.element.options.floatHighImg) {
           style.backgroundImage = `url(${this.element.options.floatHighImg})`
         }
       }
-      
 
+      style.fontWeight = this.element.options.fontWeight ? this.element.options.fontWeight : '300'
       style.lineHeight = this.element.style.height + 'px'
       style.backgroundRepeat = 'no-repeat'
       style.backgroundSize = '100% 100%'
       style.textAlign = this.element.options.horizontal
 
-      console.log('floatStyle........',style)
+      console.log('floatStyle........', style)
       return style
     },
     navList() {
@@ -360,7 +361,7 @@ export default {
   },
   created() {
     // console.log('tab导航组件', this.element,this.canvasStyleData)
-  }, 
+  },
   mounted() {
     this.oldName = this.element.options.heightTabs
     if (this.element.options.pattern === 'scroll' && this.element.options.vertical === 'elementKey') {
@@ -421,7 +422,7 @@ export default {
     toggleNav(key) { // tab点击的值
       // 切换导航
       const _that = this
-      console.log('点击key',key,this.element)
+      console.log('点击key', key, this.element)
       if (this.canvasStyleData.showArr) {
         const newArr = this.canvasStyleData.showArr
         newArr.forEach((keys, index) => {
@@ -470,7 +471,7 @@ export default {
             console.warn(res)
             // res.options.heightTabs = res.options.navTabList[0].name
             this.canvasStyleData.showArr = []
-            res.options&&res.options.heightTabs && this.canvasStyleData.showArr.push(res.options.heightTabs)
+            res.options && res.options.heightTabs && this.canvasStyleData.showArr.push(res.options.heightTabs)
             // console.log(this.canvasStyleData.showArr)
             chengkey = false
           }
@@ -479,26 +480,26 @@ export default {
           this.canvasStyleData.showArr = []
         }
       } else {
-        console.log('inScreen',this.inScreen)
+        console.log('inScreen', this.inScreen)
         // if(!this.inScreen) {
-          // let compData = JSON.parse(JSON.stringify(this.componentData))
-          this.componentData.forEach(item => {
-            if(item.component === 'de-nav') {
-              let a = JSON.parse(JSON.stringify(item.options.navTabList)).find(val => val.name === this.element.showName)
-              if(a !== undefined) {
-                item.options.heightTabs = key.name
-                this.canvasStyleData.showArr = []
-                this.canvasStyleData.showArr.push(key.name)
-              }
-              if(item.id === this.element.id) {
-                item.options.heightTabs = key.name
-              }
+        // let compData = JSON.parse(JSON.stringify(this.componentData))
+        this.componentData.forEach(item => {
+          if (item.component === 'de-nav') {
+            const a = JSON.parse(JSON.stringify(item.options.navTabList)).find(val => val.name === this.element.showName)
+            if (a !== undefined) {
+              item.options.heightTabs = key.name
+              this.canvasStyleData.showArr = []
+              this.canvasStyleData.showArr.push(key.name)
             }
-          })
-          this.$store.commit('setComponentData',this.componentData)
+            if (item.id === this.element.id) {
+              item.options.heightTabs = key.name
+            }
+          }
+        })
+        this.$store.commit('setComponentData', this.componentData)
         // }
       }
-      console.warn('--end---',this.canvasStyleData)
+      console.warn('--end---', this.canvasStyleData)
       // --end
 
       this.commitStyle()
