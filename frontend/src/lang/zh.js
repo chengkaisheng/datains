@@ -140,13 +140,13 @@ export default {
       longitudinal: '纵向分布',
       horizontally: '水平居中',
       vertically: '垂直居中',
-      move: '移动',
+      move: '移动'
     },
     move: {
       left: '向左移动',
       right: '向右移动',
       top: '向上移动',
-      bottom: '向下移动',
+      bottom: '向下移动'
     },
     stop: '停止',
     first_login_tips: '您使用的是初始密码，记得修改密码哦',
@@ -996,6 +996,7 @@ export default {
     axis_label_show: '标签显示',
     axis_label_color: '标签颜色',
     axis_label_width: '标签宽度',
+    axias_label_move: '标签移动',
     axis_label_overflow: '标签超出设置',
     axis_label_hidden: '标签重叠隐藏',
     axis_label_fontsize: '标签大小',
@@ -1815,7 +1816,7 @@ export default {
     play_once: '播放一次',
     play_circle: '循环播放',
     video_links: '视频链接',
-    interface:  '接口',
+    interface: '接口',
     links_params: '接口参数',
     web_url: '网页地址',
     video_add_tips: '请点击添加配置视频信息...',
@@ -2027,7 +2028,7 @@ export default {
   },
   detextinfo: {
     label: '文本详情',
-    placeholder: '请选择',
+    placeholder: '请选择'
   },
   detextselect: {
     label: '文本下拉',

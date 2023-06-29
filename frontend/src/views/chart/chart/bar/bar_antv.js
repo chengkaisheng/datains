@@ -56,7 +56,7 @@ function sortDatas(data) {
   })
 }
 export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack, cstyle = {}) {
-  console.log('bar_antv,chart',chart)
+  console.log('bar_antv,chart', chart, JSON.parse(chart.customStyle))
   // theme
   const theme = getTheme(chart)
   // attr
@@ -64,11 +64,17 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   const tooltip = getTooltip(chart)
   // style
   const legend = getLegend(chart)
-  const xAxis = getXAxis(chart,cstyle)
-  const yAxis = getYAxis(chart,cstyle)
+  const xAxis = getXAxis(chart, cstyle)
+  const yAxis = getYAxis(chart, cstyle)
+
+  console.log('antv xAxis: ', xAxis)
   // data
   const data = chart.data.datas
   // const data = sortDatas(chart)
+
+  data.forEach((item) => {
+    item.field = `${new Date(item.name).format('yyyy-MM-dd')}\n${new Date(item.name).format('hh:mm:ss')}`
+  })
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
@@ -117,7 +123,7 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
           end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
         }
       }
-    ],
+    ]
   }
   // size
   let customAttr = {}
@@ -132,7 +138,7 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
       }
     }
   }
-  console.log('antv,bar,,,',options)
+  console.log('antv,bar,,,', options)
   // group
   if (isGroup) {
     options.isGroup = true
@@ -166,8 +172,8 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   const tooltip = getTooltip(chart)
   // style
   const legend = getLegend(chart)
-  const xAxis = getXAxis(chart,cstyle)
-  const yAxis = getYAxis(chart,cstyle)
+  const xAxis = getXAxis(chart, cstyle)
+  const yAxis = getYAxis(chart, cstyle)
   // data
   const data = chart.data.datas
   // config

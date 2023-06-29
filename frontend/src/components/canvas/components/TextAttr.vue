@@ -53,7 +53,7 @@
       <div v-if="attrShow('fontSize')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-input v-model="initFontSize" type="number" size="mini" :max="maxFontSize" @change="styleChange" />
       </div>
-      
+
       <div v-if="attrShow('fontFamily')" :title="$t('chart.text_style')" style="width: 80px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-select v-model="styleInfo.fontFamily" placeholder="请选择" size="mini" @change="styleChange">
           <el-option
@@ -65,8 +65,8 @@
         </el-select>
       </div>
       <div v-if="attrShow('autoWrap')" :title="$t('chart.text_wrap')" style="width: 60px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-checkbox v-model="styleInfo.autoWrap" @change="styleChange" border size="mini">
-          <svg-icon icon-class="wrap" ></svg-icon>
+        <el-checkbox v-model="styleInfo.autoWrap" border size="mini" @change="styleChange">
+          <svg-icon icon-class="wrap" />
         </el-checkbox>
       </div>
 
@@ -194,7 +194,7 @@ import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import FrameLinks from '@/components/canvas/components/Editor/FrameLinks'
 
 export default {
-  components: { FrameLinks, Hyperlinks, DateFormat, VideoLinks, StreamMediaLinks , KmediaUniLinks },
+  components: { FrameLinks, Hyperlinks, DateFormat, VideoLinks, StreamMediaLinks, KmediaUniLinks },
   props: {
     scrollLeft: {
       type: Number,
@@ -214,7 +214,7 @@ export default {
       mainWidthOffset: 600,
       initFontSize: 12,
       miniFontSize: 1,
-      maxFontSize: 128,
+      maxFontSize: 200,
       fontOptions: ['宋体', '楷体', '黑体', '仿宋', '新宋体'],
       textAlignOptions: [
         {
@@ -372,7 +372,7 @@ export default {
       return style
     },
     styleInfo() {
-      console.log('文本样式',this.curComponent)
+      console.log('文本样式', this.curComponent)
       return this.$store.state.curComponent.style
     },
     canvasWidth() {

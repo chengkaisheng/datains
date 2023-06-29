@@ -2120,7 +2120,7 @@ export default {
       view.stylePriority = this.view.stylePriority
       // view.data = this.data
       this.chart = view
-      console.log('calcStyle,,,,', this.panelInfo, view)
+      console.log('calcStyle,,,,', this.panelInfo, view, this.view)
       // 保存到缓存表
       const viewSave = this.buildParam(true, 'chart', false, false)
       console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^保存走这里')
@@ -2345,7 +2345,7 @@ export default {
     },
 
     onChangeXAxisForm(val) {
-      console.log(val)
+      console.log('xAxis change: ', val)
       this.view.customStyle.xAxis = val
       this.calcStyle()
     },

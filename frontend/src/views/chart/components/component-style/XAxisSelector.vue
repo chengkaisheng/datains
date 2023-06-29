@@ -40,7 +40,7 @@
           <el-form-item :label="$t('chart.axias_name_right')" class="form-item">
             <el-slider v-model="axisForm.paddingRight" show-input :show-input-controls="false" :min="-100" :max="100" input-size="mini" @change="changeXAxisStyle" />
           </el-form-item>
-          
+
           <!-- <el-form-item :label="$t('chart.axias_name_lineHeight')" class="form-item">
             <el-slider v-model="axisForm.nameTextStyle.lineHeight" show-input :show-input-controls="false" :min="0" :max="100" input-size="mini" @change="changeXAxisStyle" />
           </el-form-item> -->
@@ -107,7 +107,7 @@
               <el-slider v-model="axisForm.axisLabel.width" show-input :show-input-controls="false" :min="0" :max="400" input-size="mini" @change="changeXAxisStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.axis_label_overflow')" class="form-item">
-              <el-select v-model="axisForm.axisLabel.overflow"  @change="changeXAxisStyle">
+              <el-select v-model="axisForm.axisLabel.overflow" @change="changeXAxisStyle">
                 <el-option v-for="option in overflows" :key="option.value" :label="option.name" :value="option.value" />
               </el-select>
             </el-form-item>
@@ -116,6 +116,9 @@
             </el-form-item>
             <el-form-item :label="$t('chart.axis_label_color')" class="form-item">
               <el-color-picker v-model="axisForm.axisLabel.color" class="el-color-picker" :predefine="predefineColors" @change="changeXAxisStyle" />
+            </el-form-item>
+            <el-form-item :label="$t('chart.axias_label_move')" class="form-item form-item-slider">
+              <el-slider v-model="axisForm.axisLabel.margin" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeXAxisStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.axis_label_rotate')" class="form-item form-item-slider">
               <el-slider v-model="axisForm.axisLabel.rotate" show-input :show-input-controls="false" :min="-90" :max="90" input-size="mini" @change="changeXAxisStyle" />
@@ -163,10 +166,10 @@ export default {
       isSetting: false,
       fontSize: [],
       overflows: [
-        {name: '无',value:'none'},
-        {name: '截断',value:'truncate'},
-        {name: '换行',value:'break'},
-        {name: '单词换行',value:'breakAll'},
+        { name: '无', value: 'none' },
+        { name: '截断', value: 'truncate' },
+        { name: '换行', value: 'break' },
+        { name: '单词换行', value: 'breakAll' }
       ],
       predefineColors: COLOR_PANEL
     }

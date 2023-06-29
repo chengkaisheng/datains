@@ -1,10 +1,11 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { DEFAULT_YAXIS_EXT_STYLE } from '@/views/chart/chart/chart'
 
-export function componentStyle(chart_option, chart,cstyle = {}) {
+export function componentStyle(chart_option, chart, cstyle = {}) {
   const padding = '8px'
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
+    console.log('bar customStyle: ', customStyle)
     // console.log('customStyle.....',customStyle,chart_option)
     if (customStyle.text) {
       chart_option.title.show = customStyle.text.show
@@ -27,7 +28,7 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       const style = chart_option.title.textStyle ? chart_option.title.textStyle : {}
       style.fontSize = customStyle.text.fontSize
       style.color = customStyle.text.color
-      style.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily : cstyle.fontFamily? cstyle.fontFamily : ''
+      style.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : cstyle.fontFamily ? cstyle.fontFamily : ''
       customStyle.text.isItalic ? style.fontStyle = 'italic' : style.fontStyle = 'normal'
       customStyle.text.isBolder ? style.fontWeight = 'bold' : style.fontWeight = 'normal'
       chart_option.title.textStyle = style
@@ -36,30 +37,30 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.legend.show = customStyle.legend.show
       // 水平方向
       if (customStyle.legend.hPosition === 'left') {
-        chart_option.legend.left = customStyle.legend.hPadding? customStyle.legend.hPadding : padding
+        chart_option.legend.left = customStyle.legend.hPadding ? customStyle.legend.hPadding : padding
       } else if (customStyle.legend.hPosition === 'right') {
-        chart_option.legend.right = customStyle.legend.hPadding? customStyle.legend.hPadding : padding
+        chart_option.legend.right = customStyle.legend.hPadding ? customStyle.legend.hPadding : padding
       } else {
         chart_option.legend.left = customStyle.legend.hPosition
       }
       // 垂直方向
       if (customStyle.legend.vPosition === 'top') {
-        chart_option.legend.top = customStyle.legend.vPadding? customStyle.legend.vPadding : padding
+        chart_option.legend.top = customStyle.legend.vPadding ? customStyle.legend.vPadding : padding
       } else if (customStyle.legend.vPosition === 'bottom') {
-        chart_option.legend.bottom = customStyle.legend.vPadding? customStyle.legend.vPadding : padding
+        chart_option.legend.bottom = customStyle.legend.vPadding ? customStyle.legend.vPadding : padding
       } else {
         chart_option.legend.top = customStyle.legend.vPosition
       }
       chart_option.legend.orient = customStyle.legend.orient
       chart_option.legend.icon = customStyle.legend.icon
       chart_option.legend.textStyle = customStyle.legend.textStyle
-      if(customStyle.legend.itemGap !== undefined) {
+      if (customStyle.legend.itemGap !== undefined) {
         chart_option.legend.itemGap = customStyle.legend.itemGap
       } else {
         chart_option.legend.itemGap = 10
       }
-      
-      chart_option.legend.textStyle.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+
+      chart_option.legend.textStyle.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
       if (chart.type === 'treemap' || chart.type === 'gauge') {
         chart_option.legend.show = false
       }
@@ -69,19 +70,20 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.xAxis.position = customStyle.xAxis.position
       chart_option.xAxis.name = customStyle.xAxis.name
       chart_option.xAxis.axisLabel = customStyle.xAxis.axisLabel
-      chart_option.xAxis.axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      chart_option.xAxis.axisLabel.margin = customStyle.xAxis.axisLabel.margin
+      chart_option.xAxis.axisLabel.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
       chart_option.xAxis.splitLine = customStyle.xAxis.splitLine
       chart_option.xAxis.nameLocation = customStyle.xAxis.nameLocation
       // chart_option.xAxis.nameGap = customStyle.xAxis.nameGap
       chart_option.xAxis.nameTextStyle = {
         ...customStyle.xAxis.nameTextStyle,
         lineHeight: 20,
-        fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+        fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : '',
         padding: [
-          customStyle.xAxis.paddingTop !== undefined? customStyle.xAxis.paddingTop : 0,
-          customStyle.xAxis.paddingRight !== undefined? customStyle.xAxis.paddingRight : 0,
-          customStyle.xAxis.paddingBottom !== undefined? customStyle.xAxis.paddingBottom : 0,
-          customStyle.xAxis.paddingLeft !== undefined? customStyle.xAxis.paddingLeft : 0,
+          customStyle.xAxis.paddingTop !== undefined ? customStyle.xAxis.paddingTop : 0,
+          customStyle.xAxis.paddingRight !== undefined ? customStyle.xAxis.paddingRight : 0,
+          customStyle.xAxis.paddingBottom !== undefined ? customStyle.xAxis.paddingBottom : 0,
+          customStyle.xAxis.paddingLeft !== undefined ? customStyle.xAxis.paddingLeft : 0
         ]
       }
       chart_option.xAxis.axisLabel.showMaxLabel = true
@@ -108,7 +110,7 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.yAxis.position = customStyle.yAxis.position
       chart_option.yAxis.name = customStyle.yAxis.name
       chart_option.yAxis.axisLabel = customStyle.yAxis.axisLabel
-      chart_option.yAxis.axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      chart_option.yAxis.axisLabel.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
       chart_option.yAxis.splitLine = customStyle.yAxis.splitLine
       chart_option.yAxis.nameLocation = customStyle.yAxis.nameLocation
       // chart_option.yAxis.nameGap = customStyle.yAxis.nameGap
@@ -116,12 +118,12 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.yAxis.nameTextStyle = {
         ...customStyle.yAxis.nameTextStyle,
         lineHeight: 20,
-        fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+        fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : '',
         padding: [
-          customStyle.yAxis.paddingTop !== undefined? customStyle.yAxis.paddingTop : 0,
-          customStyle.yAxis.paddingRight !== undefined? customStyle.yAxis.paddingRight : 0,
-          customStyle.yAxis.paddingBottom !== undefined? customStyle.yAxis.paddingBottom : 0,
-          customStyle.yAxis.paddingLeft !== undefined? customStyle.yAxis.paddingLeft : 0,
+          customStyle.yAxis.paddingTop !== undefined ? customStyle.yAxis.paddingTop : 0,
+          customStyle.yAxis.paddingRight !== undefined ? customStyle.yAxis.paddingRight : 0,
+          customStyle.yAxis.paddingBottom !== undefined ? customStyle.yAxis.paddingBottom : 0,
+          customStyle.yAxis.paddingLeft !== undefined ? customStyle.yAxis.paddingLeft : 0
         ]
       }
       // console.log('common,yAixs,',customStyle.yAxis)
@@ -151,7 +153,7 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.yAxis[0].name = customStyle.yAxis.name
       chart_option.yAxis[0].nameLocation = customStyle.yAxis.nameLocation
       chart_option.yAxis[0].axisLabel = customStyle.yAxis.axisLabel
-      chart_option.yAxis[0].axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      chart_option.yAxis[0].axisLabel.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
       chart_option.yAxis[0].splitLine = customStyle.yAxis.splitLine
       chart_option.yAxis[0].nameRotate = 0
       // chart_option.yAxis[0].nameTextStyle = customStyle.yAxis.nameTextStyle
@@ -159,12 +161,12 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.yAxis[0].nameTextStyle = {
         ...customStyle.yAxis.nameTextStyle,
         lineHeight: 20,
-        fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+        fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : '',
         padding: [
-          customStyle.yAxis.paddingTop !== undefined? customStyle.yAxis.paddingTop : 0,
-          customStyle.yAxis.paddingRight !== undefined? customStyle.yAxis.paddingRight : 0,
-          customStyle.yAxis.paddingBottom !== undefined? customStyle.yAxis.paddingBottom : 0,
-          customStyle.yAxis.paddingLeft !== undefined? customStyle.yAxis.paddingLeft : 0,
+          customStyle.yAxis.paddingTop !== undefined ? customStyle.yAxis.paddingTop : 0,
+          customStyle.yAxis.paddingRight !== undefined ? customStyle.yAxis.paddingRight : 0,
+          customStyle.yAxis.paddingBottom !== undefined ? customStyle.yAxis.paddingBottom : 0,
+          customStyle.yAxis.paddingLeft !== undefined ? customStyle.yAxis.paddingLeft : 0
         ]
       }
 
@@ -194,7 +196,7 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.yAxis[1].name = customStyle.yAxisExt.name
       chart_option.yAxis[1].nameLocation = customStyle.yAxisExt.nameLocation
       chart_option.yAxis[1].axisLabel = customStyle.yAxisExt.axisLabel
-      chart_option.yAxis[1].axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      chart_option.yAxis[1].axisLabel.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
       chart_option.yAxis[1].splitLine = customStyle.yAxisExt.splitLine
       chart_option.yAxis[1].nameRotate = 0
       // chart_option.yAxis[1].nameTextStyle = customStyle.yAxisExt.nameTextStyle
@@ -202,12 +204,12 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.yAxis[1].nameTextStyle = {
         ...customStyle.yAxisExt.nameTextStyle,
         lineHeight: 20,
-        fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+        fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : '',
         padding: [
-          customStyle.yAxisExt.paddingTop !== undefined? customStyle.yAxisExt.paddingTop : 0,
-          customStyle.yAxisExt.paddingRight !== undefined? customStyle.yAxisExt.paddingRight : 0,
-          customStyle.yAxisExt.paddingBottom !== undefined? customStyle.yAxisExt.paddingBottom : 0,
-          customStyle.yAxisExt.paddingLeft !== undefined? customStyle.yAxisExt.paddingLeft : 0,
+          customStyle.yAxisExt.paddingTop !== undefined ? customStyle.yAxisExt.paddingTop : 0,
+          customStyle.yAxisExt.paddingRight !== undefined ? customStyle.yAxisExt.paddingRight : 0,
+          customStyle.yAxisExt.paddingBottom !== undefined ? customStyle.yAxisExt.paddingBottom : 0,
+          customStyle.yAxisExt.paddingLeft !== undefined ? customStyle.yAxisExt.paddingLeft : 0
         ]
       }
 
@@ -236,7 +238,7 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.radar.axisLine = customStyle.split.axisLine
       chart_option.radar.axisTick = customStyle.split.axisTick
       chart_option.radar.axisLabel = customStyle.split.axisLabel
-      chart_option.radar.axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      chart_option.radar.axisLabel.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
       chart_option.radar.splitLine = customStyle.split.splitLine
       chart_option.radar.splitArea = customStyle.split.splitArea
     }

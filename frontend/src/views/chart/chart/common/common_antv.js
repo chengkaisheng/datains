@@ -133,6 +133,7 @@ export function getLabel(chart) {
     // label
     if (customAttr.label) {
       const l = JSON.parse(JSON.stringify(customAttr.label))
+
       let fn = ''
       if (l.antvFormatter !== undefined && l.antvFormatter !== '') {
         fn = '`' + ((l.antvFormatter.replace(/{a}/g, '${text.field}')).replace(/{b}/g, '${text.value}')) + '`'
@@ -347,8 +348,10 @@ export function getXAxis(chart, cstyle = {}) {
           }
         } : null
         var fontFamess = cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif'
+        var rotate = parseInt(a.axisLabel.rotate) * Math.PI / 180
         const label = a.axisLabel && a.axisLabel.show ? {
-          rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
+          rotate: rotate,
+          offset: a.nameGap,
           style: {
             fill: a.axisLabel.color,
             fontSize: parseInt(a.axisLabel.fontSize),
