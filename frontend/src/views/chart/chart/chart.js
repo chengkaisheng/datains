@@ -1,4 +1,4 @@
-import { color } from "echarts"
+import { color } from 'echarts'
 
 export const DEFAULT_COLOR_CASE = {
   value: 'default',
@@ -137,7 +137,7 @@ export const DEFAULT_SIZE = {
   hc3dHeight: 80,
   hc3dNeckWidth: 30,
   hc3dNeckHeight: 25,
-  hc3dFunnelOpacity: 1,
+  hc3dFunnelOpacity: 1
 }
 export const DEFAULT_LABEL = {
   show: false,
@@ -146,7 +146,7 @@ export const DEFAULT_LABEL = {
   color: '#909399',
   fontSize: '10',
   formatter: '{c}',
-  antvFormatter:'{b}',
+  antvFormatter: '{b}',
   gaugeFormatter: '{value}',
   labelLine: {
     show: true
@@ -199,7 +199,7 @@ export const DEFAULT_LABEL = {
   popContentBorderBottomColor: '#ffffff',
   // popContentBorderBottomWidth: 1,
   popContentLeft: 30,
-  popContentRight: 70,
+  popContentRight: 70
 }
 export const DEFAULT_TOOLTIP = {
   show: true,
@@ -211,7 +211,7 @@ export const DEFAULT_TOOLTIP = {
   },
   formatter: '',
   antvFormatter: '',
-  widthNumber: 200,
+  widthNumber: 200
 }
 export const DEFAULT_TOTAL = {
   row: {
@@ -294,7 +294,7 @@ export const DEFAULT_XAXIS_STYLE = {
     formatter: '{value}',
     width: 100,
     overflow: 'none',
-    hideOverlap: false,
+    hideOverlap: false
   },
   splitLine: {
     show: true,
@@ -360,7 +360,7 @@ export const DEFAULT_YAXIS_STYLE = {
     color: '#333333',
     fontSize: 12,
     lineHeight: 20,
-    fontFamily: '',
+    fontFamily: ''
   },
   axisLabel: {
     show: true,
@@ -371,7 +371,7 @@ export const DEFAULT_YAXIS_STYLE = {
     fontFamily: '',
     width: 100,
     overflow: 'none',
-    hideOverlap: false,
+    hideOverlap: false
   },
   splitLine: {
     show: true,
@@ -405,7 +405,7 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
     color: '#333333',
     fontSize: 12,
     lineHeight: 20,
-    fontFamily: '',
+    fontFamily: ''
   },
   axisLabel: {
     show: true,
@@ -745,31 +745,31 @@ export const BASE_BAR_RATE = {
     containLabel: true
   },
   xAxis: [
-    {show: false}
+    { show: false }
   ],
-  yAxis:[
+  yAxis: [
     {
-      axisTick: {show: false},
-      axisLine: {show: false},
+      axisTick: { show: false },
+      axisLine: { show: false },
       // inverse: true, // 反向数据轴
       axisLabel: {},
       data: []
     },
     {
-      axisTick: {show: false},
-      axisLine: {show: false},
+      axisTick: { show: false },
+      axisLine: { show: false },
       // inverse: true, // 反向数据轴
       axisLabel: {},
       data: []
     },
     {
       axisLine: {
-          lineStyle: {
-              color: 'rgba(0,0,0,0)',
-          },
+        lineStyle: {
+          color: 'rgba(0,0,0,0)'
+        }
       },
-      data: [],
-    },
+      data: []
+    }
   ],
   series: [],
   dataZoom: [
@@ -985,7 +985,7 @@ export const BASE_BOXPLOT = {
     },
     {
       transform: {
-        type: 'boxplot',
+        type: 'boxplot'
         // config: { itemNameFormatter: 'expr {value}' }
       }
     },
@@ -1026,9 +1026,9 @@ export const BASE_BOXPLOT = {
     {
       type: 'boxplot',
       datasetIndex: 1,
-      boxWidth: [1,50],
-      dimensions: [],
-    },
+      boxWidth: [1, 50],
+      dimensions: []
+    }
     // {
     //   name: 'outlier',
     //   type: 'scatter',
@@ -1140,7 +1140,7 @@ export const BASE_3DCOLUMN = {
   //     [2283,39.41,8294928,"United States",1810],
   //     [853,34.05,334002,"Australia",1820],
   //     [1491,39.02993548,879432,"Canada",1820],
-  //     [985,32,380055273,"China",1820]  
+  //     [985,32,380055273,"China",1820]
   //   ]
   // },
   series: [
@@ -1252,7 +1252,7 @@ export const BASE_SANKEY = {
 }
 
 export const BASE_3DEARTH = {
-  background: "#000",
+  background: '#000',
   globe: {
     baseTexture: '',
     heightTexture: '',
@@ -1395,13 +1395,13 @@ export const BASE_CALENDAR_PIE = {
     itemWidth: 10,
     itemHeight: 10,
     icon: 'rect',
-    data: [],
+    data: []
   },
   calendar: {
     top: 'middle',
     left: 'center',
     orient: 'vertical',
-    cellSize: [60,60],
+    cellSize: [60, 60],
     yearLabel: {
       show: false,
       fontSize: 30
@@ -1690,7 +1690,7 @@ export const BASE_BUBBLE_MAP = {
   bmap: {
     center: [104.114129, 37.550339],
     zoom: 5,
-    roam: true,
+    roam: true
   },
   series: [
     {
@@ -1937,7 +1937,7 @@ export const BASE_GRAPH = {
         gravity: 0.1
       },
       circular: {
-        rotateLabel: false,
+        rotateLabel: false
       },
       scaleLimit: {
         max: null,
@@ -1997,13 +1997,13 @@ export const BASE_LIQUID = {
   series: [
     {
       type: 'liquidFill',
-      shape:'circle',
+      shape: 'circle',
       label: {
         show: false,
         textStyle: {
           fontSize: 14,
-          color: '#909399',
-        },
+          color: '#909399'
+        }
         // formatter: function(a,b,c) {
         //   return '{a}\n{b}\nValue:{c}'
         //   // formatter: '{a}\n{b}\nValue: {c}',
@@ -2013,12 +2013,12 @@ export const BASE_LIQUID = {
       outline: {
         show: false,
         itemStyle: {},
-        borderDistance:8
+        borderDistance: 8
       },
       waveLength: 100,
       waveAnimation: true,
       radius: '50%',
-      data: [],
+      data: []
     }
   ]
 }

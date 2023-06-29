@@ -283,7 +283,7 @@ export default {
   mounted() {
     // console.log('this.fields', this.fields)
     console.log('获取边框数据', this.element)
-    console.log('this.chart---', this.chart)
+    console.log('滚动表格 this.chart---', this.chart)
     // console.log('滚动表格',this.inScreen)
     // this.oldData = JSON.parse(JSON.stringify(this.chart))
 
@@ -312,7 +312,11 @@ export default {
         this.setCondition(keyValue)
       }
       this.numberLine = ''
-      this.tableScroll()
+
+      // 弹窗关闭判断轮播联动是否设置为是，为是时继续轮播联动
+      if (this.bannerLinkageKey) {
+        this.tableScroll()
+      }
     },
     handleClose() {
       this.dialogVisible = false
@@ -549,7 +553,7 @@ export default {
       })
       // this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
       this.dataInfo = arr
-      console.log('有数据才会去执行操作---------', this.dataInfo)
+      console.log('有数据才会去执行操作---------this.dataInfo: ', this.dataInfo)
       // this.initStyle()
       if (customAttr.size) {
         if (customAttr.size.carouselPics !== undefined) {
@@ -666,7 +670,8 @@ export default {
     initStyle() {
       if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
-        console.log('是否触发此处修改------------2222222', customAttr)
+        console.log('initStyle 是否触发此处修改------------2222222', customAttr)
+
         if (customAttr.color) {
           this.table_header_class.color = customAttr.color.tableFontColor
           if (customAttr.color.tableHeaderBgColor) {
@@ -741,8 +746,8 @@ export default {
         if (this.dataInfo.length) {
           // 页面mounted()时候调用一次
           this.getDetailsInfo(this.dataInfo)
-
-          if (!this.isVisible) { // 判断弹窗是否显示了，显示不让其滚动
+          // 轮播联动设置为是且弹窗未显示
+          if (this.bannerLinkageKey && !this.isVisible) { // 判断弹窗是否显示了，显示不让其滚动
             this.tableScroll()// 表格滚动
           }
         }

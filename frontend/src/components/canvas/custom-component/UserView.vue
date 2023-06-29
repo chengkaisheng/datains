@@ -506,7 +506,7 @@ export default {
     },
     cfilters() {
       // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
-      console.log('2222', this.element.filters)
+      console.log('cfilters: ', this.element.filters)
       if (!this.element.filters) return []
       return JSON.parse(JSON.stringify(this.element.filters))
     },
@@ -881,7 +881,6 @@ export default {
                       if (response.data.xaxis) {
                         const axisList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE' || item.type === 'VARCHAR') && item.dateStyle === 'M')
                         console.log('antv,axisList', axisList)
-
                         if (axisList.length > 0) {
                           const arr = []
                           const list = deepCopy(response.data.data.datas)
@@ -955,6 +954,7 @@ export default {
                         }
 
                         const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE' || item.type === 'VARCHAR') && item.dateStyle === 'y_Q')
+
                         console.log('antv,qList', qList)
                         if (qList.length > 0) {
                           const arr = []

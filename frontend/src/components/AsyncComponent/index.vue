@@ -55,8 +55,13 @@ export default {
           res = await window.SyncComponentCache[this.url]
         }
 
+        console.log('res: ', res)
+
         const Fn = Function
         this.mode = new Fn(`return ${res.data || res}`)()
+        // const fnString = `return ${JSON.stringify(res.data || res)}`
+        // this.mode = new Fn('mode', fnString)()
+        // console.log(this.mode.success, new Fn('mode', fnString)())
         /* if (res && res.data) {
           const Fn = Function
           this.mode = new Fn(`return ${res.data || res}`)()
