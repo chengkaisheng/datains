@@ -10,7 +10,7 @@
         </el-form-item> -->
         <el-form-item label="上传图片" class="form-item">
           <div style="margin-bottom: 5px;">
-            <el-button type="primary" v-if="isUpload" size="mini" @click="submitBtn()">确定</el-button>
+            <el-button v-if="isUpload" type="primary" size="mini" @click="submitBtn()">确定</el-button>
           </div>
           <el-upload
             action=""
@@ -55,7 +55,7 @@ export default {
       dialogVisible: false,
       dialogImageUrl: '',
       fileList: [],
-      isUpload: false,
+      isUpload: false
     }
   },
   watch: {
@@ -80,17 +80,16 @@ export default {
         } else {
           customAttr = JSON.parse(chart.customAttr)
         }
-        // console.log('customAttr',customAttr)
-        if(customAttr.size) {
+        if (customAttr.size) {
           this.picForm = customAttr.size
-          if(customAttr.size.carouselValue === undefined) {
+          if (customAttr.size.carouselValue === undefined) {
             this.picForm.carouselValue = false
           }
-          if(customAttr.size.carouselPics === undefined) {
+          if (customAttr.size.carouselPics === undefined) {
             this.picForm.carouselPics = []
           }
-          if(this.picForm.carouselPics.length) {
-            let arr = []
+          if (this.picForm.carouselPics.length) {
+            const arr = []
             this.picForm.carouselPics.forEach(item => {
               arr.push(item)
             })
@@ -99,32 +98,29 @@ export default {
         }
       }
     },
-    changePicCase(){
-      console.log('改变：',this.picForm)
+    changePicCase() {
       this.$emit('onSizeChange', this.picForm)
     },
-    submitBtn(){
+    submitBtn() {
       this.isUpload = false
-      console.log('carouselPics,....',this.picForm.carouselPics)
       this.changePicCase()
     },
 
-    handlePictureCardPreview(file){
+    handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
-    handleRemove(file, fileList){
-      console.log('remove', file, fileList)
+    handleRemove(file, fileList) {
       var _this = this
       _this.fileList = fileList
       _this.picForm.carouselPics = []
-      _this.fileList.forEach((item,index) => {
-        if(item.raw) {
+      _this.fileList.forEach((item, index) => {
+        if (item.raw) {
           const reader = new FileReader()
           reader.onload = function() {
             _this.picForm.carouselPics.push({
               url: reader.result,
-              number: index,
+              number: index
             })
           }
           reader.readAsDataURL(item.raw)
@@ -134,12 +130,11 @@ export default {
       })
       this.isUpload = true
     },
-    onChange(file, fileList){
-      console.log('上传',file,fileList)
+    onChange(file, fileList) {
       if (file.size / 1024 / 1024 > 10) {
         this.$message.error('上传的文件大小不能超过 10MB!')
-        if(fileList.length){
-          fileList.splice((fileList.length-1),1)
+        if (fileList.length) {
+          fileList.splice((fileList.length - 1), 1)
           this.fileList = fileList
         } else {
           this.fileList = []
@@ -147,17 +142,16 @@ export default {
         return
       }
       var _this = this
-      
+
       _this.fileList = fileList
       _this.picForm.carouselPics = []
-      _this.fileList.forEach((item,index) => {
-        if(item.raw) {
+      _this.fileList.forEach((item, index) => {
+        if (item.raw) {
           const reader = new FileReader()
           reader.onload = function() {
-            // console.log('reader.result7777777', reader.result)
             _this.picForm.carouselPics.push({
               url: reader.result,
-              number: index,
+              number: index
             })
           }
           reader.readAsDataURL(item.raw)
@@ -165,11 +159,10 @@ export default {
           _this.picForm.carouselPics.push(item)
         }
       })
-      
+
       this.isUpload = true
     },
     upload(file) {
-      console.log('this is upload', file)
     }
   }
 }

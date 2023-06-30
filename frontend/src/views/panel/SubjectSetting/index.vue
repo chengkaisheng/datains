@@ -162,10 +162,9 @@ export default {
       }
       chart.customAttr = JSON.parse(chart.customAttr)
       chart.customStyle = JSON.parse(chart.customStyle)
-      console.log('对过滤值进行处理-------------------------------------------------------------------------------', chart.customFilter)
+
       chart.customFilter = JSON.parse(chart.customFilter)
       this.chart = chart
-      console.log('subject-setting,,init:::::', this.chart)
 
       // 样式优先级
       this.stylePriority = chart.stylePriority
@@ -179,12 +178,10 @@ export default {
     onChangePanelStyle(parma) {
     },
     onColorChange(val) {
-      console.log('colors', val)
       this.chart.customAttr.color = val
       this.save()
     },
     onTableColorChange(val) {
-      console.log('table', val)
       this.chart.customAttr.tableColor = val
       this.save()
     },
@@ -197,12 +194,10 @@ export default {
       this.save()
     },
     onTitleChange(val) {
-      // console.log('测试标题',val)
       this.chart.customStyle.text = val
       this.save()
     },
     onPriorityChange(val) {
-      console.log(val)
       this.chart.stylePriority = this.stylePriority
       this.save()
     },
@@ -215,7 +210,7 @@ export default {
       chart.customStyle = JSON.stringify(this.chart.customStyle)
       chart.customFilter = JSON.stringify(this.chart.customFilter)
       canvasStyleData.chart = chart
-      console.log('改变的', canvasStyleData)
+
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'save')
       //  判断是否使用 仪表板的样式

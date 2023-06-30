@@ -201,7 +201,7 @@ export default {
     // },
     titleStyleSet() {
       // {width:titleWidth+'%',textAlign:'center'}
-      console.log('this.titleFontSet', this.titleFontSet)
+
       const style = {}
       style.width = this.portal.titleWidth + '%'
       style.textAlign = 'center'
@@ -249,13 +249,11 @@ export default {
   },
 
   mounted() {
-    console.log('PortalNavMenu，，，')
     const that = this
     function getTreedDataFirstTrendId(treeData) {
       for (let i = 0; i < treeData.length; i++) {
         const item = treeData[i]
         if (item.trendId && !that.currentTreeNode.id) {
-          console.log('item.label', item.label)
           that.currentTreeNode = item
         } else {
           getTreedDataFirstTrendId(item.children)
@@ -289,24 +287,21 @@ export default {
       }
     },
     changePage(item, index) {
-      console.log('item切换页面', item, index, this.portal)
       this.handleMenuSelect(item.id)
     },
     handleMenuSelect(active) {
-      console.log('----- active', active)
       const that = this
       function getTreedDataActive(treeData) {
         for (let i = 0; i < treeData.length; i++) {
           const item = treeData[i]
           if (item.id === active) {
-            console.log('item.label', item.label)
             that.$emit('update', item.trendId)
           } else {
             getTreedDataActive(item.children)
           }
         }
       }
-      // console.log('getTreedDataActive(this.portal.config.treeData)', getTreedDataActive(this.portal.config.treeData))
+
       getTreedDataActive(this.portal.config.treeData)
     }
   }

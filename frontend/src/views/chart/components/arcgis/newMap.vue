@@ -18,7 +18,6 @@ export default {
     }
   },
   created() {
-    console.log('chartId', this.chartId)
   },
   mounted() {
     const that = this

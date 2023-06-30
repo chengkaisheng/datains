@@ -7,12 +7,12 @@
         {{ watherData.city }}
       </div>
       <div class="iconClass" :style="iconStyle" :title="watherData.type">
-        <svg-icon :icon-class="newIcon(watherData.type)"/>
+        <svg-icon :icon-class="newIcon(watherData.type)" />
       </div>
       <div class="statusClass" :style="fontStyle">
-        <span>{{ watherData.wendu }}℃ </span> 
+        <span>{{ watherData.wendu }}℃ </span>
         <span> {{ watherData.fengxiang }}风 </span>
-        <span>{{watherData.fengli}}级 </span>
+        <span>{{ watherData.fengli }}级 </span>
       </div>
     </div>
     <!-- <div class="icon_class" :style="boxStyle">
@@ -48,7 +48,7 @@ export default {
         fengli: '',
         icon: ''
       },
-      cityCode: '320508',
+      cityCode: '320508'
     }
   },
   computed: {
@@ -112,9 +112,8 @@ export default {
   },
   watch: {
     'element.weatherStyle.proCityCode': {
-      handler(val1,val2) {
-        console.log('改变',val1)
-        if(val1.length === 6) {
+      handler(val1, val2) {
+        if (val1.length === 6) {
           this.cityCode = val1
           this.getSunType()
         }
@@ -122,12 +121,10 @@ export default {
     }
   },
   created() {
-    // console.log('天气组件', this.element)
   },
   mounted() {
     // this.changeSlidesPerView()
-    // console.log('getLocation', this.getLocation())
-    if(this.element.weatherStyle.proCityCode !==undefined && this.element.weatherStyle.proCityCode !== '') {
+    if (this.element.weatherStyle.proCityCode !== undefined && this.element.weatherStyle.proCityCode !== '') {
       this.cityCode = this.element.weatherStyle.proCityCode
     } else {
       this.cityCode = '320508'
@@ -144,50 +141,49 @@ export default {
   methods: {
     newIcon(key) {
       let name = ''
-      if(key === '多云') {
+      if (key === '多云') {
         name = 'duoyun'
-      } else if(key === '晴') {
+      } else if (key === '晴') {
         name = 'qing'
-      } else if(key === '阴天' || key === '阴') {
+      } else if (key === '阴天' || key === '阴') {
         name = 'yingtian'
-      } else if(key === '小雨') {
+      } else if (key === '小雨') {
         name = 'xiaoyu'
-      } else if(key === '中雨') {
+      } else if (key === '中雨') {
         name = 'zhongyu'
-      } else if(key === '大雨') {
+      } else if (key === '大雨') {
         name = 'dayu'
-      } else if(key === '小雪') {
+      } else if (key === '小雪') {
         name = 'xiaoxue'
-      } else if(key === '中雪') {
+      } else if (key === '中雪') {
         name = 'zhongxue'
-      } else if(key === '大雪') {
+      } else if (key === '大雪') {
         name = 'daxue'
-      } else if(key === '雨夹雪') {
+      } else if (key === '雨夹雪') {
         name = '雨夹雪'
-      } else if(key === '阵雨') {
+      } else if (key === '阵雨') {
         name = 'zhenyu'
-      } else if(key === '雷阵雨') {
+      } else if (key === '雷阵雨') {
         name = 'leizhanyu'
-      } else if(key === '雷电') {
+      } else if (key === '雷电') {
         name = 'leidian'
-      } else if(key === '雾') {
+      } else if (key === '雾') {
         name = 'wu'
-      } else if(key === '霾') {
+      } else if (key === '霾') {
         name = 'mai'
-      } else if(key === '浮尘') {
+      } else if (key === '浮尘') {
         name = 'fuchen'
-      } else if(key === '扬沙') {
+      } else if (key === '扬沙') {
         name = 'yangsha'
-      } else if(key === '沙尘暴') {
+      } else if (key === '沙尘暴') {
         name = 'shachenbao'
-      } else if(key === '冰雹') {
+      } else if (key === '冰雹') {
         name = 'bingbao'
       }
-      console.log('name', name)
+
       return name
     },
     getSunType() {
-      console.log('chu00000000000000')
       axios({
         methods: 'get',
         // 高德天气api
@@ -195,8 +191,7 @@ export default {
         // url: 'http://wthrcdn.etouch.cn/weather_mini?city=姑苏区'
         // url: 'http://i.tianqi.com/index.php'
       }).then(res => {
-        // console.log('天气信息-----', res)
-        if(res.status) {
+        if (res.status) {
           const dataInfo = res.data.lives[0]
           this.watherData.wendu = dataInfo.temperature
           this.watherData.city = dataInfo.city
@@ -226,11 +221,8 @@ export default {
           function(position) {
             var latitude = position.coords.latitude// 纬度
             var longitude = position.coords.longitude// 经度
-            console.log('Latitude : ' + latitude + ' Longitude: ' + longitude)
-            console.log(position)
           },
           // function(err) {
-          //   console.log('您的浏览器不支持此项技术')
           // }, { timeout: 3000 }
         )
       }
@@ -238,8 +230,6 @@ export default {
 
     toggleNav(key) {
       // 切换导航
-      console.log('previewCanvasScale', this.previewCanvasScale)
-      console.log('切换导航------ ', this.componentData, this.canvasStyleData)
       const iframeArr = []
       this.canvasStyleData.navShowKey = key.name
       this.componentData.forEach((ele, index) => {
@@ -249,10 +239,8 @@ export default {
       })
       this.heightKey = key.name
 
-      console.log('key---')
       iframeArr.forEach(ele => {
         document.getElementById('iframe' + ele.id).contentWindow.postMessage(key, '*')
-        console.log('网页插件', ele)
       })
     }
   }

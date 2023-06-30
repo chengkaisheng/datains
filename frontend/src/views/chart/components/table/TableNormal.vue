@@ -139,7 +139,6 @@ export default {
   },
   watch: {
     chart: function() {
-      console.log('this.chart.data', this.chart.data)
       this.resetPage()
       this.init()
     }
@@ -153,7 +152,6 @@ export default {
   },
   methods: {
     changeColumnWidth({ column, columnIndex }) {
-      console.log('23123213213231232132121', column, columnIndex)
       // if (column.width !== column.renderWidth) {
       //   this.tableHeadList[columnIndex - 2].width = column.renderWidth
       //   // this.saveHeadConfig()
@@ -268,7 +266,6 @@ export default {
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
-        console.log('TableNormal...style', customStyle)
         if (customStyle.text) {
           this.title_show = customStyle.text.show
           this.title_class.fontSize = customStyle.text.fontSize + 'px'
@@ -286,12 +283,11 @@ export default {
       const table = document.getElementsByClassName(this.chart.id)
       for (let i = 0; i < table.length; i++) {
         const s_table = table[i].getElementsByClassName('elx-table--footer')
-        // console.log(s_table)
         let s = ''
         for (const i in this.table_header_class) {
           s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
         }
-        // console.log(s_table)
+
         for (let i = 0; i < s_table.length; i++) {
           s_table[i].setAttribute('style', s)
         }

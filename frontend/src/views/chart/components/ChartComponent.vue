@@ -259,7 +259,6 @@ export default {
         })
 
         this.myChart.on('legendselectchanged', function(params) {
-          // console.log('图例点击',params)
           if (that.myChart.getOption().series[0].type !== 'pie') {
             return
           }
@@ -298,7 +297,6 @@ export default {
       let chart_option = {}
       // type
 
-      // console.log(this.$store.state.canvasStyleData)
       // bar-contrast 对比
       // bar-double
       if (chart.type === 'bar') {
@@ -339,7 +337,6 @@ export default {
       } else if (chart.type === 'line-polar') {
         chart_option = polarLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line-stack') {
-      //   debugger
         chart_option = stackLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie') {
         chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
@@ -395,7 +392,6 @@ export default {
       // } else if (chart.type === '3dearth') {
       //   chart_option = base3dEarthOption(JSON.parse(JSON.stringify(BASE_3DEARTH)))
       // }
-      // console.log(JSON.stringify(chart_option))
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false
       }
@@ -407,7 +403,6 @@ export default {
           return
         }
         const cCode = this.dynamicAreaCode || customAttr.areaCode
-        console.log('选择区域，', cCode)
         if (this.$store.getters.geoMap[cCode]) {
           const json = this.$store.getters.geoMap[cCode]
           this.initMapChart(json, chart)

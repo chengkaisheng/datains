@@ -66,7 +66,6 @@ export default {
     },
     videoStatus: {
       handler: function() {
-        console.log('改变status',this.videoStatus,this.element)
       },
       deep: true
     }
@@ -74,7 +73,6 @@ export default {
   created() {
   },
   mounted() {
-    console.log('frame',this.videoStatus)
     bus.$on('frameLinksChange-' + this.element.id, () => {
       this.frameShow = false
       this.$nextTick(() => {
@@ -84,10 +82,8 @@ export default {
   },
   methods: {
     loaded(e) {
-      console.log('loaded:', e)
     },
     onError(e) {
-      console.log('onError:', e)
     }
 
   }

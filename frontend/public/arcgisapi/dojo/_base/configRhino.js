@@ -125,7 +125,6 @@ function rhinoDojoConfig(config, baseUrl, rhinoArgs){
 					callback();
 				}catch(e){
 					console.log("failed to load resource (" + url + ")");
-					console.log(e);
 				}
 			},
 

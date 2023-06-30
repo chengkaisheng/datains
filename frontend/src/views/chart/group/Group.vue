@@ -464,7 +464,6 @@ export default {
       this.$refs.chartTreeRef.filter(this.filterText)
     },
     chartType(val) {
-      console.log('2222', val)
       this.view.isPlugin = val && this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(val)
     }
 
@@ -496,7 +495,6 @@ export default {
       const view = JSON.parse(JSON.stringify(this.view))
       view.render = key
       this.view = view
-      console.log('======', this.pluginRenderOptions, key, this.view)
     },
     loadPluginType() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
@@ -798,7 +796,6 @@ export default {
       view.type = this.view.type
       view.isPlugin = this.view.isPlugin
       view.render = this.view.render
-      console.log('33333', view.render)
       view.resultMode = 'custom'
       view.resultCount = 1000
       view.customAttr = JSON.stringify({
@@ -822,8 +819,8 @@ export default {
         assistLine: [],
         threshold: DEFAULT_THRESHOLD
       })
-      if(this.canvasStyleData.chart.stylePriority === 'panel') {
-        view.stylePriority= 'panel'
+      if (this.canvasStyleData.chart.stylePriority === 'panel') {
+        view.stylePriority = 'panel'
       } else {
         view.stylePriority = 'view' // 默认样式优先级视图
       }
@@ -836,7 +833,6 @@ export default {
       view.drillFields = JSON.stringify([])
       view.extBubble = JSON.stringify([])
       this.setChartDefaultOptions(view)
-      console.log('view', view)
       const _this = this
       post('/chart/view/newOne/' + this.panelInfo.id, view, true).then(response => {
         this.closeCreateChart()
@@ -855,7 +851,6 @@ export default {
     setChartDefaultOptions(view) {
       const type = view.type
       const attr = JSON.parse(view.customAttr)
-      console.log('4444', this.view)
       if (type.includes('pie')) {
         if (view.render === 'echarts') {
           attr.label.position = 'inside'
@@ -881,7 +876,6 @@ export default {
     },
 
     getTable(table) {
-      console.log('表格：', table)
       this.table = JSON.parse(JSON.stringify(table))
     },
 

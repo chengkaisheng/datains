@@ -15,7 +15,7 @@
           <span>标题</span>
         </el-col>
         <el-col :span="8">
-          <el-input v-model="curComponent.options.popTitle" size="small"></el-input>
+          <el-input v-model="curComponent.options.popTitle" size="small" />
         </el-col>
       </el-row>
       <el-row class="text_row">
@@ -23,7 +23,7 @@
           <span>标题颜色</span>
         </el-col>
         <el-col :span="8">
-          <el-color-picker v-model="curComponent.options.popTitleColor" class="color-picker-style" :predefine="predefineColors"/>
+          <el-color-picker v-model="curComponent.options.popTitleColor" class="color-picker-style" :predefine="predefineColors" />
         </el-col>
       </el-row>
       <el-row class="text_row">
@@ -31,7 +31,7 @@
           <span>弹窗颜色</span>
         </el-col>
         <el-col :span="8">
-          <el-color-picker v-model="curComponent.options.popPanelColor" class="color-picker-style" :predefine="predefineColors"/>
+          <el-color-picker v-model="curComponent.options.popPanelColor" class="color-picker-style" :predefine="predefineColors" />
         </el-col>
       </el-row>
       <el-row class="text_row">
@@ -39,7 +39,7 @@
           <span>弹窗高度(px)</span>
         </el-col>
         <el-col :span="8">
-          <el-input-number v-model="curComponent.options.popHeight" size="small" :min="1" :max="1000"></el-input-number>
+          <el-input-number v-model="curComponent.options.popHeight" size="small" :min="1" :max="1000" />
         </el-col>
       </el-row>
       <el-row class="text_row">
@@ -47,7 +47,7 @@
           <span>弹窗宽度(%)</span>
         </el-col>
         <el-col :span="8">
-          <el-input-number v-model="curComponent.options.popImgWidth" size="small" :min="1" :max="100"></el-input-number>
+          <el-input-number v-model="curComponent.options.popImgWidth" size="small" :min="1" :max="100" />
         </el-col>
       </el-row>
       <el-row class="text_row">
@@ -55,12 +55,15 @@
           <span>展示图片</span>
         </el-col>
         <el-col style="margin-top: 10px;padding-left: 20px;">
-          <el-col style="position:relative;text-align: center;" 
-            :span="6" v-show="fileList.length" 
-            v-for="(item,index) in fileList" :key="index"
+          <el-col
+            v-for="(item,index) in fileList"
+            v-show="fileList.length"
+            :key="index"
+            style="position:relative;text-align: center;"
+            :span="6"
           >
             <img :src="item.url" alt="" style="width: 90%;">
-            <i class="el-icon-delete del_img" @click="handleRemove(index)"></i>
+            <i class="el-icon-delete del_img" @click="handleRemove(index)" />
           </el-col>
           <el-col :span="6">
             <el-upload
@@ -74,14 +77,14 @@
               :file-list="fileList"
               :on-change="onChange"
             >
-            <!-- :limit="1" -->
+              <!-- :limit="1" -->
               <i class="el-icon-plus" />
             </el-upload>
             <span>
               <i class="el-icon-warning" /> <span>上传的文件大小不能超过1MB!</span>
             </span>
           </el-col>
-          
+
         </el-col>
       </el-row>
     </div>
@@ -99,7 +102,7 @@ import { mapState } from 'vuex'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 
 export default {
-  name: 'textPopSet',
+  name: 'TextPopSet',
   props: {
     element: {
       type: Object,
@@ -110,7 +113,7 @@ export default {
     return {
       predefineColors: COLOR_PANEL,
       fileList: [],
-      updataUrl: '',
+      updataUrl: ''
     }
   },
   computed: {
@@ -125,33 +128,30 @@ export default {
         isPopVisible: false,
         popImgList: [],
         popTitle: '',
-        popTitleColor: '#000000', 
-        popPanelColor: '#ffffff', 
+        popTitleColor: '#000000',
+        popPanelColor: '#ffffff',
         popHeight: 300,
-        popImgWidth: 38,
+        popImgWidth: 38
       }
     }
-    if(this.curComponent.options.popHeight === undefined) {
+    if (this.curComponent.options.popHeight === undefined) {
       this.curComponent.options.popHeight = 300
     }
-    if(this.curComponent.options.popImgWidth === undefined) {
+    if (this.curComponent.options.popImgWidth === undefined) {
       this.curComponent.options.popImgWidth = 38
     }
-    if(this.curComponent.options.popTitleColor === undefined) {
+    if (this.curComponent.options.popTitleColor === undefined) {
       this.curComponent.options.popTitleColor = '#000000'
     }
-    if(this.curComponent.options.popPanelColor === undefined) {
+    if (this.curComponent.options.popPanelColor === undefined) {
       this.curComponent.options.popPanelColor = '#ffffff'
     }
   },
   mounted() {
-    console.log('textPopSet',this.curComponent)
-    
     this.fileList = this.curComponent.options.popImgList
   },
   methods: {
     save() {
-      console.log('保存',this.fileList)
       this.curComponent.options.popImgList = this.fileList
       this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
@@ -160,19 +160,15 @@ export default {
       this.$emit('backgroundSetClose')
     },
     handlePictureCardPreview(file) {
-      console.log('file---', file)
       // this.dialogImageUrl = file.url
       // this.dialogVisible = true
     },
     handleRemove(index) {
-      console.log('remove',index)
-      this.fileList.splice(index,1)
+      this.fileList.splice(index, 1)
     },
     upload(file) {
-      console.log('this is upload', file)
     },
     onChange(file, fileList) {
-      console.log('change', fileList,this.fileList)
       if (file.size / 1024 / 1024 > 1) {
         this.$message.error('上传的文件大小不能超过 1MB!')
         return
@@ -181,13 +177,11 @@ export default {
       const reader = new FileReader()
       reader.onload = function() {
         _this.fileList.push(
-          {url: reader.result}
+          { url: reader.result }
         )
-        console.log('reader.result6666666', reader.result,_this.fileList)
       }
       reader.readAsDataURL(file.raw)
-      console.log('222222', file, fileList)
-    },
+    }
   }
 }
 </script>

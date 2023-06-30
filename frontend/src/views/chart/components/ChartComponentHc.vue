@@ -20,12 +20,12 @@ import funnel3d from 'highcharts/modules/funnel3d' // 漏斗图引入
 funnel3d(highcharts)
 import cylinder from 'highcharts/modules/cylinder'
 cylinder(highcharts)
-import pyramid3d from 'highcharts/modules/pyramid3d' //金字塔图引入
+import pyramid3d from 'highcharts/modules/pyramid3d' // 金字塔图引入
 pyramid3d(highcharts)
 
 import { BASE_PIE, basePieOption, uuid } from '@/views/chart/chart/pie/pie_hc'
 import { BASE_COLUMM, BASE_COLUMN_STACK, baseColumnOption } from '@/views/chart/chart/column/column_hc'
-import { BASE_CYLINDER, baseCylinderOption} from '@/views/chart/chart/column/cylinder_hc'
+import { BASE_CYLINDER, baseCylinderOption } from '@/views/chart/chart/column/cylinder_hc'
 import { BASE_FUNNEL, baseFunnelOption } from '@/views/chart/chart/funnel/funnel_hc'
 import { BASE_PYRAMID, basePyramidOption } from '@/views/chart/chart/pyramid/pyramid_hc'
 import { BASE_SCATTER, baseScatterOption } from '@/views/chart/chart/scatter/scatter_hc'
@@ -105,7 +105,6 @@ export default {
   watch: {
     chart: {
       handler(newVal, oldVla) {
-        console.log('chart is change')
         this.preDraw()
       },
       deep: true
@@ -194,12 +193,11 @@ export default {
     drawEcharts() {
       const chart = this.chart
       let chart_option = {}
-      console.log('3d数据。。。', chart, this.myChart)
 
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false
       }
-      console.log(this.$store.state.canvasStyleData)
+
       if (chart.type === '3dpie') {
         const base_json = JSON.parse(JSON.stringify(BASE_PIE))
         chart_option = basePieOption(base_json, chart, this.terminalType, this.$store.state.canvasStyleData)
@@ -237,14 +235,12 @@ export default {
           this.myChart.destroy()
         }
         this.myChart = this.$highcharts.chart(this.chartId, option)
-        // console.log('这个',this.myChart)
-        if (this.chart.type === '3dfunnel'){
-          let customAttr = JSON.parse(this.chart.customAttr)
-          // console.log('这，，，',customAttr)
-          if(customAttr.size) {
+        if (this.chart.type === '3dfunnel') {
+          const customAttr = JSON.parse(this.chart.customAttr)
+          if (customAttr.size) {
             this.myChart.series[0].points.forEach(p => {
               p.graphic.upperGroup.attr({
-                opacity: customAttr.size.hc3dFunnelOpacity !== undefined? customAttr.size.hc3dFunnelOpacity : 1
+                opacity: customAttr.size.hc3dFunnelOpacity !== undefined ? customAttr.size.hc3dFunnelOpacity : 1
               })
             })
           }
@@ -268,7 +264,6 @@ export default {
     chartResize() {
       // 指定图表的配置项和数据
       const chart = this.myChart
-      // console.log(chart)
       chart.reflow()
     },
 

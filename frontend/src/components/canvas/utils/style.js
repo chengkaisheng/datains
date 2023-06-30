@@ -17,8 +17,8 @@ export function getStyle(style, filter = []) {
   const result = {}
   Object.keys(style).forEach(key => {
     if (!filter.includes(key)) {
-      if( key === 'autoWrap') { // 自动换行
-        if(style[key]) {
+      if (key === 'autoWrap') { // 自动换行
+        if (style[key]) {
           result['whiteSpace'] = 'pre-line'
         } else {
           result['whiteSpace'] = 'nowrap'
@@ -166,7 +166,6 @@ export function getScaleValue(propValue, scale) {
 }
 
 export function recursionTransObj(template, infoObj, scale, terminal) {
-  console.log()
   for (const templateKey in template) {
     // 如果是数组 进行赋值计算
     if (template[templateKey] instanceof Array) {
@@ -174,7 +173,6 @@ export function recursionTransObj(template, infoObj, scale, terminal) {
         if (infoObj[templateKey] && infoObj[templateKey][templateProp]) {
           // 移动端特殊属性值设置
           if (terminal === 'mobile' && mobileSpecialProps[templateProp] !== undefined) {
-            // console.log('mobile:' + templateProp + mobileSpecialProps[templateProp])
             infoObj[templateKey][templateProp] = mobileSpecialProps[templateProp]
           } else {
             infoObj[templateKey][templateProp] = getScaleValue(infoObj[templateKey][templateProp], scale)

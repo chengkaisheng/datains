@@ -61,7 +61,6 @@ class TextInfoServiceImpl extends WidgetService {
   }
 
   filterFieldMethod(fields) {
-    console.log('这是？',fields)
     return fields.filter(field => {
       return field['deType'] === 0
     })

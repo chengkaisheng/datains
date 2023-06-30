@@ -12,7 +12,6 @@
   <div id="link"></div>
 </body>
 <script>
-  console.log('window.location.href======>',window.location.href)
   function getQueryVariable(variable) {
     let query = window.location.search.substring(1)
     let vars = []
@@ -35,7 +34,6 @@
   const terminal = getQueryVariable('terminal')
   const attachParams = getQueryVariable('attachParams')
   let url = "/#/delink?link=" + encodeURIComponent(link)
-  console.log('是否走这个地方------------------',window.location.search)
   // return
   if (terminal) {
     url += '&terminal=' + terminal
@@ -44,7 +42,6 @@
     url += '&user=' + encodeURIComponent(user)
   }
   if (attachParams) {
-    console.log('attachParams-bf:'+attachParams+';-af:'+encodeURIComponent(attachParams))
     // url += '&attachParams=' + encodeURIComponent(attachParams)
     url += '&attachParams=' + attachParams
 

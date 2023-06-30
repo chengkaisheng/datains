@@ -37,7 +37,7 @@ export function baseLiquid(plot, container, chart, cstyle = {}) {
           style: ({ percent }) => ({
             fontSize: parseInt(label.fontSize),
             color: label.color,
-            fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
           })
         }
       } else {
@@ -46,19 +46,19 @@ export function baseLiquid(plot, container, chart, cstyle = {}) {
     }
   }
 
-  if(chart.data && chart.data.fields && chart.data.fields.length) {
-    let fields = chart.data.fields
-    let arr = []
+  if (chart.data && chart.data.fields && chart.data.fields.length) {
+    const fields = chart.data.fields
+    const arr = []
     for (let i = 0; i < fields.length; i++) {
-        if(fields[i].chartType) {
-          arr.push(fields[i])
-        }
+      if (fields[i].chartType) {
+        arr.push(fields[i])
+      }
     }
     for (let i = 0; i < arr.length; i++) {
-      if(customAttr.color && customAttr.color.variety) {
+      if (customAttr.color && customAttr.color.variety) {
         // 定义柱状图渐变色
-        let a = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
-        let b = hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+        const a = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        const b = hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
         gColors.push(`l(270) 0:${a} 1:${b}`)
       }
     }
@@ -92,13 +92,13 @@ export function baseLiquid(plot, container, chart, cstyle = {}) {
     theme: {
       styleSheet: {
         brandColor: colors[0],
-        paletteQualitative10: customAttr.color.variety? gColors : colors,
-        paletteQualitative20: customAttr.color.variety? gColors : colors,
+        paletteQualitative10: customAttr.color.variety ? gColors : colors,
+        paletteQualitative20: customAttr.color.variety ? gColors : colors,
         backgroundColor: bgColor
       }
     },
     liquidStyle: { // 设置渐变色
-      fill: customAttr.color.variety? gColors[0] : colors[0]
+      fill: customAttr.color.variety ? gColors[0] : colors[0]
     },
     percent: (parseFloat(value) / parseFloat(max)),
     radius: radius,
@@ -108,7 +108,7 @@ export function baseLiquid(plot, container, chart, cstyle = {}) {
       content: labelContent
     }
   }
-  console.log('antv_水波图',options)
+
   // 开始渲染
   if (plot) {
     plot.destroy()

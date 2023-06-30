@@ -6,7 +6,6 @@ import img2 from '../../../../assets/Funnel2.png'
 import img3 from '../../../../assets/Funnel3.png'
 
 export function baseBarOption(chart_option, chart, cstyle = {}) {
-  console.log('chart,,,,', chart, JSON.parse(chart.xaxis), cstyle)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -16,7 +15,6 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
     }
     // tooltip
     if (customAttr.tooltip) {
-      console.log('这个悬浮', customAttr.tooltip)
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
@@ -32,7 +30,7 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
   if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
-    // console.log('customAttr?????????', customAttr)
+
     const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
@@ -88,9 +86,10 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
       chart_option.series.push(y)
     }
   }
-  console.log('bar_echarts', chart_option)
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
+
   return chart_option
 }
 // contrastBarOption 对比
@@ -119,7 +118,6 @@ export function contrastBarOption(chart_option, chart, cstyle = {}) {
   if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
-    // console.log('customAttr?????????', customAttr)
     const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
@@ -177,18 +175,16 @@ export function contrastBarOption(chart_option, chart, cstyle = {}) {
       chart_option.series.push(y)
     }
   }
-  console.log('bar_echarts', chart_option)
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
-  console.log('bar_echarts++++++++++>>>>>', chart_option)
+
   const yAixsdata = JSON.parse(JSON.stringify(chart_option.yAxis))
   // yAixsdata.push(chart_option.yAxis)
   // yAixsdata.push(chart_option.yAxis)
-  // console.log('yAixsdata===>', yAixsdata)
   // yAixsdata[0].type = 'value'
   // yAixsdata[1].type = 'value'
   // yAixsdata[1].inverse = true
-  console.log('yAixsdata===>', yAixsdata)
   // chart_option.yAxis = yAixsdata
   chart_option.yAxis = [
     {
@@ -245,7 +241,6 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
   if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
-    // console.log('customAttr?????????', customAttr)
     const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
@@ -334,7 +329,6 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
   }
 
   chart_option.series = []
-  console.log('_____________', chart_option)
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   chart_option.xAxis = []
@@ -473,7 +467,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     },
     data: chart.data.x
   }]
-  console.log('double,,,,', chart_option)
+
   // var lastYearData = [3, 20, 62, 34, 55, 65, 33];
   // var thisYearData = [11, 38, 23, 39, 66, 66, 79];
   const option = {
@@ -484,7 +478,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
       }
     ]
   }
-  console.log('options===>', option)
+
   return option
 }
 
@@ -537,19 +531,14 @@ export function rankingBarOption(chart_option, chart, cstyle = {}) {
       data: chart.data.x,
       startAngle: 75
     }
-    // console.log('customAttr?????????', customAttr)
+
     const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
     let dataArr = []
     dataArr = chart.data.series[0].data
-    // dataArr.forEach(res => {
-    //   console.log('res===>', res)
-    // })
-    // console.log('++++++>>>>', dataArr)
+
     const arrss = [{ value: 2, name: '222' }, { value: 1, name: '322' }]
-    console.log('------------>>>>>', arrss.sort(compare('value')))
 
     // dataArr.sort((a, b) => { return b.value - a.value })
-    console.log('dataArr', dataArr)
 
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
@@ -619,7 +608,7 @@ export function rankingBarOption(chart_option, chart, cstyle = {}) {
       show: false
     }
   ]
-  console.log('_____________+++++++++++++', chart_option, chart.data)
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
@@ -661,7 +650,7 @@ export function polarStackBarOption(chart_option, chart, cstyle = {}) {
       data: chart.data.x
       // startAngle: 75
     }
-    // console.log('customAttr?????????', customAttr)
+
     const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
 
     for (let i = 0; i < chart.data.series.length; i++) {
@@ -736,7 +725,7 @@ export function polarStackBarOption(chart_option, chart, cstyle = {}) {
       show: false
     }
   ]
-  console.log('_____________+++++++++++++', chart_option, chart.data)
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
@@ -767,7 +756,7 @@ export function clockcatterOption(chart_option, chart, cstyle = {}) {
   if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
-    // console.log('customAttr?????????', customAttr)
+
     const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
@@ -817,12 +806,12 @@ export function clockcatterOption(chart_option, chart, cstyle = {}) {
         y.label = customAttr.label
       }
       y.type = 'candlestick'
-      console.log('yyyyyyyyyyyyyyyy', y)
+
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
   }
-  console.log('_____________', chart_option)
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
@@ -855,7 +844,7 @@ export function pyramidBarOption(chart_option, chart, cstyle = {}) {
   if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
-    // console.log('customAttr?????????', customAttr)
+
     const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
@@ -975,7 +964,6 @@ export function pyramidBarOption(chart_option, chart, cstyle = {}) {
   }
   chart_option.series = seriesArr
 
-  console.log('_____________!!!!', chart_option)
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
@@ -1005,7 +993,7 @@ export function triangleBarOption(chart_option, chart, cstyle = {}) {
   if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
-    // console.log('customAttr?????????', customAttr)
+
     const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
@@ -1060,7 +1048,7 @@ export function triangleBarOption(chart_option, chart, cstyle = {}) {
       chart_option.series.push(y)
     }
   }
-  // console.log(chart_option);
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
@@ -1091,7 +1079,7 @@ export function annularBarOption(chart_option, chart, cstyle = {}) {
   if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
-    // console.log('customAttr?????????', customAttr)
+
     const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
@@ -1174,7 +1162,7 @@ export function annularBarOption(chart_option, chart, cstyle = {}) {
     type: 'category',
     data: chart.data.x
   }
-  // console.log(chart_option);
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
@@ -1313,17 +1301,13 @@ export function annularBarOptions(chart_option, chart, cstyle = {}) {
   }
   // 处理data
   if (chart.data) {
-    // console.log('____________________++++++++++', chart.data)
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
-    // console.log('customAttr?????????', customAttr)
     const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
     const arrValue = getArrayValue(chart.data.series[0].data, 'value')
-    // console.log('???????chart.data.series[0].data', chart.data.series[0].data, arrValue, eval(arrValue.join('+')))
     const dataForm = chart.data.series[0].data
     var seriesArr = []
     for (let i = 0; i < dataForm.length; i++) {
-      // console.log(dataForm[i])
       seriesArr.push({
         name: '',
         type: 'pie',
@@ -1409,7 +1393,7 @@ export function annularBarOptions(chart_option, chart, cstyle = {}) {
         ]
       })
     }
-    // console.log('seriesArr-----', seriesArr)
+
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
       // color
@@ -1487,7 +1471,7 @@ export function annularBarOptions(chart_option, chart, cstyle = {}) {
   //   // max: 3,
   //   startAngle: 0
   // }
-  // console.log(chart_option);
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   chart_option.legend.top = '13%'
@@ -1497,7 +1481,7 @@ export function annularBarOptions(chart_option, chart, cstyle = {}) {
   chart_option.legend.padding = [0, 18]
   chart_option.legend.data = chart.data.x
   chart_option.legend.orient = 'vertical'
-  console.log('chart_option______________', chart_option)
+
   return chart_option
 }
 
@@ -1529,7 +1513,7 @@ export function stackBarPartOption(chart_option, chart, cstyle = {}) {
       s.yAxisIndex = 0
     }
   })
-  console.log('部分堆叠', chart_option)
+
   return chart_option
 }
 
@@ -1538,7 +1522,7 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
-    console.log('customArr,横向,,,,', customAttr)
+
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
@@ -1549,7 +1533,7 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
       tooltip.extraCssText = 'max-width: 200px;white-space: pre-line;' // 额外附加css样式
       chart_option.tooltip = tooltip
     }
-    // console.log('customAttr____________', chart_option, chart)
+
     chart_option.grid.left = customAttr.size.spaceleft
     chart_option.grid.right = customAttr.size.spaceRight
     chart_option.grid.top = customAttr.size.spaceTop
@@ -1614,7 +1598,7 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
       chart_option.series.push(y)
     }
   }
-  // console.log('横向柱：',chart_option);
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
@@ -1635,7 +1619,6 @@ export function horizontalStackBarOption(chart_option, chart, cstyle = {}) {
 
 // 立体柱状图
 export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
-  console.log('测试1', chart_option, chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -1662,7 +1645,6 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
     chart_option.xAxis.data = chart.data.x
     chart_option.xAxis.offset = 5
 
-    console.log('chart.data', chart.data)
     const series = chart.data.series[0]
     const y = series
     y.itemStyle = {
@@ -1695,8 +1677,6 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
     }
     // label
 	  if (customAttr.label) {
-      // debugger
-      console.log('标签的数据：', customAttr.label)
       // y.label = customAttr.label
       // y.z = 10000000000
       y.label = {
@@ -1841,12 +1821,11 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
 
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
-  console.log('echarts,3d.....', chart_option)
+
   return chart_option
 }
 
 export function base3DColumnOption(chart_option, chart, cstyle = {}) {
-  console.log('3d柱状图', chart)
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
@@ -1877,7 +1856,6 @@ export function base3DColumnOption(chart_option, chart, cstyle = {}) {
         })
         arr.push(arr1)
       }
-      console.log('bbbarr', arr)
 
       const s = new Array(Math.max(... arr.map(item => item.length)))
       for (let index = 0; index < s.length; index++) {
@@ -1889,7 +1867,6 @@ export function base3DColumnOption(chart_option, chart, cstyle = {}) {
           }
         }
       }
-      console.log('3dbar数据', s)
 
       chart_option.series[0].data = s
 
@@ -1902,7 +1879,6 @@ export function base3DColumnOption(chart_option, chart, cstyle = {}) {
 
 // 横向进度图
 export function barRateOption(chart_option, chart, cstyle = {}) {
-  console.log('进度图', chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -1917,7 +1893,6 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
     //   tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
     //   chart_option.tooltip = tooltip
     // }
-    // console.log('customAttr____________', chart_option, chart)
     chart_option.grid.left = customAttr.size.spaceleft
     chart_option.grid.right = customAttr.size.spaceRight
     chart_option.grid.top = customAttr.size.spaceTop
@@ -1925,7 +1900,6 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
   }
   // 处理data
   if (chart.data) {
-    console.log('数据，，', chart.data)
     chart_option.title.text = chart.title
     chart_option.yAxis[0].data = chart.data.x
 
@@ -1935,7 +1909,7 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
     const arr3 = []
     const datas = chart.data.series[0].data
     const max = Math.max(...datas.map(item => { return item.value }))
-    // console.log(max)
+
     for (let i = 0; i < datas.length; i++) {
       const obj = {
         value: datas[i].value
@@ -2042,7 +2016,7 @@ export function barRateOption(chart_option, chart, cstyle = {}) {
       // itemStyle:{}
     }
   }
-  console.log('bar-rate', chart_option)
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option

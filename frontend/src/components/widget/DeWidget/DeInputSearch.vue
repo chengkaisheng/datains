@@ -7,10 +7,10 @@
     resize="vertical"
     :placeholder="$t(element.options.attrs.placeholder)"
     :size="size"
+    :style="inputStyle"
     @input="valueChange"
     @keypress.enter.native="search"
     @dblclick="setEdit"
-    :style="inputStyle"
   >
 
     <el-button slot="append" icon="el-icon-search" @click="search" />
@@ -55,22 +55,21 @@ export default {
     },
     inputStyle() {
       const style = {}
-      console.log('inputstyle',this.element)
-      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
-        if(this.element.commonSelectFrame.backType === 'Image') {
-          if(this.element.commonSelectFrame.backImg !== '') {
+      if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        if (this.element.commonSelectFrame.backType === 'Image') {
+          if (this.element.commonSelectFrame.backImg !== '') {
             style.backgroundImage = `url(${this.element.commonSelectFrame.backImg})`
           }
           style.backgroundRepeat = 'no-repeat'
           style.backgroundSize = '100% 100%'
-        } else  {
+        } else {
           style.backgroundColor = this.element.commonSelectFrame.color
           // style.backgroundColor = this.hexColorToRGBA(this.element.commonSelectFrame.color,this.element.commonSelectFrame.alpha)
         }
         style.color = this.element.commonSelectFrame.fontColor
-        style.fontSize = this.element.commonSelectFrame.fontSize?this.element.commonSelectFrame.fontSize+'px':'14px'
+        style.fontSize = this.element.commonSelectFrame.fontSize ? this.element.commonSelectFrame.fontSize + 'px' : '14px'
       }
-      
+
       return style
     }
   },
@@ -86,7 +85,6 @@ export default {
     }
   },
   created() {
-    console.log('deinputsearch',this.element)
     if (this.element.options.value) {
       this.value = this.fillValueDerfault()
       this.search()
@@ -147,5 +145,5 @@ export default {
   background-color: transparent;
   color: inherit;
 }
-//  .el-button .el-button--default .el-button--medium 
+//  .el-button .el-button--default .el-button--medium
 </style>

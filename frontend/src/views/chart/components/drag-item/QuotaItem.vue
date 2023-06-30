@@ -35,7 +35,7 @@
                 <el-dropdown-item :command="beforeSwitch('bar')">{{ $t('chart.chart_bar') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSwitch('line')">{{ $t('chart.chart_line') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSwitch('scatter')">{{ $t('chart.chart_scatter') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeSwitch('pie')">{{ $t('chart.chart_pie')}}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSwitch('pie')">{{ $t('chart.chart_pie') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -105,12 +105,12 @@
           <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
             <span>{{ $t('chart.delete') }}</span>
           </el-dropdown-item>
-          <el-dropdown-item divided v-if="viewType === 'roll-elemnt'">
+          <el-dropdown-item v-if="viewType === 'roll-elemnt'" divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="checkeShow">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-view" />
-                  <span>{{$t('chart.display')}}</span>
+                  <span>{{ $t('chart.display') }}</span>
                   <span class="summary-span-item">
                     (
                     <span v-if="item.checked">展示</span>
@@ -125,12 +125,12 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item divided v-if="viewType === 'roll-elemnt'">
+          <el-dropdown-item v-if="viewType === 'roll-elemnt'" divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="relationShow">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-view" />
-                  <span>{{$t('chart.relation')}}</span>
+                  <span>{{ $t('chart.relation') }}</span>
                   <span class="summary-span-item">
                     (
                     <span v-if="item.relation">展示</span>
@@ -146,12 +146,12 @@
             </el-dropdown>
           </el-dropdown-item>
 
-          <el-dropdown-item divided v-if="viewType === 'table-prog'">
+          <el-dropdown-item v-if="viewType === 'table-prog'" divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="progressShow">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-view" />
-                  <span>{{$t('chart.progress_show')}}</span>
+                  <span>{{ $t('chart.progress_show') }}</span>
                   <span class="summary-span-item">
                     (
                     <span v-if="item.progress">展示</span>
@@ -229,7 +229,6 @@ export default {
     }
   },
   mounted() {
-    console.log('指标拖拽字段')
     this.init()
     this.isEnableCompare()
   },
@@ -238,8 +237,8 @@ export default {
       if (!this.item.compareCalc) {
         this.item.compareCalc = JSON.parse(JSON.stringify(this.compareItem))
       }
-      if(this.viewType === 'roll-elemnt') {
-        if(this.item.relation === undefined) {
+      if (this.viewType === 'roll-elemnt') {
+        if (this.item.relation === undefined) {
           this.item.relation = true
         }
       }
@@ -286,7 +285,6 @@ export default {
     },
 
     summary(param) {
-      // console.log(param)
       this.item.summary = param.type
       this.$emit('onQuotaItemChange', this.item)
     },
@@ -297,9 +295,8 @@ export default {
     },
 
     checkeShow(param) {
-      console.log('字段展示',param)
       this.item.checked = param.type
-      this.$emit('onQuotaItemChange',this.item)
+      this.$emit('onQuotaItemChange', this.item)
     },
     beforeDisplay(type) {
       return {
@@ -308,7 +305,7 @@ export default {
     },
     relationShow(param) {
       this.item.relation = param.type
-      this.$emit('onDimensionItemChange',this.item)
+      this.$emit('onDimensionItemChange', this.item)
     },
     beforeRelation(type) {
       return {
@@ -317,7 +314,7 @@ export default {
     },
     progressShow(param) {
       this.item.progress = param.type
-      this.$emit('onDimensionItemChange',this.item)
+      this.$emit('onDimensionItemChange', this.item)
     },
     beforeProgress(type) {
       return {
@@ -326,7 +323,6 @@ export default {
     },
 
     switchChartType(param) {
-      console.log('switch',param)
       this.item.chartType = param.type
       this.$emit('onQuotaItemChange', this.item)
     },
@@ -356,7 +352,6 @@ export default {
     },
 
     sort(param) {
-      // console.log(param)
       this.item.sort = param.type
       this.$emit('onQuotaItemChange', this.item)
     },

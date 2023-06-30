@@ -35,7 +35,7 @@
                 <el-dropdown-item :command="beforeSwitch('bar')">{{ $t('chart.chart_bar') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSwitch('line')">{{ $t('chart.chart_line') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSwitch('scatter')">{{ $t('chart.chart_scatter') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeSwitch('pie')">{{ $t('chart.chart_pie')}}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSwitch('pie')">{{ $t('chart.chart_pie') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -218,7 +218,6 @@ export default {
     },
 
     summary(param) {
-      // console.log(param)
       this.item.summary = param.type
       this.$emit('onQuotaItemChange', this.item)
     },
@@ -229,7 +228,6 @@ export default {
     },
 
     switchChartType(param) {
-      // console.log(param)
       this.item.chartType = param.type
       this.$emit('onQuotaItemChange', this.item)
     },
@@ -259,7 +257,6 @@ export default {
     },
 
     sort(param) {
-      // console.log(param)
       this.item.sort = param.type
       this.$emit('onQuotaItemChange', this.item)
     },

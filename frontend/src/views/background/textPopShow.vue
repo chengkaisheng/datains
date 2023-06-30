@@ -16,7 +16,7 @@
 import { mapState } from 'vuex'
 
 export default {
-  name: 'textPopShow',
+  name: 'TextPopShow',
   props: {
     element: {
       type: Object,
@@ -25,12 +25,12 @@ export default {
   },
   data() {
     return {
-      
+
     }
   },
   computed: {
     fileList() {
-      if(this.element && this.element.options) {
+      if (this.element && this.element.options) {
         return this.element.options.popImgList
       } else {
         return []
@@ -41,32 +41,31 @@ export default {
       'componentData'
     ]),
     backStyle() {
-      let style = {}
-      if(this.element && this.element.options && this.element.options.popPanelColor) {
+      const style = {}
+      if (this.element && this.element.options && this.element.options.popPanelColor) {
         style.backgroundColor = this.element.options.popPanelColor
       }
       return style
     },
     popHeight() {
-      if(this.element && this.element.options && this.element.options.popHeight) {
+      if (this.element && this.element.options && this.element.options.popHeight) {
         return this.element.options.popHeight + 'px'
       } else {
         return '340px'
       }
     },
     imgStyle() {
-      let style = {}
-      if(this.element.options.popHeight) {
+      const style = {}
+      if (this.element.options.popHeight) {
         style.height = (this.element.options.popHeight) + 'px'
       }
       return style
     }
   },
   mounted() {
-    console.log('数据1',this.element)
   },
   methods: {
-    
+
   }
 }
 </script>

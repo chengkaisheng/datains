@@ -1,20 +1,23 @@
 <template>
-  <div >
+  <div>
     <div class="nav_calss">
-      <el-select 
+      <el-select
+        v-model="linkOpen"
         class="jump_sel"
-        v-model="linkOpen" 
-        @change="linkChange" 
         style="width: 100%;"
         :placeholder="getText"
         :popper-append-to-body="inScreen"
         :style="jumpStyle"
         popper-class="jump_sel_pop"
+        @change="linkChange"
       >
-        <el-option v-for="(item,index) in jumpArr" 
-          :key="index" :value="item.jumpLink" 
-          :label="item.jumpName" :style="fontStyle">
-        </el-option>
+        <el-option
+          v-for="(item,index) in jumpArr"
+          :key="index"
+          :value="item.jumpLink"
+          :label="item.jumpName"
+          :style="fontStyle"
+        />
       </el-select>
     </div>
   </div>
@@ -37,7 +40,7 @@ export default {
       type: Boolean,
       required: false,
       default: true
-    },
+    }
   },
   computed: {
     ...mapState([
@@ -50,12 +53,12 @@ export default {
       return this.element.options.jumpList
     },
     getText() {
-      return this.element.options.placeholder !== undefined? this.element.options.placeholder : ''
+      return this.element.options.placeholder !== undefined ? this.element.options.placeholder : ''
     },
     fontStyle() {
-      let style= {}
-      if(this.element.options.nameType === 'back') {
-        if(this.element.options.nameBgImg !== '') {
+      const style = {}
+      if (this.element.options.nameType === 'back') {
+        if (this.element.options.nameBgImg !== '') {
           style.backgroundImage = `url(${this.element.options.nameBgImg})`
         }
         style.backgroundRepeat = 'no-repeat'
@@ -68,8 +71,8 @@ export default {
     },
     jumpStyle() {
       const style = {}
-      if(this.element.options.bgType === 'back') {
-        if(this.element.options.jumpBgImg !== '') {
+      if (this.element.options.bgType === 'back') {
+        if (this.element.options.jumpBgImg !== '') {
           style.backgroundImage = `url(${this.element.options.jumpBgImg})`
         }
         style.backgroundRepeat = 'no-repeat'
@@ -78,30 +81,28 @@ export default {
         style.backgroundColor = this.element.options.jumpBgColor
       }
       style.color = this.element.options.fontColor
-      style.fontSize = this.element.options.fontSize !==undefined? this.element.options.fontSize+'px':'14px'
-      // console.log('options',this.element.options,style)
+      style.fontSize = this.element.options.fontSize !== undefined ? this.element.options.fontSize + 'px' : '14px'
+
       // style.marginTop = (this.element.style.height - 36) + 'px'
       style.lineHeight = this.element.style.height + 'px'
       return style
-    },
+    }
   },
   data() {
     return {
       linkOpen: null,
-      isClick: false,
+      isClick: false
     }
   },
   mounted() {
-    console.log('de-jump',this.curComponent,this.element)
   },
   methods: {
     linkChange(value) {
-      // console.log('跳转',this.linkOpen)
-      if(value !== '' && value !== null) {
+      if (value !== '' && value !== null) {
         window.location.href = value
       }
     }
-  },
+  }
 }
 </script>
 <style lang="less" scoped>
@@ -173,7 +174,6 @@ export default {
   color: inherit;
   font-size: inherit;
 }
-
 
 // /deep/ .el-select-dropdown {
 //   background-color: transparent !important;

@@ -15,7 +15,6 @@ import {
 function sortDatas(data) {
   var sort1 = JSON.parse(data.xaxis)
   var sort2 = sort1[0].sort
-  // console.log(sort1.sort)
   let isSort
   if (sort2 === undefined) {
     isSort = false
@@ -56,7 +55,6 @@ function sortDatas(data) {
   })
 }
 export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack, cstyle = {}) {
-  console.log('bar_antv,chart', chart, JSON.parse(chart.customStyle))
   // theme
   const theme = getTheme(chart)
   // attr
@@ -67,14 +65,10 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   const xAxis = getXAxis(chart, cstyle)
   const yAxis = getYAxis(chart, cstyle)
 
-  console.log('antv xAxis: ', xAxis)
   // data
   const data = chart.data.datas
   // const data = sortDatas(chart)
 
-  data.forEach((item) => {
-    item.field = `${new Date(item.name).format('yyyy-MM-dd')}\n${new Date(item.name).format('hh:mm:ss')}`
-  })
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
@@ -138,7 +132,6 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
       }
     }
   }
-  console.log('antv,bar,,,', options)
   // group
   if (isGroup) {
     options.isGroup = true

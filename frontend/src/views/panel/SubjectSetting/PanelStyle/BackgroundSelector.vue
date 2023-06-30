@@ -17,7 +17,7 @@
             <el-col>
               <el-col :span="6">透明度</el-col>
               <el-col :span="18">
-                <el-input-number v-model="panel.alpha" :max="100" :min="0" size="small" @change="onChangeType"></el-input-number>
+                <el-input-number v-model="panel.alpha" :max="100" :min="0" size="small" @change="onChangeType" />
               </el-col>
             </el-col>
           </el-row>
@@ -85,7 +85,7 @@ export default {
   },
   created() {
     // 初始化赋值
-    if(this.canvasStyleData.panel.alpha === undefined) {
+    if (this.canvasStyleData.panel.alpha === undefined) {
       this.canvasStyleData.panel.alpha = 100
     }
     this.panel = this.canvasStyleData.panel
@@ -114,7 +114,6 @@ export default {
       this.dialogVisible = true
     },
     beforeAvatarUpload(file) {
-      console.log('file.size', file.size)
       const isLt10M = file.size / 1024 / 1024 < 10
       if (!isLt10M) {
         // this.$message.error('上传的文件大小不能超过 1MB!')
@@ -123,7 +122,6 @@ export default {
       return isLt10M
     },
     onChange(file, fileList) {
-      console.log('file-----', file, file.size / 1024 / 1024)
       if (file.size / 1024 / 1024 > 10) {
         this.$message.error('上传的文件大小不能超过 10MB!')
         this.fileList = []
@@ -141,7 +139,7 @@ export default {
       reader.readAsDataURL(file.raw)
     },
     upload(file) {
-      // console.log('this is upload')
+
     }
   }
 }

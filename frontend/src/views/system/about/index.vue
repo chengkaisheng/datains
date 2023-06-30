@@ -150,7 +150,6 @@ export default {
       window.open(url, '_blank')
     },
     beforeUpload(file) {
-      // console.log(file)
       this.importLic(file)
       return false
     }

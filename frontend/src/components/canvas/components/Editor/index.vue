@@ -388,7 +388,6 @@ import jumpSet from '@/views/background/jumpSet'
 import textPopSet from '@/views/background/textPopSet'
 import textInfoSet from '@/views/background/textInfoSet'
 
-
 import { events } from '../../../DeDrag/option.js'
 import { addEvent, removeEvent } from '../../../../utils/dom.js'
 const eventsForBus = events.mouse
@@ -425,11 +424,9 @@ function debounce(func, time) {
 
 function scrollScreen(e) {
   if (e.clientY + 50 >= window.innerHeight) {
-    // console.log('scrollScreen+')
     const body = $(document.body)
     body.scrollTop(body.scrollTop() + 20)
   } else if (e.clientY <= 150) {
-    // console.log('scrollScreen-')
     const body = $(document.body)
     body.scrollTop(body.scrollTop() - 20)
   }
@@ -510,7 +507,6 @@ function recalcCellWidth() {
 }
 
 function init() {
-  // console.log('innnnnnnnnitttttttt')
   this.cellWidth = this.baseWidth + this.baseMarginLeft
   this.cellHeight = this.baseHeight + this.baseMarginTop
   this.yourList = this.getList()
@@ -681,7 +677,6 @@ function initPosition(_this) {
 }
 
 function addItem(item, index) {
-  // console.log('addItem')
   if (index < 0) {
     index = this.yourList.length
   }
@@ -946,7 +941,7 @@ function findBelowItems(item) {
           break
         }
       } catch (e) {
-        console.log('positionBox igonre')
+        console.error(e)
       }
     }
   }
@@ -959,7 +954,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, tabSet, pictureSet, setCustom, weatherSet, jumpSet, textPopSet,textInfoSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, tabSet, pictureSet, setCustom, weatherSet, jumpSet, textPopSet, textInfoSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -1160,7 +1155,6 @@ export default {
     },
     displayClass() {
       return function(value) {
-        // console.log('value1111-----', value)
         // if (value.type === 'de-frame') {
         if (value.showName) {
           if (this.canvasStyleData.showArr && value.navModel === 'elementKey') {
@@ -1186,7 +1180,6 @@ export default {
     },
     showOrNot(item) {
       return function(value) {
-        console.log('value===', value)
         if (item.type === 'de-frame') {
           return true
         } else {
@@ -1227,14 +1220,12 @@ export default {
           }
         }
       }
-      // console.log('backgroundType--------',)
       return style
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
     dragComponentInfo() {
-      // console.log('是否触发这个事件------')
       return this.$store.state.dragComponentInfo
     },
 
@@ -1263,7 +1254,6 @@ export default {
     },
     outStyle: {
       handler(newVal, oldVla) {
-        // console.log('改变从这里开始-------------', newVal)
         this.resizeParentBoundsRef()
         this.changeScale() // 暂时禁用为解决s2表格出现的加载问题
         this.outStyleOld = deepCopy(newVal)
@@ -1272,13 +1262,10 @@ export default {
     },
     componentData: {
       handler(newVal, oldVla) {
-        // console.log('++++++this.componentData', this.componentData)
-        // console.log('组件：', newVal)
         // 初始化时componentData 加载可能出现慢的情况 此时重新初始化一下matrix
         if (newVal.length !== this.lastComponentDataLength) {
           this.lastComponentDataLength = newVal.length
           this.initMatrix()
-          // console.log('componentData-initMatrix')
         }
       },
       deep: true
@@ -1324,7 +1311,6 @@ export default {
   },
   methods: {
     // showOrNot(item) {
-    //   console.log('判断展示数据', item, this.canvasStyleData)
     //   // return true
     //   if (item.showName) {
     //     if (this.canvasStyleData.navShowKey === item.showName) {
@@ -1370,7 +1356,6 @@ export default {
       this.customVisible = false
     },
     boardSet(item) {
-      // console.log('itsm00001', item)
       this.$emit('boardSet', item)
 
       this.boardSetVisible = true
@@ -1378,11 +1363,9 @@ export default {
     tabRelation(item) {
       this.tabElement = item
       this.tabVisible = true
-      // console.log('最终触发呗')
       // this.boardSetVisible = true
     },
     bannerImg(item) {
-      console.log('bannerImg,item-----', item)
       this.bannerelement = item
       this.bannerSetVisible = true
     },
@@ -1394,42 +1377,33 @@ export default {
     setFontIcon(item) {
       this.iconVisible = true
       this.iconElement = item
-
-      console.log('触发字体图标修改')
     },
     setPicture(item) {
       this.pictureVisible = true
       this.pictureElement = item
-      console.log('触发图片库')
     },
     setCustomBtn(item) {
-      console.log('触发轮播修改图-----')
       this.customVisible = true
       this.customElement = item
     },
     setWeather(item) {
       this.weatherVisible = true
       this.weatherElement = item
-      console.log('天气组件样式设置')
     },
     setJump(item) {
       this.jumpVisible = true
       this.jumpElement = item
-      console.log('下拉跳转设置')
     },
     setTextInfo(item) {
       this.textInfoVisible = true
       this.textInfoElement = item
-      console.log('详情联动')
     },
     setText(item) {
       this.textVisible = true
       this.textElement = item
-      console.log('文本图片设置弹窗')
     },
     changeStyleWithScale,
     setLine(e) {
-      // console.log('组件外的移动----------', e)
       if (e.offsetY >= this.baseline.top) {
         this.baseline.height = e.offsetY - this.baseline.top
       }
@@ -1438,7 +1412,6 @@ export default {
       }
     },
     hangdleMouseUp(e) {
-      // console.log('松开鼠标的时候触发-----------', e)
       if (this.baseline.width <= 50 || this.baseline.height <= 50) {
         this.baseLineShow = false
       }
@@ -1447,10 +1420,8 @@ export default {
     },
     baseMoseDown(e) {
       e.stopPropagation()
-      // console.log('----------------------111111111111111111111111111111111', e)
     },
     clearInfo() {
-      // console.log('双击事件---', this.componentData)
       this.baseLineShow = false
       this.baseline.left = 0
       this.baseline.top = 0
@@ -1458,7 +1429,6 @@ export default {
       this.baseline.width = 0
     },
     handleMouseDown(e) {
-      // console.log('---------------------点击画布非元素-----------------------------', e)
       // removeEvent(document.documentElement, 'mouseup', this.hangdleMouseUp)
       if (!this.baseLineShow) {
         this.baseline.left = e.offsetX
@@ -1581,18 +1551,15 @@ export default {
       result['rotate'] = style['rotate']
       result['borderWidth'] = style['borderWidth']
       result['opacity'] = style['opacity']
-      // console.log('这里的style改变了什么======', style, result)
       return result
     },
 
     getComponentStyleDefault(style) {
-      // console.log('style触发器1111==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
       return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       // return style
     },
 
     getComponentStyle(style) {
-      // console.log('style触发器2222==', style, getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
       return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       // return style
     },
@@ -1620,13 +1587,11 @@ export default {
       return value
     },
     changeScale() {
-      // console.log('this.matrixCount-------------------什么玩意11111111', this.canvasStyleData, this.outStyle)
       if (this.canvasStyleData.matrixCount) {
         this.matrixCount = this.canvasStyleData.matrixCount
       }
       // 1.3 版本重新设计仪表板定位方式，基准画布宽高为 1600*900 宽度自适应当前画布获取缩放比例scaleWidth
       // 高度缩放比例scaleHeight = scaleWidth 基础矩阵为128*72 矩阵原始宽度12.5*12.5 矩阵高度可以调整
-      // console.log('this.matrixCount-------------------什么玩意', this.matrixCount)
       if (this.outStyle.width && this.outStyle.height) {
         // 矩阵计算
         this.matrixStyle.originWidth = this.canvasStyleData.width / this.matrixCount.x
@@ -1646,9 +1611,7 @@ export default {
         this.baseHeight = this.matrixStyle.height
         this.cellWidth = this.matrixStyle.width
         this.cellHeight = this.matrixStyle.height
-        // console.log('.initMatrix1')
         this.initMatrix()
-        // console.log('this.outStyle.width * 100 / this.canvasStyleData.width', this.outStyle.width, this.canvasStyleData.width)
         // this.scaleWidth = this.outStyle.width * 100 / this.canvasStyleData.width
         this.scaleWidth = 100
         // this.scaleHeight = this.outStyle.height * 100 / this.canvasStyleData.height
@@ -1670,7 +1633,6 @@ export default {
       }
     },
     getShapeStyleIntDeDrag(style, prop) {
-      // console.log('什么问题啊？',style,prop)
       if (prop === 'rotate') {
         return style['rotate']
       }
@@ -1690,7 +1652,6 @@ export default {
       if (prop === 'top') {
         const top = this.format(style['top'], this.scaleHeight)
         // const top = style['top']
-        // console.log('top:' + top)
         return top
       }
     },
@@ -1725,7 +1686,6 @@ export default {
       this.$refs['userViewDialog'].exportExcel()
     },
     showViewDetails(index) {
-      console.log('第几个？', index)
       this.$refs.wrapperChild[index].openChartDetailsDialog()
     },
 
@@ -1741,7 +1701,7 @@ export default {
     },
     handleDragOver(e) {
       if (this.dragComponentInfo === null) return
-      // console.log('展示？？？？？？？', this.dragComponentInfo, e)
+
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth
@@ -1787,7 +1747,6 @@ export default {
       return true
     },
     containerMouseDown(e) {
-      // console.log('修改值状态', e)
       // e.preventDefault();
       if (!this.infoBox) {
         this.infoBox = {}
@@ -1815,7 +1774,6 @@ export default {
       infoBox.oldSizeY = item.sizey
     },
     onMouseUp(e) {
-      // console.log('onMouseUp')
       const vm = this
       if (_.isEmpty(vm.infoBox)) return
       if (vm.infoBox.cloneItem) {
@@ -1858,9 +1816,7 @@ export default {
       newY = newY > 0 ? newY : 1
       debounce((function(newX, oldX, newY, oldY, addSizex, addSizey) {
         return function() {
-          // console.log('move1')
           if (newX !== oldX || oldY !== newY) {
-            // console.log('move2')
             movePlayer.call(vm, resizeItem, {
               x: newX,
               y: newY
@@ -1893,9 +1849,7 @@ export default {
       newY = newY > 0 ? newY : 1
       debounce((function(newX, oldX, newY, oldY) {
         return function() {
-          // console.log('move1')
           if (newX !== oldX || oldY !== newY) {
-            // console.log('move2')
             movePlayer.call(vm, moveItem, {
               x: newX,
               y: newY
@@ -1946,8 +1900,6 @@ export default {
      * @returns
      */
     getMaxCell() {
-      // console.log('getMaxCell:')
-
       return this.maxCell
     },
     /**
@@ -1956,8 +1908,6 @@ export default {
      * @returns
      */
     getRenderState() {
-      console.log('getRenderState:', this.moveAnimate)
-
       return this.moveAnimate
     },
     addItem: addItem,
@@ -1972,7 +1922,6 @@ export default {
       }, 100)
     },
     addItemBox(item) {
-      // console.log('addItemBox:' + JSON.stringify(item))
       this.yourList.push(item)
 
       this.$nextTick(function() {
@@ -1980,7 +1929,6 @@ export default {
       })
     },
     removeLastItem() {
-      // console.log('rlI:' + JSON.stringify(this.yourList))
       if (this.canvasStyleData.auxiliaryMatrix) {
         this.removeItem(this.yourList.length - 1)
       }

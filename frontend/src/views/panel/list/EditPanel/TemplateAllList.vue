@@ -91,7 +91,6 @@ export default {
     },
     nodeClick(data, node) {
       findOne(data.id).then(res => {
-        console.log('获取数据1111', res)
         this.$emit('showCurrentTemplateInfo', res.data)
       })
     }

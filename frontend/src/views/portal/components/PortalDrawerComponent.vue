@@ -473,7 +473,7 @@ export default {
     },
     titleStyleSet() {
       // {width:titleWidth+'%',textAlign:'center'}
-      console.log('this.titleFontSet', this.titleFontSet)
+
       const style = {}
       style.width = this.titleWidth + '%'
       style.textAlign = 'center'
@@ -507,7 +507,7 @@ export default {
   methods: {
     configHeight() {
       // let a = document.documentElement.clientHeight
-      console.log('document.body.offsetHeight', document.body.offsetHeight, document.documentElement.clientHeight)
+
       return (document.body.offsetHeight - 180) + 'px'
     },
     formatTooltip(val) {
@@ -534,14 +534,13 @@ export default {
       _this.uploadDisabled = true
       const reader = new FileReader()
       reader.onload = function() {
-        console.log('图片数据', reader.result)
         // _this.curComponent.commonBackground.outerImage = reader.result
         _this.navBageImg = reader.result
       }
       reader.readAsDataURL(file.raw)
     },
     upload(file) {
-      // console.log('this is upload')
+
     },
     // ...mapMutations({
     //   setTopNavPosRadio: "SET_TOP_NAV_POS_RADIO",
@@ -591,7 +590,6 @@ export default {
 
     /** *************** 预览 start ****************/
     handleEditPreivewTab(evt) {
-      console.log('evt -- ', evt)
       if (evt == 'edit') {
         return
       }
@@ -605,7 +603,6 @@ export default {
         }
       }
       this.$nextTick(() => {
-        console.log('this.$refs.panelViewShow', this.$refs.panelViewShow)
         if (this.$refs.panelViewShow) {
           this.$refs.panelViewShow.clickFullscreen()
 
@@ -639,12 +636,12 @@ export default {
 
     // 一级导航位置
     handleChangeTopNavPosRadio(radio) {
-      console.log('radio', radio)
+
       // this.setTopNavPosRadio(radio);
     },
     // 选择主题设置
     handleChangeThemeColor(color) {
-      console.log('color', color)
+
       // this.setThemeColor(color);
     },
     setNavLayoutStyle(style) {
@@ -652,7 +649,6 @@ export default {
     },
     // 选择一级菜单
     handleTopSelect(active) {
-      console.log('active', active)
       this.topActiveTab = active
     },
 

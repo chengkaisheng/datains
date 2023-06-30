@@ -1,6 +1,11 @@
 <template>
-  <div v-if="editStatus" class="v-text" @keydown="handleKeydown" @keyup="handleKeyup"
-    :style="textStyle">
+  <div
+    v-if="editStatus"
+    class="v-text"
+    :style="textStyle"
+    @keydown="handleKeydown"
+    @keyup="handleKeyup"
+  >
     <!-- tabindex >= 0 使得双击时聚集该元素 -->
     <div
       v-if="canEdit"
@@ -71,7 +76,6 @@ export default {
       return this.editMode === 'edit' && !this.mobileLayoutStatus
     },
     textInfo() {
-      // console.log('text.........',this.element,this.canvasStyleData)
       if (this.element && this.element.hyperlinks && this.element.hyperlinks.enable) {
         return "<a title='" + this.element.hyperlinks.content + "' target='" + this.element.hyperlinks.openMode + "' href='" + this.element.hyperlinks.content + "'>" + this.element.propValue + '</a>'
       } else {
@@ -121,7 +125,6 @@ export default {
     },
 
     handleMousedown(e) {
-      // console.log('点击',this.canEdit)
       if (this.canEdit) {
         e.stopPropagation()
       }
@@ -183,7 +186,7 @@ export default {
 
         // word-wrap:break-word;
         // word-break:break-all;
-        
+
     }
 
     .canEdit {

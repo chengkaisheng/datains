@@ -157,7 +157,6 @@ export default {
     setStyle() {
       return function(value) {
         const style = {}
-        console.log('this.element.options', this.element.options)
         if (this.element.options.vertical !== 'elementKey') {
           if (this.canvasStyleData.navShowKey === value.name) {
             // return this.element.options.highlight
@@ -209,7 +208,6 @@ export default {
     setStyle1() {
       return function(value) {
         const style = {}
-        // console.log('this.element.options')
         if (this.element.options.vertical !== 'elementKey') {
           if (this.canvasStyleData.navShowKey === value.name) {
             // return this.element.options.highlight
@@ -255,7 +253,7 @@ export default {
         style.backgroundRepeat = 'no-repeat'
         style.backgroundSize = '100% 100%'
         style.textAlign = this.element.options.horizontal
-        console.log('setStyle1', style)
+
         return style
       }
     },
@@ -263,7 +261,7 @@ export default {
       const style = {}
       style.left = (this.element.options.floatLevel ? parseInt(this.element.options.floatLevel) : 0) + 'px'
       style.top = (this.element.options.floatVertical ? parseInt(this.element.options.floatVertical) : 0) + 'px'
-      // console.log('修改后会进吗？',this.element.options)
+
       return style
     },
     floatSize() {
@@ -302,7 +300,6 @@ export default {
       style.backgroundSize = '100% 100%'
       style.textAlign = this.element.options.horizontal
 
-      console.log('floatStyle........', style)
       return style
     },
     navList() {
@@ -316,7 +313,7 @@ export default {
     },
     boxWidth() {
       const b_width = this.element.style.width / this.element.options.scrollPage
-      console.log('b_width', b_width)
+
       return Math.floor(b_width)
     },
     box_width() {
@@ -331,7 +328,6 @@ export default {
   watch: {
     slidesPerView: {
       handler: function(val1, val2) {
-        console.log('监听视图层变化=============slidesPerView', val1, val2)
         this.changeSlidesPerView()
       },
       deep: true
@@ -339,28 +335,24 @@ export default {
     },
     rotationTime: {
       handler: function(val1, val2) {
-        console.log('轮播时间控制----------------------', val1, val2)
         this.changeSlidesPerView()
       },
       deep: true
     },
     // pictureGap: {
     //   handler: function(val1, val2) {
-    //     console.log('设置图片间隔----------------------', val1, val2)
     //     this.changeSlidesPerView()
     //   },
     //   deep: true
     // },
     navList: {
       handler: function(val1, val2) {
-        console.log('设置图片数量----------------------', val1, val2)
         this.changeSlidesPerView()
       },
       deep: true
     }
   },
   created() {
-    // console.log('tab导航组件', this.element,this.canvasStyleData)
   },
   mounted() {
     this.oldName = this.element.options.heightTabs
@@ -370,7 +362,6 @@ export default {
   },
   methods: {
     scrollBtn(key) {
-      console.log('123123', key)
       if (key === 'lt') {
         const datas = this.navList[this.navList.length - 1]
         this.navList.splice(this.navList.length - 1, 1)
@@ -389,7 +380,6 @@ export default {
         this.navList.push(datas)
       }
       this.element.options.heightTabs = this.navList[0].name
-      console.log('this.move', this.move)
     },
     baseMoseDownEven(e) {
       e.stopPropagation()
@@ -414,7 +404,6 @@ export default {
     },
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
-      // console.log('const canvasStyleData', canvasStyleData)
       // canvasStyleData.panel = this.panel
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
@@ -422,31 +411,24 @@ export default {
     toggleNav(key) { // tab点击的值
       // 切换导航
       const _that = this
-      console.log('点击key', key, this.element)
       if (this.canvasStyleData.showArr) {
         const newArr = this.canvasStyleData.showArr
         newArr.forEach((keys, index) => {
-          console.log('keys', keys)
           if (this.oldName === keys) {
             newArr.splice(index, 1)
             // delete keys
           }
         })
-        // console.log('newArr', this.oldName, 'this.oldName', newArr)
         this.canvasStyleData.showArr = newArr
       }
 
-      // console.log('previewCanvasScale', this.previewCanvasScale)
-      // console.log('切换导航------ ', this.componentData, this.canvasStyleData)
       const iframeArr = []
       if (this.element.options.vertical !== 'elementKey') { // 点击的导航的级别不是元素级
         // this.canvasStyleData.navModel = 'defult'
         this.canvasStyleData.navShowKey = key.name
       } else {
         // this.canvasStyleData.navModel = 'independent'
-        // console.warn('chi-------111111111-------chu', this.canvasStyleData.showArr)
         if (this.canvasStyleData.showArr) {
-          // console.warn('chi-------22222222-------chu', this.canvasStyleData.showArr)
           if (this.canvasStyleData.showArr.indexOf(key.name) === -1) {
             this.canvasStyleData.showArr.push(key.name)
           }
@@ -468,11 +450,9 @@ export default {
         let chengkey = true
         this.componentData.forEach(res => {
           if (res.showName === key.name) {
-            console.warn(res)
             // res.options.heightTabs = res.options.navTabList[0].name
             this.canvasStyleData.showArr = []
             res.options && res.options.heightTabs && this.canvasStyleData.showArr.push(res.options.heightTabs)
-            // console.log(this.canvasStyleData.showArr)
             chengkey = false
           }
         })
@@ -480,7 +460,6 @@ export default {
           this.canvasStyleData.showArr = []
         }
       } else {
-        console.log('inScreen', this.inScreen)
         // if(!this.inScreen) {
         // let compData = JSON.parse(JSON.stringify(this.componentData))
         this.componentData.forEach(item => {
@@ -510,27 +489,22 @@ export default {
       })
       this.heightKey = key.name
 
-      console.log('key---')
       if (JSON.stringify(iframeArr) !== '[]') {
         iframeArr.forEach(ele => {
           document.getElementById('iframe' + ele.id).contentWindow.postMessage(key, '*')
-          console.log('网页插件', ele)
         })
       }
     },
     popOver() {
-      // console.log('over',this.inScreen)
       this.isVisible = true
     },
     popClick() {
-      // console.log('click',this.element,this.canvasStyleData)
       this.isVisible = true
       // if (this.element.options.vertical !== 'elementKey') { // 点击的导航的级别不是元素级
       //   this.canvasStyleData.navShowKey = this.element.options.floatName
       // }
     },
     popOut() {
-      console.log('out')
       this.isVisible = false
     }
   }

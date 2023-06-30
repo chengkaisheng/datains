@@ -164,9 +164,6 @@ export default {
   },
   watch: {
     chart: function() {
-      console.log('this.chart.data----------！！！！！！', this.chart.data)
-      console.log('this.chart.data----------2222', this.chart)
-
       if (this.chart.data) {
         clearInterval(this.timer)
         this.prossData()
@@ -178,9 +175,6 @@ export default {
     }
   },
   mounted() {
-    console.log('this.fields', this.fields)
-    console.log('获取边框数据', this.element)
-    console.log('this.chart---', this.chart)
     if (this.chart.data) {
       this.prossData()
       // this.tableScroll()
@@ -221,7 +215,6 @@ export default {
     },
     tableScroll() {
       this.timer = setInterval(() => {
-        console.log('2222')
         const data = this.dataInfo[0]
         setTimeout(() => {
           this.dataInfo.splice(0, 1)
@@ -234,7 +227,6 @@ export default {
     prossData() {
       this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
       this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-      console.log('有数据才会去执行操作---------', this.dataInfo)
       // this.initStyle()
 
       this.$nextTick(() => {
@@ -242,7 +234,6 @@ export default {
       })
     },
     changeColumnWidth({ column, columnIndex }) {
-      console.log('23123213213231232132121', column, columnIndex)
       // if (column.width !== column.renderWidth) {
       //   this.tableHeadList[columnIndex - 2].width = column.renderWidth
       //   // this.saveHeadConfig()
@@ -327,7 +318,6 @@ export default {
     initStyle() {
       if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
-        console.log('是否触发此处修改------------2222222', customAttr)
         if (customAttr.color) {
           this.table_header_class.color = customAttr.color.tableFontColor
           this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
@@ -351,7 +341,6 @@ export default {
           this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
           this.setStyle.height = customAttr.size.tableItemHeight + 'px'
           this.rollingRate = customAttr.size.tableRollingRate
-          console.log('customAttr.size.tableItemHeight', customAttr.size.tableItemHeight)
           this.bodyHeight = customAttr.size.tableSpacing
           // this.scrollId.height = customAttr.size.tableItemHeight + 'px'
           this.table_item_class.textAlign = customAttr.size.tableItemAlign
@@ -374,7 +363,7 @@ export default {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
-      console.log('this.scrollId', this.scrollId, this.table_item_class)
+
       // 修改footer合计样式
       // const table = document.getElementsByClassName(this.chart.id)
       // for (let i = 0; i < table.length; i++) {

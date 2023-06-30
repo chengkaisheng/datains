@@ -207,7 +207,7 @@ export default {
           }
         })
       })
-      console.log(data)
+
       return opSetInfo
     }
   },
@@ -216,28 +216,23 @@ export default {
     this.getAllImg()
   },
   mounted() {
-    console.log('componentData--------', this.curComponent)
   },
 
   methods: {
     handleChange(val) {
-      console.log(val, this.activeNames)
     },
     clickImg(res) {
       this.changImg = res.url
       this.imgInfo = res
     },
     delectBtn(item) {
-      console.log('删除按钮----', item)
       deletImg(item.id).then(res => {
-        console.log('删除数据', res)
         // this.$message.success('删除成功')
         this.getAllImg('删除成功')
       })
     },
     getAllImg(key) {
       getAllImgList().then(res => {
-        console.log('获取所有图片数据', res)
         this.allImgData = res.data
         this.allImgData.forEach(ele => {
           ele.editKey = false
@@ -249,20 +244,17 @@ export default {
       })
     },
     addNavInfo() {
-      console.log('this.navInfoLis', this.navInfoLis)
       this.navInfoLis.push({
         name: '',
         relation: []
       })
     },
     blurSelect(e) {
-      console.log('失焦', e)
     },
     deleteNav(item, index) {
       this.navInfoLis.splice(index, 1)
     },
     init() {
-      console.log('componentData--------', this.componentData, this.curComponent)
       if (this.curComponent.options.bannerImgList) {
         this.curComponent.options.bannerImgList.forEach(res => {
           this.fileList.push({ url: res })
@@ -277,7 +269,6 @@ export default {
       })
     },
     cancel() {
-      console.log('this.curComponent.commonBackground.boxWidth=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },
     save() {
@@ -288,7 +279,6 @@ export default {
         image.onload = _ => {
           const width = image.width
           const height = image.height
-          console.log('width', width, height)
           // 然后就可以做需要的操作了
           this.curComponent.picData = this.imgInfo.url
           this.curComponent.style.width = image.width
@@ -296,13 +286,11 @@ export default {
         }
       }
 
-      console.log('this.fileList', this.fileList)
       this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
     },
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
-      console.log('const canvasStyleData', canvasStyleData)
       // canvasStyleData.panel = this.panel
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
@@ -311,13 +299,11 @@ export default {
       this.commitStyle()
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList)
       this.uploadDisabled = false
       this.fileList = []
       this.commitStyle()
     },
     handlePictureCardPreview(file) {
-      console.log('file---', file)
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
@@ -327,7 +313,6 @@ export default {
         this.fileList = []
         return
       }
-      console.log('file, fileList', file, fileList)
       // var _this = this
       // const reader = new FileReader()
 
@@ -369,7 +354,6 @@ export default {
       // this.imgchecked(file)
       const reader = new FileReader()
       reader.onload = (res) => {
-        console.log('reader.result6666666', file, reader.result)
         this.imgUrlInfo = res.target.result
         // this.uploadImg(res.target.result)
         // var image = new Image()
@@ -381,10 +365,8 @@ export default {
         // }
       }
       reader.readAsDataURL(file.raw)
-      console.log('222222', file, fileList)
     },
     uploadImg(item) {
-      console.log('上传的图片---', item)
     },
     addGroup() { // 添加分组
       // this.allImgData.push({
@@ -415,7 +397,6 @@ export default {
       ele.editKey = false
     },
     editBtn(ele) {
-      console.log('----', ele)
       this.oldName = ele.name
       // ele.editKey = true
       this.$prompt('请输入新的分组名称', '编辑', {
@@ -423,7 +404,6 @@ export default {
         cancelButtonText: '取消'
       }).then(({ value }) => {
         updateName({ oldName: ele.name, newName: value }).then(res => {
-          console.log('更新名字', res)
           this.getAllImg('更新成功')
         })
         // this.$message({
@@ -456,7 +436,6 @@ export default {
         name: this.groupName
       }
       uploadImgUrl(params).then(res => {
-        console.log('请求结果', res)
         if (res.success) {
           // this.$message.success('上传成功')
           this.uploadDisabled = false
@@ -469,7 +448,6 @@ export default {
     },
 
     upload(file) {
-      console.log('this is upload', file)
     }
 
   }

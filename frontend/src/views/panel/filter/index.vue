@@ -56,7 +56,7 @@ export default {
           'textSelectWidget',
           'textSelectGridWidget',
           'textInputWidget',
-          'textRotation',
+          'textRotation'
           // 'textInfoWidget'
         ],
         '数字过滤组件': [
@@ -81,19 +81,17 @@ export default {
       const widgetNames = this.widgetSubjects[key]
       this.widgetSubjects[key] = widgetNames.map(widgetName => {
         const widget = ApplicationContext.getService(widgetName)
-        console.log('widget================', widget)
+
         const result = { widgetName: widgetName }
         Object.assign(result, widget.getLeftPanel())
-        console.log('合并展示效果----------------------', result)
+
         return result
       })
     }
-    // console.log('this.widgetSubjects=>' + JSON.stringify(this.widgetSubjects))
   },
 
   methods: {
     handleDragStart(ev) {
-      console.log('组件拖动：',ev)
       // 记录拖拽信息
       const dragComponentInfo = deepCopy(ApplicationContext.getService(ev.target.dataset.id).getDrawPanel())
       // 设置矩阵标记点

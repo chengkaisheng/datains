@@ -57,7 +57,7 @@
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-text-info'" class="icon iconfont icon-genghuan" @click.stop="setTextInfo" />
       </span>
       <span :title="$t('panel.text_pop_set')">
-        <i v-if="activeModel==='edit' && curComponent && curComponent.type === 'v-text'" class="icon iconfont icon-genghuan" @click.stop="setText"></i>
+        <i v-if="activeModel==='edit' && curComponent && curComponent.type === 'v-text'" class="icon iconfont icon-genghuan" @click.stop="setText" />
       </span>
       <span :title="'锁定'">
         <svg-icon v-if="activeModel==='edit'&&curComponent&&lockValue" :icon-class="'locking'" class="icon" style="color:#fff" @click.stop="setLockout(false)" />
@@ -136,7 +136,6 @@ export default {
     },
     // 多选框 显示
     checkboxShow() {
-      console.log('checkShow::::::', this.element)
       return this.checkboxStatus
     },
     // 编辑或预览区域显示
@@ -157,7 +156,6 @@ export default {
       return linkageFiltersCount
     },
     linkageInfo() {
-      console.log('link11111111111', this.targetLinkageInfo, this.element)
       return this.targetLinkageInfo[this.element.propValue.viewId]
     },
     miniHeight() {
@@ -171,12 +169,11 @@ export default {
       return this.curComponent.miniSizex || 1
     },
     lockValue() {
-      console.log('213123', this.curComponent)
       return this.curComponent.isLock
     },
     setNewValue() {
       const style = {}
-      console.log('标题数据1', this.curComponent)
+
       if (this.curComponent && this.curComponent.type === 'v-text' && !this.checkboxStatus) {
         style.right = '-40px'
       }
@@ -201,7 +198,6 @@ export default {
   },
   methods: {
     checkChange(boo) {
-      console.log('isCheck', boo, this.element.id,)
       const componentData = deepCopy(this.componentData)
       componentData.map(item => {
         if (this.element.id === item.id) {
@@ -215,10 +211,8 @@ export default {
           item.commonBackground.boxWidth = Math.floor(info.offsetWidth)
           item.commonBackground.boxHeight = Math.floor(info.offsetHeight)
         }
-        // console.log('eleId',item)
       })
       this.$store.commit('setComponentData', componentData)
-      console.log('这个 值？', this.componentData)
 
       const arr = this.componentData.filter(item => item.isCheck && !item.isLock)
       if (arr.length === 2) {
@@ -233,7 +227,6 @@ export default {
     createTimer() {
       if (!this.timer) {
         this.timer = setInterval(() => {
-          console.log('t=' + this.curComponent.auxiliaryMatrix)
         }, 5000)
       }
     },
@@ -281,7 +274,7 @@ export default {
         width: width,
         height: height
       }
-      console.log('矩阵处理style====', style)
+
       this.$store.commit('setShapeStyle', style)
       // resize
       this.$emit('resizeView')
@@ -314,7 +307,6 @@ export default {
 
     },
     amRemoveItem() {
-      console.log('设置点击', 2222)
       this.$emit('amRemoveItem')
     },
     // 清除相同sourceViewId 的 联动条件
@@ -333,7 +325,6 @@ export default {
       })
     },
     linkJumpSet() {
-      console.log('设置点击', 3333)
       this.$emit('linkJumpSet')
     },
     goFile() {
@@ -341,7 +332,6 @@ export default {
     },
     goBannerFile() {
       // this.dialogVisible = true
-      console.log('-------------------------------------------------------', this.element)
       this.$emit('bannerImg')
     },
     setNavInfo() {
@@ -366,13 +356,11 @@ export default {
       this.$emit('setText')
     },
     setCustom() {
-      console.log('触发此处？？？？？')
       this.$emit('setCustom')
     },
     setLockout(key) {
       // this.$emit('setLockout')
       this.curComponent.isLock = key
-      console.log('this.curComponent', key)
     },
     handleFileChange(e) {
       const file = e.target.files[0]
@@ -390,12 +378,10 @@ export default {
       reader.readAsDataURL(file)
     },
     boardSet() {
-      console.log('添加设置功能', 1111)
       this.$emit('boardSet')
     },
 
     tabRelation() {
-      console.log('第二层', 1111)
       this.$emit('tabRelation')
     }
   }

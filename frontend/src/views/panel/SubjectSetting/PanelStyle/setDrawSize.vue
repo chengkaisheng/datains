@@ -117,7 +117,7 @@ export default {
       const canvasStyleData = deepCopy(this.canvasStyleData)
       canvasStyleData.width = this.width
       canvasStyleData.height = this.height
-      console.log('canvasStyleData', canvasStyleData)
+
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
     },
@@ -149,7 +149,7 @@ export default {
       reader.readAsDataURL(file.raw)
     },
     upload(file) {
-      // console.log('this is upload')
+
     }
   }
 }

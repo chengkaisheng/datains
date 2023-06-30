@@ -21,7 +21,7 @@
               class="first-element-contaner"
               :class="[
                 element.component === 'de-select-grid'?'first-element-grid-contaner': '',
-                element.component === 'de-select'? 'first-element-select-contaner' : '', 
+                element.component === 'de-select'? 'first-element-select-contaner' : '',
               ]"
             >
 
@@ -115,12 +115,10 @@ export default {
     this.watchSize()
   },
   created() {
-    // console.log('aaaaaa')
   },
   methods: {
 
     watchSize() {
-      console.log('watchSize', this.element)
       const erd = elementResizeDetectorMaker()
       erd.listenTo(this.$refs.myContainer, ele => {
         const deContentContainer = this.$refs.deContentContainer

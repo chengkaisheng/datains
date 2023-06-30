@@ -92,7 +92,6 @@ export default {
     }
   },
   mounted() {
-    console.log('textinfoset')
     this.init()
     this.setfont()
   },
@@ -154,7 +153,6 @@ export default {
       }
     },
     save() {
-      console.log('保存')
       this.curComponent.options.viewId = this.viewValue
       this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')

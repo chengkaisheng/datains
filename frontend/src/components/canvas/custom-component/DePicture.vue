@@ -81,7 +81,6 @@ export default {
 
   },
   created() {
-    // console.log('轮播图片组件', this.element)
   },
   mounted() {
     // this.changeSlidesPerView()
@@ -92,8 +91,6 @@ export default {
     },
     toggleNav(key) {
       // 切换导航
-      console.log('previewCanvasScale', this.previewCanvasScale)
-      console.log('切换导航------ ', this.componentData, this.canvasStyleData)
       const iframeArr = []
       this.canvasStyleData.navShowKey = key.name
       this.componentData.forEach((ele, index) => {
@@ -103,10 +100,8 @@ export default {
       })
       this.heightKey = key.name
 
-      console.log('key---')
       iframeArr.forEach(ele => {
         document.getElementById('iframe' + ele.id).contentWindow.postMessage(key, '*')
-        console.log('网页插件', ele)
       })
     }
   }

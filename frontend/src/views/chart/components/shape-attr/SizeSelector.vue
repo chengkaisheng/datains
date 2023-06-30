@@ -8,24 +8,32 @@
         <el-form-item :label="$t('chart.bar_width')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barWidth" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="1" :max="80" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type && (chart.type !== 'bar-stack' && chart.type !== 'bar-rate')" 
-          :label="$t('chart.bar_gap')" class="form-item form-item-slider">
+        <el-form-item
+          v-show="chart.type && (chart.type !== 'bar-stack' && chart.type !== 'bar-rate')"
+          :label="$t('chart.bar_gap')"
+          class="form-item form-item-slider"
+        >
           <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="-1" :max="5" :step="0.1" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item v-show="chart.type && chart.type === 'bar'" :label="'柱圆角'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barBorderRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="50" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type && chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar' && chart.type !== 'bar-rate'" 
-          :label="'柱边框'" class="form-item form-item-slider">
+        <el-form-item
+          v-show="chart.type && chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar' && chart.type !== 'bar-rate'"
+          :label="'柱边框'"
+          class="form-item form-item-slider"
+        >
           <el-slider v-model="sizeForm.barBorderValue" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type && chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar' && chart.type !== 'bar-rate'" 
-          :label="'边框类型'" class="form-item"
+        <el-form-item
+          v-show="chart.type && chart.type.includes('bar') && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar' && chart.type !== 'bar-rate'"
+          :label="'边框类型'"
+          class="form-item"
         >
           <el-select v-model="sizeForm.borderType" @change="changeBarSizeCase">
-            <el-option label="实线" value="solid"></el-option>
-            <el-option label="虚线" value="dashed"></el-option>
-            <el-option label="点" value="dotted"></el-option>
+            <el-option label="实线" value="solid" />
+            <el-option label="虚线" value="dashed" />
+            <el-option label="点" value="dotted" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -200,7 +208,7 @@
       <el-form v-show="chart.type && (chart.type.includes('text') || chart.type === 'label')" ref="sizeFormText" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item label="排列格式" class="form-item">
           <el-select v-model="sizeForm.quotaArrayStatus" placeholder="请选择" @change="changeBarSizeCase">
-            <el-option v-for="item in quotaArrays" :key="item.value" :label="item.name" :value="item.value"></el-option>
+            <el-option v-for="item in quotaArrays" :key="item.value" :label="item.name" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('panel.fontWeight')" class="form-item">
@@ -378,13 +386,13 @@
           <el-checkbox v-model="sizeForm.caldWAdapt" @change="changeBarSizeCase">自适应</el-checkbox>
         </el-form-item>
         <el-form-item label="图表宽度" class="form-item form-item-slider">
-          <el-slider :disabled="sizeForm.caldWAdapt" v-model="sizeForm.caldWidth" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.caldWidth" :disabled="sizeForm.caldWAdapt" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item label="高度自适应" class="form-item">
           <el-checkbox v-model="sizeForm.caldHAdapt" @change="changeBarSizeCase">自适应</el-checkbox>
         </el-form-item>
         <el-form-item label="图表高度" class="form-item form-item-slider">
-          <el-slider :disabled="sizeForm.caldHAdapt" v-model="sizeForm.caldHeight" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.caldHeight" :disabled="sizeForm.caldHAdapt" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item label="饼图大小" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.caldPieSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="50" @change="changeBarSizeCase" />
@@ -446,7 +454,7 @@ export default {
         { name: '600', value: '600' },
         { name: '700', value: '700' },
         { name: '800', value: '800' },
-        { name: '900', value: '900' },
+        { name: '900', value: '900' }
       ],
       liquidShapeOptions: [
         { name: this.$t('chart.liquid_shape_circle'), value: 'circle' },
@@ -464,10 +472,10 @@ export default {
       fontSize: [],
       predefineColors: COLOR_PANEL,
       quotaArrays: [
-        {name: '上下排序,值在上',value: 'column'},
-        {name: '上下排序,值在下',value: 'column-reverse'},
-        {name: '左右排序,值在左',value: 'row'},
-        {name: '左右排序,值在右',value: 'row-reverse'},
+        { name: '上下排序,值在上', value: 'column' },
+        { name: '上下排序,值在下', value: 'column-reverse' },
+        { name: '左右排序,值在左', value: 'row' },
+        { name: '左右排序,值在右', value: 'row-reverse' }
       ]
     }
   },
@@ -521,7 +529,6 @@ export default {
       this.fontSize = arr
     },
     changeBarSizeCase() {
-      console.log('--------', this.sizeForm)
       this.$emit('onSizeChange', this.sizeForm)
     }
   }

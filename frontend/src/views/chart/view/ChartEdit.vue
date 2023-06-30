@@ -1681,11 +1681,10 @@ export default {
   watch: {
     'param': function(val) {
       if (this.param.optType === 'new') {
-        //
+
       } else if (this.param.id !== this.preChartId) {
         this.preChartId = this.param.id
         this.chartInit()
-        // console.log('fromwatch:' + JSON.stringify(val))
       }
     },
     searchField(val) {
@@ -1720,7 +1719,6 @@ export default {
     this.bindPluginEvent()
     this.initFromPanel()
     this.chartInit()
-    // console.log('mounted')
   },
   activated() {
   },
@@ -1745,7 +1743,6 @@ export default {
     },
     chartInit() {
       this.urlMap1 = this.view.urlMap
-      console.log('chartInit::::::::::', this.urlMap1, this.view)
       this.resetDrill()
       this.initFromPanel()
       this.getChart(this.param.id)
@@ -1800,7 +1797,6 @@ export default {
         parseInt(this.view.resultCount) < 1) {
         this.view.resultCount = '1000'
       }
-      // console.log('这是个啥？',this.canvasStyleData)
       // if(this.canvasStyleData.chart.stylePriority === 'panel') {
       //   if(this.canvasStyleData.panel.resultMode === 'custom') {
       //     data.resultCount = this.canvasStyleData.panel.resultCount
@@ -2040,8 +2036,8 @@ export default {
       view.extBubble = JSON.stringify(view.extBubble)
       view.senior = JSON.stringify(view.senior)
 
-      console.log('buildParam：', view)
       delete view.data
+
       return view
     },
     // calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
@@ -2089,10 +2085,8 @@ export default {
     calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
       this.changeEditStatus(true)
       const view = this.buildParam(true, 'chart', false, switchType)
-      console.log('calcData：', this.panelInfo, view)
       if (!view) return
       // 缓存 拖动的数据并调用 UserView组件的view-in-cache 方法传值
-      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^保存还是--走这里')
       save2Cache(this.panelInfo.id, view).then(() => {
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
@@ -2120,10 +2114,8 @@ export default {
       view.stylePriority = this.view.stylePriority
       // view.data = this.data
       this.chart = view
-      console.log('calcStyle,,,,', this.panelInfo, view, this.view)
       // 保存到缓存表
       const viewSave = this.buildParam(true, 'chart', false, false)
-      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^保存走这里')
       if (!viewSave) return
       save2Cache(this.panelInfo.id, viewSave)
 
@@ -2169,7 +2161,6 @@ export default {
           drill: this.drillClickDimensionList,
           queryFrom: 'panelEdit'
         }).then(response => {
-          console.log('接口数据获取----------', response)
           this.initTableData(response.data.tableId)
           this.view = JSON.parse(JSON.stringify(response.data))
           this.view.xaxis = this.view.xaxis ? JSON.parse(this.view.xaxis) : []
@@ -2187,7 +2178,6 @@ export default {
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
-          // console.log(JSON.stringify(this.chart))
           this.httpRequest.status = true
           if (this.chart.privileges) {
             this.param.privileges = this.chart.privileges
@@ -2235,7 +2225,6 @@ export default {
           this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
           // this.view.file = this.view.file ? this.view.file : ''
           this.view.urlMap = this.view.urlMap ? this.view.urlMap : this.urlMap1
-          console.log('getChart::::::::::', this.view)
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
@@ -2251,11 +2240,10 @@ export default {
 
     // 上传成功
     handleAvatarSuccess(res, file) {
-      console.log(res, file)
+
     },
     // 上传之前
     beforeAvatarUpload(file) {
-      console.log('file', file)
       if (file.type !== 'application/x-tar' && file.type !== 'application/x-zip-compressed') {
         this.$message.error('支持格式为：.tar .zip')
         return
@@ -2263,7 +2251,6 @@ export default {
     },
     // 获取上传数据
     httpRequestUpdate(data) {
-      console.log(data, this.view.file)
       // let _this = this
       // let rd = new FileReader() // 创建文件读取对象
       // let file = data.file
@@ -2274,7 +2261,6 @@ export default {
     },
     // move回调方法
     onMove(e, originalEvent) {
-      console.log('拖动', e)
       this.moveId = e.draggedContext.element.id
       return true
     },
@@ -2306,13 +2292,11 @@ export default {
     },
 
     onColorChange(val) {
-      console.log('val: ', val)
       this.view.customAttr.color = val
       this.calcStyle()
     },
 
     onSizeChange(val) {
-      console.log('12121212----------------', val)
       this.view.customAttr.size = val
       this.calcStyle()
     },
@@ -2329,7 +2313,6 @@ export default {
     },
 
     onLabelChange(val) {
-      console.log(val)
       this.view.customAttr.label = val
       this.calcStyle()
     },
@@ -2345,7 +2328,6 @@ export default {
     },
 
     onChangeXAxisForm(val) {
-      console.log('xAxis change: ', val)
       this.view.customStyle.xAxis = val
       this.calcStyle()
     },
@@ -2455,7 +2437,6 @@ export default {
       this.calcData(true)
     },
     showEditFilter(item) {
-      console.log('item-------', item)
       this.filterItem = JSON.parse(JSON.stringify(item))
       this.chartForFilter = JSON.parse(JSON.stringify(this.view))
       if (!this.filterItem.logic) {
@@ -2473,7 +2454,6 @@ export default {
       this.resultFilterEdit = false
     },
     saveResultFilter() {
-      console.log('this.view======', this.view, this.view.customFilter)
       if (((this.filterItem.deType === 0 || this.filterItem.deType === 5) && this.filterItem.filterType !== 'enum') ||
         this.filterItem.deType === 1 ||
         this.filterItem.deType === 2 ||
@@ -2656,7 +2636,6 @@ export default {
       }
     },
     dragMoveDuplicate(list, e, mode) {
-      console.log('dragMoveDuplicate::::::::::', list, e, mode)
       if (mode === 'ds') {
         list.splice(e.newDraggableIndex, 1)
       } else {
@@ -2670,7 +2649,6 @@ export default {
       }
     },
     addXaxis(e) {
-      console.log('维度添加：', e, this.view)
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
       }
@@ -2681,7 +2659,6 @@ export default {
       this.calcData(true)
     },
     addXaxisExt(e) {
-      console.log('维度ex添加：', e, this.view)
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
       }
@@ -2713,7 +2690,6 @@ export default {
       this.calcData(true)
     },
     moveToDimension(e) {
-      console.log('moveToDimension:::::::::::', e)
       this.dragMoveDuplicate(this.dimensionData, e, 'ds')
       this.calcData(true)
     },
@@ -2933,12 +2909,10 @@ export default {
       })
     },
     changeEditStatus(status) {
-      console.log('changeEditStatus', status)
       this.hasEdit = status
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
     },
     changeChartType() {
-      console.log('------')
       this.setChartDefaultOptions()
       this.calcData(true, 'chart', true, true)
     },

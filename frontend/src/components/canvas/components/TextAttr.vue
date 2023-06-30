@@ -366,13 +366,10 @@ export default {
       if ((this.selfWidth + this.curComponent.style.left >= this.canvasStyleData.width)) {
         style.left = (this.canvasStyleData.width - this.selfWidth) + 'px'
       }
-      console.log('this.curComponent=====', this.curComponent)
-      console.log('this.scrollLeft', this.scrollLeft)
-      console.log('this.this.curComponent.style.left', this.curComponent.style.left)
+
       return style
     },
     styleInfo() {
-      console.log('文本样式', this.curComponent)
       return this.$store.state.curComponent.style
     },
     canvasWidth() {
@@ -415,7 +412,6 @@ export default {
         this.$nextTick(() => {
           this.init()
         })
-        // console.log('curComponent change')
       }
     }
   },
@@ -438,13 +434,10 @@ export default {
       } else {
         this.mainWidthOffset = document.getElementById('main-attr').offsetWidth - 50
       }
-      console.log('t----------------', document.getElementById('textAttr').offsetWidth)
-      this.selfWidth = document.getElementById('textAttr').offsetWidth
 
-      // console.log('mainWidthOffset:' + this.mainWidthOffset)
+      this.selfWidth = document.getElementById('textAttr').offsetWidth
     },
     attrShow(attr) {
-      // console.log('attr:' + attr + this[this.curComponent.type].includes(attr))
       return this[this.curComponent.type].includes(attr)
     },
     goColor() {
@@ -457,7 +450,6 @@ export default {
       this.$refs.backgroundColorPicker.handleTrigger()
     },
     getPositionX(x) {
-      console.log('this.curCanvasScale.scalePointWidth', this.curCanvasScale.scalePointWidth)
       let ps = 0
       ps = (x * this.curCanvasScale.scalePointWidth) + 60
       // 防止toolbar超出边界

@@ -2,12 +2,10 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
 
 export function baseLineOption(chart_option, chart, cstyle = {}) {
-  console.log('echarts,line------------', chart_option, chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
-    console.log('chart.customAttr!!!!!!!!!!!', customAttr)
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
@@ -61,20 +59,17 @@ export function baseLineOption(chart_option, chart, cstyle = {}) {
       chart_option.series.push(y)
     }
   }
-  console.log('图表数据修改===+++++++++++++++', chart_option, chart)
-  // console.log(chart_option);
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
 }
 // polarLineOption
 export function polarLineOption(chart_option, chart, cstyle = {}) {
-  console.log('echarts,line------------', chart_option, chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
-    console.log('chart.customAttr!!!!!!!!!!!', customAttr)
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
@@ -129,7 +124,7 @@ export function polarLineOption(chart_option, chart, cstyle = {}) {
       chart_option.series.push(y)
     }
   }
-  console.log('图表数据修改===+++++++++++++++', chart_option, chart)
+
   chart_option.polar = {
     radius: [0, '70%']
   }
@@ -154,7 +149,7 @@ export function polarLineOption(chart_option, chart, cstyle = {}) {
     startAngle: 0
   }
   chart_option.radiusAxis = {}
-  // console.log(chart_option);
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
@@ -170,7 +165,6 @@ export function stackLineOption(chart_option, chart, cstyle = {}) {
   // ext
   // chart_option.tooltip.trigger = 'axis'
   chart_option.series.forEach(function(s, i) {
-    console.log('stack............', s, i)
     s.stack = 'stack'
 
     if (customAttr.color.variety) {
@@ -201,7 +195,6 @@ export function stackLineOption(chart_option, chart, cstyle = {}) {
 }
 
 export function heatMapOption(chart_option, chart, cstyle = {}) {
-  console.log('数据改变的值++++++++++', chart_option, chart)
   let customAttr = {}
 
   if (chart.customAttr) {
@@ -224,7 +217,6 @@ export function heatMapOption(chart_option, chart, cstyle = {}) {
   if (chart.data) {
     if (chart.data.series) {
       const handleArr = chart.data.series[0].data
-      console.log('需要处理数据的数组', handleArr)
 
       handleArr.forEach(res => {
         var dataFromArr = []
@@ -234,7 +226,6 @@ export function heatMapOption(chart_option, chart, cstyle = {}) {
         dataArr.push(dataFromArr)
         // res.dimensionLis[0].value
       })
-      console.log('最新数据状态数组', dataArr)
     }
     const xdata = []
     const ydata = []
@@ -243,7 +234,6 @@ export function heatMapOption(chart_option, chart, cstyle = {}) {
       var axisData = item.trim().split('\n')
       xdata.push(axisData[1])
       ydata.push(axisData[0])
-      // console.log('item', item.trim().split('\n'))
     })
     chart_option.title.text = chart.title
     chart_option.yAxis.data = ydata
@@ -276,7 +266,6 @@ export function heatMapOption(chart_option, chart, cstyle = {}) {
         y.label = customAttr.label
       }
       y.type = 'heatmap'
-      console.log('这是个什么鬼yyyyyyyyy', y)
       chart_option.legend.data.push(y.name)
       // chart_option.series.data = y.data
       // 参数第一位是Y轴坐标，第二位是X坐标，第三位是数值
@@ -286,7 +275,7 @@ export function heatMapOption(chart_option, chart, cstyle = {}) {
       })
     }
   }
-  console.log('最种的渲染样式=====chart_option', chart_option)
+
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option

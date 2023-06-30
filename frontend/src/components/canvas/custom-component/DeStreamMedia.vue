@@ -1,7 +1,7 @@
 <template>
   <el-row ref="mainPlayer" style="width: 100%;height: 100%">
     <div v-if="element.streamMediaLinks.videoType == 'flv'">
-      <div :id="`flv${myPlayer[3]}`" v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
+      <div v-if="element.streamMediaLinks[element.streamMediaLinks.videoType].url" :id="`flv${myPlayer[3]}`" class="video-container">
         <video
           :id="myPlayer[3]"
           :ref="myPlayer[3]"
@@ -18,7 +18,7 @@
       </div>
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'hls'">
-      <div :id="`hls${myPlayer[0]}`" v-show="element.streamMediaLinks[element.streamMediaLinks.videoType].url" class="video-container">
+      <div v-show="element.streamMediaLinks[element.streamMediaLinks.videoType].url" :id="`hls${myPlayer[0]}`" class="video-container">
         <video
           :id="myPlayer[0]"
           :ref="myPlayer[0]"
@@ -33,8 +33,8 @@
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'rtmp'">
       <div
-        :id="`rtmp${myPlayer[1]}`"
         v-show="element.streamMediaLinks[element.streamMediaLinks.videoType].url"
+        :id="`rtmp${myPlayer[1]}`"
         class="video-container "
         style="position: relative;"
       >
@@ -145,10 +145,8 @@ export default {
   watch: {
     element: {
       handler: function() {
-        console.log('改变',this.element,this.pOption)
         var url = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].url
         if (this.element.streamMediaLinks.videoType === 'flv') {
-          console.log('flv')
           if (this.pOption.url === undefined && url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
             this.pOption.url = url
@@ -162,45 +160,36 @@ export default {
           }
         }
         if (this.element.streamMediaLinks.videoType === 'hls') {
-          console.log('hls')
-          let link = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].link
-          let params = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].params
-          if(link === '2') {
+          const link = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].link
+          const params = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].params
+          if (link === '2') {
             if (this.pOption.url === undefined && url && params) {
-              console.log('hls1111')
               this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
               // this.pOption.url = url
-              // console.log('url',this.pOption)
               this.initOptionHls(this.pOption)
             }
             if (this.pOption.url !== undefined && (this.pOption.url !== url || this.pOption.params !== params)) {
-              console.log('hls2222')
               this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
               this.pOption.url = url
               this.initOptionHls(this.pOption, true)
             }
           } else {
             if (this.pOption.url === undefined && url) {
-              console.log('hls1111')
               this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
               // this.pOption.url = url
-              // console.log('url',this.pOption)
               this.initOptionHls(this.pOption)
             }
             if (this.pOption.url !== undefined && this.pOption.url !== url) {
-              console.log('hls2222')
               this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
               this.pOption.url = url
               this.initOptionHls(this.pOption, true)
             }
           }
-          
         }
         if (this.element.streamMediaLinks.videoType === 'rtmp') {
-          console.log('rtmp')
-          let link = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].link
-          let params = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].params
-          if(link === '2') {
+          const link = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].link
+          const params = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType].params
+          if (link === '2') {
             if (this.pOption.url === undefined && url && params) {
               this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
               this.pOption.url = url
@@ -225,7 +214,6 @@ export default {
           }
         }
         if (this.element.streamMediaLinks.videoType === 'webrtc') {
-          console.log('webrtc')
           if (this.pOption.url === undefined && url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
             this.pOption.url = url
@@ -242,10 +230,8 @@ export default {
     },
     videoStatus: { // 切换tab导航，不关联的视屏video销毁，关联的展示，用于释放运行内存
       handler: function() {
-        console.log('videoStatus',this.videoStatus)
         // if(this.videoStatus === 'visible') {
         //   if(this.element.streamMediaLinks.videoType === 'hls') {
-        //     console.log('hls1111====',this.myPlayerHls)
         //     // 添加dom元素
         //     let html = `<video id=${this.myPlayer[0]} ref="${this.myPlayer[0]}" :destroyOnClose="true" class="vjs-default-skin vjs-big-play-centered vjs-16-9 video-js" controls preload="auto"></video>`
         //     document.getElementById(`hls${this.myPlayer[0]}`).innerHTML = html
@@ -253,7 +239,6 @@ export default {
         //   }
         // } else if (this.videoStatus === 'hidden') {
         //   if(this.element.streamMediaLinks.videoType === 'hls') {
-        //     console.log('hls222====',this.myPlayerHls)
         //     if (this.myPlayerHls) {
         //       const myPlayerHls = this.$refs[this.myPlayer[0]] // 不能用document 获取节点
         //       videojs(myPlayerHls).dispose() // 销毁video实例，避免出现节点不存在 但是flash一直在执行，报 this.el.......is not function
@@ -265,7 +250,6 @@ export default {
     }
     // pOption: {
     //   handler: function() {
-    //     console.log('1111this.element.streamMediaLinks.videoType', this.element.streamMediaLinks.videoType)
     //     if (this.element.streamMediaLinks.videoType === 'flv') {
     //       this.initOption(this.pOption.url)
     //     }
@@ -274,7 +258,6 @@ export default {
     // }
   },
   created() {
-    console.log('这个状态是',this.videoStatus)
     var timestamp = new Date().getTime()
     var myPlayerHls = 'myPlayerHls' + timestamp
     var myPlayerRtmp = 'myPlayerRtmp' + timestamp
@@ -284,7 +267,6 @@ export default {
     this.myPlayer.push(myPlayerRtmp)
     this.myPlayer.push(myPlayerWebrtc)
     this.myPlayer.push(myPlayerFlv)
-    console.log('myPlayer',this.myPlayer)
   },
   mounted() {
     if (!this.pOption.url) {
@@ -351,76 +333,72 @@ export default {
                 this.myPlayerFlv.play()
               }
             } catch (error) {
-              console.log(error)
+              console.error(error)
             }
           } else {
-            console.log('video失败')
           }
         }
       })
     },
     initOptionHls(options, status) {
-      console.log('axios,,,,,,',options)
-      if(options.link === '2') {
-        let data = null;
-        if(options.params !== '') {
-          let arr = options.params.split('&')
-          let obj = {}
+      if (options.link === '2') {
+        let data = null
+        if (options.params !== '') {
+          const arr = options.params.split('&')
+          const obj = {}
           arr.map(item => {
-            let arr1 = item.split('=')
+            const arr1 = item.split('=')
             obj[arr1[0]] = arr1[1]
           })
           data = obj
         }
-        console.log('hls参数',data)
-        axios.post(options.url,data,{
-          headers: {contentType: 'application/json; charset=utf-8'}
+        axios.post(options.url, data, {
+          headers: { contentType: 'application/json; charset=utf-8' }
         })
-        .then(res => {
-          console.log('11111,,,,',res)
-          if(res.data) {
-            if (status) {
-              this.myPlayerHls.reset() // 重置 video
-              this.myPlayerHls.src([{
-                type: 'application/x-mpegURL',
-                src: res.data.url
-              }])
-              this.myPlayerHls.load()
-              this.myPlayerHls.play()
-
-              return false
-            }
-
-            this.myPlayerHls = videojs(
-              this.myPlayer[0], 
-              {
-                autoplay: this.pOption.autoplay,
-                loop: this.pOption.loop,
-                bigPlayButton: false,
-                textTrackDisplay: false,
-                posterImage: true,
-                errorDisplay: false,
-                controls: true,
-                hls: {
-                  withCredentials: true
-                },
-                sources: [{
+          .then(res => {
+            if (res.data) {
+              if (status) {
+                this.myPlayerHls.reset() // 重置 video
+                this.myPlayerHls.src([{
                   type: 'application/x-mpegURL',
                   src: res.data.url
-                }]
-              },
-              function() {
-                // this.play()
-                this.on('error', function() {
-                  console.log('视频播放失败')
-                })
+                }])
+                this.myPlayerHls.load()
+                this.myPlayerHls.play()
+
+                return false
               }
-            )
-          }
-        }).catch(error => {
-          console.log('error',error)
-          this.$message.error('视频链接访问失败！')
-        })
+
+              this.myPlayerHls = videojs(
+                this.myPlayer[0],
+                {
+                  autoplay: this.pOption.autoplay,
+                  loop: this.pOption.loop,
+                  bigPlayButton: false,
+                  textTrackDisplay: false,
+                  posterImage: true,
+                  errorDisplay: false,
+                  controls: true,
+                  hls: {
+                    withCredentials: true
+                  },
+                  sources: [{
+                    type: 'application/x-mpegURL',
+                    src: res.data.url
+                  }]
+                },
+                function() {
+                // this.play()
+                  this.on('error', function() {
+                    console.error('视频播放失败')
+                  })
+                }
+              )
+            }
+          }).catch(error => {
+            console.error('error', error)
+            this.$message.error('视频链接访问失败！')
+          })
       } else {
         if (status) {
           this.myPlayerHls.reset() // 重置 video
@@ -430,8 +408,8 @@ export default {
           }])
           this.myPlayerHls.load()
           // this.myPlayerHls.play()
-          if(this.videoStatus === 'visible') {
-              this.myPlayerHls.play()
+          if (this.videoStatus === 'visible') {
+            this.myPlayerHls.play()
           } else if (this.videoStatus === 'hidden') {
             this.myPlayerHls.pause()
           }
@@ -439,7 +417,7 @@ export default {
         }
 
         this.myPlayerHls = videojs(
-          this.myPlayer[0], 
+          this.myPlayer[0],
           {
             autoplay: this.pOption.autoplay,
             loop: this.pOption.loop,
@@ -466,24 +444,22 @@ export default {
       }
     },
     initOptionRtmp(options, status) {
-      console.log(options)
-      if(options.link === '2') {
-        let data = null;
-        if(options.params !== '') {
-          let arr = options.params.split('&')
-          let obj = {}
+      if (options.link === '2') {
+        let data = null
+        if (options.params !== '') {
+          const arr = options.params.split('&')
+          const obj = {}
           arr.map(item => {
-            let arr1 = item.split('=')
+            const arr1 = item.split('=')
             obj[arr1[0]] = arr1[1]
           })
           data = obj
         }
-        console.log('rtmp参数',data)
-        axios.post(options.url,data,{
-          headers: {contentType: 'application/json; charset=utf-8'}
+
+        axios.post(options.url, data, {
+          headers: { contentType: 'application/json; charset=utf-8' }
         }).then(res => {
-          console.log('rtmppppp',res)
-          if(res.data){
+          if (res.data) {
             if (status) {
               this.myPlayerRtmp.reset() // 重置 video
               this.myPlayerRtmp.src([{
@@ -495,24 +471,24 @@ export default {
               return false
             }
             this.$nextTick(() => {
-              this.myPlayerRtmp = videojs(this.myPlayer[1], 
-              {
-                sources: [{
-                  type: 'rtmp/flv',
-                  src: res.data.url
-                }],
-                controls: true,
-                muted: true,
-                autoplay: true,
-                preload: 'auto',
-                textTrackDisplay: false,
-                errorDisplay: false,
-                controlBar: false,
-                bigPlayButton: false
-              }, function() {
-                this.load()
-                this.play()
-              })
+              this.myPlayerRtmp = videojs(this.myPlayer[1],
+                {
+                  sources: [{
+                    type: 'rtmp/flv',
+                    src: res.data.url
+                  }],
+                  controls: true,
+                  muted: true,
+                  autoplay: true,
+                  preload: 'auto',
+                  textTrackDisplay: false,
+                  errorDisplay: false,
+                  controlBar: false,
+                  bigPlayButton: false
+                }, function() {
+                  this.load()
+                  this.play()
+                })
             })
           }
         })
@@ -547,7 +523,6 @@ export default {
           })
         })
       }
-      
     },
     initOptionWeb(url, status) {
       if (this.myPlayerWebrtc && status) {
@@ -568,7 +543,6 @@ export default {
             videoDom.addEventListener('canplay', function(e) {
               videoDom.play()
             })
-            console.log(obj, '播放器开始播放！')
           }
         })
       })
@@ -584,7 +558,6 @@ export default {
 
       // this.remoteVideo = document.querySelector('#remote-video')
       // // this.remoteVideo.onloadeddata = () => {
-      // //   console.log('播放对方视频')
       // //   this.remoteVideo.play()
       // // }
       // const PeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window
@@ -594,7 +567,6 @@ export default {
       // that.peer = new PeerConnection()
       // that.peer.ontrack = e => {
       //   if (e && e.streams) {
-      //     console.log('收到对方音频/视频流数据...', e.streams)
       //     that.remoteVideo.srcObject = e.streams[0]
       //   }
       // }
@@ -604,24 +576,19 @@ export default {
       var that = this
       try {
         this.ws = new WebSocket(this.wsUrl)
-        console.log('开始连接', this.ws)
         this.initWebScoketFun()
         this.ws.onclose = () => {
-          console.log('链接关闭', this.wsUrl)
           this.reconnect(this.wsUrl)
         }
         this.ws.onerror = () => {
-          console.log('链接失败', this.wsUrl)
           setTimeout(() => {
             that.reconnect(that.wsUrl)
           }, 10000)
         }
         this.ws.onopen = () => {
-          console.log('链接成功', this.wsUrl)
           this.heartCheck.start()
         }
       } catch (e) {
-        console.log('链接错误', e)
         this.reconnect(this.wsUrl)
       }
     },
@@ -657,7 +624,7 @@ export default {
       //   this.heartCheck.start()
       // }
       this.ws.onmessage = (e) => {
-        console.log(e, 'webScoket心跳链接')
+        console.info('webScoket心跳链接: ', e)
         const {
           type,
           sdp,
@@ -685,7 +652,7 @@ export default {
         this.createWebSocket(url)
         this.lockReconnect = false
       }, 60000)
-    },
+    }
 
   }
 }

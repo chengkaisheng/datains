@@ -116,10 +116,9 @@ export const BASE_FUNNEL = {
 }
 
 let terminalType = 'pc'
-export function baseFunnelOption(chart_option, chart, terminal = 'pc',cstyle = {}) {
+export function baseFunnelOption(chart_option, chart, terminal = 'pc', cstyle = {}) {
   terminalType = terminal
   let customAttr = {}
-  // console.log('funnel,chart.customAttr: ', chart.customAttr)
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.color) {
@@ -139,13 +138,13 @@ export function baseFunnelOption(chart_option, chart, terminal = 'pc',cstyle = {
 
       chart_option.tooltip.enabled = tooltip.show
       chart_option.tooltip.style = { fontSize: tooltip.textStyle.fontSize, color: tooltip.textStyle.color }
-      
-      if(!formatter) {
-        chart_option.tooltip.headerFormat =  `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small><table>`
+
+      if (!formatter) {
+        chart_option.tooltip.headerFormat = `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small><table>`
         chart_option.tooltip.pointFormat = `<tr><td style="font-size:${tooltip.textStyle.fontSize}px;">{series.name}: </td>` +
           `<td style="text-align: right;font-size:${tooltip.textStyle.fontSize}px;"><b>{point.y}</b></td></tr>`
       } else {
-        chart_option.tooltip.headerFormat = '';
+        chart_option.tooltip.headerFormat = ''
         chart_option.tooltip.pointFormat = `<span style="font-size:${tooltip.textStyle.fontSize}px;">${formatter}</span>`
       }
       // chart_option.tooltip.formatter = formatter
@@ -157,9 +156,9 @@ export function baseFunnelOption(chart_option, chart, terminal = 'pc',cstyle = {
       dataLabels.enabled = customAttr.label.show
       dataLabels.color = customAttr.label.color
       dataLabels.style = { color: customAttr.label.color, fontSize: customAttr.label.fontSize }
-      dataLabels.align = customAttr.label.align? customAttr.label.align : 'right'
-      dataLabels.x = customAttr.label.xHc !==undefined? customAttr.label.xHc : 0
-      dataLabels.y = customAttr.label.yHc !==undefined? customAttr.label.yHc : 0
+      dataLabels.align = customAttr.label.align ? customAttr.label.align : 'right'
+      dataLabels.x = customAttr.label.xHc !== undefined ? customAttr.label.xHc : 0
+      dataLabels.y = customAttr.label.yHc !== undefined ? customAttr.label.yHc : 0
       const reg = new RegExp('\n', 'g')
       let formatter = customAttr.label.formatter.replace(reg, '<br/>')
       formatter = formatter.replace('{a}', '{series.name}')
@@ -167,23 +166,22 @@ export function baseFunnelOption(chart_option, chart, terminal = 'pc',cstyle = {
       formatter = formatter.replace('{c}', '{point.y}')
       formatter = formatter.replace('{d}', '{point.percentage:.2f}%')
       dataLabels.format = formatter
-      
+
       // 系列数据标签的选项，显示在每个数据点旁边
       chart_option.plotOptions.series.dataLabels = dataLabels
     }
 
     // size
     if (customAttr.size) {
-      chart_option.plotOptions.series.width = customAttr.size.hc3dWidth !== undefined? customAttr.size.hc3dWidth +'%' : '80%'
-      chart_option.plotOptions.series.height = customAttr.size.hc3dHeight !== undefined? customAttr.size.hc3dHeight +'%' : '80%'
-      chart_option.plotOptions.series.neckWidth = customAttr.size.hc3dNeckWidth !== undefined? customAttr.size.hc3dNeckWidth +'%' : '30%'
-      chart_option.plotOptions.series.neckHeight = customAttr.size.hc3dNeckHeight !== undefined? customAttr.size.hc3dNeckHeight +'%' : '20%'
+      chart_option.plotOptions.series.width = customAttr.size.hc3dWidth !== undefined ? customAttr.size.hc3dWidth + '%' : '80%'
+      chart_option.plotOptions.series.height = customAttr.size.hc3dHeight !== undefined ? customAttr.size.hc3dHeight + '%' : '80%'
+      chart_option.plotOptions.series.neckWidth = customAttr.size.hc3dNeckWidth !== undefined ? customAttr.size.hc3dNeckWidth + '%' : '30%'
+      chart_option.plotOptions.series.neckHeight = customAttr.size.hc3dNeckHeight !== undefined ? customAttr.size.hc3dNeckHeight + '%' : '20%'
     }
   }
 
   // 处理data
   if (chart.data) {
-    // console.log('funnel,chart.data',chart.data)
     // chart_option.title.text = chart.title
     if (chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[0].name
@@ -204,14 +202,13 @@ export function baseFunnelOption(chart_option, chart, terminal = 'pc',cstyle = {
         chart_option.series[0].data.push(y)
       }
       // chart_option.xAxis.categories = arr;
-      console.log('funnel,chart_option:::::',chart_option)
     }
   }
 
-  componentStyle(chart_option, chart,cstyle)
+  componentStyle(chart_option, chart, cstyle)
   return chart_option
 }
-export function componentStyle(chart_option, chart,cstyle) {
+export function componentStyle(chart_option, chart, cstyle) {
   const padding = '8px'
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
@@ -221,7 +218,7 @@ export function componentStyle(chart_option, chart,cstyle) {
       const style = chart_option.title.style ? chart_option.title.style : {}
       style.fontSize = customStyle.text.fontSize
       style.color = customStyle.text.color
-      style.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily : cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      style.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
       customStyle.text.isItalic ? style.fontStyle = 'italic' : style.fontStyle = 'normal'
       customStyle.text.isBolder ? style.fontWeight = 'bold' : style.fontWeight = 'normal'
       chart_option.title.style = style
@@ -240,7 +237,7 @@ export function componentStyle(chart_option, chart,cstyle) {
       chart_option.legend.itemMarginBottom = customStyle.legend.marginButtom // 图例的marginButtom
 
       chart_option.legend.itemStyle = customStyle.legend.textStyle
-      chart_option.legend.itemStyle.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      chart_option.legend.itemStyle.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
     }
 
     if (customStyle.background) {
@@ -303,5 +300,4 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
 export function uuid() {
   return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
 }
-  
-  
+

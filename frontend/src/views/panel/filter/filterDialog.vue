@@ -329,7 +329,6 @@ export default {
     }
   },
   created() {
-    // console.log('这是？',this.widgetInfo)
     this.widget = this.widgetInfo
     this.currentElement = JSON.parse(JSON.stringify(this.element))
     this.myAttrs = this.currentElement.options.attrs
@@ -438,24 +437,20 @@ export default {
       })
     },
     handleNodeClick(data) {
-      console.log('点击数据11111======》',data)
       if (data.type !== 'group') {
         this.showFieldDatas(data)
       }
     },
     handleAllNodeClick(data) {
-      console.log('点击数据222====》',data)
-      if(data.nodeType !== "spine") {
+      if (data.nodeType !== 'spine') {
         this.showAllFieldDatas(data)
       }
     },
-    filterNode(value,data) {
-      // console.log('过滤====》',value,data)
-      if(!value) return true
+    filterNode(value, data) {
+      if (!value) return true
       return data.label.indexOf(value) !== -1
     },
     loadTree(node, resolve) {
-      console.log('lazyLoad==========>',node)
       if (!this.isTreeSearch) {
         if (node.level > 0) {
           if (node.data.id) {
@@ -480,13 +475,12 @@ export default {
     findTree(cache) { // 查询所有的数据集数据
       const modelInfo = localStorage.getItem('dataset-tree')
       const userCache = (modelInfo && cache)
-      if(userCache) {
+      if (userCache) {
         this.defaultDatas = JSON.parse(modelInfo)
         this.datas = JSON.parse(modelInfo)
       }
 
-      queryAuthModel({modelType: 'dataset'}).then(res => {
-        // console.log('树数据====》',res.data)
+      queryAuthModel({ modelType: 'dataset' }).then(res => {
         localStorage.setItem('dataset-tree', JSON.stringify(res.data))
         this.defaultDatas = res.data
         this.datas = res.data
@@ -506,7 +500,7 @@ export default {
       tail.link = true
     },
     setAllTailLink(node) {
-      const tail = this.dataSetBreads[this.dataSetBreads.length -1]
+      const tail = this.dataSetBreads[this.dataSetBreads.length - 1]
       tail.type = node.modelInnerType
       tail.link = true
     },
@@ -574,7 +568,7 @@ export default {
     loadField(tableId) {
       fieldListWithPermission(tableId).then(res => {
         let datas = res.data
-        // console.log('表格字段数据',datas,this.widget)
+
         if (this.widget && this.widget.filterFieldMethod && this.widget.name !== 'textInfoWidget') {
           datas = this.widget.filterFieldMethod(datas)
         }

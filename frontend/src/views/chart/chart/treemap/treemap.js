@@ -1,7 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
 
-export function baseTreemapOption(chart_option, chart,cstyle = {}) {
+export function baseTreemapOption(chart_option, chart, cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -58,7 +58,8 @@ export function baseTreemapOption(chart_option, chart,cstyle = {}) {
       chart_option.series[0].name = chart.data.series[0].name
     }
   }
-  // console.log(chart_option);
-  componentStyle(chart_option, chart,cstyle)
+
+  componentStyle(chart_option, chart, cstyle)
+
   return chart_option
 }

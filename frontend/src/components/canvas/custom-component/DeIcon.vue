@@ -25,8 +25,7 @@ export default {
       return this.editMode === 'preview' && this.element && this.element.hyperlinks && this.element.hyperlinks.enable
     }
   },
-  mounted(){
-    console.log('DeIcon::::',this.element,this.editMode)
+  mounted() {
   }
 }
 </script>

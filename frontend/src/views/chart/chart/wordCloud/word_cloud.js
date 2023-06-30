@@ -5,8 +5,7 @@ import {
 } from '@/views/chart/chart/common/common_antv'
 import { WordCloud } from '@antv/g2plot'
 
-export function baseWordCloudOptionAntV(plot, container, chart, action,cstyle = {},scalePointWidth) {
-  console.log('词云',chart,scalePointWidth)
+export function baseWordCloudOptionAntV(plot, container, chart, action, cstyle = {}, scalePointWidth) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -21,7 +20,7 @@ export function baseWordCloudOptionAntV(plot, container, chart, action,cstyle = 
     weightField: 'value',
     colorField: 'field',
     wordStyle: {
-      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : 'Verdana',
+      fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'Verdana',
       fontSize: [8, 32],
       rotation: [-20, 20],
       padding: 2
@@ -52,14 +51,12 @@ export function baseWordCloudOptionAntV(plot, container, chart, action,cstyle = 
   //     }
   //   }
   // }
-  
-  //绘制图形
 
-  if(chart.customAttr) {
+  // 绘制图形
+
+  if (chart.customAttr) {
     const customAttr = JSON.parse(chart.customAttr)
-    // console.log('/??????',customAttr)
-    if(customAttr.size) {
-      // console.log(customAttr.size)
+    if (customAttr.size) {
       options.wordStyle.fontSize[0] = customAttr.size.wordMin * scalePointWidth
       options.wordStyle.fontSize[1] = customAttr.size.wordMax * scalePointWidth
     }

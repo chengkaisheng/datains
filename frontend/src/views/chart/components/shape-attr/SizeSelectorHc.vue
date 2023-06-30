@@ -1,6 +1,6 @@
 <template>
   <div style="width: 100%">
-    <el-col >
+    <el-col>
       <el-form v-show="chart.type && chart.type === '3dfunnel'" ref="sizeFormFunnel" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item :label="$t('chart.hc_3d_width')" class="form-item">
           <el-slider v-model="sizeForm.hc3dWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeFocusCase" />
@@ -22,7 +22,7 @@
   </div>
 </template>
 <script>
-import {COLOR_PANEL, DEFAULT_SIZE } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_SIZE } from '../../chart/chart'
 export default {
   name: 'SizeSelectorHc',
   props: {
@@ -38,7 +38,7 @@ export default {
   data() {
     return {
       sizeForm: JSON.parse(JSON.stringify(DEFAULT_SIZE)),
-      predefineColors: COLOR_PANEL,
+      predefineColors: COLOR_PANEL
     }
   },
   watch: {
@@ -49,7 +49,6 @@ export default {
     }
   },
   mounted() {
-    console.log('进这个?',this.chart)
     this.initData()
   },
   methods: {
@@ -67,7 +66,7 @@ export default {
         }
       }
     },
-    
+
     changeFocusCase() {
       this.$emit('onSizeChange', this.sizeForm)
     }

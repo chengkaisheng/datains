@@ -57,7 +57,6 @@ export function groupTree(data, loading = true, timeout = 60000) {
 }
 
 export function viewData(id, panelId, data) {
-  console.log('view/getData/2222222222------：', data)
   return request({
     url: '/chart/view/getData/' + id + '/' + panelId,
     method: 'post',
@@ -136,12 +135,8 @@ export function delGroup(groupId) {
 
 export function initPanelData(panelId, callback) {
   // 加载视图数据
-  console.log('initPanelData,,,,,', panelId)
   findOne(panelId).then(response => {
     // 初始化视图data和style 数据
-    console.log('初始化数据3333', response)
-    console.log('页面 数 据 来源===', JSON.parse(response.data.panelData))
-    console.log('页面 样 式 来源===', JSON.parse(response.data.panelStyle))
     panelInit(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle))
     // 设置当前仪表板全局信息
     store.dispatch('panel/setPanelInfo', {

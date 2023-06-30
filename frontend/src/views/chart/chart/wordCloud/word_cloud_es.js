@@ -2,12 +2,10 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
 // echarts
 export function baseWordCloudOption(chart_option, chart, cstyle = {}, scalePointWidth) {
-  console.log('这地方？', chart_option, chart, cstyle)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
-    // console.log('样式：：',customAttr)
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
@@ -44,7 +42,7 @@ export function baseWordCloudOption(chart_option, chart, cstyle = {}, scalePoint
         y.type = 'wordCloud'
 
         y.textStyle = {
-          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
         }
 
         chart_option.series[0].data.push(y)
@@ -52,9 +50,7 @@ export function baseWordCloudOption(chart_option, chart, cstyle = {}, scalePoint
 
       if (chart.customAttr) {
         const customAttr = JSON.parse(chart.customAttr)
-        console.log('/??????', customAttr)
         if (customAttr.size) {
-          // console.log(customAttr.size)
           chart_option.series[0].sizeRange[0] = customAttr.size.wordMin * scalePointWidth
           chart_option.series[0].sizeRange[1] = customAttr.size.wordMax * scalePointWidth
           chart_option.series[0].shape = customAttr.size.wordShape
@@ -64,11 +60,10 @@ export function baseWordCloudOption(chart_option, chart, cstyle = {}, scalePoint
         chart_option.series[0].textStyle.normal.fontFamily = cstyle.fontFamily
         chart_option.textStyle.fontFamily = cstyle.fontFamily
       }
-      console.log('series,数据', chart_option)
     }
   }
   componentStyle(chart_option, chart, cstyle) // 图表样式
   seniorCfg(chart_option, chart) // 值样式
-  console.log('词云,echart,word_cloud', chart_option)
+
   return chart_option
 }

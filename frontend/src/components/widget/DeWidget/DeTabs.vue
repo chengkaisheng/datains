@@ -218,12 +218,10 @@ export default {
     }
   },
   mounted() {
-    console.log('xinzengtabs=======================================================================----------------------------')
   },
   created() {
     bus.$on('add-new-tab', this.addNewTab)
     this.activeTabName = this.element.options.tabList[0].name
-    console.log('this.element', this.element)
   },
   methods: {
     beforeHandleCommond(item, param) {
@@ -294,7 +292,6 @@ export default {
     },
 
     setComponentInfo() {
-      console.log('aaa')
     },
 
     editCurTitle(param) {
@@ -324,7 +321,6 @@ export default {
     },
 
     addNewTab(componentId) {
-      console.log('componentId', componentId)
       if (!componentId || componentId !== this.element.id) return
       const curName = uuid.v1()
       const tab = {
@@ -350,7 +346,6 @@ export default {
           this.$store.dispatch('chart/setViewId', item.content.propValue.viewId)
         }
       })
-      // console.log(tab)
     }
 
   }

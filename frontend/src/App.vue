@@ -16,14 +16,12 @@ export default {
   },
   mounted() {
     const attachParams = this.getQueryVariable('attachParams')
-    console.log('attachParams,,,', attachParams)
     localStorage.setItem('permissionId', attachParams)
   },
   methods: {
     getQueryVariable(variable) {
       // let query = window.location.search.substring(1)
       let query = window.location.href.split('?')[1]
-      console.log('query', query)
       let vars = []
       if (!query) {
         query = document.cookie

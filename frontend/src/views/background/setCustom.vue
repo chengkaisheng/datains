@@ -74,13 +74,13 @@
           <span class="params-title">箭头图标颜色</span>
         </el-col>
         <el-col :span="8">
-          <el-color-picker v-model="curComponent.options.arrowColor"></el-color-picker>
+          <el-color-picker v-model="curComponent.options.arrowColor" />
         </el-col>
         <el-col :span="4">
           <span class="params-title">箭头间隔</span>
         </el-col>
         <el-col :span="8">
-          <el-input-number v-model="curComponent.options.arrowSpacing" :min="1" :max="100"></el-input-number>
+          <el-input-number v-model="curComponent.options.arrowSpacing" :min="1" :max="100" />
         </el-col>
       </el-row>
       <el-row>
@@ -294,7 +294,7 @@ export default {
           }
         })
       })
-      console.log(data)
+
       return opSetInfo
     }
   },
@@ -308,7 +308,6 @@ export default {
     //     res.showName = ''
     //   }
     // })
-    console.log('componentData获取数据--', this.componentData, this.curComponent)
     // const seltOps = []
     // this.navInfoLis = this.element.options.navTabList
     // this.navInfoLis.forEach(res => {
@@ -368,14 +367,12 @@ export default {
     },
     clickImg(item) {
       this.currentlySelected = item.url
-      console.log('图片数据', item)
     },
     cancelPicture() {
       this.innerVisible = false
       // this.changImg = ''
     },
     savePicture() {
-      console.log('this.activeNameTabs', this.activeNameTabs)
       if (this.activeNameTabs === 'first') {
         if (this.chengKey === 'highlight') {
           this.changImg = this.currentlySelected
@@ -393,7 +390,6 @@ export default {
     },
     getAllImg() {
       getAllImgList().then(res => {
-        console.log('获取所有图片数据', res)
         this.allImgData = res.data
       })
     },
@@ -408,7 +404,6 @@ export default {
       this.innerVisible = true
     },
     addNavInfo() {
-      console.log('this.navInfoLis', this.navInfoLis)
       this.navInfoLis.push({
         name: '',
         relation: []
@@ -416,7 +411,6 @@ export default {
     },
     changeAssembly(e) {
       // 组件不能重复选择
-      console.log(e)
       // this.options.forEach(res => {
       //   res.disabled = false
       //   console.log('res', res)
@@ -430,13 +424,11 @@ export default {
       // })
     },
     blurSelect(e) {
-      console.log('失焦', e)
     },
     deleteNav(item, index) {
       this.navInfoLis.splice(index, 1)
     },
     init() {
-      console.log('componentData--------', this.componentData, this.curComponent)
       if (this.curComponent.options.bannerImgList) {
         this.curComponent.options.bannerImgList.forEach(res => {
           this.fileList.push({ url: res })
@@ -472,7 +464,6 @@ export default {
       // this.curComponent.commonBackground.innerPadding = this.backgroundOrigin.innerPadding
       // this.curComponent.commonBackground.boxWidth = Math.floor(this.backgroundOrigin.boxWidth)
       // this.curComponent.commonBackground.boxHeight = Math.floor(this.backgroundOrigin.boxHeight)
-      console.log('this.curComponent.commonBackground.boxWidth=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },
     save() {
@@ -486,7 +477,6 @@ export default {
       //     })
       //   })
       // })
-      console.log('this.fileList', this.fileList)
       // 高亮背景
       this.curComponent.options.heightBgImg = this.changImg
       // 默认背景
@@ -499,7 +489,6 @@ export default {
     },
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
-      console.log('const canvasStyleData', canvasStyleData)
       // canvasStyleData.panel = this.panel
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
@@ -508,7 +497,6 @@ export default {
       this.commitStyle()
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList)
       this.uploadDisabled = false
       // this.panel.imageUrl = null
       this.curComponent.options.heightBgImg = ''
@@ -516,7 +504,6 @@ export default {
       this.commitStyle()
     },
     handlePictureCardPreview(file) {
-      console.log('file---', file)
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
@@ -526,7 +513,6 @@ export default {
         this.fileList = []
         return
       }
-      console.log('file, fileList', file, fileList)
       var _this = this
       _this.uploadDisabled = true
       const reader = new FileReader()
@@ -534,13 +520,10 @@ export default {
         _this.updataUrl = reader.result
         // _this.curComponent.options.heightBgImg = reader.result
         // _this.commitStyle()
-        console.log('reader.result6666666', reader.result)
       }
       reader.readAsDataURL(file.raw)
-      console.log('222222', file, fileList)
     },
     upload(file) {
-      console.log('this is upload', file)
     }
 
   }

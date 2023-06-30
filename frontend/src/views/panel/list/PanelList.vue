@@ -692,8 +692,8 @@ export default {
       // 清空当前缓存,快照
       this.$store.commit('refreshSnapshot')
       this.$store.commit('setComponentData', [])
-      console.log('新建访问编辑？',this.isPanelStyle,this.panelStyleData)
-      if(this.isPanelStyle) {
+
+      if (this.isPanelStyle) {
         const canvasStyle = deepCopy(DEFAULT_COMMON_CANVAS_STYLE_STRING)
         canvasStyle.width = this.panelStyleData.canvasWidth
         canvasStyle.height = this.panelStyleData.canvasHeight
@@ -701,7 +701,7 @@ export default {
         canvasStyle.refreshUnit = this.panelStyleData.refreshUnit
         canvasStyle.refreshTime = this.panelStyleData.refreshTime
         canvasStyle.panel = this.panelStyleData.panel
-        this.$store.commit('setCanvasStyle',canvasStyle)
+        this.$store.commit('setCanvasStyle', canvasStyle)
       } else {
         this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
       }
@@ -775,7 +775,6 @@ export default {
               children: res.data
             }
           ]
-          // console.log('tGroupData=>' + JSON.stringify(_this.tGroupData))
         } else {
           _this.tGroupData = res.data
         }

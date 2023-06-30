@@ -302,7 +302,6 @@ if(typeof window != 'undefined'){
 	if(!dojo.config.afterOnLoad){
 		window.addEventListener("DOMContentLoaded", function(e){
 			dojo._loadInit(e);
-			// console.log("DOM content loaded", e);
 		}, false);
 	}
 

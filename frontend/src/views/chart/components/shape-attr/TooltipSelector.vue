@@ -88,7 +88,6 @@ export default {
   mounted() {
     this.init()
     this.initData()
-    console.log('TooltipSelector--------', this.tooltipForm, this.chart)
   },
   methods: {
     initData() {

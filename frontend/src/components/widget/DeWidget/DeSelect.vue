@@ -3,19 +3,19 @@
   <el-select
     v-if="element.options!== null && element.options.attrs!==null && show"
     ref="deSelect"
-    class="deSelect"
     v-model="value"
+    class="deSelect"
     :collapse-tags="showNumber"
     :clearable="!element.options.attrs.multiple"
     :multiple="element.options.attrs.multiple"
     :placeholder="$t(element.options.attrs.placeholder)"
     :popper-append-to-body="inScreen"
+    :style="selectStyle"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
-    :style="selectStyle"
   >
-  <!-- :size="size" -->
+    <!-- :size="size" -->
     <!-- popper-class -->
     <el-option
       v-for="item in datas"
@@ -82,31 +82,30 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     selectStyle() {
-      let style =  {}
-      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
-        if(this.element.commonSelectFrame.backType === 'Image') {
-          if(this.element.commonSelectFrame.backImg !== '') {
+      const style = {}
+      if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        if (this.element.commonSelectFrame.backType === 'Image') {
+          if (this.element.commonSelectFrame.backImg !== '') {
             style.backgroundImage = `url(${this.element.commonSelectFrame.backImg})`
           }
           style.backgroundRepeat = 'no-repeat'
           style.backgroundSize = '100% 100%'
-        } else  {
+        } else {
           style.backgroundColor = this.element.commonSelectFrame.color
         }
         style.color = this.element.commonSelectFrame.fontColor
-        style.fontSize = this.element.commonSelectFrame.fontSize? this.element.commonSelectFrame.fontSize + 'px': '14px'
+        style.fontSize = this.element.commonSelectFrame.fontSize ? this.element.commonSelectFrame.fontSize + 'px' : '14px'
       }
       // style.borderRadius = '4px'
       style.height = '100%'
       style.lineHeight = this.element.style.height + 'px'
-      console.log('select样式',style)
       return style
     },
     optionStyle() {
       const style = {}
-      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable){
-        if(this.element.commonSelectFrame.checkBgType === 'Image') {
-          if(this.element.commonSelectFrame.checkBgImg !== '' && this.element.commonSelectFrame.checkBgImg !== null) {
+      if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        if (this.element.commonSelectFrame.checkBgType === 'Image') {
+          if (this.element.commonSelectFrame.checkBgImg !== '' && this.element.commonSelectFrame.checkBgImg !== null) {
             style.backgroundImage = `url(${this.element.commonSelectFrame.checkBgImg})`
           }
           style.backgroundRepeat = 'no-repeat'
@@ -115,9 +114,9 @@ export default {
           style.backgroundColor = this.element.commonSelectFrame.checkBgColor
         }
         style.color = this.element.commonSelectFrame.checkColor
-        style.fontSize = this.element.commonSelectFrame.checkFontSize? this.element.commonSelectFrame.checkFontSize + 'px': '14px'
+        style.fontSize = this.element.commonSelectFrame.checkFontSize ? this.element.commonSelectFrame.checkFontSize + 'px' : '14px'
       }
-      console.log('optionstyle,,,',style)
+
       return style
     }
   },
@@ -181,7 +180,6 @@ export default {
         this.changeValue(this.value)
       }
     })
-    console.log('Deselect',this.element) // background/index.vue
   },
 
   methods: {
@@ -208,7 +206,6 @@ export default {
       }
     },
     changeValue(value) {
-      console.log('下拉框的值', value)
       if (!this.inDraw) {
         if (value === null) {
           this.element.options.value = ''
@@ -241,7 +238,7 @@ export default {
         value: this.formatFilterValue(),
         operator: this.operator
       }
-      console.log('param触发---', param)
+
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
     formatFilterValue() {

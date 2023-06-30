@@ -37,7 +37,7 @@ import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { baseTableInfo, baseTableNormal, baseTablePivot,baseTableProg } from '@/views/chart/chart/table/table-info'
+import { baseTableInfo, baseTableNormal, baseTablePivot, baseTableProg } from '@/views/chart/chart/table/table-info'
 // import { json } from 'stream/consumers'
 
 export default {
@@ -128,7 +128,6 @@ export default {
         this.initTitle()
         this.calcHeightDelay()
         new Promise((resolve) => { resolve() }).then(() => {
-          console.log('22222', '触发此处')
           this.drawView()
         })
       },
@@ -139,7 +138,6 @@ export default {
     }
   },
   mounted() {
-    // console.log('11111', this.canvasStyleData)
     this.preDraw()
   },
   beforeDestroy() {
@@ -200,15 +198,12 @@ export default {
           ]
         }
       }
-      // console.log('是否触发drawView事件----------------？？？？？？？？？？？？？？？？？？？', this.chart)
+
       if (chart.type === 'table-info') {
-        // console.log('触发点-------1111111111')
         this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.canvasStyleData.fontFamily)
       } else if (chart.type === 'table-normal') {
-        // console.log('触发点-------22222222222')
         this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.canvasStyleData.fontFamily)
       } else if (chart.type === 'table-pivot') {
-        // console.log('触发点-------33333333333')
         this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.canvasStyleData.fontFamily)
       } else if (chart.type === 'table-prog') {
         this.myChart = baseTableProg(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.canvasStyleData.fontFamily)
@@ -233,7 +228,6 @@ export default {
       // })
 
       if (this.myChart && this.antVRenderStatus) {
-        // console.log('this.antVRenderStatus', this.antVRenderStatus)
         this.myChart.render()
       }
       // this.timer = null
@@ -285,10 +279,8 @@ export default {
     },
 
     antVAction(param) {
-      // console.log(param, 'param')
       const cell = this.myChart.getCell(param.target)
       const meta = cell.getMeta()
-      // console.log(meta, 'meta')
 
       let xAxis = []
       if (this.chart.xaxis) {
@@ -323,7 +315,6 @@ export default {
           dimensionList: dimensionList
         }
       }
-      console.log(this.pointParam, 'pointParam')
 
       if (this.trackMenu.length < 2) { // 只有一个事件直接调用
         this.trackClick(this.trackMenu[0])

@@ -119,7 +119,6 @@ let terminalType = 'pc'
 export function baseScatterOption(chart_option, chart, terminal = 'pc') {
   terminalType = terminal
   let customAttr = {}
-  // console.log('scatter,chart.customAttr: ', JSON.parse(chart.customAttr),chart)
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.color) {
@@ -162,7 +161,6 @@ export function baseScatterOption(chart_option, chart, terminal = 'pc') {
 
   // 处理data
   if (chart.data) {
-    console.log('scatter,chart.data', chart.data)
     // chart_option.title.text = chart.title
     if (chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[0].name
@@ -178,7 +176,6 @@ export function baseScatterOption(chart_option, chart, terminal = 'pc') {
         chart_option.series[0].data.push(y)
       }
       // chart_option.xAxis.categories = arr;
-      console.log('scatter,chart_option:::::', chart_option)
     }
   }
 

@@ -5,8 +5,6 @@ export function componentStyle(chart_option, chart, cstyle = {}) {
   const padding = '8px'
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
-    console.log('bar customStyle: ', customStyle)
-    // console.log('customStyle.....',customStyle,chart_option)
     if (customStyle.text) {
       chart_option.title.show = customStyle.text.show
       // 水平方向
@@ -70,7 +68,7 @@ export function componentStyle(chart_option, chart, cstyle = {}) {
       chart_option.xAxis.position = customStyle.xAxis.position
       chart_option.xAxis.name = customStyle.xAxis.name
       chart_option.xAxis.axisLabel = customStyle.xAxis.axisLabel
-      chart_option.xAxis.axisLabel.margin = customStyle.xAxis.axisLabel.margin
+      chart_option.xAxis.axisLabel.margin = customStyle.xAxis.axisLabel.margin ? customStyle.xAxis.axisLabel.margin : 0
       chart_option.xAxis.axisLabel.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
       chart_option.xAxis.splitLine = customStyle.xAxis.splitLine
       chart_option.xAxis.nameLocation = customStyle.xAxis.nameLocation
@@ -126,7 +124,6 @@ export function componentStyle(chart_option, chart, cstyle = {}) {
           customStyle.yAxis.paddingLeft !== undefined ? customStyle.yAxis.paddingLeft : 0
         ]
       }
-      // console.log('common,yAixs,',customStyle.yAxis)
 
       chart_option.yAxis.axisLabel.showMaxLabel = true
       chart_option.yAxis.axisLabel.showMinLabel = true
@@ -245,8 +242,6 @@ export function componentStyle(chart_option, chart, cstyle = {}) {
     if (customStyle.background) {
       chart_option.backgroundColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
-
-    // console.log('componentStyle......',chart_option)
   }
 }
 
@@ -324,5 +319,4 @@ export function seniorCfg(chart_option, chart) {
       }
     }
   }
-  // console.log('seniorCfg.....',chart_option)
 }

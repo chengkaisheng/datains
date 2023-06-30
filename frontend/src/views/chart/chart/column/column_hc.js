@@ -236,7 +236,7 @@ let terminalType = 'pc'
 export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, isStack, cstyle = {}) {
   terminalType = terminal
   let customAttr = {}
-  console.log('column,chart: ', chart)
+
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.color) {
@@ -249,23 +249,22 @@ export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, i
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
 
       chart_option.tooltip.enabled = tooltip.show
-      chart_option.tooltip.style = { 
-        fontSize: tooltip.textStyle.fontSize, 
-        color: tooltip.textStyle.color 
+      chart_option.tooltip.style = {
+        fontSize: tooltip.textStyle.fontSize,
+        color: tooltip.textStyle.color
       }
       let formatter = tooltip.formatter
       formatter = formatter.replace('{a}', '{series.name}')
       formatter = formatter.replace('{b}', '{point.name}')
       formatter = formatter.replace('{c}', '{point.y}')
       formatter = formatter.replace('{d}', '{point.percentage:.2f}%')
-      // console.log('这个 formatter==>>',formatter)
-      if(!formatter) {
-        chart_option.tooltip.headerFormat =  `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small><table>`
+
+      if (!formatter) {
+        chart_option.tooltip.headerFormat = `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small><table>`
         chart_option.tooltip.pointFormat = `<tr><td style="font-size:${tooltip.textStyle.fontSize}px;">{series.name}: </td>` +
           `<td style="text-align: right;font-size:${tooltip.textStyle.fontSize}px;"><b>{point.y}</b></td></tr>`
-        
       } else {
-        if(formatter.indexOf('{point.name}') !== -1) {
+        if (formatter.indexOf('{point.name}') !== -1) {
           chart_option.tooltip.headerFormat = `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small>`
           chart_option.tooltip.pointFormat = `<div style="font-size:${tooltip.textStyle.fontSize}px;">${formatter}</div>`
         } else {
@@ -273,10 +272,8 @@ export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, i
           chart_option.tooltip.pointFormat = `<div style="font-size:${tooltip.textStyle.fontSize}px;">${formatter}</div>`
         }
       }
-      
-      // chart_option.tooltip.formatter = formatter
 
-      // console.log('tooltip:::=>',chart_option.tooltip)
+      // chart_option.tooltip.formatter = formatter
     }
 
     // label
@@ -308,11 +305,9 @@ export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, i
 
   // 处理data
   if (chart.data) {
-    // console.log('column,chart.data',chart.data)
     // chart_option.title.text = chart.title
     // 基础柱状数据处理
     if (isBase) {
-      console.log(chart)
       if (chart.data.series.length > 0) {
         // chart_option.series[0].name = chart.data.series[0].name
         // if (customAttr.color) {
@@ -339,18 +334,17 @@ export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, i
           }
           if (customAttr.color) {
             obj.opacity = customAttr.color.alpha / 100
-            if(customAttr.color.variety) {
+            if (customAttr.color.variety) {
               obj.color = {
-                linearGradient: {x1: 0,y1: 1,x2: 0,y2: 0},
+                linearGradient: { x1: 0, y1: 1, x2: 0, y2: 0 },
                 stops: [
-                  [0, hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)], // 0% 
-                  [1, hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)], // 100%
+                  [0, hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)], // 0%
+                  [1, hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)] // 100%
                 ]
               }
             } else {
               obj.color = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
             }
-            
           }
           arr.push(obj)
         }
@@ -362,8 +356,6 @@ export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, i
         /* if (customAttr.size) {
               chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
             }*/
-
-        console.log('isBase,chart_option:::::', chart_option)
       }
     }
 
@@ -387,8 +379,6 @@ export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, i
         chart_option.series = arr
 
         chart_option.xAxis.categories = chart.data.x
-
-        // console.log('isStack,chart_option',chart_option)
       }
     }
   }
@@ -398,10 +388,8 @@ export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, i
 }
 export function componentStyle(chart_option, chart, cstyle) {
   const padding = '8px'
-  console.log('column_hc,样式：：：', chart)
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
-    console.log('customStyle=========', customStyle)
     if (customStyle.text) {
       chart_option.title.text = customStyle.text.show ? chart.title : ''
       const style = chart_option.title.style ? chart_option.title.style : {}
@@ -426,8 +414,6 @@ export function componentStyle(chart_option, chart, cstyle) {
       chart_option.legend.itemMarginTop = customStyle.legend.marginTop // 图例的marginButtom
       chart_option.legend.itemMarginBottom = customStyle.legend.marginButtom // 图例的marginButtom
 
-      console.log('customStyle.legend----------', customStyle.legend)
-
       chart_option.legend.itemStyle = customStyle.legend.textStyle
       chart_option.legend.itemStyle.icon = customStyle.legend.icon
       chart_option.legend.itemStyle.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
@@ -441,7 +427,7 @@ export function componentStyle(chart_option, chart, cstyle) {
     if (customStyle.xAxis) {
       chart_option.xAxis.visible = customStyle.xAxis.show // 展示
       chart_option.xAxis.title.text = customStyle.xAxis.name // 描述
-      chart_option.xAxis.title.align = customStyle.xAxis.align? customStyle.xAxis.align : 'middle' // 对齐
+      chart_option.xAxis.title.align = customStyle.xAxis.align ? customStyle.xAxis.align : 'middle' // 对齐
       chart_option.xAxis.title.style = customStyle.xAxis.nameTextStyle // 描述字体颜色
       chart_option.xAxis.title.style.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : '' // 描述字体
       chart_option.xAxis.gridLineColor = customStyle.xAxis.splitLine.lineStyle.color // 轴线颜色
@@ -456,7 +442,7 @@ export function componentStyle(chart_option, chart, cstyle) {
     if (customStyle.yAxis) {
       chart_option.yAxis.visible = customStyle.yAxis.show // 展示
       chart_option.yAxis.title.text = customStyle.yAxis.name // 描述
-      chart_option.yAxis.title.align = customStyle.yAxis.align? customStyle.yAxis.align : 'middle' // 对齐
+      chart_option.yAxis.title.align = customStyle.yAxis.align ? customStyle.yAxis.align : 'middle' // 对齐
       chart_option.yAxis.title.style = customStyle.yAxis.nameTextStyle // 字体颜色
       chart_option.yAxis.title.style.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : '' // 描述字体
       chart_option.yAxis.gridLineColor = customStyle.yAxis.splitLine.lineStyle.color // 轴线颜色

@@ -21,12 +21,12 @@
       <el-form ref="form" class="panel_form" :model="panelObj" label-width="120px" label-position="left">
         <el-col :span="12">
           <el-form-item :label="$t('chart.canvasWith')">
-            <el-input-number size="small" v-model="panelObj.canvasWidth" @change="handleChange" :min="1" :max="10000"></el-input-number>
+            <el-input-number v-model="panelObj.canvasWidth" size="small" :min="1" :max="10000" @change="handleChange" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item :label="$t('chart.canvasHeight')">
-            <el-input-number size="small" v-model="panelObj.canvasHeight" :min="1" :max="10000" @change="handleChange" />
+            <el-input-number v-model="panelObj.canvasHeight" size="small" :min="1" :max="10000" @change="handleChange" />
           </el-form-item>
         </el-col>
         <el-col>
@@ -43,14 +43,14 @@
         </el-col>
         <el-col>
           <el-form-item :label="$t('chart.background')">
-            <el-radio-group v-model="panelObj.panel.backgroundType" @change="handleChange" style="width: 100%">
+            <el-radio-group v-model="panelObj.panel.backgroundType" style="width: 100%" @change="handleChange">
               <el-col :span="12">
-                <el-radio label="color" >{{ $t('chart.color') }}</el-radio>
+                <el-radio label="color">{{ $t('chart.color') }}</el-radio>
               </el-col>
               <el-col :span="12">
-                <el-radio label="image" >{{ $t('panel.photo') }}</el-radio>
+                <el-radio label="image">{{ $t('panel.photo') }}</el-radio>
               </el-col>
-            </el-radio-group> 
+            </el-radio-group>
             <el-row style="margin-top:5px;">
               <el-col :span="12">
                 <el-color-picker v-model="panelObj.panel.color" :predefine="predefineColors" size="mini" style="cursor: pointer;z-index: 1004;" @change="handleChange" />
@@ -91,7 +91,7 @@
         </el-col>
         <el-col>
           <el-form-item label="视图加载提示">
-            <el-checkbox v-model="panelObj.refreshViewLoading" @change="handleChange"></el-checkbox>
+            <el-checkbox v-model="panelObj.refreshViewLoading" @change="handleChange" />
           </el-form-item>
         </el-col>
         <el-col>
@@ -117,7 +117,7 @@
         </el-col>
         <el-col>
           <el-form-item :label="$t('panel.panel_view_result_show')">
-            <el-radio-group v-model="panelObj.panel.resultMode" @change="handleChange" style="width: 100%;">
+            <el-radio-group v-model="panelObj.panel.resultMode" style="width: 100%;" @change="handleChange">
               <el-radio label="all">{{ $t('panel.view') }}</el-radio>
               <el-radio label="custom">{{ $t('panel.panel') }}</el-radio>
             </el-radio-group>
@@ -148,7 +148,7 @@
       </el-col>
       <el-col :span="16" :style="classBackground" class="preview-show" />
     </el-row>
-        <el-row v-if="inputType==='new_outer_template'" class="preview" :style="classBackground" />
+    <el-row v-if="inputType==='new_outer_template'" class="preview" :style="classBackground" />
     <el-row class="root-class">
       <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
       <el-button type="primary" size="mini" @click="save()">{{ $t('commons.confirm') }}</el-button>
@@ -165,9 +165,9 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 
 export default {
-  components: { 
-    TemplateAllList,
-   },
+  components: {
+    TemplateAllList
+  },
   props: {
     editPanelOut: {
       type: Object,
@@ -198,18 +198,18 @@ export default {
           imageUrl: null,
           gap: 'yes',
           resultMode: 'all',
-          resultCount: 1000,
+          resultCount: 1000
         },
         refreshViewLoading: true,
         refreshUnit: 'minute',
-        refreshTime: 5,
+        refreshTime: 5
       },
       fontOptions: ['宋体', '楷体', '黑体', '仿宋', '新宋体'],
       predefineColors: COLOR_PANEL,
       fileList: [],
       dialogImageUrl: '',
       dialogVisible: false,
-      uploadDisabled: false,
+      uploadDisabled: false
     }
   },
   computed: {
@@ -251,12 +251,11 @@ export default {
       // const canvasStyleData = deepCopy(this.canvasStyleData)
       // canvasStyleData.panel = this.panel
       // this.$store.commit('setCanvasStyle', canvasStyleData)
-      this.$store.commit('setPanelStyleData',this.panelObj)
-      this.$store.commit('setPanelStatus',true)
+      this.$store.commit('setPanelStyleData', this.panelObj)
+      this.$store.commit('setPanelStatus', true)
       this.$store.commit('recordSnapshot', 'commitStyle')
     },
     handleChange() {
-      console.log('数据',this.panelObj)
       this.commitStyle()
     },
     handlePictureCardPreview(file) {
@@ -270,7 +269,6 @@ export default {
       this.commitStyle()
     },
     beforeAvatarUpload(file) {
-      console.log('file.size', file.size)
       const isLt10M = file.size / 1024 / 1024 < 10
       if (!isLt10M) {
         // this.$message.error('上传的文件大小不能超过 1MB!')
@@ -279,7 +277,6 @@ export default {
       return isLt10M
     },
     onChange(file, fileList) {
-      console.log('file-----', file, file.size / 1024 / 1024)
       if (file.size / 1024 / 1024 > 10) {
         this.$message.error('上传的文件大小不能超过 10MB!')
         this.fileList = []
@@ -298,7 +295,7 @@ export default {
     },
 
     upload(file) {
-      // console.log('this is upload')
+
     },
 
     entryKey(event) {

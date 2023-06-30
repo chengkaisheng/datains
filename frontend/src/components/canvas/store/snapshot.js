@@ -17,7 +17,7 @@ export default {
       if (state.snapshotIndex > 0) {
         state.snapshotIndex--
         state.doSnapshotIndex = state.snapshotIndex
-        // console.log('undo......',state.snapshotData[state.snapshotIndex])
+
         store.commit('setComponentData', deepCopy(state.snapshotData[state.snapshotIndex]))
         store.commit('setCanvasStyle', deepCopy(state.snapshotStyleData[state.snapshotIndex]))
       }
@@ -34,9 +34,7 @@ export default {
     },
 
     recordSnapshot(state) {
-      console.log('这里？record,,,,',state)
       state.changeTimes++
-      // console.log('recordSnapshot')
       // 添加新的快照
       state.snapshotData[++state.snapshotIndex] = deepCopy(state.componentData)
       state.snapshotStyleData[state.snapshotIndex] = deepCopy(state.canvasStyleData)
@@ -47,7 +45,6 @@ export default {
       }
     },
     refreshSnapshot(state) {
-      // console.log('refreshSnapshot')
       // 刷新快照
       state.snapshotData = []
       state.snapshotStyleData = []

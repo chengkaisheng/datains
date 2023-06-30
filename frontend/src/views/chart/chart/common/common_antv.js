@@ -56,7 +56,6 @@ export function getTheme(chart) {
         }
       }
     }
-    console.log('gColors...', gColors)
   }
 
   let customStyle
@@ -138,7 +137,6 @@ export function getLabel(chart) {
       if (l.antvFormatter !== undefined && l.antvFormatter !== '') {
         fn = '`' + ((l.antvFormatter.replace(/{a}/g, '${text.field}')).replace(/{b}/g, '${text.value}')) + '`'
       }
-      // console.log('内容格式',fn)
 
       if (l.show) {
         if (chart.type === 'pie') {
@@ -183,7 +181,6 @@ export function getTooltip(chart) {
     // tooltip
     if (customAttr.tooltip) {
       const t = JSON.parse(JSON.stringify(customAttr.tooltip))
-      // console.log('浮窗数据',t)
       if (t.show) {
         if (t.antvFormatter !== undefined) {
           if (t.antvFormatter === '') {
@@ -192,7 +189,6 @@ export function getTooltip(chart) {
             tooltip = {
               customContent: (title, items) => {
                 // title是当前移入是对应的x轴数据；items是[{...}]形式的，
-                // console.log(title,items)
                 let str = ''
                 str += `<div style="padding: 5px;color:${t.textStyle.color};font-size:${t.textStyle.fontSize}">`
 
@@ -213,7 +209,7 @@ export function getTooltip(chart) {
                   str += '</div>'
                 })
                 str += '</div>'
-                // console.log('展示情况：',str)
+
                 return str
               }
             }
@@ -237,7 +233,6 @@ export function getLegend(chart) {
     // legend
     if (customStyle.legend) {
       const l = JSON.parse(JSON.stringify(customStyle.legend))
-      console.log('lllllllllll', l)
       if (l.show) {
         let offsetX, offsetY, position, itemSpacing
         const orient = l.orient
@@ -384,7 +379,7 @@ export function getXAxis(chart, cstyle = {}) {
       }
     }
   }
-  console.log('x轴：：：', axis)
+
   return axis
 }
 // yAxis
@@ -452,7 +447,7 @@ export function getYAxis(chart, cstyle = {}) {
       }
     }
   }
-  console.log('Y轴：', axis)
+
   return axis
 }
 // yAxisExt
@@ -513,7 +508,7 @@ export function getYAxisExt(chart) {
       }
     }
   }
-  console.log('yExt')
+
   return axis
 }
 

@@ -53,7 +53,7 @@
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="beforeDateStyle('y')">{{ $t('chart.y') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M')">{{ $t('chart.y_M') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeDateStyle('y_Q')">{{$t('chart.y_Q')}}</el-dropdown-item>
+                <el-dropdown-item :command="beforeDateStyle('y_Q')">{{ $t('chart.y_Q') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('M')">{{ $t('chart.M') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M_d')">{{ $t('chart.y_M_d') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('H_m_s')" divided>{{ $t('chart.H_m_s') }}</el-dropdown-item>
@@ -85,12 +85,12 @@
           <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
             <span>{{ $t('chart.delete') }}</span>
           </el-dropdown-item>
-          <el-dropdown-item divided v-if="(viewType === 'roll-elemnt' || viewType === 'progress-count')">
+          <el-dropdown-item v-if="(viewType === 'roll-elemnt' || viewType === 'progress-count')" divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="checkeShow">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-view" />
-                  <span>{{$t('chart.display')}}</span>
+                  <span>{{ $t('chart.display') }}</span>
                   <span class="summary-span-item">
                     (
                     <span v-if="item.checked">展示</span>
@@ -105,12 +105,12 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item divided v-if="viewType === 'roll-elemnt'">
+          <el-dropdown-item v-if="viewType === 'roll-elemnt'" divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="relationShow">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-view" />
-                  <span>{{$t('chart.relation')}}</span>
+                  <span>{{ $t('chart.relation') }}</span>
                   <span class="summary-span-item">
                     (
                     <span v-if="item.relation">展示</span>
@@ -198,16 +198,14 @@ export default {
     }
   },
   mounted() {
-    console.log('维度拖拽字段')
-    if(this.viewType === 'roll-elemnt') {
-      if(this.item.relation === undefined) {
+    if (this.viewType === 'roll-elemnt') {
+      if (this.item.relation === undefined) {
         this.item.relation = true
       }
     }
   },
   methods: {
     clickItem(param) {
-      console.log('clickItem,,,,,',param)
       if (!param) {
         return
       }
@@ -231,7 +229,6 @@ export default {
       }
     },
     sort(param) {
-      console.log('sort,param',param)
       this.item.sort = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
@@ -241,7 +238,6 @@ export default {
       }
     },
     dateStyle(param) {
-      console.log('修改',param)
       this.item.dateStyle = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
@@ -251,9 +247,8 @@ export default {
       }
     },
     checkeShow(param) {
-      console.log('字段展示',param)
       this.item.checked = param.type
-      this.$emit('onDimensionItemChange',this.item)
+      this.$emit('onDimensionItemChange', this.item)
     },
     beforeDisplay(type) {
       return {
@@ -262,7 +257,7 @@ export default {
     },
     relationShow(param) {
       this.item.relation = param.type
-      this.$emit('onDimensionItemChange',this.item)
+      this.$emit('onDimensionItemChange', this.item)
     },
     beforeRelation(type) {
       return {
@@ -271,7 +266,7 @@ export default {
     },
     progressShow(param) {
       this.item.progress = param.type
-      this.$emit('onDimensionItemChange',this.item)
+      this.$emit('onDimensionItemChange', this.item)
     },
     beforeProgress(type) {
       return {
@@ -279,7 +274,6 @@ export default {
       }
     },
     datePattern(param) {
-      // console.log(param)
       this.item.datePattern = param.type
       this.$emit('onDimensionItemChange', this.item)
     },

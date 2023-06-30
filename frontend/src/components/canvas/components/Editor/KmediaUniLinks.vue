@@ -7,7 +7,7 @@
     <el-row style="margin-top: 20px;">
       <el-form ref="form" size="mini" label-width="70px">
         <el-form-item label="devId：">
-          <el-input v-model="kmediaLinks.devId" placeholder="请输入"></el-input>
+          <el-input v-model="kmediaLinks.devId" placeholder="请输入" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit">{{ $t('panel.confirm') }}</el-button>
@@ -30,9 +30,9 @@ export default {
       required: true
     }
   },
-  data(){
+  data() {
     return {
-      kmediaLinks: {},
+      kmediaLinks: {}
     }
   },
   computed: {
@@ -53,7 +53,6 @@ export default {
   },
   methods: {
     init() {
-      console.log('this.linkInfo', this.linkInfo)
       this.kmediaLinks = deepCopy(this.linkInfo)
     },
     onSubmit() {

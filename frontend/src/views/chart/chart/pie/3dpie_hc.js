@@ -113,7 +113,6 @@ export const BASE_PIE = {
 
 let terminalType = 'pc'
 export function basePieOption(chart_option, chart, terminal = 'pc') {
-  console.log('饼3', chart_option, chart, terminal)
   terminalType = terminal
   let customAttr = {}
   if (chart.customAttr) {

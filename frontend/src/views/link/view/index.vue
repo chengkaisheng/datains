@@ -87,7 +87,6 @@ export default {
               type: 'error',
               showClose: true
             })
-            console.log('outerParams Decode error：', e)
           }
         }
 
@@ -111,7 +110,6 @@ export default {
             if (--loadingCount === 0) {
               this.show = true
             }
-            console.log('tempParam error：', e)
           }
         }
 

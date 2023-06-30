@@ -42,7 +42,7 @@ export default {
   mounted() {
     const arr = []
     const files = require.context('@/assets/icon_lib', true, /\.+jpg|jpeg|png$/).keys()
-    console.log(files)
+
     files.forEach((item, index) => {
       arr.push({
         id: '40001',
@@ -52,12 +52,11 @@ export default {
         defaultClass: 'text-filter'
       })
     })
-    console.log(arr)
+
     this.imgData = arr
   },
   methods: {
     handleDragStart(ev) {
-      console.log('======拖拽触发事件', ev, ev.target.dataset.id)
       if (ev.target.dataset.id === undefined) return
       sessionStorage.setItem('iconUrl', ev.target.innerText)
       this.getImgWH(ev.target.innerText)
@@ -74,9 +73,8 @@ export default {
       this.$store.commit('clearDragComponentInfo')
     },
     async getImgWH(name) {
-      console.log(name)
       const obj = await this.getImgSize(name)
-      console.log(obj)
+
       sessionStorage.setItem('imgWidth', obj.width)
       sessionStorage.setItem('imgHeight', obj.height)
     },
@@ -85,7 +83,6 @@ export default {
         const imgObj = new Image()
         imgObj.src = require('@/assets/icon_lib/' + name)
         imgObj.onload = () => {
-          console.log(imgObj)
           resolve({
             width: imgObj.width,
             height: imgObj.height
@@ -94,10 +91,9 @@ export default {
       })
     },
     componentInfo(id) {
-      console.log(id)
       // 辅助设计组件
       let component
-      console.log('componentList', componentList)
+
       componentList.forEach(componentTemp => {
         if (id === componentTemp.id) {
           component = deepCopy(componentTemp)
@@ -110,7 +106,7 @@ export default {
         component.auxiliaryMatrix = false
       }
       component.moveStatus = 'start'
-      console.log('图标组件数据::::::', component)
+
       return component
     }
   }

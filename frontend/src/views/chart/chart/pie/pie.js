@@ -4,7 +4,6 @@ import { componentStyle } from '../common/common'
 // import echarts from 'echarts'
 
 export function basePieOption(chart_option, chart, cstyle = {}) {
-  console.log('chart data pie: ', chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -12,7 +11,7 @@ export function basePieOption(chart_option, chart, cstyle = {}) {
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
-    console.log('----------数据-----', customAttr, chart_option, chart)
+
     chart_option.grid.left = customAttr.size.spaceleft
     chart_option.grid.right = customAttr.size.spaceRight
     chart_option.grid.top = customAttr.size.spaceTop
@@ -61,16 +60,15 @@ export function basePieOption(chart_option, chart, cstyle = {}) {
         y.type = 'pie'
         chart_option.series[0].data.push(y)
       }
-      console.log('chart_option.series[0]: ', chart_option.series[0])
     }
   }
-  // console.log(chart_option);
+
   componentStyle(chart_option, chart, cstyle)
+
   return chart_option
 }
 // prominentPieOption
 export function prominentPieOption(chart_option, chart, cstyle = {}) {
-  console.log('chart data pie: ', chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -78,7 +76,7 @@ export function prominentPieOption(chart_option, chart, cstyle = {}) {
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
-    console.log('----------数据-----', customAttr, chart_option, chart)
+
     chart_option.grid.left = customAttr.size.spaceleft
     chart_option.grid.right = customAttr.size.spaceRight
     chart_option.grid.top = customAttr.size.spaceTop
@@ -130,11 +128,11 @@ export function prominentPieOption(chart_option, chart, cstyle = {}) {
       const pieKeyValue = customAttr.size.pieKeyValue !== undefined ? customAttr.size.pieKeyValue : 0
       chart_option.series[0].data[pieKeyValue].selected = true
       chart_option.series[0].selectedMode = 'single'
-      console.log('chart_option.series[0]: ', chart_option.series[0])
     }
   }
-  // console.log(chart_option);
+
   componentStyle(chart_option, chart, cstyle)
+
   return chart_option
 }
 
@@ -218,13 +216,13 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
       }
     }
   }
-  // console.log(chart_option);
+
   componentStyle(chart_option, chart, cstyle)
+
   return chart_option
 }
 
 export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
-  // console.log('玫瑰环图', chart, cstyle)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -409,8 +407,8 @@ export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
     }
   }
 
-  console.log('渐变玫瑰11', chart_option)
   componentStyle(chart_option, chart, cstyle)
+
   return chart_option
 }
 
@@ -467,8 +465,8 @@ export function texturePieOption(chart_option, chart, cstyle = {}) {
       }
     }
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart, cstyle)
+
   return chart_option
 }
 
@@ -525,8 +523,8 @@ export function newHartOption(chart_option, chart, cstyle = {}) {
       }
     }
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart, cstyle)
+
   return chart_option
 }
 

@@ -167,7 +167,7 @@ export default {
       return style
     },
     ...mapState([
-      'canvasStyleData',
+      'canvasStyleData'
     ])
   },
   watch: {
@@ -197,9 +197,8 @@ export default {
       // })
     },
     subjectChange() {
-      console.log('subject.......',this.subjectItem)
       this.$store.commit('setCanvasStyle', JSON.parse(this.subjectItem.details))
-      this.$store.commit('setTemplateStatus',true)
+      this.$store.commit('setTemplateStatus', true)
       this.$store.commit('recordSnapshot', 'subjectChange')
       bus.$emit('onSubjectChange')
     },
@@ -207,7 +206,7 @@ export default {
       this.$emit('templateEdit', this.template)
     },
     handleDelete() {
-      // console.log('handleDelete')
+
     },
     // 双击事件
     setEdit() {

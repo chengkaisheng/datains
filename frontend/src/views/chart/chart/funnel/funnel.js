@@ -48,14 +48,12 @@ export function baseFunnelOption(chart_option, chart, cstyle = {}) {
       }
     }
   }
-  // console.log(chart_option);
-  componentStyle(chart_option, chart,cstyle)
+
+  componentStyle(chart_option, chart, cstyle)
   return chart_option
 }
 
 export function baseContrastFunnelOption(chart_option, chart, cstyle = {}) {
-  console.log('对比漏斗',chart)
-
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
@@ -78,15 +76,14 @@ export function baseContrastFunnelOption(chart_option, chart, cstyle = {}) {
   }
 
   // 处理data
-  if(chart.data) {
+  if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.legend.data = chart.data.x
-    
-    if(chart.data.series.length > 0) {
-      console.log('series,,,',chart.data.series)
+
+    if (chart.data.series.length > 0) {
       const valueArr = chart.data.series[0].data
-      let arr = []
-      for(let i=0;i<valueArr.length;i++) {
+      const arr = []
+      for (let i = 0; i < valueArr.length; i++) {
         const y = valueArr[i]
         y.name = chart.data.x[i]
         // color
@@ -140,8 +137,8 @@ export function baseContrastFunnelOption(chart_option, chart, cstyle = {}) {
     }
   }
 
-  componentStyle(chart_option, chart,cstyle)
-  console.log('对比funner',chart_option)
+  componentStyle(chart_option, chart, cstyle)
+
   return chart_option
 }
 

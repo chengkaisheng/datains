@@ -476,7 +476,7 @@ export default {
     //       }
     //     })
     //   })
-    //   console.log(data)
+
     //   return opSetInfo
     // }
   },
@@ -485,8 +485,6 @@ export default {
 
   },
   mounted() {
-    console.log('this.curComponent', this.curComponent)
-    console.log('this.componentData', this.componentData)
     this.selectObj.icon = this.curComponent.iconData.icon
     this.selectObj.type = this.curComponent.iconData.type
     this.iconSize = this.curComponent.iconData.fontSize
@@ -494,16 +492,13 @@ export default {
     // let dataArr = []
     // this.componentData.forEach(res => {
     //   if (res.type === 'de-nav') {
-    //     console.log('res', res)
     //     this.options.push.apply(this.options, res.options.navTabList)
     //   }
     // })
-    console.log('this.options', this.options)
   },
 
   methods: {
     addNavInfo() {
-      console.log('this.navInfoLis', this.navInfoLis)
       this.navInfoLis.push({
         name: '',
         relation: []
@@ -515,7 +510,6 @@ export default {
       })
     },
     cancel() {
-      console.log('this.curComponent.commonBackground.boxWidth=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },
     changeIcon(item) {
@@ -531,7 +525,6 @@ export default {
     },
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
-      console.log('const canvasStyleData', canvasStyleData)
       canvasStyleData.panel = this.panel
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
@@ -540,16 +533,13 @@ export default {
       this.commitStyle()
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList)
       var _this = this
       _this.fileList = fileList
       _this.curComponent.options.bannerImgList = []
       _this.fileList.forEach(item => {
-        console.log('itemssss', item)
         if (item.raw) {
           const reader = new FileReader()
           reader.onload = function() {
-            console.log('reader.result7777777', reader.result)
             _this.curComponent.options.bannerImgList.push(reader.result)
           }
           reader.readAsDataURL(item.raw)
@@ -563,17 +553,14 @@ export default {
       this.commitStyle()
     },
     handlePictureCardPreview(file) {
-      console.log('file---', file)
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
     onChange(file, fileList) {
-      console.log('file, fileList', file, fileList)
       var _this = this
       _this.uploadDisabled = true
       // const reader = new FileReader()
       // reader.onload = function() {
-      // console.log('reader.result', reader.result)
       // _this.imgUrlList.push(reader.result)
       // _this.curComponent.commonBackground.outerImage = reader.result
       // }
@@ -581,11 +568,9 @@ export default {
       _this.fileList = fileList
       // _this.curComponent.options.bannerImgList = []
       _this.fileList.forEach(item => {
-        console.log('itemssss', item)
         if (item.raw) {
           const reader = new FileReader()
           reader.onload = function() {
-            console.log('reader.result6666666', reader.result)
             // _this.imgUrlList.push(reader.result)
             // _this.curComponent.options.bannerImgList.push(reader.result)
           }
@@ -594,10 +579,8 @@ export default {
           // _this.curComponent.options.bannerImgList.push(item.url)
         }
       })
-      console.log('222222', file, fileList)
     },
     upload(file) {
-      console.log('this is upload', file)
     }
 
   }

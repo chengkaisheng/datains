@@ -37,7 +37,7 @@
         </el-row>
         <el-button slot="reference" size="mini" class="shape-item">
           {{ $t('panel.panel_view_result_show') }}
-          <i class="el-icon-setting el-icon--right"/>
+          <i class="el-icon-setting el-icon--right" />
         </el-button>
       </el-popover>
     </div>
@@ -66,7 +66,6 @@ export default {
   },
   methods: {
     onChangePanelStyle() {
-      console.log('变化',this.panel,this.canvasStyleData)
       // bus.$emit('calc-data')
       this.$store.state.styleChangeTimes++
     }

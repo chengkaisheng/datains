@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
+import { mapState } from 'vuex'
 
 export default {
   name: 'FilterControl',
@@ -100,7 +100,6 @@ export default {
   },
 
   created() {
-    // console.log('filtercontrol,,,',this.childViews);
     this.attrs = this.controlAttrs
   },
   methods: {

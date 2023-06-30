@@ -132,9 +132,11 @@
         </el-row>
       </el-row>
 
-      <el-row v-if="(curComponent.component === 'de-select' || curComponent.component === 'de-input-search' || curComponent.component === 'de-select-grid') 
-        && curComponent.type === 'custom'">
-        <el-row >
+      <el-row
+        v-if="(curComponent.component === 'de-select' || curComponent.component === 'de-input-search' || curComponent.component === 'de-select-grid')
+          && curComponent.type === 'custom'"
+      >
+        <el-row>
           <el-col :span="4" style="padding-left: 10px;padding-top: 5px">
             <el-checkbox v-model="curComponent.commonSelectFrame.enable" @change="clickEnable">{{ $t('panel.selectBackground') }}</el-checkbox>
           </el-col>
@@ -186,7 +188,7 @@
             </el-col>
           </el-row> -->
           <el-row>
-            <el-col :span="4" ><span class="params-title-small">框字体颜色：</span></el-col>
+            <el-col :span="4"><span class="params-title-small">框字体颜色：</span></el-col>
             <el-col :span="8">
               <el-color-picker v-model="curComponent.commonSelectFrame.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
             </el-col>
@@ -195,27 +197,27 @@
             </el-col>
             <el-col :span="8">
               <el-select v-model="curComponent.commonSelectFrame.fontSize" size="small">
-                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value"></el-option>
+                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
               </el-select>
             </el-col>
           </el-row>
           <el-row v-if="curComponent.component === 'de-select'" style="margin-top: 10px;">
             <el-col style="margin-bottom: 10px;">
-              <el-col :span="4" ><span class="params-title-small">选项字体颜色：</span></el-col>
+              <el-col :span="4"><span class="params-title-small">选项字体颜色：</span></el-col>
               <el-col :span="8">
                 <el-color-picker v-model="curComponent.commonSelectFrame.checkColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
               </el-col>
-              <el-col :span="4" >
+              <el-col :span="4">
                 <span class="params-title-small">选项字体大小：</span>
               </el-col>
               <el-col :span="8">
                 <el-select v-model="curComponent.commonSelectFrame.checkFontSize" size="small">
-                  <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value"></el-option>
+                  <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
                 </el-select>
               </el-col>
             </el-col>
             <el-col>
-              <el-col :span="4" ><span class="params-title-small">选项背景设置：</span></el-col>
+              <el-col :span="4"><span class="params-title-small">选项背景设置：</span></el-col>
               <el-col :span="20">
                 <el-col style="margin-bottom: 10px;">
                   <el-radio-group v-model="curComponent.commonSelectFrame.checkBgType" style="width: 100%;">
@@ -258,21 +260,21 @@
           </el-row>
           <el-row v-if="curComponent.component === 'de-select-grid'" style="margin-top: 10px;">
             <el-col style="margin-bottom: 10px;">
-              <el-col :span="4" ><span class="params-title-small">列表字体颜色：</span></el-col>
+              <el-col :span="4"><span class="params-title-small">列表字体颜色：</span></el-col>
               <el-col :span="8">
                 <el-color-picker v-model="curComponent.commonSelectFrame.panelColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
               </el-col>
-              <el-col :span="4" >
+              <el-col :span="4">
                 <span class="params-title-small">列表字体大小：</span>
               </el-col>
               <el-col :span="8">
                 <el-select v-model="curComponent.commonSelectFrame.panelFontSize" size="small">
-                  <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value"></el-option>
+                  <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
                 </el-select>
               </el-col>
             </el-col>
             <el-col>
-              <el-col :span="4" ><span class="params-title-small">列表背景颜色：</span></el-col>
+              <el-col :span="4"><span class="params-title-small">列表背景颜色：</span></el-col>
               <el-col :span="1">
                 <el-color-picker v-model="curComponent.commonSelectFrame.panelBgColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
               </el-col>
@@ -292,13 +294,13 @@
 
       <el-row v-if="curComponent.component === 'Picture'">
         <el-row>
-            <el-col :span="4">
-              <span class="params-title-small">图片不透明度：</span>
-            </el-col>
-            <el-col :span="11">
-              <el-slider v-model="curComponent.commonSelectFrame.alpha" show-input :show-input-controls="false" input-size="mini" />
-            </el-col>
-          </el-row>
+          <el-col :span="4">
+            <span class="params-title-small">图片不透明度：</span>
+          </el-col>
+          <el-col :span="11">
+            <el-slider v-model="curComponent.commonSelectFrame.alpha" show-input :show-input-controls="false" input-size="mini" />
+          </el-col>
+        </el-row>
       </el-row>
       <el-row v-if="curComponent.component === 'de-date'">
         <el-row>
@@ -306,8 +308,8 @@
             <span class="params-title-small">日期字体颜色：</span>
           </el-col>
           <el-col :span="1">
-              <el-color-picker v-model="curComponent.commonSelectFrame.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
-            </el-col>
+            <el-color-picker v-model="curComponent.commonSelectFrame.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+          </el-col>
         </el-row>
       </el-row>
 
@@ -329,8 +331,8 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import {
-  COMMON_SELECT_FRAME,
-} from '@/components/canvas/custom-component/component-list' 
+  COMMON_SELECT_FRAME
+} from '@/components/canvas/custom-component/component-list'
 
 export default {
   name: 'Background',
@@ -355,7 +357,7 @@ export default {
       uploadDownDisabled: false,
       panel: null,
       predefineColors: COLOR_PANEL,
-      fontSize: [],
+      fontSize: []
     }
   },
   created() {
@@ -373,8 +375,7 @@ export default {
   },
   methods: {
     init() {
-      console.log('this.curComponent', this.curComponent)
-      if(this.curComponent && this.curComponent.commonSelectFrame === undefined) {
+      if (this.curComponent && this.curComponent.commonSelectFrame === undefined) {
         this.curComponent.commonSelectFrame = deepCopy(COMMON_SELECT_FRAME)
       }
 
@@ -382,11 +383,11 @@ export default {
         this.fileList.push({ url: this.curComponent.commonBackground.outerImage })
       }
 
-      if(this.curComponent && this.curComponent.commonSelectFrame && this.curComponent.commonSelectFrame.backImg && typeof (this.curComponent.commonSelectFrame.backImg) === 'string') {
-        this.fileSelList.push({url: this.curComponent.commonSelectFrame.backImg})
+      if (this.curComponent && this.curComponent.commonSelectFrame && this.curComponent.commonSelectFrame.backImg && typeof (this.curComponent.commonSelectFrame.backImg) === 'string') {
+        this.fileSelList.push({ url: this.curComponent.commonSelectFrame.backImg })
       }
       this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
-      this.selectOrigin =deepCopy(this.curComponent.commonSelectFrame)
+      this.selectOrigin = deepCopy(this.curComponent.commonSelectFrame)
       this.queryBackground()
     },
     initFont() {
@@ -405,7 +406,6 @@ export default {
       })
     },
     clickEnable() {
-      console.log('clickEnableclickEnableclickEnableclickEnable')
     },
     cancel() {
       this.curComponent.commonBackground.enable = this.backgroundOrigin.enable
@@ -421,9 +421,9 @@ export default {
       this.curComponent.commonBackground.fontSize = this.backgroundOrigin.fontSize
       this.curComponent.commonBackground.fontColor = this.backgroundOrigin.fontColor
 
-      if(this.curComponent.component === 'de-select' 
-        || this.curComponent.component === 'de-input-search'
-        || this.curComponent.component === 'de-select-grid'
+      if (this.curComponent.component === 'de-select' ||
+        this.curComponent.component === 'de-input-search' ||
+        this.curComponent.component === 'de-select-grid'
       ) {
         this.curComponent.commonSelectFrame.enable = this.selectOrigin.enable
         this.curComponent.commonSelectFrame.backType = this.selectOrigin.backType
@@ -439,22 +439,19 @@ export default {
         this.curComponent.commonSelectFrame.panelColor = this.selectOrigin.panelColor
       }
 
-      if(this.curComponent.component === 'Picture') {
+      if (this.curComponent.component === 'Picture') {
         this.curComponent.commonSelectFrame.alpha = this.selectOrigin.alpha
       }
-      if(this.curComponent.component === 'de-date') {
+      if (this.curComponent.component === 'de-date') {
         this.curComponent.commonSelectFrame.fontSize === this.selectOrigin.fontSize
       }
       // if(this.curComponent.component === 'de-text-info') {
       //   this.curComponent.commonSelectFrame.fontColor === this.selectOrigin.fontColor
       // }
 
-
-      console.log('this.curComponent.commonBackground=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },
     save() {
-      console.log('组件背景样式：：：：', this.curComponent)
       this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
     },
@@ -473,12 +470,12 @@ export default {
       this.fileList = []
       this.commitStyle()
     },
-    handleSelRemove(file,fileList) {
+    handleSelRemove(file, fileList) {
       this.uploadSelDisabled = false,
       this.fileSelList = []
       this.commitStyle()
     },
-    handleDownRemove(file,fileList) {
+    handleDownRemove(file, fileList) {
       this.uploadDownDisabled = false,
       this.fileDownList = []
       this.commitStyle()
@@ -496,7 +493,6 @@ export default {
       this.dialogDownVisible = true
     },
     onChange(file, fileList) {
-      console.log('file', file)
       if (file.size / 1024 / 1024 > 10) {
         this.$message.error('上传的文件大小不能超过 10MB!')
         this.fileList = []
@@ -510,7 +506,7 @@ export default {
       }
       reader.readAsDataURL(file.raw)
     },
-    onSelChange(file,fileList) {
+    onSelChange(file, fileList) {
       if (file.size / 1024 / 1024 > 10) {
         this.$message.error('上传的文件大小不能超过 10MB!')
         this.fileSelList = []
@@ -524,7 +520,7 @@ export default {
       }
       reader.readAsDataURL(file.raw)
     },
-    onDownChange(file,fileList) {
+    onDownChange(file, fileList) {
       if (file.size / 1024 / 1024 > 10) {
         this.$message.error('上传的文件大小不能超过 10MB!')
         this.fileDownList = []
@@ -539,7 +535,6 @@ export default {
       reader.readAsDataURL(file.raw)
     },
     upload(file) {
-      // console.log('this is upload')
     }
 
   }

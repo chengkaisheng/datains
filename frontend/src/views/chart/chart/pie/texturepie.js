@@ -50,8 +50,9 @@ export function basePieOption(chart_option, chart) {
       }
     }
   }
-  // console.log(chart_option);
+
   componentStyle(chart_option, chart)
+
   return chart_option
 }
 
@@ -104,8 +105,9 @@ export function rosePieOption(chart_option, chart) {
       }
     }
   }
-  // console.log(chart_option);
+
   componentStyle(chart_option, chart)
+
   return chart_option
 }
 

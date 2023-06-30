@@ -259,8 +259,6 @@ export default {
   },
   watch: {
     chart: function() {
-      console.log('this.chart.data----------2222', this.chart, this.timer)
-
       if (this.chart.data) {
         clearInterval(this.timer)
         this.prossData()
@@ -275,10 +273,6 @@ export default {
     }
   },
   mounted() {
-    // console.log('this.fields', this.fields)
-    console.log('获取边框数据111', this.element)
-    console.log('this.chart1111---', this.chart)
-    // console.log('滚动表格',this.inScreen)
     // this.oldData = JSON.parse(JSON.stringify(this.chart))
 
     if (this.chart.data) {
@@ -369,7 +363,6 @@ export default {
       JSON.parse(this.chart.yaxis).forEach(item => {
         axis.push(item)
       })
-      // console.log('维度和指标的字段：：：',axis)
       this.axisList = axis
 
       const arr = []
@@ -381,7 +374,6 @@ export default {
       })
       // this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
       this.dataInfo = arr
-      console.log('有数据才会去执行操作---------', this.dataInfo)
       // this.initStyle()
 
       this.$nextTick(() => {
@@ -399,13 +391,11 @@ export default {
         'sourceViewId': this.element.propValue.viewId,
         'targetViewIds': targetViewIds
       }
-      // console.log('联动设置',requestInfo)
       // getViewLinkageGather(requestInfo).then(rsp => {
       //   console.log('联动数据', rsp)
       // })
     },
     changeColumnWidth({ column, columnIndex }) {
-      console.log('23123213213231232132121', column, columnIndex)
       // if (column.width !== column.renderWidth) {
       //   this.tableHeadList[columnIndex - 2].width = column.renderWidth
       //   // this.saveHeadConfig()
@@ -483,7 +473,6 @@ export default {
     initStyle() {
       const customAttr = JSON.parse(this.chart.customAttr)
       if (this.chart.customAttr) {
-        console.log('是否触发此处修改------------2222222', customAttr)
         if (customAttr.color) {
           this.table_header_class.color = customAttr.color.tableFontColor
           this.iconStyle.color = customAttr.color.tableIconColor !== undefined ? hexColorToRGBA(customAttr.color.tableIconColor, customAttr.color.alphaG) : '#000000'
@@ -517,13 +506,11 @@ export default {
           this.highlight = customAttr.size.highlightNumber ? customAttr.size.highlightNumber : 2
           this.tableRowsNumber = customAttr.size.tableRowsNumber ? customAttr.size.tableRowsNumber : 5
           // this.scrollId.fontSize = (Math.ceil(+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth)) + 'px'
-          // console.log('customAttr.size.heightLightFontSize', customAttr.size.heightLightFontSize, this.previewCanvasScale.scalePointWidth)
           this.scrollId.fontSize = (+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
           this.scrollId.marginBottom = customAttr.size.tableMargin ? customAttr.size.tableMargin + 'px' : '0px'
           this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
           this.setStyle.height = customAttr.size.tableItemHeight + 'px'
           this.rollingRate = customAttr.size.tableRollingRate
-          // console.log('customAttr.size.tableItemHeight', customAttr.size.tableItemHeight)
           this.bodyHeight = customAttr.size.tableItemHeight
           this.scrollId.height = customAttr.size.tableItemHeight + 'px'
           this.table_item_class.textAlign = customAttr.size.tableItemAlign
@@ -531,7 +518,6 @@ export default {
           this.iconStyle.fontSize = customAttr.size.tableIconFontSize ? customAttr.size.tableIconFontSize + 'px' : '80px'
           this.iconStyle.height = customAttr.size.tableIconHeight ? customAttr.size.tableIconHeight + 'px' : '40px'
 
-          console.log('widthData', customAttr.size.widthData)
           if (customAttr.size.widthData && customAttr.size.widthData.length) {
             this.adaptWidth = customAttr.size.adaptWidth !== undefined ? customAttr.size.adaptWidth : true
             this.widthData = customAttr.size.widthData
@@ -540,7 +526,6 @@ export default {
           }
         }
         if (customAttr.label) {
-          // console.log('label数据，，，，，', customAttr.label)
           this.isPopShow = customAttr.label.popShow
           this.popOpen.position = customAttr.label.popOpen
           this.popOpen.left = customAttr.label.popLeft ? customAttr.label.popLeft + 'px' : '0px'
@@ -565,7 +550,6 @@ export default {
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
-        console.log('customStyle', customStyle)
         if (customStyle.text) {
           this.title_show = customStyle.text.show
           this.title_class.fontSize = (customStyle.text.fontSize * this.previewCanvasScale.scalePointWidth) + 'px'

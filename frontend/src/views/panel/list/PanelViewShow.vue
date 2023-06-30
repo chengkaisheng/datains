@@ -192,7 +192,6 @@ export default {
       }
     },
     showMainFlag() {
-      console.log('22222', this.showMain)
       return this.showMain
     },
     panelInfo() {
@@ -370,7 +369,6 @@ export default {
     },
 
     updatePortal(trendId) {
-      console.log('trendId', trendId)
       this.$emit('update', trendId)
     }
   }

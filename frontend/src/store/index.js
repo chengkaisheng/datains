@@ -153,7 +153,6 @@ const data = {
     },
 
     setCanvasStyle(state, style) {
-      console.log('设置样式：', style)
       if (style) {
         style['selfAdaption'] = true
       }
@@ -173,11 +172,9 @@ const data = {
     },
 
     setTemplateStatus(state, status) {
-      console.log('设置temp样式', status)
       state.templateStatus = status
     },
     setPriorityStatus(state, status) {
-      console.log('设置priority', status)
       state.isStylePriority = status
     },
 
@@ -189,7 +186,7 @@ const data = {
           resizing: false
         }
       }
-      console.log('操作视图', component)
+
       state.styleChangeTimes = 0
       state.curComponent = component
       state.curComponentIndex = index
@@ -197,23 +194,19 @@ const data = {
 
     setDetailsViews(state, data) {
       const arr = state.detailsViews.map(item => { return item.id })
-      // console.log('已有哪些',arr,data)
       if (arr.indexOf(data.id) !== -1) {
         for (let i = 0; i < state.detailsViews.length; i++) {
           const el = state.detailsViews[i]
           if (el.id === data.id) {
             state.detailsViews[i] = data
-            // console.log('11111111',state.detailsViews[i])
           }
         }
       } else {
         state.detailsViews.push(data)
       }
-      // console.log('这值，，',state.detailsViews)
     },
 
     setScrollViews(state, data) {
-      // console.log('设置联动弹窗',data)
       state.scrollViews = data
     },
     setScrollVisible(state, status) {
@@ -243,7 +236,6 @@ const data = {
         if (height || height === 0) curComponent.style.height = (height / curCanvasScale.scalePointHeight) + 0.0000001
         if (rotate || rotate === 0) curComponent.style.rotate = rotate
       }
-      // console.log('宽高处理出？？？？？？', width, height, curComponent, curCanvasScale)
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {
@@ -279,11 +271,9 @@ const data = {
       })
     },
     addViewFilter(state, data) {
-      console.log('过滤器修改-----------', state, data)
       const condition = formatCondition(data)
       const vValid = valueValid(condition)
       //   1.根据componentId过滤
-      console.log('condition', condition, 'vValid', vValid)
       const filterComponentId = condition.componentId
 
       //   2.循环每个Component 得到 三种情况 a增加b删除c无操作
@@ -291,9 +281,7 @@ const data = {
 
       for (let index = 0; index < state.componentData.length; index++) {
         const element = state.componentData[index]
-        console.log('1---------------点')
         if (element.type && element.type === 'de-tabs') {
-          console.log('2---------------点')
           for (let idx = 0; idx < element.options.tabList.length; idx++) {
             const ele = element.options.tabList[idx].content
             if (!ele.type || ele.type !== 'view') continue
@@ -315,7 +303,6 @@ const data = {
           state.componentData[index] = element
         }
         if (!element.type || element.type !== 'view') continue
-        console.log('3---------------点', condition)
         const currentFilters = element.filters || []
         const vidMatch = viewIdMatch(condition.viewIds, element.propValue.viewId)
 
@@ -326,18 +313,15 @@ const data = {
             currentFilters.splice(j, 1)
           }
         }
-        console.log('4---------------点', condition, data)
         // 不存在该条件 且 条件有效 直接保存该条件
         // !filterExist && vValid && currentFilters.push(condition)
         vidMatch && vValid && currentFilters.push(condition)
         element.filters = currentFilters
-        console.log('5---------------点', element, data)
         state.componentData[index] = {}
         state.componentData[index] = element
 
         // this.$set(state.componentData[index], 'newKey', data.value)
       }
-      console.log('state.componentData', state.componentData)
     },
 
     // 添加联动 下钻 等过滤组件
@@ -494,7 +478,6 @@ const data = {
       state.componentData.splice(index, 1)
     },
     setLinkageInfo(state, targetLinkageInfo) {
-      console.log('联动设置：：', state, targetLinkageInfo)
       state.linkageSettingStatus = true
       state.curLinkageView = state.curComponent
       state.targetLinkageInfo = targetLinkageInfo
@@ -511,7 +494,6 @@ const data = {
       state.isUniformity = status
     },
     setNowPanelTrackInfo(state, trackInfo) {
-      console.log('联动信息，，', trackInfo)
       state.nowPanelTrackInfo = trackInfo
     },
     setNowPanelJumpInfo(state, jumpInfo) {
@@ -538,11 +520,10 @@ const data = {
         height: 0,
         width: 0
       }
-      console.log('setDragComp', dragComponentInfo)
+
       state.dragComponentInfo = dragComponentInfo
     },
     clearDragComponentInfo(state) {
-      console.log(state)
       // 如果当前没有拖拽的元素没有放置到画布 清理一下矩阵的占位符
       if (state.dragComponentInfo === null) return
 

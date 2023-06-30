@@ -72,7 +72,6 @@ export default {
     },
     dateStyle() {
       const style = {}
-      // console.log('日期颜色。',this.element)
       if (this.element.commonSelectFrame.fontColor !== undefined) {
         style.color = this.element.commonSelectFrame.fontColor
         style['--text-color'] = this.element.commonSelectFrame.fontColor

@@ -23,7 +23,7 @@ export default {
           ele.relation = []
         })
       }
-      console.log('触发复制---------', state.copyData)
+
       state.isCut = false
     },
 

@@ -34,7 +34,7 @@
         <cluster-mode />
       </el-tab-pane>
 
-      <el-tab-pane  v-if="engineMode==='cluster'" :lazy="true" :label="$t('system_parameter_setting.kettle_setting')" name="eight">
+      <el-tab-pane v-if="engineMode==='cluster'" :lazy="true" :label="$t('system_parameter_setting.kettle_setting')" name="eight">
         <kettle-setting />
       </el-tab-pane>
 
@@ -53,7 +53,7 @@ import { pluginLoaded } from '@/api/user'
 import { engineMode } from '@/api/system/engine'
 export default {
 
-  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom, SimpleMode, ClusterMode, KettleSetting},
+  components: { BasicSetting, EmailSetting, LayoutContent, PluginCom, SimpleMode, ClusterMode, KettleSetting },
   data() {
     return {
       activeName: 'zero',
@@ -71,7 +71,7 @@ export default {
   },
   methods: {
     handleClick(tab, event) {
-      // console.log(tab, event)
+
     }
   }
 }

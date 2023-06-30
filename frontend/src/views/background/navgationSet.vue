@@ -146,7 +146,7 @@
               </el-col>
               <el-col :span="18">
                 <div v-show="navBgImg!==''" style="height:100px;width:120px;overflow-y:scroll;position: relative;">
-                  <i class="el-icon-delete i_pos" @click="deleteImg('default')"></i>
+                  <i class="el-icon-delete i_pos" @click="deleteImg('default')" />
                   <img :src="navBgImg" class="img_class">
                 </div>
               </el-col>
@@ -179,7 +179,7 @@
               </el-col>
               <el-col :span="18">
                 <div v-show="changImg!==''" style="height:100px;width:120px;overflow-y:scroll;position: relative;">
-                  <i class="el-icon-delete i_pos" @click="deleteImg('highlight')"></i>
+                  <i class="el-icon-delete i_pos" @click="deleteImg('highlight')" />
                   <img :src="changImg" class="img_class">
                 </div>
               </el-col>
@@ -192,7 +192,7 @@
             <el-radio :label="false">图库</el-radio>
           </el-radio-group>
         </el-col> -->
-        
+
         <!-- <el-col v-show="updataType" style="width: 130px!important;">
           <el-upload
             action=""
@@ -257,13 +257,13 @@
             <span class="params-title">浮窗展示宽度</span>
           </el-col>
           <el-col :span="8">
-            <el-input-number v-model="curComponent.options.floatWidth" :min="1"></el-input-number>
+            <el-input-number v-model="curComponent.options.floatWidth" :min="1" />
           </el-col>
           <el-col :span="4">
             <span class="params-title">浮窗展示高度</span>
           </el-col>
           <el-col :span="8">
-            <el-input-number v-model="curComponent.options.floatHeight" :min="1"></el-input-number>
+            <el-input-number v-model="curComponent.options.floatHeight" :min="1" />
           </el-col>
         </el-col>
         <el-col style="margin-top: 10px;">
@@ -271,13 +271,13 @@
             <span class="params-title">浮窗水平偏移</span>
           </el-col>
           <el-col :span="8">
-            <el-input-number v-model="curComponent.options.floatLevel" :min="0"></el-input-number>
+            <el-input-number v-model="curComponent.options.floatLevel" :min="0" />
           </el-col>
           <el-col :span="4">
             <span class="params-title">浮窗垂直偏移</span>
           </el-col>
           <el-col :span="8">
-            <el-input-number v-model="curComponent.options.floatVertical" :min="0"></el-input-number>
+            <el-input-number v-model="curComponent.options.floatVertical" :min="0" />
           </el-col>
         </el-col>
 
@@ -292,7 +292,7 @@
               </el-col>
               <el-col :span="10">
                 <div v-show="floatImg !== ''" style="height:100px;width:120px;overflow-y:scroll;position: relative;">
-                    <i class="el-icon-delete i_pos" @click="deleteImg('float')"></i>
+                  <i class="el-icon-delete i_pos" @click="deleteImg('float')" />
                   <img :src="floatImg" class="img_class">
                 </div>
               </el-col>
@@ -304,9 +304,9 @@
               <el-col :span="6">
                 <el-button size="mini" type="primary" @click="openFloatHighImg()">选择</el-button>
               </el-col>
-              <el-col :span="10" >
+              <el-col :span="10">
                 <div v-show="floatHighImg !== ''" style="height:100px;width:120px;overflow-y:scroll;position: relative;">
-                    <i class="el-icon-delete i_pos" @click="deleteImg('floatHigh')"></i>
+                  <i class="el-icon-delete i_pos" @click="deleteImg('floatHigh')" />
                   <img :src="floatHighImg" class="img_class">
                 </div>
               </el-col>
@@ -332,7 +332,7 @@
           <el-col :span="4">
             <span class="params-title">导航标题</span>
             <el-tooltip content="导航标题与其他tab导航标题不能相同" placement="top" effect="light">
-            <i class="el-icon-info"></i>
+              <i class="el-icon-info" />
             </el-tooltip>
           </el-col>
           <el-col :span="8">
@@ -371,78 +371,78 @@
     </el-row>
 
     <el-dialog
-        width="750px"
-        title="图片库"
-        :visible.sync="innerVisible"
-        append-to-body
-      >
-        <el-tabs v-model="activeNameTabs" @tab-click="handleClick">
-          <el-tab-pane label="图库选择" name="first">
-            <el-row class="bif_box">
-              <el-col>
-                <el-collapse v-model="activeNames">
-                  <el-collapse-item v-for="(ited,index) in allImgData" :key="index" :title="ited.name" :name="ited.name">
-                    <template slot="title">
-                      <span style="width:600px">{{ ited.name }}</span>
-                    </template>
-                    <el-row :gutter="10" style="padding:10px;">
-                      <el-col v-for="(item,indexs) in ited.str" :key="indexs" style="height:108px;margin-bottom:20px; position:relative;" :span="6">
-                        <div class="img_Box" @click="clickImg(item)">
-                          <img :src="item.url" class="img_class">
-                        </div>
-                      </el-col>
-                    </el-row>
-                  </el-collapse-item>
-                </el-collapse>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top:20px;">
-              <el-col :span="3">
-                <span class="params-title">{{ '选中图片：' }}</span>
-              </el-col>
-              <el-col :span="6" style="height:108px;margin-bottom:20px;overflow-y:scroll;">
-                <img :src="currentlySelected" class="img_class">
-              </el-col>
-            </el-row>
-          </el-tab-pane>
-          <el-tab-pane label="上传图片" name="second">
-            <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
-              <el-col :span="4">
-                <span class="params-title">{{ '选择图片' }}</span>
-              </el-col>
-              <el-col v-show="updataType" style="width: 130px!important;">
-                <el-upload
-                  action=""
-                  accept=".jpeg,.jpg,.png,.gif,.svg"
-                  class="avatar-uploader"
-                  list-type="picture-card"
-                  :class="{disabled:uploadDisabled}"
-                  :on-preview="handlePictureCardPreview"
-                  :on-remove="handleRemove"
-                  :http-request="upload"
-                  :file-list="fileList"
-                  :on-change="onChange"
-                >
-                  <i class="el-icon-plus" />
-                </el-upload>
-                <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :append-to-body="true" :visible.sync="dialogVisible">
-                  <img width="100%" :src="dialogImageUrl" alt="">
-                </el-dialog>
-              </el-col>
-              <el-col v-show="updataType" :span="7">
-                <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
-              </el-col>
-            </el-row>
-          </el-tab-pane>
-        </el-tabs>
+      width="750px"
+      title="图片库"
+      :visible.sync="innerVisible"
+      append-to-body
+    >
+      <el-tabs v-model="activeNameTabs" @tab-click="handleClick">
+        <el-tab-pane label="图库选择" name="first">
+          <el-row class="bif_box">
+            <el-col>
+              <el-collapse v-model="activeNames">
+                <el-collapse-item v-for="(ited,index) in allImgData" :key="index" :title="ited.name" :name="ited.name">
+                  <template slot="title">
+                    <span style="width:600px">{{ ited.name }}</span>
+                  </template>
+                  <el-row :gutter="10" style="padding:10px;">
+                    <el-col v-for="(item,indexs) in ited.str" :key="indexs" style="height:108px;margin-bottom:20px; position:relative;" :span="6">
+                      <div class="img_Box" @click="clickImg(item)">
+                        <img :src="item.url" class="img_class">
+                      </div>
+                    </el-col>
+                  </el-row>
+                </el-collapse-item>
+              </el-collapse>
+            </el-col>
+          </el-row>
+          <el-row style="margin-top:20px;">
+            <el-col :span="3">
+              <span class="params-title">{{ '选中图片：' }}</span>
+            </el-col>
+            <el-col :span="6" style="height:108px;margin-bottom:20px;overflow-y:scroll;">
+              <img :src="currentlySelected" class="img_class">
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+        <el-tab-pane label="上传图片" name="second">
+          <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+            <el-col :span="4">
+              <span class="params-title">{{ '选择图片' }}</span>
+            </el-col>
+            <el-col v-show="updataType" style="width: 130px!important;">
+              <el-upload
+                action=""
+                accept=".jpeg,.jpg,.png,.gif,.svg"
+                class="avatar-uploader"
+                list-type="picture-card"
+                :class="{disabled:uploadDisabled}"
+                :on-preview="handlePictureCardPreview"
+                :on-remove="handleRemove"
+                :http-request="upload"
+                :file-list="fileList"
+                :on-change="onChange"
+              >
+                <i class="el-icon-plus" />
+              </el-upload>
+              <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :append-to-body="true" :visible.sync="dialogVisible">
+                <img width="100%" :src="dialogImageUrl" alt="">
+              </el-dialog>
+            </el-col>
+            <el-col v-show="updataType" :span="7">
+              <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+      </el-tabs>
 
-        <el-row class="root-class">
-          <el-col :span="24">
-            <el-button size="mini" @click="cancelPicture()">{{ $t('commons.cancel') }}</el-button>
-            <el-button type="primary" size="mini" @click="savePicture()">{{ $t('commons.confirm') }}</el-button>
-          </el-col>
-        </el-row>
-      </el-dialog>
+      <el-row class="root-class">
+        <el-col :span="24">
+          <el-button size="mini" @click="cancelPicture()">{{ $t('commons.cancel') }}</el-button>
+          <el-button type="primary" size="mini" @click="savePicture()">{{ $t('commons.confirm') }}</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -522,8 +522,8 @@ export default {
         { name: '600', value: '600' },
         { name: '700', value: '700' },
         { name: '800', value: '800' },
-        { name: '900', value: '900' },
-      ],
+        { name: '900', value: '900' }
+      ]
     }
   },
   computed: {
@@ -538,7 +538,6 @@ export default {
         data = data.concat(res.relation)
       })
       const opSetInfo = this.options
-      console.log('this.options', this.options)
       opSetInfo.forEach(item => {
         data.forEach(e => {
           if (e === item.id) {
@@ -546,7 +545,7 @@ export default {
           }
         })
       })
-      console.log('---------', data)
+
       return opSetInfo
     }
   },
@@ -560,31 +559,27 @@ export default {
     //     res.showName = ''
     //   }
     // })
-    console.log('componentData获取数据--', this.componentData, this.curComponent)
     // const seltOps = []
     this.navInfoLis = this.element.options.navTabList
     this.navInfoLis.forEach(res => {
       res.relation = []
     })
     this.navInfoLis.forEach(ele => {
-      console.log('ele::::', ele)
       this.componentData.forEach(res => {
-        if (res.showName === ele.name) {  // 这个地方判断
+        if (res.showName === ele.name) { // 这个地方判断
           // res.showName = ''
           ele.relation.push(res.id)
           delete res.showName
         }
       })
     })
-    console.log(' this.componentData', this.componentData)
+
     const newArrr = deepCopy(this.componentData)
     newArrr.forEach(ele => {
       ele.disabled = true
       if (!ele.hasOwnProperty('showName')) {
-        console.log('满足条件的ele', ele)
         ele.disabled = false
       }
-      console.log('ele----', ele)
     })
     this.navInfoLis.forEach(res => {
       res.relation.forEach(e => {
@@ -596,7 +591,6 @@ export default {
       })
     })
     this.options = deepCopy(newArrr)
-    console.log('0-0-0-0-0-0-0-0-0--0', this.options)
     if (this.element.options.heightBgImg && this.element.options.heightBgImg !== '') {
       // this.updataUrl = this.curComponent.options.heightBgImg
       this.changImg = this.curComponent.options.heightBgImg
@@ -610,7 +604,7 @@ export default {
       this.floatImg = this.curComponent.options.floatImg
     }
 
-    if(this.curComponent.options.floatHighImg) {
+    if (this.curComponent.options.floatHighImg) {
       this.floatHighImg = this.curComponent.options.floatHighImg
     }
     // this.curComponent.options.defaultBg = this.navBgImg
@@ -633,7 +627,6 @@ export default {
         // return
       }
 
-      // console.log('每一行的数据内容', item, this.element)
       // return true
     },
     handleClick() {
@@ -641,14 +634,12 @@ export default {
     },
     clickImg(item) {
       this.currentlySelected = item.url
-      console.log('图片数据', item)
     },
     cancelPicture() {
       this.innerVisible = false
       // this.changImg = ''
     },
     savePicture() {
-      console.log('this.activeNameTabs', this.activeNameTabs)
       if (this.activeNameTabs === 'first') {
         if (this.chengKey === 'highlight') {
           this.changImg = this.currentlySelected
@@ -673,21 +664,20 @@ export default {
       this.innerVisible = false
     },
     deleteImg(value) {
-      if(value === 'default') {
-        this.navBgImg = ""
-      } else if(value === 'highlight') {
-        this.changImg = ""
-      } else if(value === 'float') {
-        this.floatImg = ""
-      } else if(value === 'floatHigh') {
-        this.floatHighImg = ""
+      if (value === 'default') {
+        this.navBgImg = ''
+      } else if (value === 'highlight') {
+        this.changImg = ''
+      } else if (value === 'float') {
+        this.floatImg = ''
+      } else if (value === 'floatHigh') {
+        this.floatHighImg = ''
       }
       this.fileList = []
       this.uploadDisabled = false
     },
     getAllImg() {
       getAllImgList().then(res => {
-        console.log('获取所有图片数据', res)
         this.allImgData = res.data
       })
     },
@@ -722,10 +712,8 @@ export default {
       this.uploadDisabled = false
       this.updataUrl = ''
       this.innerVisible = true
-      
     },
     addNavInfo() {
-      console.log('this.navInfoLis', this.navInfoLis)
       this.navInfoLis.push({
         name: '',
         relation: []
@@ -733,10 +721,8 @@ export default {
     },
     changeAssembly(e) {
       // 组件不能重复选择
-      console.log(e)
       // this.options.forEach(res => {
       //   res.disabled = false
-      //   console.log('res', res)
       // })
       // e.forEach(item => {
       //   this.options.forEach(res => {
@@ -747,13 +733,11 @@ export default {
       // })
     },
     blurSelect(e) {
-      console.log('失焦', e)
     },
     deleteNav(item, index) {
       this.navInfoLis.splice(index, 1)
     },
     init() {
-      console.log('componentData--------', this.componentData, this.curComponent)
       if (this.curComponent.options.bannerImgList) {
         this.curComponent.options.bannerImgList.forEach(res => {
           this.fileList.push({ url: res })
@@ -789,7 +773,6 @@ export default {
       // this.curComponent.commonBackground.innerPadding = this.backgroundOrigin.innerPadding
       // this.curComponent.commonBackground.boxWidth = Math.floor(this.backgroundOrigin.boxWidth)
       // this.curComponent.commonBackground.boxHeight = Math.floor(this.backgroundOrigin.boxHeight)
-      console.log('this.curComponent.commonBackground.boxWidth=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },
     save() {
@@ -818,7 +801,6 @@ export default {
         }
       }
 
-      console.log('this.fileList', this.fileList)
       // 高亮背景
       this.curComponent.options.heightBgImg = this.changImg
       // 默认背景
@@ -835,7 +817,6 @@ export default {
     },
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
-      console.log('const canvasStyleData', canvasStyleData)
       // canvasStyleData.panel = this.panel
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
@@ -844,7 +825,6 @@ export default {
       this.commitStyle()
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList)
       this.uploadDisabled = false
       // this.panel.imageUrl = null
       this.curComponent.options.heightBgImg = ''
@@ -852,7 +832,6 @@ export default {
       this.commitStyle()
     },
     handlePictureCardPreview(file) {
-      console.log('file---', file)
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
@@ -862,21 +841,16 @@ export default {
         this.fileList = []
         return
       }
-      console.log('file, fileList', file, fileList)
+
       var _this = this
       _this.uploadDisabled = true
       const reader = new FileReader()
       reader.onload = function() {
         _this.updataUrl = reader.result
-        // _this.curComponent.options.heightBgImg = reader.result
-        // _this.commitStyle()
-        console.log('reader.result6666666', reader.result)
       }
       reader.readAsDataURL(file.raw)
-      console.log('222222', file, fileList)
     },
     upload(file) {
-      console.log('this is upload', file)
     }
 
   }

@@ -364,7 +364,6 @@ export default {
       )
     },
     charViewG2ShowFlag() {
-      // console.log('----------3333', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
@@ -377,7 +376,6 @@ export default {
       )
     },
     charViewS2ShowFlag() {
-      // console.log('----------4444', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
@@ -397,7 +395,6 @@ export default {
       )
     },
     tableShowFlag() {
-      // console.log('----------22222222', this.chart)
       return (
         this.httpRequest.status &&
         this.chart.type &&
@@ -406,7 +403,6 @@ export default {
       )
     },
     rollShowFlag() {
-      console.log('触发此处问题-----------', this.chart.type)
       return (
         this.httpRequest.status &&
         this.chart.type &&
@@ -415,7 +411,6 @@ export default {
       )
     },
     dialogTableFlog() {
-      console.log('this.chart.type', this.chart.type)
       return (
         this.httpRequest.status &&
         this.chart.type &&
@@ -424,7 +419,6 @@ export default {
       )
     },
     tableRollFlag() {
-      // console.log('滚动表格chart', this.chart)
       // const rollChart = JSON.parse(JSON.stringify(this.chart))
 
       // localStorage.setItem('rollChart', JSON.stringify(rollChart))
@@ -506,18 +500,15 @@ export default {
     },
     cfilters() {
       // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
-      console.log('cfilters: ', this.element.filters)
       if (!this.element.filters) return []
       return JSON.parse(JSON.stringify(this.element.filters))
     },
     newKey() {
-      console.log('添加的先后--------')
       if (this.element.newKey) return []
       return this.element.newKey
     },
     linkageFilters() {
       // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
-      console.log('这里赋值？', this.element)
       if (!this.element.linkageFilters) return []
       return JSON.parse(JSON.stringify(this.element.linkageFilters))
     },
@@ -559,19 +550,16 @@ export default {
       return this.canvasStyleData.panel.resultCount
     },
     boxWidth() {
-      // console.log('修改触发=====0001boxWidth', this.element)
       return (
         (this.element.commonBackground && this.element.commonBackground.boxWidth) || 0
       )
     },
     boxHeight() {
-      // console.log('修改触发=====0001boxWidth', this.element)
       return (
         (this.element.commonBackground && this.element.commonBackground.boxHeight) || 0
       )
     },
     innerPadding() {
-      // console.log('修改触发=====0001')
       return (
         (this.element.commonBackground && this.element.commonBackground.innerPadding) || 0
       )
@@ -593,14 +581,12 @@ export default {
   watch: {
     innerPadding: {
       handler: function(val1, val2) {
-        // console.log('监听视图层变化=============', val1, val2)
         this.resizeChart()
       },
       deep: true
     },
     boxWidth: {
       handler: function(val1, val2) {
-        // console.log('监听视图层变化=============boxWidth', val1, val2)
         this.element.style.width = val1
         this.resizeChart()
       },
@@ -608,7 +594,6 @@ export default {
     },
     boxHeight: {
       handler: function(val1, val2) {
-        // console.log('监听视图层变化=============boxWidth', val1, val2)
         this.element.style.height = val1
         this.resizeChart()
       },
@@ -617,8 +602,6 @@ export default {
     cfilters: {
       handler: function(val1, val2) {
         if (isChange(val1, val2) && !this.isFirstLoad) {
-          console.log('触发点-------------------------5')
-          console.log('this.element', this.element, this.chart)
           // if (this.chart.type !== 'roll-elemnt') {  //阻止滚动表格文本搜索
           //   this.getData(this.element.propValue.viewId)
           // }
@@ -629,9 +612,7 @@ export default {
     },
     linkageFilters: {
       handler(newVal, oldVal) {
-        console.log('触发，linkage', newVal, oldVal)
         if (isChange(newVal, oldVal)) {
-          console.log('触发点-------------------------6', newVal, this.element)
           this.getData(this.element.propValue.viewId)
         }
       },
@@ -648,7 +629,6 @@ export default {
           this.preCanvasPanel.resultMode !== newVal.panel.resultMode ||
           this.templateStatus || this.isStylePriority
         ) {
-          console.log('触发点-------------------------1')
           this.getData(this.element.propValue.viewId, false)
         }
         // 如果gap有变化刷新
@@ -676,7 +656,6 @@ export default {
     // 监听外部计时器变化
     searchCount: function(val1) {
       if (val1 > 0 && this.requestStatus !== 'waiting') {
-        console.log('-----------计时器', this.chart)
         if (this.chart.type !== 'roll-elemnt' && this.chart.type !== 'roll-click-element') {
           this.getData(this.element.propValue.viewId)
         }
@@ -706,13 +685,11 @@ export default {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
       // 如果watch.filters 已经进行数据初始化时候，此处放弃数据初始化
-      console.log('触发点-------------------------7')
       this.getData(this.element.propValue.viewId, false)
     }
   },
   methods: {
     resizeChart() {
-      // console.log('resizeChart',this.element)
       if (this.chart.type === 'map') {
         this.destroyTimeMachine()
         this.changeIndex++
@@ -780,17 +757,16 @@ export default {
       if (this.chart.type === 'map' && this.scaleCoefficientType === 'mobile') {
         customAttrChart.label.show = false
       }
-      // console.log('88888888customAttrChart', customAttrChart, this.chart)
+
       this.chart = {
         ...this.chart,
         customAttr: JSON.stringify(customAttrChart),
         customStyle: JSON.stringify(customStyleChart)
       }
-      // console.log('this.chart====', this.chart)
+
       this.mergeStyle()
     },
     mergeStyle() {
-      // console.log('mergeStyle....',this.requestStatus,this.canvasStyleData,this.chart)
       if (
         (this.requestStatus === 'success' || this.requestStatus === 'merging') &&
         (this.chart.stylePriority === 'panel' || this.canvasStyleData.chart.stylePriority === 'panel') &&
@@ -808,7 +784,7 @@ export default {
         } else {
           customAttrChart.color = customAttrPanel.color
         }
-        // console.log('customAttrChart=====6666', customAttrChart)
+
         this.chart = {
           ...this.chart,
           customAttr: JSON.stringify(customAttrChart),
@@ -818,8 +794,6 @@ export default {
       }
     },
     getData(id, cache = true) {
-      console.log('getData...,走的获取数据的通道', this.templateStatus, this.isStylePriority, this.canvasStyleData)
-      console.log('getLocal', localStorage.getItem('permissionId'))
       if (id) {
         // this.requestStatus = 'waiting'
         this.message = null
@@ -860,27 +834,23 @@ export default {
         //       }
         //     }
         //   })
-        // console.log('data--------', requestInfo)
-        console.log('data--------', id, this.panelInfo, requestInfo)
+
         method(id, this.panelInfo.id, requestInfo)
           .then((response) => {
-            console.log('response接口获取参数', response)
             if (response.success) {
               const keyValeu = JSON.parse(localStorage.getItem('permissionId'))
               if (keyValeu === null) {
-                console.log('filterData------------------------->>>>>>>>>>>>>>>>>222222222222', keyValeu)
+
               }
               // const filterData = JSON.parse(response.data.customFilter)
 
-              console.log('filterData------------------------->>>>>>>>>>>>>>>>>', keyValeu)
               if (response.data.customFilter === '[]' || keyValeu === null) {
                 if (response.success) {
-                  console.log('查出的数据', response.data)
                   if (response.data.render === 'antv') {
                     if (response.data.data) {
                       if (response.data.xaxis) {
                         const axisList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE' || item.type === 'VARCHAR') && item.dateStyle === 'M')
-                        console.log('antv,axisList', axisList)
+
                         if (axisList.length > 0) {
                           const arr = []
                           const list = deepCopy(response.data.data.datas)
@@ -949,13 +919,12 @@ export default {
                             }
                             arr.push(obj)
                           })
-                          console.log('这个。。。', arr)
+
                           response.data.data.datas = arr
                         }
 
                         const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE' || item.type === 'VARCHAR') && item.dateStyle === 'y_Q')
 
-                        console.log('antv,qList', qList)
                         if (qList.length > 0) {
                           const arr = []
                           const list = deepCopy(response.data.data.datas)
@@ -1001,12 +970,12 @@ export default {
 
                             arr.push(obj)
                           })
-                          console.log('这个。。。', arr)
+
                           response.data.data.datas = arr
                         }
 
                         const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
-                        console.log('antv,xaisList,,,,', xaisList)
+
                         if (xaisList.length) {
                           if (xaisList[0].sort === 'asc') {
                             const datas = deepCopy(response.data.data.datas)
@@ -1075,7 +1044,7 @@ export default {
                     if (response.data.data) {
                       if (response.data.xaxis) {
                         const axisList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'M')
-                        console.log('echarts,axisList', axisList)
+
                         if (axisList.length > 0) {
                           const arr = []
                           const list = deepCopy(response.data.data.x)
@@ -1108,12 +1077,12 @@ export default {
                             }
                             arr.push(obj)
                           })
-                          console.log('这个。。。', arr)
+
                           response.data.data.x = arr
                         }
 
                         const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'y_Q')
-                        console.log('echarts,qList', qList)
+
                         if (qList.length > 0) {
                           const arr = []
                           const list = deepCopy(response.data.data.x)
@@ -1148,13 +1117,11 @@ export default {
                             arr.push(obj)
                           })
 
-                          console.log('ec,,,,', arr)
-
                           response.data.data.x = arr
                         }
 
                         const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
-                        console.log('echarts,xaisList', xaisList)
+
                         if (xaisList.length) {
                           if (xaisList[0].sort === 'asc') { // 升序
                             const datas = JSON.parse(JSON.stringify(response.data.data))
@@ -1253,7 +1220,6 @@ export default {
 
                   // 主题切换
                   if (this.templateStatus) {
-                    console.log('主题值：', this.canvasStyleData.chart, this.chart)
                     this.chart.customAttr = this.canvasStyleData.chart.customAttr
                     this.chart.customStyle = this.canvasStyleData.chart.customStyle
                     const deepCacheInfo = deepCopy(this.chart)
@@ -1264,17 +1230,16 @@ export default {
                     deepCacheInfo.yaxisExt = JSON.parse(this.chart.yaxisExt)
                     deepCacheInfo.customAttr = JSON.parse(this.chart.customAttr)
                     deepCacheInfo.customStyle = JSON.parse(this.chart.customStyle)
-                    console.log('----------------------过滤的值--------------22222', this.chart.customFilter)
+
                     deepCacheInfo.customFilter = JSON.parse(this.chart.customFilter)
                     deepCacheInfo.extStack = JSON.parse(this.chart.extStack)
                     deepCacheInfo.drillFields = JSON.parse(this.chart.drillFields)
                     deepCacheInfo.extBubble = JSON.parse(this.chart.extBubble)
                     deepCacheInfo.senior = JSON.parse(this.chart.senior)
 
-                    // console.log('dddddddddddd',deepCacheInfo)
                     this.saveThemeInfo(deepCacheInfo, 'chart', false, false)
                   }
-                  console.log('userView,,,,this.chart: ', this.chart)
+
                   this.chart['position'] = this.inTab ? 'tab' : 'panel'
                   // 记录当前数据
                   this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
@@ -1290,7 +1255,7 @@ export default {
                     )
                     this.resetDrill()
                   }
-                  console.log('执行此处问题-----')
+
                   this.drillFilters = JSON.parse(
                     JSON.stringify(
                       response.data.drillFilters ? response.data.drillFilters : []
@@ -1305,14 +1270,13 @@ export default {
 
                   // this.requestStatus = 'success'
                   this.httpRequest.status = true
-                  console.log('thissssss', this.chart)
                 } else {
                   // this.requestStatus = 'error'
                   this.message = response.message
                 }
               } else {
                 // localStorage.setItem('permissionId', JSON.stringify('万达广场'))
-                console.log('有过滤需求的字段', response.data)
+
                 const filterData = JSON.parse(response.data.customFilter)
                 // filterData[0].filter = []
                 // permissionId
@@ -1332,15 +1296,13 @@ export default {
 
                 response.data.customFilter = JSON.stringify(filterData)
                 save2Cache(this.panelInfo.id, response.data).then(res => {
-                  console.log('新的过滤', res)
                   method(id, this.panelInfo.id, requestInfo).then((response) => {
                     if (response.success) {
-                      console.log('查出的数据', response.data)
                       if (response.data.render === 'antv') {
                         if (response.data.data) {
                           if (response.data.xaxis) {
                             const axisList = JSON.parse(response.data.xaxis).filter(item => item.type === 'DATETIME' && item.dateStyle === 'M')
-                            // console.log('antv,xaxis',axisList)
+
                             if (axisList.length > 0) {
                               const arr = []
                               const list = deepCopy(response.data.data.datas)
@@ -1409,12 +1371,12 @@ export default {
                                 }
                                 arr.push(obj)
                               })
-                              console.log('这个。。。', arr)
+
                               response.data.data.datas = arr
                             }
 
                             const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'y_Q')
-                            console.log('antv,qList', qList)
+
                             if (qList.length > 0) {
                               const arr = []
                               const list = deepCopy(response.data.data.datas)
@@ -1460,12 +1422,12 @@ export default {
 
                                 arr.push(obj)
                               })
-                              console.log('这个。。。', arr)
+
                               response.data.data.datas = arr
                             }
 
                             const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
-                            console.log('antv,xaisList,,,,', xaisList)
+
                             if (xaisList.length) {
                               if (xaisList[0].sort === 'asc') {
                                 const datas = deepCopy(response.data.data.datas)
@@ -1534,7 +1496,7 @@ export default {
                         if (response.data.data) {
                           if (response.data.xaxis) {
                             const axisList = JSON.parse(response.data.xaxis).filter(item => item.type === 'DATETIME' && item.dateStyle === 'M')
-                            // console.log('echarts,xaxis',axisList)
+
                             if (axisList.length > 0) {
                               const arr = []
                               const list = deepCopy(response.data.data.x)
@@ -1567,12 +1529,12 @@ export default {
                                 }
                                 arr.push(obj)
                               })
-                              console.log('这个。。。', arr)
+
                               response.data.data.x = arr
                             }
 
                             const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'y_Q')
-                            console.log('echarts,qList', qList)
+
                             if (qList.length > 0) {
                               const arr = []
                               const list = deepCopy(response.data.data.x)
@@ -1607,13 +1569,11 @@ export default {
                                 arr.push(obj)
                               })
 
-                              console.log('ec,,,,', arr)
-
                               response.data.data.x = arr
                             }
 
                             const xaisList = JSON.parse(response.data.xaxis).filter(item => item.originName === '季度')
-                            console.log('echarts,xaisList', xaisList)
+
                             if (xaisList.length) {
                               if (xaisList[0].sort === 'asc') { // 升序
                                 const datas = JSON.parse(JSON.stringify(response.data.data))
@@ -1712,7 +1672,6 @@ export default {
 
                       // 主题切换
                       if (this.templateStatus) {
-                        console.log('主题值：', this.canvasStyleData.chart, this.chart)
                         this.chart.customAttr = this.canvasStyleData.chart.customAttr
                         this.chart.customStyle = this.canvasStyleData.chart.customStyle
                         const deepCacheInfo = deepCopy(this.chart)
@@ -1723,17 +1682,16 @@ export default {
                         deepCacheInfo.yaxisExt = JSON.parse(this.chart.yaxisExt)
                         deepCacheInfo.customAttr = JSON.parse(this.chart.customAttr)
                         deepCacheInfo.customStyle = JSON.parse(this.chart.customStyle)
-                        console.log('----------------------过滤的值--------------22222', this.chart.customFilter)
+
                         deepCacheInfo.customFilter = JSON.parse(this.chart.customFilter)
                         deepCacheInfo.extStack = JSON.parse(this.chart.extStack)
                         deepCacheInfo.drillFields = JSON.parse(this.chart.drillFields)
                         deepCacheInfo.extBubble = JSON.parse(this.chart.extBubble)
                         deepCacheInfo.senior = JSON.parse(this.chart.senior)
 
-                        // console.log('dddddddddddd',deepCacheInfo)
                         this.saveThemeInfo(deepCacheInfo, 'chart', false, false)
                       }
-                      console.log('userView,,,,this.chart: ', this.chart)
+
                       this.chart['position'] = this.inTab ? 'tab' : 'panel'
                       // 记录当前数据
                       this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
@@ -1749,7 +1707,7 @@ export default {
                         )
                         this.resetDrill()
                       }
-                      console.log('执行此处问题-----')
+
                       this.drillFilters = JSON.parse(
                         JSON.stringify(
                           response.data.drillFilters ? response.data.drillFilters : []
@@ -1763,7 +1721,6 @@ export default {
                       // }
                       // this.requestStatus = 'success'
                       this.httpRequest.status = true
-                      console.log('thissssss', this.chart)
                     } else {
                       // this.requestStatus = 'error'
                       this.message = response.message
@@ -1778,7 +1735,6 @@ export default {
             return true
           })
           .catch((err) => {
-            console.log(err)
             this.requestStatus = 'error'
             if (err.message && err.message.indexOf('timeout') > -1) {
               this.message = this.$t('panel.timeout_refresh')
@@ -1797,7 +1753,6 @@ export default {
       }
     },
     saveThemeInfo(data, trigger, needRefreshGroup = false, switchType = false) {
-      console.log('saveTheme...', data)
       if (!data.resultCount ||
         data.resultCount === '' ||
         isNaN(Number(data.resultCount)) ||
@@ -1969,7 +1924,6 @@ export default {
         view.drillFields = []
       }
       view.customFilter.forEach(function(ele) {
-        console.log('==========================================', ele)
         if (ele && !ele.filter) {
           ele.filter = []
         }
@@ -2000,7 +1954,7 @@ export default {
       view.yaxisExt = JSON.stringify(view.yaxisExt)
       view.customAttr = JSON.stringify(view.customAttr)
       view.customStyle = JSON.stringify(view.customStyle)
-      console.log('----------------------过滤的值--------------111111', view.customFilter)
+
       view.customFilter = JSON.stringify(view.customFilter)
       view.extStack = JSON.stringify(view.extStack)
       view.drillFields = JSON.stringify(view.drillFields)
@@ -2008,7 +1962,7 @@ export default {
       view.senior = JSON.stringify(view.senior)
 
       delete view.data
-      console.log('处理后：', view)
+
       save2Cache(view.sceneId, view)
     },
     viewIdMatch(viewIds, viewId) {
@@ -2036,7 +1990,7 @@ export default {
         (this.chart.type === 'map' || this.chart.type === 'buddle-map') &&
           this.sendToChildren(param)
         this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
-        console.log('触发点-------------------------2')
+
         this.getData(this.element.propValue.viewId)
       } else if (this.chart.drillFields.length > 0) {
         this.$message({
@@ -2142,7 +2096,7 @@ export default {
       if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
         this.backToParent(index, length)
       }
-      console.log('触发点-------------------------3')
+
       this.getData(this.element.propValue.viewId)
     },
     // 回到父级地图
@@ -2297,14 +2251,11 @@ export default {
     },
 
     renderComponent() {
-      // console.log('this.chart.render', this.chart)
       return this.chart.render
     },
     getDataEdit(param) {
-      console.log('getDataEdit::::', param)
       this.$store.state.styleChangeTimes++
       if (param.type === 'propChange') {
-        console.log('触发点-------------------------4')
         this.getData(param.viewId, false)
       } else if (param.type === 'styleChange') {
         this.chart.customAttr = param.viewInfo.customAttr

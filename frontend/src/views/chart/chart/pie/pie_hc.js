@@ -65,7 +65,7 @@ export const BASE_PIE = {
       enabled: true,
       alpha: 45,
       beta: 0,
-      depth: 20,
+      depth: 20
     },
     backgroundColor: 'rgba(0,0,0,0)'
   },
@@ -100,7 +100,7 @@ export const BASE_PIE = {
     pointFormat: '<tr><td>{series.name}: </td>' +
 			'<td style="text-align: right"><b>{point.y}</b></td></tr>',
     footerFormat: '</table>',
-    valueDecimals: 2,
+    valueDecimals: 2
   },
 
   series: [
@@ -113,10 +113,9 @@ export const BASE_PIE = {
 }
 
 let terminalType = 'pc'
-export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) {
+export function basePieOption(chart_option, chart, terminal = 'pc', cstyle = {}) {
   terminalType = terminal
   let customAttr = {}
-  // console.log('chart.customAttr: ', chart.customAttr)
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.color) {
@@ -129,25 +128,25 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
 
       chart_option.tooltip.enabled = tooltip.show
-      chart_option.tooltip.style = { 
-        fontSize: tooltip.textStyle.fontSize, 
-        color: tooltip.textStyle.color 
+      chart_option.tooltip.style = {
+        fontSize: tooltip.textStyle.fontSize,
+        color: tooltip.textStyle.color
       }
       let formatter = tooltip.formatter
       formatter = formatter.replace('{a}', '{series.name}')
       formatter = formatter.replace('{b}', '{point.name}')
       formatter = formatter.replace('{c}', '{point.y}')
       formatter = formatter.replace('{d}', '{point.percentage:.2f}%')
-      // console.log('这个formatter',formatter)
-      if(!formatter) {
-        chart_option.tooltip.headerFormat =  `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small><table>`
+
+      if (!formatter) {
+        chart_option.tooltip.headerFormat = `<small style="font-size:${tooltip.textStyle.fontSize}px;">{point.key}</small><table>`
         chart_option.tooltip.pointFormat = `<tr><td style="font-size:${tooltip.textStyle.fontSize}px;">{series.name}: </td>` +
           `<td style="text-align: right;font-size:${tooltip.textStyle.fontSize}px;"><b>{point.y}</b></td></tr>`
       } else {
-        chart_option.tooltip.headerFormat = '';
+        chart_option.tooltip.headerFormat = ''
         chart_option.tooltip.pointFormat = `<span style="font-size:${tooltip.textStyle.fontSize}px;">${formatter}</span>`
       }
-      
+
       // chart_option.tooltip.formatter = formatter
     }
 
@@ -179,7 +178,6 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
   // 处理data
   if (chart.data) {
     // chart_option.title.text = chart.title
-    console.log('chart.data',chart.data)
     if (chart.data.series.length === 1) {
       chart_option.series[0].name = chart.data.series[0].name
       if (customAttr.color) {
@@ -188,7 +186,7 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
 
       // size
       if (customAttr.size) {
-        chart_option.plotOptions.pie.innerSize = customAttr.size.pieInnerRadius? customAttr.size.pieInnerRadius + '%' : '0%'
+        chart_option.plotOptions.pie.innerSize = customAttr.size.pieInnerRadius ? customAttr.size.pieInnerRadius + '%' : '0%'
       }
       chart_option.series[0].depth = customAttr.size.depth ? customAttr.size.depth : 20
       const valueArr = chart.data.series[0].data
@@ -198,15 +196,14 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
         y.y = y.value
         chart_option.series[0].data.push(y)
       }
-    } else if(chart.data.series.length > 1){
+    } else if (chart.data.series.length > 1) {
       const series = chart.data.series
-      const x = chart.data.x[0].replace(/\r|\n/ig,",").split(',')
-      console.log('xxxx',x)
+      const x = chart.data.x[0].replace(/\r|\n/ig, ',').split(',')
       const arr = []
       for (let i = 0; i < series.length; i++) {
         const obj = {
-          name: x.length === series.length?x[i]: series[i].name,
-          y: series[i].data.map(ele => { return ele.value })[0],
+          name: x.length === series.length ? x[i] : series[i].name,
+          y: series[i].data.map(ele => { return ele.value })[0]
         }
         if (customAttr.color) {
           obj.color = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
@@ -214,26 +211,24 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
         arr.push(obj)
       }
       chart_option.series[0].data = arr
-      
     }
-
   }
-  console.log('pie,chart_option', chart_option)
+
   componentStyle(chart_option, chart, cstyle)
+
   return chart_option
 }
-export function componentStyle(chart_option, chart,cstyle) {
+export function componentStyle(chart_option, chart, cstyle) {
   const padding = '8px'
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
-    console.log('componentStyle: ', customStyle)
 
     if (customStyle.text) {
       chart_option.title.text = customStyle.text.show ? chart.title : ''
       const style = chart_option.title.style ? chart_option.title.style : {}
       style.fontSize = customStyle.text.fontSize
       style.color = customStyle.text.color
-      style.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily : cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      style.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
       customStyle.text.isItalic ? style.fontStyle = 'italic' : style.fontStyle = 'normal'
       customStyle.text.isBolder ? style.fontWeight = 'bold' : style.fontWeight = 'normal'
       chart_option.title.style = style

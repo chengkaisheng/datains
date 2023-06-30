@@ -118,7 +118,7 @@ export default {
     // 初始化赋值
     this.panel = this.canvasStyleData.panel
     this.fontValue = this.canvasStyleData.fontFamily
-    console.log(this.canvasStyleData.fontFamily)
+
     // this.height = this.canvasStyleData.height
     if (this.panel.imageUrl && typeof (this.panel.imageUrl) === 'string') {
       this.fileList.push({ url: this.panel.imageUrl })
@@ -129,7 +129,7 @@ export default {
       const canvasStyleData = deepCopy(this.canvasStyleData)
       canvasStyleData.fontFamily = this.fontValue
       // canvasStyleData.height = this.height
-      console.log('canvasStyleData', canvasStyleData)
+
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
     },
@@ -161,7 +161,7 @@ export default {
       reader.readAsDataURL(file.raw)
     },
     upload(file) {
-      // console.log('this is upload')
+
     }
   }
 }

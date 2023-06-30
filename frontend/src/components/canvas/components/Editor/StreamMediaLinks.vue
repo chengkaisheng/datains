@@ -51,34 +51,38 @@
           </el-form-item>
           <el-form-item label="链接类型">
             <el-radio-group v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].link">
-              <el-radio label="1">{{$t('panel.video_links')}}</el-radio>
-              <el-radio label="2">{{$t('panel.interface')}}</el-radio>
+              <el-radio label="1">{{ $t('panel.video_links') }}</el-radio>
+              <el-radio label="2">{{ $t('panel.interface') }}</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item :label="streamMediaInfoTemp[streamMediaInfoTemp.videoType].link === '2'?
-          $t('panel.interface'): $t('panel.video_links')">
+          <el-form-item
+            :label="streamMediaInfoTemp[streamMediaInfoTemp.videoType].link === '2'?
+              $t('panel.interface'): $t('panel.video_links')"
+          >
             <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].url" />
           </el-form-item>
-          <el-form-item :label="$t('panel.links_params')" v-if="streamMediaInfoTemp[streamMediaInfoTemp.videoType].link === '2'">
-            <el-input placeholder="参数格式：xxx=xx&xxx=xx&xxx=xx" v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].params"></el-input>
+          <el-form-item v-if="streamMediaInfoTemp[streamMediaInfoTemp.videoType].link === '2'" :label="$t('panel.links_params')">
+            <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].params" placeholder="参数格式：xxx=xx&xxx=xx&xxx=xx" />
           </el-form-item>
         </el-row>
         <el-row v-if="streamMediaInfoTemp.videoType === 'rtmp'">
           <el-form-item label="链接类型">
             <el-radio-group v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].link">
-              <el-radio label="1">{{$t('panel.video_links')}}</el-radio>
-              <el-radio label="2">{{$t('panel.interface')}}</el-radio>
+              <el-radio label="1">{{ $t('panel.video_links') }}</el-radio>
+              <el-radio label="2">{{ $t('panel.interface') }}</el-radio>
             </el-radio-group>
           </el-form-item>
           <span style="color: #909399; font-size: 8px;padding-left: 72px;">
             Tips:Flash环境下可播放
           </span>
-          <el-form-item :label="streamMediaInfoTemp[streamMediaInfoTemp.videoType].link === '2'?
-          $t('panel.interface'): $t('panel.video_links')">
+          <el-form-item
+            :label="streamMediaInfoTemp[streamMediaInfoTemp.videoType].link === '2'?
+              $t('panel.interface'): $t('panel.video_links')"
+          >
             <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].url" />
           </el-form-item>
-          <el-form-item :label="$t('panel.links_params')" v-if="streamMediaInfoTemp[streamMediaInfoTemp.videoType].link === '2'">
-            <el-input placeholder="参数格式：xxx=xx&xxx=xx&xxx=xx" v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].params"></el-input>
+          <el-form-item v-if="streamMediaInfoTemp[streamMediaInfoTemp.videoType].link === '2'" :label="$t('panel.links_params')">
+            <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].params" placeholder="参数格式：xxx=xx&xxx=xx&xxx=xx" />
           </el-form-item>
         </el-row>
         <el-row v-if="streamMediaInfoTemp.videoType === 'webrtc'">
@@ -146,13 +150,11 @@ export default {
   methods: {
     init() {
       this.streamMediaInfoTemp = deepCopy(this.linkInfo)
-      if(this.streamMediaInfoTemp.rtmp.link === undefined) {
+      if (this.streamMediaInfoTemp.rtmp.link === undefined) {
         this.streamMediaInfoTemp.rtmp.link = '1'
       }
-      console.log('this.linkInfo', this.linkInfo)
     },
     linkChange(value) {
-      console.log('类型改变',value,this.streamMediaInfoTemp)
     },
     onSubmit() {
       this.streamMediaInfoTemp[this.streamMediaInfoTemp.videoType].url = checkAddHttp(this.streamMediaInfoTemp[this.streamMediaInfoTemp.videoType].url)

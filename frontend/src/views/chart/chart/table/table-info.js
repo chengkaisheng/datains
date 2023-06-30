@@ -81,7 +81,7 @@ export function baseTableInfo(s2, container, chart, action, tableData, fontFamil
     width: containerDom.offsetWidth,
     height: containerDom.offsetHeight,
     // showSeriesNumber: true
-    style: getSize(chart),
+    style: getSize(chart)
     // conditions: {
 
     // }
@@ -92,7 +92,6 @@ export function baseTableInfo(s2, container, chart, action, tableData, fontFamil
     s2.destroy()
   }
   s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
-  // console.log('S2',s2)
   // s2.facet.setScrollOffset(1)
 
   // click
@@ -106,7 +105,6 @@ export function baseTableInfo(s2, container, chart, action, tableData, fontFamil
 }
 
 export function baseTableNormal(s2, container, chart, action, tableData, fontFamily = '') {
-  // console.log('s2, container, chart, action, tableData', s2, container, chart, action, tableData)
   const containerDom = document.getElementById(container)
 
   // fields
@@ -312,7 +310,7 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
     width: containerDom.offsetWidth,
     height: containerDom.offsetHeight,
     style: getSize(chart),
-    totals: totalCfg,
+    totals: totalCfg
     // rowCell: (node, s2, headConfig) => {
     //   console.log('rowCell,,,',node, s2, headConfig)
     // },
@@ -338,11 +336,9 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
 }
 
 export function baseTableProg(s2, container, chart, action, tableData, fontFamily = '') {
-  console.log('进度表',s2, container, chart, tableData, fontFamily)
   const containerDom = document.getElementById(container)
   // fields
   const fields = chart.data.fields
-  // console.log('fieldsssss,',fields)
   if (!fields || fields.length === 0) {
     if (s2) {
       s2.destroy()
@@ -352,7 +348,7 @@ export function baseTableProg(s2, container, chart, action, tableData, fontFamil
   const foce = []
   const yaxis = JSON.parse(chart.yaxis)
   yaxis.map(item => {
-    foce.push({name: item.name,originName: item.originName,progress: item.progress,datainsName: item.datainsName})
+    foce.push({ name: item.name, originName: item.originName, progress: item.progress, datainsName: item.datainsName })
   })
 
   const columns = []
@@ -401,7 +397,7 @@ export function baseTableProg(s2, container, chart, action, tableData, fontFamil
     })
 
     foce.forEach(item => {
-      if(item.progress) {
+      if (item.progress) {
         hField.push({
           field: item.originName,
           mapping(value) {
@@ -410,7 +406,7 @@ export function baseTableProg(s2, container, chart, action, tableData, fontFamil
               isCompare: true,
               maxValue: 100,
               minValue: 0,
-              fieldValue: value > 100? 100 : value,
+              fieldValue: value > 100 ? 100 : value
             }
           }
         })
@@ -426,7 +422,7 @@ export function baseTableProg(s2, container, chart, action, tableData, fontFamil
     })
 
     foce.forEach(item => {
-      if(item.progress) {
+      if (item.progress) {
         hField.push({
           field: item.originName,
           mapping(value) {
@@ -435,7 +431,7 @@ export function baseTableProg(s2, container, chart, action, tableData, fontFamil
               isCompare: true,
               maxValue: 100,
               minValue: 0,
-              fieldValue: value > 100? 100 : value,
+              fieldValue: value > 100 ? 100 : value
             }
           }
         })
@@ -458,7 +454,7 @@ export function baseTableProg(s2, container, chart, action, tableData, fontFamil
     height: containerDom.offsetHeight,
     style: getSize(chart),
     interaction: {
-      hoverHighlight: false,
+      hoverHighlight: false
     },
     conditions: {
       // interval: hField
@@ -467,14 +463,13 @@ export function baseTableProg(s2, container, chart, action, tableData, fontFamil
           field: 'sort',
           mapping: () => {
             return {
-              fill: '#800bFF',
+              fill: '#800bFF'
             }
           }
         }
       ]
     }
   }
-  console.log('s2Optionssss',s2Options)
 
   // 开始渲染
   if (s2) {

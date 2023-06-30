@@ -2,16 +2,16 @@
   <div>
     <div class="block">
       <div class="scroll_box" :style="big_box">
-        <span class="left_btn" @click.stop="scrollBtn('lt')" :style="iconStyle">
+        <span class="left_btn" :style="iconStyle" @click.stop="scrollBtn('lt')">
           <i class="el-icon-arrow-left" />
         </span>
-        <span class="right_btn" @click.stop="scrollBtn('rt')" :style="iconStyle">
+        <span class="right_btn" :style="iconStyle" @click.stop="scrollBtn('rt')">
           <i class="el-icon-arrow-right" />
         </span>
         <!-- <div class="scroll_nav_calss" :style="box_width">
           <div v-for="(item,index) in datas" :key="index" :style="boxStyle">
             <div :style="setStyle(item)">
-              <span class="title_class" :style="{color:heightlight(item)}" 
+              <span class="title_class" :style="{color:heightlight(item)}"
                 @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">
                 {{ item.text }}
               </span>
@@ -22,10 +22,13 @@
           <el-row :style="row_width">
             <el-col v-for="(item,index) of datas" :key="index" :style="boxStyle">
               <div :style="setStyle(item)">
-                <span class="title_class" :style="{color: heightlight(item)}"
-                  @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)"
+                <span
+                  class="title_class"
+                  :style="{color: heightlight(item)}"
+                  @mousedown="baseMoseDownEven"
+                  @click.stop="toggleNav(item)"
                 >
-                  {{item.text}}
+                  {{ item.text }}
                 </span>
               </div>
             </el-col>
@@ -91,13 +94,11 @@ export default {
       'previewCanvasScale'
     ]),
     operator() {
-      console.log('修改组件问题=====', this.element)
       return this.element.options.attrs.multiple ? 'in' : 'eq'
     },
     setStyle() {
       return function(value) {
         const style = {}
-        // console.log('this.element.options', this.element.options)
         if (this.element.options.vertical === 'elementKey') {
           if (this.canvasStyleData.navShowKey === value.text) {
             style.backgroundColor = this.element.options.highlightBg
@@ -152,11 +153,10 @@ export default {
     },
     big_box() {
       const style = {}
-      console.log('this.element', this.element)
       style.height = this.element.style.height + 'px'
       style.fontWeight = this.element.style.fontWeight
       style.fontSize = this.element.style.fontSize + 'px'
-      if(this.element.options.arrowSpacing) {
+      if (this.element.options.arrowSpacing) {
         style.paddingLeft = this.element.options.arrowSpacing + 'px'
         style.paddingRight = this.element.options.arrowSpacing + 'px'
       }
@@ -187,17 +187,16 @@ export default {
     boxWidth() {
       // const b_width = (this.element.style.width - 12) / this.element.options.scrollPage
       let b_width = 0
-      if(this.element.options.arrowSpacing) {
-        b_width = (this.element.style.width - this.element.options.arrowSpacing*2) / this.element.options.scrollPage
+      if (this.element.options.arrowSpacing) {
+        b_width = (this.element.style.width - this.element.options.arrowSpacing * 2) / this.element.options.scrollPage
       } else {
         b_width = (this.element.style.width) / this.element.options.scrollPage
       }
-      console.log('b_width', b_width)
       return Math.floor(b_width)
     },
     iconStyle() {
       const style = {}
-      if(this.element.options.arrowColor) {
+      if (this.element.options.arrowColor) {
         style.color = this.element.options.arrowColor
       }
       return style
@@ -209,7 +208,7 @@ export default {
     },
     row_width() {
       const style = {}
-      style.width = (this.element.style.width - (this.element.options.arrowSpacing*2)) + 'px'
+      style.width = (this.element.style.width - (this.element.options.arrowSpacing * 2)) + 'px'
       return style
     },
     bannerStyle() {
@@ -257,11 +256,9 @@ export default {
           this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
         this.datas = this.optionDatas(res.data)
-        console.log('this.datas22222222', this.datas)
       }) || (this.element.options.value = '')
     },
     'element.options.autoplay': function(value, old) {
-      console.log('判断是否启用轮播模式-------')
       if (this.element.options.autoplay) {
         this.scrollEven()
       } else {
@@ -289,7 +286,6 @@ export default {
   },
   created() {
     this.initLoad()
-    console.log('derotation', this.element)
   },
   mounted() {
     bus.$on('reset-default-value', id => {
@@ -304,7 +300,6 @@ export default {
       }
     })
     setTimeout(() => {
-      console.log('数据来源------=========>>>>', this.datas)
     })
   },
   destroyed() {
@@ -313,8 +308,6 @@ export default {
 
   methods: {
     scrollEven() {
-      // console.log('123123', key)
-
       this.timer = setInterval(() => {
         this.scrollBtn('rt')
       }, this.scrollTimes)
@@ -323,7 +316,6 @@ export default {
       e.stopPropagation()
     },
     scrollBtn(key) {
-      console.log('key', key)
       // clearInterval(this.timer)
       if (key === 'lt') {
         const datasll = this.datas[this.datas.length - 1]
@@ -345,17 +337,13 @@ export default {
       // this.scrollEven()
     },
     toggleNav(key) {
-      console.log('keysss', key)
       this.element.options.heightTabs = key.text
       this.changeValue(key.id)
     },
     changeCarousel(e) {
-      console.log('element:', this.element)
       if (JSON.stringify(this.datas) !== '[]') {
-        console.log('this.datas', this.datas)
         this.datas.forEach((item, index) => {
           if (e === index) {
-            console.log('对数据进行解析----', item, index, e)
             this.changeValue(item.id)
           }
           if (e === this.datas.length - 1) {
@@ -365,16 +353,11 @@ export default {
               this.value = item.id
             }
           }
-
-          // console.log('对数据进行解析----', item, index)
         })
       }
       // this.changeValue(e)
-      // JSON.str
-      // console.log('轮播图事件触发------', e)
     },
     initLoad() {
-      console.log('this.element=======', this.element)
       this.value = this.element.options.attrs.multiple ? [] : null
       if (this.element.options.attrs.fieldId) {
         let method = multFieldValues
@@ -385,7 +368,6 @@ export default {
         }
         method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
           this.datas = this.optionDatas(res.data)
-          console.log('this.datas1111111111------------->', this.datas)
           if (this.element.options.autoplay) {
             this.scrollEven()
           }
@@ -400,13 +382,11 @@ export default {
         })
       }
       if (this.element.options.value) {
-        console.log('---------------------------------------首次触发--->')
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
       }
     },
     changeValue(value) {
-      console.log('轮播框的值', value, this.inDraw)
       if (!this.inDraw) {
         this.element.options.value = value
       }
@@ -420,7 +400,7 @@ export default {
         value: this.formatFilterValue(),
         operator: this.operator
       }
-      console.log(' this.inDraw ', this.inDraw)
+
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
     formatFilterValue() {

@@ -265,8 +265,6 @@ export default {
   },
   watch: {
     chart: function() {
-      console.log('this.chart.data----------2222', this.chart, this.timer)
-
       if (this.chart.data) {
         clearInterval(this.timer)
         this.prossData()
@@ -281,10 +279,6 @@ export default {
     }
   },
   mounted() {
-    // console.log('this.fields', this.fields)
-    console.log('获取边框数据', this.element)
-    console.log('滚动表格 this.chart---', this.chart)
-    // console.log('滚动表格',this.inScreen)
     // this.oldData = JSON.parse(JSON.stringify(this.chart))
 
     if (this.chart.data) {
@@ -299,12 +293,9 @@ export default {
   },
   methods: {
     popShow() {
-      console.log('show')
       clearInterval(this.timer)
     },
     popHide() {
-      console.log('hide', this.highlight)
-
       const keyObj = this.dataInfo[this.highlight - 1]
       const keyValue = []
       keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
@@ -323,7 +314,6 @@ export default {
       this.popHide()
     },
     showDialogInfo(info, num) {
-      console.log('点击表格', info, num)
       //
       const keyObj = this.dataInfo[num]
       const keyValue = []
@@ -335,7 +325,6 @@ export default {
       if (!this.isPopShow) {
         return
       }
-      // console.log(num)
       this.numberLine = num
 
       const arr = []
@@ -354,7 +343,6 @@ export default {
       this.infoForm = arr.sort((a, b) => {
         return a.num - b.num
       })
-      console.log(this.infoForm)
       this.isVisible = true
 
       this.setLinkViews(info)
@@ -384,7 +372,6 @@ export default {
       // this.infoForm = arr
     },
     setLinkViews(info) { // 设置联动的弹窗展示出来
-      console.log('点击的数据', info)
       let sarr = []
       const arrVal = []
       if (this.chart.data && this.chart.data.sourceFields) {
@@ -437,13 +424,10 @@ export default {
     },
     tableScroll() {
       this.timer = setInterval(() => {
-        // console.log('轮播表格2222', this.chart.data, this.element)
         this.element.options = { attrs: {
           fieldId: this.chart.data.fields[0].id,
           viewIds: []
         }, manualModify: true }
-        debugger
-        console.log(this.dataInfo)
         const data = JSON.parse(JSON.stringify(this.dataInfo))
         const obj = data.shift()
         data.push(obj)
@@ -456,8 +440,6 @@ export default {
         //   this.dataInfo.push(data)
         // }, 101)
         // console.log('存储数据', this.dataInfo[3])
-        debugger
-        console.log(this.dataInfo)
         let keyObj = {}
         if (this.highlight > this.dataInfo.length) {
           keyObj = this.dataInfo[this.dataInfo.length - 1]
@@ -465,13 +447,8 @@ export default {
           keyObj = this.dataInfo[this.highlight - 1]
         }
         const keyValue = []
-        debugger
-        console.log(keyObj)
         // let keys = this.chart.data.fields[0].datainsName
         keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
-        debugger
-        console.log(keyValue)
-        console.log('bannerLinkageKey', this.bannerLinkageKey)
         if (this.bannerLinkageKey === true) {
           this.setCondition(keyValue)
         } else {
@@ -480,7 +457,6 @@ export default {
             clearInterval(this.timer)
           })
         }
-        // console.log('字段是？',this.fields)
         this.getDetailsInfo(this.dataInfo)
       }, this.scrolleTime) // 滚动速度
     },
@@ -496,7 +472,6 @@ export default {
       this.$store.commit('addViewFilter', param)
     },
     getDetailsInfo(data) { // 设置详情信息
-      // console.log('详情数据和index',data,this.picInfo)
       const arr = []
       let url = ''
       data.map((item, index) => {
@@ -519,7 +494,7 @@ export default {
           }
         }
       })
-      // console.log('arrrrrrrrr',arr,this.chart)
+
       const objs = {
         id: this.chart.id,
         data: arr,
@@ -532,7 +507,6 @@ export default {
       this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
 
       const customAttr = JSON.parse(this.chart.customAttr)
-      // console.log('customAttr11111',customAttr)
 
       const axis = []
       JSON.parse(this.chart.xaxis).forEach(item => {
@@ -541,7 +515,7 @@ export default {
       JSON.parse(this.chart.yaxis).forEach(item => {
         axis.push(item)
       })
-      // console.log('维度和指标的字段：：：',axis)
+
       this.axisList = axis
 
       const arr = []
@@ -553,7 +527,7 @@ export default {
       })
       // this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
       this.dataInfo = arr
-      console.log('有数据才会去执行操作---------this.dataInfo: ', this.dataInfo)
+
       // this.initStyle()
       if (customAttr.size) {
         if (customAttr.size.carouselPics !== undefined) {
@@ -579,13 +553,12 @@ export default {
         'sourceViewId': this.element.propValue.viewId,
         'targetViewIds': targetViewIds
       }
-      // console.log('联动设置',requestInfo)
+
       // getViewLinkageGather(requestInfo).then(rsp => {
       //   console.log('联动数据', rsp)
       // })
     },
     changeColumnWidth({ column, columnIndex }) {
-      console.log('23123213213231232132121', column, columnIndex)
       // if (column.width !== column.renderWidth) {
       //   this.tableHeadList[columnIndex - 2].width = column.renderWidth
       //   // this.saveHeadConfig()
@@ -670,7 +643,6 @@ export default {
     initStyle() {
       if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
-        console.log('initStyle 是否触发此处修改------------2222222', customAttr)
 
         if (customAttr.color) {
           this.table_header_class.color = customAttr.color.tableFontColor
@@ -701,18 +673,15 @@ export default {
           this.highlight = customAttr.size.highlightNumber ? customAttr.size.highlightNumber : 2
           this.tableRowsNumber = customAttr.size.tableRowsNumber ? customAttr.size.tableRowsNumber : 5
           // this.scrollId.fontSize = (Math.ceil(+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth)) + 'px'
-          // console.log('customAttr.size.heightLightFontSize', customAttr.size.heightLightFontSize, this.previewCanvasScale.scalePointWidth)
           this.scrollId.fontSize = (+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
           this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
           this.setStyle.height = customAttr.size.tableItemHeight + 'px'
           this.rollingRate = customAttr.size.tableRollingRate
-          // console.log('customAttr.size.tableItemHeight', customAttr.size.tableItemHeight)
           this.bodyHeight = customAttr.size.tableItemHeight
           this.scrollId.height = customAttr.size.tableItemHeight + 'px'
           this.table_item_class.textAlign = customAttr.size.tableItemAlign
           this.scrolleTime = customAttr.size.automaticTime
 
-          console.log('widthData', customAttr.size.widthData)
           if (customAttr.size.widthData && customAttr.size.widthData.length) {
             this.adaptWidth = customAttr.size.adaptWidth !== undefined ? customAttr.size.adaptWidth : true
             this.widthData = customAttr.size.widthData
@@ -721,7 +690,6 @@ export default {
           }
         }
         if (customAttr.label) {
-          // console.log('label数据，，，，，', customAttr.label)
           this.isPopShow = customAttr.label.popShow
           this.popOpen.position = customAttr.label.popOpen
           this.popOpen.left = customAttr.label.popLeft ? customAttr.label.popLeft + 'px' : '0px'
@@ -754,7 +722,6 @@ export default {
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
-        console.log('customStyle', customStyle)
         if (customStyle.text) {
           this.title_show = customStyle.text.show
           this.title_class.fontSize = (customStyle.text.fontSize * this.previewCanvasScale.scalePointWidth) + 'px'

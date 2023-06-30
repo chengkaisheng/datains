@@ -2,7 +2,6 @@
 import { componentStyle } from '../common/common'
 
 export function baseMapOption(chart_option, chart) {
-  console.log('mapppppppppppppppp',chart_option,chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -82,7 +81,7 @@ export function baseMapOption(chart_option, chart) {
       }
     }
   }
-  // console.log(chart_option);
+
   componentStyle(chart_option, chart)
   return chart_option
 }

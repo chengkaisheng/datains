@@ -166,15 +166,13 @@ export default {
     },
 
     update(trendId) {
-      console.log('触发此处的刷新功能，-------', trendId)
       if (trendId) {
         if (Object.prototype.toString.call(trendId) === '[object Array]') {
           trendId = trendId[trendId.length - 1]
         }
         const that = this
-        console.log('此处的trendId', trendId)
+
         initPanelData(trendId, function(response) {
-          console.log('response===', response)
           bus.$emit('set-panel-show-type', 0)
           setTimeout(() => {
             if (that.$refs.panelViewShow) {
@@ -236,7 +234,7 @@ export default {
     },
 
     handlePageSizeChange(evt) {
-      console.log('handlePageSizeChange evt', evt)
+
     },
 
     async handleSavePortal(params) {

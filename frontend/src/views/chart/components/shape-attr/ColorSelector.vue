@@ -3,27 +3,33 @@
     <el-col>
       <el-form ref="colorForm" :model="colorForm" label-width="90px" size="mini">
         <div v-if="sourceType==='view' || sourceType==='panelEchart'">
-          <el-form-item v-show="chart.type && 
-            (
-              (chart.render === 'echarts' && 
-                (chart.type.includes('bar') || chart.type === 'graph' || 
-                chart.type === 'pie-rose-gradient' || chart.type === 'liquid')
-              ) 
-              || 
-              (chart.render === 'antv' && 
-                (chart.type === 'bar' || chart.type === 'bar-horizontal' ||
-                chart.type ==='line-stack' || chart.type.includes('3dcolumn') ||
-                chart.type === 'liquid')
-              )  
-            )" 
-            :label="$t('chart.color_variety_check')" class="form-item">
-            <el-checkbox v-model="colorForm.variety" @change="changeColorCase"></el-checkbox>
+          <el-form-item
+            v-show="chart.type &&
+              (
+                (chart.render === 'echarts' &&
+              (chart.type.includes('bar') || chart.type === 'graph' ||
+              chart.type === 'pie-rose-gradient' || chart.type === 'liquid')
+              )
+              ||
+              (chart.render === 'antv' &&
+              (chart.type === 'bar' || chart.type === 'bar-horizontal' ||
+              chart.type ==='line-stack' || chart.type.includes('3dcolumn') ||
+              chart.type === 'liquid')
+              )
+              )"
+            :label="$t('chart.color_variety_check')"
+            class="form-item"
+          >
+            <el-checkbox v-model="colorForm.variety" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="chart.type && !chart.type.includes('table')
-            &&!chart.type.includes('vertical')&&!chart.type.includes('dialog') 
-            && !chart.type.includes('roll')&&!chart.type.includes('dialog') 
-            && !chart.type.includes('text') && chart.type !== 'label'" 
-          :label="$t('chart.color_case')" class="form-item">
+          <el-form-item
+            v-show="chart.type && !chart.type.includes('table')
+              &&!chart.type.includes('vertical')&&!chart.type.includes('dialog')
+              && !chart.type.includes('roll')&&!chart.type.includes('dialog')
+              && !chart.type.includes('text') && chart.type !== 'label'"
+            :label="$t('chart.color_case')"
+            class="form-item"
+          >
             <el-popover
               placement="bottom"
               width="400"
@@ -65,20 +71,23 @@
             </el-popover>
           </el-form-item>
           <!-- 渐变色 -->
-          <el-form-item v-show="colorForm.variety && chart.type && 
+          <el-form-item
+            v-show="colorForm.variety && chart.type &&
               (
                 (chart.render === 'echarts' &&
-                  (chart.type.includes('bar') || chart.type === 'graph' ||
-                  chart.type === 'pie-rose-gradient' || chart.type === 'liquid')
-                ) 
-                || 
-                (chart.render === 'antv' &&
-                  (chart.type === 'bar' || chart.type === 'bar-horizontal' ||
-                  chart.type ==='line-stack' || chart.type.includes('3dcolumn') ||
-                  chart.type === 'liquid')
-                ) 
-              )" 
-            :label="$t('chart.variety_color')" class="form-item">
+              (chart.type.includes('bar') || chart.type === 'graph' ||
+              chart.type === 'pie-rose-gradient' || chart.type === 'liquid')
+              )
+              ||
+              (chart.render === 'antv' &&
+              (chart.type === 'bar' || chart.type === 'bar-horizontal' ||
+              chart.type ==='line-stack' || chart.type.includes('3dcolumn') ||
+              chart.type === 'liquid')
+              )
+              )"
+            :label="$t('chart.variety_color')"
+            class="form-item"
+          >
             <el-popover
               placement="bottom"
               width="400"
@@ -115,14 +124,16 @@
                 </div>
               </div>
               <div slot="reference" style="cursor:  pointer;margin-top: 2px;width: 180px;">
-                <span v-for="(v,index) in colorForm.colors1" :key="index" :style="{width: '20px',height:  '20px',display:'inline-block',backgroundColor: v,border: '1px solid #eeeeee'}"></span>
+                <span v-for="(v,index) in colorForm.colors1" :key="index" :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: v,border: '1px solid #eeeeee'}" />
               </div>
             </el-popover>
           </el-form-item>
           <!-- 边框颜色 -->
-          <el-form-item v-show="chart.type && chart.render === 'echarts' && chart.type.includes('bar') 
-            && chart.type !== 'bar-rate' && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar'" 
-            :label="'边框颜色'" class="form-item"
+          <el-form-item
+            v-show="chart.type && chart.render === 'echarts' && chart.type.includes('bar')
+              && chart.type !== 'bar-rate' && chart.type !== 'bar-triangle' && chart.type !== 'bar-annular' && chart.type !== 'pictorial-bar'"
+            :label="'边框颜色'"
+            class="form-item"
           >
             <!-- <el-color-picker v-model="colorForm.borderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" /> -->
             <el-popover
@@ -161,7 +172,7 @@
                 </div>
               </div>
               <div slot="reference" style="cursor:  pointer;margin-top: 2px;width: 180px;">
-                <span v-for="(v,index) in colorForm.borderColors" :key="index" :style="{width: '20px',height:  '20px',display:'inline-block',backgroundColor: v,border: '1px solid #eeeeee'}"></span>
+                <span v-for="(v,index) in colorForm.borderColors" :key="index" :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: v,border: '1px solid #eeeeee'}" />
               </div>
             </el-popover>
           </el-form-item>
@@ -172,11 +183,11 @@
 
           <el-form-item v-show="chart.type && chart.type ==='progress-count'" label="颜色层级" class="form-item">
             <el-select v-model="colorForm.progressLevel" size="mini" @change="changeColorCase">
-              <el-option label="不分级" :value="1"></el-option>
-              <el-option label="二级" :value="2"></el-option>
-              <el-option label="三级" :value="3"></el-option>
-              <el-option label="四级" :value="4"></el-option>
-              <el-option label="五级" :value="5"></el-option>
+              <el-option label="不分级" :value="1" />
+              <el-option label="二级" :value="2" />
+              <el-option label="三级" :value="3" />
+              <el-option label="四级" :value="4" />
+              <el-option label="五级" :value="5" />
             </el-select>
           </el-form-item>
 
@@ -206,8 +217,11 @@
           <el-form-item v-show="chart.type && chart.type === 'roll-click-element'" :label="$t('chart.table_icon_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableIconColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll')||chart.type.includes('dialog'))) || sourceType==='panelTable'" 
-            :label="$t('chart.table_header_bg')" class="form-item">
+          <el-form-item
+            v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll')||chart.type.includes('dialog'))) || sourceType==='panelTable'"
+            :label="$t('chart.table_header_bg')"
+            class="form-item"
+          >
             <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
           <!-- <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('vertical'))) || sourceType==='panelTable'" :label="'表格背景'" class="form-item">
@@ -240,8 +254,11 @@
           <!--              </el-form-item>-->
         </div>
 
-        <el-form-item v-show="chart.type && (chart.type === 'bar-rate' || chart.type === 'roll-click-element')" 
-          :label="chart.type ==='bar-ratte'?'渐变透明度':'图标透明度'" class="form-item form-item-slider">
+        <el-form-item
+          v-show="chart.type && (chart.type === 'bar-rate' || chart.type === 'roll-click-element')"
+          :label="chart.type ==='bar-ratte'?'渐变透明度':'图标透明度'"
+          class="form-item form-item-slider"
+        >
           <el-slider v-model="colorForm.alphaG" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase" />
         </el-form-item>
         <el-form-item v-show="chart.type && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.not_alpha')" class="form-item form-item-slider">
@@ -359,12 +376,12 @@ export default {
           name: this.$t('chart.color_blank'),
           value: 'blank',
           colors: ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff']
-        },
+        }
       ],
       colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE)),
       customColor: null,
       custom1Color: null,
-      customBorColor:  null,
+      customBorColor: null,
       colorIndex: 0,
       color1Index: 0,
       borIndex: 0,
@@ -440,8 +457,6 @@ export default {
       this.$emit('onColorChange', this.colorForm)
     },
     init() {
-      console.log('chart是否改变,color', this.chart)
-      // console.log('chart是否改变,color',this.chart)
       const chart = JSON.parse(JSON.stringify(this.chart))
       if (chart.customAttr) {
         let customAttr = null
@@ -474,8 +489,6 @@ export default {
           this.colorForm.tableBorderColor = this.colorForm.tableBorderColor ? this.colorForm.tableBorderColor : DEFAULT_COLOR_CASE.tableBorderColor
         }
       }
-      console.log('this.colorForm,,,', this.colorForm)
-      // console.log('this.colorForm,,,',this.colorForm)
     },
 
     switchColor(index) {

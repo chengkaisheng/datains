@@ -221,7 +221,6 @@ export default {
   },
   methods: {
     initOptions() {
-      console.log('this.item', this.item)
       if (this.item) {
         if (this.item.deType === 0 || this.item.deType === 5) {
           this.options = JSON.parse(JSON.stringify(this.textOptions))
@@ -255,7 +254,6 @@ export default {
       })
     },
     addFilter() {
-      console.log(' this.item.filter', this.item.filter)
       this.item.filter.push({
         fieldId: this.item.id,
         term: 'eq',

@@ -2,10 +2,14 @@
   <div ref="myplayer" class="main-frame">
     <!-- <div :id="myPlayerKu" :ref="myPlayerKu" style="width: 100%;height: 100%;"></div> -->
     <div v-if="element.options.devId" class="main-frame">
-      <iframe v-if="kframeShow" :id="'iframe'+element.id" 
-        :src="`/kmedia-uni/index.html?device_id=${element.options.devId}`" 
-        frameborder="0" scrolling="auto" class="main-frame">
-      </iframe>
+      <iframe
+        v-if="kframeShow"
+        :id="'iframe'+element.id"
+        :src="`/kmedia-uni/index.html?device_id=${element.options.devId}`"
+        frameborder="0"
+        scrolling="auto"
+        class="main-frame"
+      />
       <div v-if="editMode==='edit'" class="frame-mask">
         <span style="opacity: 1;">
           <span style="font-weight: bold;color: lawngreen;">{{ $t('panel.edit_web_tips') }}</span>
@@ -35,18 +39,6 @@ export default {
       default: false
     }
   },
-  watch: {
-    element: {
-      handler(val1,val2) {
-        console.log('kmedia改变======',val1)
-        this.kframeShow = false
-        this.$nextTick(() => {
-          this.kframeShow = true
-        })
-      }, 
-      deep: true
-    }
-  },
   data() {
     return {
       kframeShow: true,
@@ -60,15 +52,26 @@ export default {
         nmediaId: '',
         startTime: '2021-06-04T00:00:00',
         endTime: '2021-06-05T00:00:00'
+      }
+    }
+  },
+  watch: {
+    element: {
+      handler(val1, val2) {
+        this.kframeShow = false
+        this.$nextTick(() => {
+          this.kframeShow = true
+        })
       },
+      deep: true
     }
   },
   created() {
-    let timestamp = new Date().getTime()
-    this.myPlayerKu = 'myPlayerKu'+timestamp
+    const timestamp = new Date().getTime()
+    this.myPlayerKu = 'myPlayerKu' + timestamp
   },
   mounted() {
-    if(!this.element.options.devId) return false
+    if (!this.element.options.devId) return false
     this.pOption = this.element.options
 
     bus.$on('frameLinksChange-' + this.element.id, () => {
@@ -79,9 +82,12 @@ export default {
     })
     // this.initOptionKu(this.pOption)
   },
+  beforeDestroy() {
+    this.exec('loadVideo')
+    this.timer && clearInterval(this.timer)
+  },
   methods: {
     initOptionKu(option) {
-      console.log('这个值，，，',option)
       const MODE = KMediaUni.MODE
       this.player = new KMediaUni({
         selector: this.myPlayerKu,
@@ -91,10 +97,10 @@ export default {
           hideControlsBar: false,
           tools: Object.values(KMediaUni.TOOLS)
         }
-      });
+      })
       this.timer = setInterval(() => {
         this.loadVideo(true)
-      }, 200);
+      }, 200)
     },
     loadVideo(isLive) {
       this.player.loadVideo({
@@ -109,20 +115,16 @@ export default {
               : {}
           )
         },
-        autoplay:true
-      });
+        autoplay: true
+      })
     },
-    exec(cmd,...args){
-      if(this.player && this.player[cmd]) {
-        this.player[cmd](...args);
-      }else {
+    exec(cmd, ...args) {
+      if (this.player && this.player[cmd]) {
+        this.player[cmd](...args)
+      } else {
         console.error('not find', cmd)
       }
-    },
-  },
-  beforeDestroy() {
-    this.exec('loadVideo')
-    this.timer && clearInterval(this.timer)
+    }
   }
 }
 </script>

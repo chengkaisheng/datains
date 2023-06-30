@@ -263,7 +263,7 @@
 
       <el-divider />
 
-      <el-row style="height: 26px;" v-if="table.type !== 'api'">
+      <el-row v-if="table.type !== 'api'" style="height: 26px;">
         <el-row>
           <el-col :span="4"><span>{{ $t('dataset.incremental_update_type') }}:</span></el-col>
           <el-col :span="18">
@@ -275,7 +275,7 @@
         </el-row>
       </el-row>
 
-      <el-row style="height: 26px;" v-if="table.type !== 'api'">
+      <el-row v-if="table.type !== 'api'" style="height: 26px;">
         <el-row>
           <el-col :span="4" style="height: 26px;"><span style="display: inline-block;height: 26px;line-height: 26px;">{{ $t('dataset.param') }}:</span></el-col>
           <el-col :span="18">
@@ -334,8 +334,8 @@ import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
 // vue-cron
 import cron from '@/components/cron/cron'
-import {hasDataPermission} from '@/utils/permission'
-import {engineMode} from "@/api/system/engine";
+import { hasDataPermission } from '@/utils/permission'
+import { engineMode } from '@/api/system/engine'
 export default {
   name: 'UpdateInfo',
   components: { codemirror, cron },
@@ -425,7 +425,7 @@ export default {
   watch: {
     table: {
       handler() {
-        if(hasDataPermission('manage',this.param.privileges)){
+        if (hasDataPermission('manage', this.param.privileges)) {
           this.listTask()
         }
         this.listTaskLog()
@@ -452,23 +452,23 @@ export default {
       } else {
         this.taskLastRequestComplete = false
       }
-      if(hasDataPermission('manage',this.param.privileges)){
+      if (hasDataPermission('manage', this.param.privileges)) {
         this.listTask(false)
       }
     }, 10000)
 
     engineMode().then(res => {
       this.engineMode = res.data
-      if (this.engineMode === 'simple' ) {
-        if(this.table.type === 'api'){
+      if (this.engineMode === 'simple') {
+        if (this.table.type === 'api') {
           this.enableUpdate = true
-        }else {
+        } else {
           this.enableUpdate = false
         }
       } else {
-        if(this.table.type === 'excel'){
+        if (this.table.type === 'excel') {
           this.enableUpdate = false
-        }else {
+        } else {
           this.enableUpdate = true
         }
       }
@@ -561,7 +561,7 @@ export default {
     getIncrementalConfig() {
       post('/dataset/table/incrementalConfig', { tableId: this.table.id }).then(response => {
         this.incrementalConfig = response.data
-        if (this.incrementalConfig.incrementalAdd.length === 0 && this.incrementalConfig.incrementalDelete.length === 0 ) {
+        if (this.incrementalConfig.incrementalAdd.length === 0 && this.incrementalConfig.incrementalDelete.length === 0) {
           this.incrementalUpdateType = 'incrementalAdd'
           this.sql = ''
           return
@@ -573,7 +573,6 @@ export default {
           this.incrementalUpdateType = 'incrementalDelete'
           this.sql = this.incrementalConfig.incrementalDelete
         }
-
       })
     },
     saveIncrementalConfig() {
@@ -739,10 +738,9 @@ export default {
       this.codemirror.setSize('-webkit-fill-available', 'auto')
     },
     onCmFocus(cm) {
-      // console.log('the editor is focus!', cm)
+
     },
     onCmCodeChange(newCode) {
-      // console.log(newCode)
       this.sql = newCode
       this.$emit('codeChange', this.sql)
     },

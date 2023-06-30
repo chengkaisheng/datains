@@ -12,7 +12,6 @@ import {
 } from '@/views/chart/chart/common/common_antv'
 
 export function baseLineOptionAntV(plot, container, chart, action, cstyle = {}) {
-  console.log('折线，antv，line', chart, cstyle)
   // theme
   const theme = getTheme(chart)
   // attr
@@ -91,7 +90,7 @@ export function baseLineOptionAntV(plot, container, chart, action, cstyle = {}) 
       }
     }
   }
-  console.log('antv,line', options)
+
   // 开始渲染
   if (plot) {
     plot.destroy()
@@ -105,7 +104,6 @@ export function baseLineOptionAntV(plot, container, chart, action, cstyle = {}) 
 }
 
 export function baseAreaOptionAntV(plot, container, chart, action, cstyle = {}) {
-  console.log('折线，antv，line_stack', plot, container, chart)
   // theme
   const theme = getTheme(chart)
   // attr
@@ -199,7 +197,6 @@ export function baseAreaOptionAntV(plot, container, chart, action, cstyle = {}) 
 }
 
 export function compare(prop) {
-  console.log('prop', prop)
   return function(obj1, obj2) {
     var val1 = obj1[prop]
     var val2 = obj2[prop]
@@ -217,7 +214,6 @@ export function compare(prop) {
   }
 }
 export function compare1(prop) {
-  console.log('prop1', prop)
   return function(obj1, obj2) {
     var val1 = obj1[prop]
     var val2 = obj2[prop]

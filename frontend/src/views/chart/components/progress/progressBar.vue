@@ -14,21 +14,25 @@
       <el-row class="prog_box">
         <el-col v-for="item in progressData" :key="item.value" :style="{marginBottom: colMargin}">
           <el-col :span="progStyle.position === 'top'? 24 : progWidth.label" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
-            <div class="prog_title" :title="item.name">{{item.name}}</div>
+            <div class="prog_title" :title="item.name">{{ item.name }}</div>
           </el-col>
           <el-col :span="progStyle.position === 'top'? 24 : progWidth.bar">
-            <el-progress :text-inside="progStyle.inside" :color="item.color" 
-              :stroke-width="progStyle.strokeWidth" :percentage="item.value>100?100:item.value" 
-              :format="formatValue(item.value)" :style="labelStyle">
-            </el-progress>
+            <el-progress
+              :text-inside="progStyle.inside"
+              :color="item.color"
+              :stroke-width="progStyle.strokeWidth"
+              :percentage="item.value>100?100:item.value"
+              :format="formatValue(item.value)"
+              :style="labelStyle"
+            />
           </el-col>
         </el-col>
-          <!-- <el-progress :text-inside="progStyle.inside" :color="customColor" :stroke-width="progStyle.strokeWidth" :percentage="progressData.value"></el-progress> -->
-          <!-- <el-col :span="progStyle.position === 'top'? 24 : 6" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
+        <!-- <el-progress :text-inside="progStyle.inside" :color="customColor" :stroke-width="progStyle.strokeWidth" :percentage="progressData.value"></el-progress> -->
+        <!-- <el-col :span="progStyle.position === 'top'? 24 : 6" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
             <p style="text-align: center;" >{{progressData.name}}</p>
           </el-col>
           <el-col :span="progStyle.position === 'top'? 24 : 18">
-            <el-progress :text-inside="progStyle.inside" :color="customColor" 
+            <el-progress :text-inside="progStyle.inside" :color="customColor"
               :stroke-width="progStyle.strokeWidth" :percentage="progressData.value" :style="labelStyle">
             </el-progress>
           </el-col> -->
@@ -46,7 +50,7 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 
 export default {
-  name: 'progressBar',
+  name: 'ProgressBar',
   components: {
     ViewTrackBar
   },
@@ -104,7 +108,7 @@ export default {
         fontStyle: 'normal',
         fontWeight: 'normal',
         background: hexColorToRGBA('#ffffff', 0),
-        fontFamily:  ''
+        fontFamily: ''
       },
       chartHeight: '100%',
       show_Prog: false,
@@ -124,11 +128,11 @@ export default {
       },
       labelStyle: {
         color: '#ffffff',
-        fontSize: '14px',
+        fontSize: '14px'
       },
-      box_chart: { 
+      box_chart: {
         borderRadius: '0px',
-        height: 'calc(100% - 30px)',
+        height: 'calc(100% - 30px)'
       },
       colMargin: '10px',
       progWidth: {
@@ -142,12 +146,12 @@ export default {
       return this.trackBarStyle
     },
     ...mapState([
-      'canvasStyleData',
+      'canvasStyleData'
     ])
   },
   watch: {
     chart: {
-      handler(newVal,oldVal){
+      handler(newVal, oldVal) {
         this.preDraw()
       },
       deep: true
@@ -205,23 +209,23 @@ export default {
 
     drawView() {
       const chart = this.chart
-      if(chart.data) {
-        if(chart.data.fields.length && chart.data.series.length) {
+      if (chart.data) {
+        if (chart.data.fields.length && chart.data.series.length) {
           this.show_Prog = true
-        }else {
+        } else {
           this.show_Prog = false
           return
         }
-        if(chart.data.series) {
+        if (chart.data.series) {
           const data = chart.data.series[0].data
           const customAttr = JSON.parse(chart.customAttr)
-          let arr = []
-          for(let i=0;i<data.length;i++) {
-            let obj = data[i]
+          const arr = []
+          for (let i = 0; i < data.length; i++) {
+            const obj = data[i]
             arr.push({
               name: obj.dimensionList[0].value,
               value: obj.value,
-              color: hexColorToRGBA(customAttr.color.colors[i%customAttr.color.colors.length],customAttr.color.alpha)
+              color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
             })
           }
           this.progressData = arr
@@ -238,7 +242,6 @@ export default {
     initTitle() {
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
-        // console.log('customStyle,progress',customStyle)
         if (customStyle.text) {
           this.title_show = customStyle.text.show
           // this.title_class.fontSize = customStyle.text.fontSize + 'px'
@@ -246,20 +249,18 @@ export default {
           this.title_class.textAlign = customStyle.text.hPosition
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
           this.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
-          this.title_class.fontFamily = customStyle.text.fontFamily? customStyle.text.fontFamily 
-            : this.canvasStyleData.fontFamily? this.canvasStyleData.fontFamily : ''
+          this.title_class.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily
+            : this.canvasStyleData.fontFamily ? this.canvasStyleData.fontFamily : ''
 
           if (this.$refs.title) {
             this.$refs.title.style.fontSize = customStyle.text.fontSize + 'px'
           }
-          if(this.title_show) {
+          if (this.title_show) {
             const height = this.$refs.title.offsetHeight
-            // console.log('高度',height)
             this.box_chart.height = `calc(100% - ${height}px)`
           } else {
             this.box_chart.height = '100%'
           }
-          
         }
         if (customStyle.background) {
           this.title_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
@@ -270,19 +271,18 @@ export default {
 
       if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
-        // console.log('customAttr,progress',customAttr)
 
         this.progStyle.fontSize = customAttr.label.progressFontSize + 'px'
         this.progStyle.color = customAttr.label.progressFontColor
-        this.progStyle.fontFamily =  this.canvasStyleData.fontFamily
-        this.progStyle.inside = customAttr.label.progressInside !== undefined? customAttr.label.progressInside : true
-        this.progStyle.strokeWidth = customAttr.label.strokeWidth !== undefined? customAttr.label.strokeWidth : 20
-        this.progStyle.position = customAttr.label.progressPosition !== undefined? customAttr.label.progressPosition : 'top'
+        this.progStyle.fontFamily = this.canvasStyleData.fontFamily
+        this.progStyle.inside = customAttr.label.progressInside !== undefined ? customAttr.label.progressInside : true
+        this.progStyle.strokeWidth = customAttr.label.strokeWidth !== undefined ? customAttr.label.strokeWidth : 20
+        this.progStyle.position = customAttr.label.progressPosition !== undefined ? customAttr.label.progressPosition : 'top'
         // this.customColor = customAttr.color.colors[0]
-        this.labelStyle.color = customAttr.label.progressLabelColor? customAttr.label.progressLabelColor : '#ffffff'
-        this.labelStyle.fontSize = customAttr.label.progressValueSize !== undefined? customAttr.label.progressValueSize + 'px' : '14px'
-        this.colMargin = customAttr.label.strokeMargin? customAttr.label.strokeMargin+'px' : '10px'
-        if(customAttr.label.progressWidth) {
+        this.labelStyle.color = customAttr.label.progressLabelColor ? customAttr.label.progressLabelColor : '#ffffff'
+        this.labelStyle.fontSize = customAttr.label.progressValueSize !== undefined ? customAttr.label.progressValueSize + 'px' : '14px'
+        this.colMargin = customAttr.label.strokeMargin ? customAttr.label.strokeMargin + 'px' : '10px'
+        if (customAttr.label.progressWidth) {
           this.progWidth.label = customAttr.label.progressWidth
           this.progWidth.bar = (24 - customAttr.label.progressWidth)
         }

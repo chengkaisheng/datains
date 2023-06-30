@@ -142,7 +142,6 @@ export default {
           ]
         }
       }
-      // console.log(this.$store.state.canvasStyleData)
       if (chart.type === 'bar') {
         this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false, this.canvasStyleData)
       } else if (chart.type === 'bar-stack') {
@@ -193,7 +192,6 @@ export default {
     },
 
     antVAction(param) {
-      console.log(param)
       if (this.chart.type === 'treemap') {
         this.pointParam = param.data.data
       } else {

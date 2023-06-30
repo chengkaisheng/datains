@@ -136,8 +136,6 @@ export default {
     },
     scrollVisible: { // 展示弹窗用
       handler(val1, val2) {
-        console.log('val11111111111', val1)
-
         if (this.chart.data && this.chart.data.sourceFields) {
           this.chart.data.sourceFields.forEach(item => {
             const sourceInfo = this.chart.id + '#' + item.id
@@ -156,7 +154,6 @@ export default {
     }
   },
   mounted() {
-    console.log('element,chart', this.chart, this.element)
     if (this.chart.data) {
       this.initData()
     }
@@ -182,7 +179,7 @@ export default {
         }
         d.push(arr)
       }
-      console.log('数据，，，', d)
+
       this.infoData = d
 
       this.initStyle()
@@ -220,7 +217,6 @@ export default {
     setData() { // 点击滚动表格，获取到联动点击的值过滤
       const fields = this.chart.data.fields
       const data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-      // console.log(fields,data,this.associateFiled,this.scrollFilters)
       const d = []
       for (let i = 0; i < data.length; i++) {
         const obj = data[i]
@@ -240,7 +236,7 @@ export default {
           d.push(arr)
         }
       }
-      // console.log('ddddddddddd',d)
+
       this.infoData = d
     },
     chartResize() {
@@ -252,7 +248,6 @@ export default {
       this.height = 100
     },
     clickPop() {
-      console.log('点击，，，', this.chart)
       // this.visible = true
     },
     closePop() {

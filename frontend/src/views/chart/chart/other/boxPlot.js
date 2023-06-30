@@ -1,8 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
 
-export function baseBoxPlotOption (chart_option, chart,cstyle = {}) {
-  console.log('盒须图',chart_option,chart)
+export function baseBoxPlotOption(chart_option, chart, cstyle = {}) {
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
@@ -23,41 +22,39 @@ export function baseBoxPlotOption (chart_option, chart,cstyle = {}) {
     // chart_option.grid.bottom = customAttr.size.spaceBottom
   }
 
-  //处理data
-  if(chart.data) {
+  // 处理data
+  if (chart.data) {
     chart_option.title.text = chart.title
     // chart_option.xAxis.data = chart.data.x
 
-    let arr = []
-    for(let i = 0; i < chart.data.series.length; i++) {
-      const y  = chart.data.series[i]
-      let arr1 = []
+    const arr = []
+    for (let i = 0; i < chart.data.series.length; i++) {
+      const y = chart.data.series[i]
+      const arr1 = []
       y.data.map(item => {
         arr1.push(item.value)
       })
-      
+
       arr.push(arr1)
       // chart_option.legend.data.push(y.name)
     }
-    console.log('boxarr,,',arr)
 
-    let map = new Array(Math.max(... arr.map(item => item.length)));
-		for(let index = 0;index < map.length;index ++) {
-			for(let key in arr) {
-				if(!map[index]) {
-					map[index] = [arr[key][index]]
-				}else {
-					map[index][key] = arr[key][index]
-				}
-			} 
-		}
-    console.log('box数据',map)
+    const map = new Array(Math.max(... arr.map(item => item.length)))
+    for (let index = 0; index < map.length; index++) {
+      for (const key in arr) {
+        if (!map[index]) {
+          map[index] = [arr[key][index]]
+        } else {
+          map[index][key] = arr[key][index]
+        }
+      }
+    }
+
     chart_option.dataset[0].source = map
   }
 
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
-  console.log('boxxxxxx',chart_option)
-  return chart_option
 
+  return chart_option
 }

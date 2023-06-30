@@ -22,7 +22,7 @@
       </span>
       <span v-show="checkboxStatus" style="float: right;">
         <el-tooltip :content="isMove? $t('commons.position.move') : $t('commons.back')">
-          <el-button :class="isMove? 'el-icon-rank' : 'el-icon-d-arrow-left'" size="mini" circle    @click="moveClick" />
+          <el-button :class="isMove? 'el-icon-rank' : 'el-icon-d-arrow-left'" size="mini" circle @click="moveClick" />
         </el-tooltip>
         <span v-if="isMove" style="padding: 0px 10px;">
           <el-tooltip :content="$t('commons.position.horizontally')">
@@ -67,7 +67,7 @@
           </el-tooltip>
         </span>
         <span v-else style="padding: 0px 10px;">
-          <el-input-number v-model="moveSize" :min="1" :max="1000" size="mini" style="width: 100px;margin-right: 10px;"></el-input-number>
+          <el-input-number v-model="moveSize" :min="1" :max="1000" size="mini" style="width: 100px;margin-right: 10px;" />
           <el-tooltip :content="$t('commons.move.left')">
             <el-button class="el-icon-back" size="mini" circle @click="moveChange('left')" />
           </el-tooltip>
@@ -123,7 +123,7 @@
       <el-tooltip :content="$t('panel.params_checkbox')">
         <el-button class="el-icon-connection icon-duoxuan" size="mini" circle @click="clickCheckbox" />
       </el-tooltip>
-      <el-tooltip :content="$t('panel.paste')" v-if="isCopyToPaste">
+      <el-tooltip v-if="isCopyToPaste" :content="$t('panel.paste')">
         <el-button class="el-icon-document-copy" size="mini" circle @click="clickPaste" />
       </el-tooltip>
       <span style="float: right;margin-left: 10px">
@@ -193,7 +193,7 @@ export default {
       changes: 0,
       closePanelVisible: false,
       isMove: true,
-      moveSize: 50,
+      moveSize: 50
     }
   },
   computed: {
@@ -201,7 +201,6 @@ export default {
       return this.changeTimes === 0 || this.snapshotIndex === this.lastSaveSnapshotIndex
     },
     editControlButton() {
-      console.log('panduan1shisd=================', this.linkageSettingStatus, this.mobileLayoutStatus, this.checkboxStatus)
       return this.linkageSettingStatus || this.mobileLayoutStatus || this.checkboxStatus
     },
     ...mapState([
@@ -237,7 +236,7 @@ export default {
       this.$nextTick(() => {
         bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
       })
-      this.$store.commit('setPanelStatus',false)
+      this.$store.commit('setPanelStatus', false)
     },
     closePanelEdit() {
       if (this.changeTimes === 0 || this.snapshotIndex === this.lastSaveSnapshotIndex) { // 已保存
@@ -246,7 +245,7 @@ export default {
         this.closePanelVisible = true
       }
 
-      this.$store.commit('setPanelStatus',false)
+      this.$store.commit('setPanelStatus', false)
     },
     goFile() {
       this.$refs.files.click()
@@ -360,15 +359,11 @@ export default {
       // 清理联动信息
       this.$store.commit('clearPanelLinkageInfo')
       // 保存到数据库
-      // console.log('this.canvasStyleData', this.componentData,this.canvasStyleData)
       this.componentData.forEach(ele => {
-        // console.log('width', document.getElementById('eleId' + ele.id).offsetWidth)
         // ele.commonBackground.boxWidth = document.getElementById('eleId' + ele.id).offsetWidth
         // ele.commonBackground.boxHeight = document.getElementById('eleId' + ele.id).offsetHeight
         // ele.style.width = document.getElementById('eleId' + ele.id).offsetWidth
         // ele.style.height = document.getElementById('eleId' + ele.id).offsetHeight
-
-        // console.log('获取盒子到左边和右边的距离', document.getElementById('eleId' + ele.id).offsetTop, document.getElementById('eleId' + ele.id).offsetLeft)
       })
       const requestInfo = {
         id: this.$store.state.panel.panelInfo.id,
@@ -387,9 +382,7 @@ export default {
         }
       })
       // 无需保存条件
-      console.log(components)
       requestInfo.panelData = JSON.stringify(components)
-      console.log('保存的数据',requestInfo)
       panelSave(requestInfo).then(response => {
         this.$store.commit('refreshSaveStatus')
         this.$message({
@@ -424,35 +417,32 @@ export default {
     },
     //  粘贴
     clickPaste() {
-      console.log('粘贴',this.isCopyToPaste)
-      this.$store.commit('setCopyToPaste',false)
+      this.$store.commit('setCopyToPaste', false)
       this.$store.commit('paste', true)
       this.$store.commit('recordSnapshot', 'paste')
     },
     clickCheckbox() {
-      console.log('checkbox')
-      if(this.componentData.length)  {
-        this.$store.commit('setCurComponent',{ component: this.componentData[0], index: 0 })
+      if (this.componentData.length) {
+        this.$store.commit('setCurComponent', { component: this.componentData[0], index: 0 })
       }
       this.$store.commit('setCheckBoxStatus', true)
     },
     checkDel() {
-      console.log('deleteCheck')
-      if(!this.componentData.length) {
+      if (!this.componentData.length) {
         return
       }
 
       const componentData = deepCopy(this.componentData)
-      let arr = []
-      let arr2 = []
-      componentData.map((item,index) => {
-        if(!item.isCheck) {
+      const arr = []
+      const arr2 = []
+      componentData.map((item, index) => {
+        if (!item.isCheck) {
           arr.push(item)
         } else {
           arr2.push(item)
         }
       })
-      if(!arr2.length) { //未选择要删除的组件
+      if (!arr2.length) { // 未选择要删除的组件
         return
       }
       this.$confirm('此操作将删除勾选组件, 是否继续?', '提示', {
@@ -460,408 +450,392 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        console.log('arrrr',arr)
-        this.$store.commit('setComponentData',arr)
+        this.$store.commit('setComponentData', arr)
         this.$store.commit('recordSnapshot')
         this.$store.commit('setCurComponent', { component: null, index: null })
-        this.$store.commit('setCheckBoxStatus',false)
-        // console.log('删除 后的',this.componentData)
+        this.$store.commit('setCheckBoxStatus', false)
 
         this.$message({
           type: 'success',
           message: '删除成功!'
-        });
+        })
       }).catch(() => {
         this.$message({
           type: 'info',
           message: '已取消删除'
-        });          
-      });
+        })
+      })
     },
     checkBack() {
       const componentData = deepCopy(this.componentData)
       componentData.map(item => {
-        item.isCheck  = false
-      });
+        item.isCheck = false
+      })
       this.isMove = true
-      this.$store.commit('setComponentData',componentData)
-      this.$store.commit('setCheckBoxStatus',false)
+      this.$store.commit('setComponentData', componentData)
+      this.$store.commit('setCheckBoxStatus', false)
     },
     // 组件对齐
     positionChange(value) {
-      console.log('position:::',value)
-      
       const componentData = deepCopy(this.componentData)
-      const arr = componentData.filter(item => item.isCheck&&!item.isLock) // 勾选中锁定状态的组件不支持对齐
+      const arr = componentData.filter(item => item.isCheck && !item.isLock) // 勾选中锁定状态的组件不支持对齐
       if (!arr.length) {
         return
       }
-      console.log(arr)
-      if(value === 'left') {
+
+      if (value === 'left') {
         if (arr.length === 1) {
           componentData.map(item => {
-            if (item.isCheck &&!item.isLock) {
+            if (item.isCheck && !item.isLock) {
               item.style.left = 1
             }
           })
         } else {
-          let lefts = arr.map(item => {return item.style.left}) // 组件left值
-          let left = Math.min(...lefts)
+          const lefts = arr.map(item => { return item.style.left }) // 组件left值
+          const left = Math.min(...lefts)
           componentData.map(item => {
-            if (item.isCheck &&!item.isLock) {
+            if (item.isCheck && !item.isLock) {
               item.style.left = left
             }
           })
         }
-
       } else if (value === 'right') {
         if (arr.length === 1) {
           componentData.map(item => {
-            if (item.isCheck &&!item.isLock) {
+            if (item.isCheck && !item.isLock) {
               item.style.left = (this.canvasStyleData.width - item.style.width)
             }
           })
         } else {
-          let rights = arr.map(item => {return (item.style.left + item.style.width)}) // 
-          let right = Math.max(...rights)
-          // console.log(right)
+          const rights = arr.map(item => { return (item.style.left + item.style.width) }) //
+          const right = Math.max(...rights)
           componentData.map(item => {
-            if (item.isCheck &&!item.isLock) {
+            if (item.isCheck && !item.isLock) {
               item.style.left = (right - item.style.width)
             }
           })
         }
-        
       } else if (value === 'top') {
         if (arr.length === 1) {
           componentData.map(item => {
-            if (item.isCheck &&!item.isLock) {
+            if (item.isCheck && !item.isLock) {
               item.style.top = 1
             }
           })
         } else {
-          let tops = arr.map(item => {return item.style.top})
-          let top = Math.min(...tops)
+          const tops = arr.map(item => { return item.style.top })
+          const top = Math.min(...tops)
           componentData.map(item => {
-            if (item.isCheck &&!item.isLock) {
+            if (item.isCheck && !item.isLock) {
               item.style.top = top
             }
           })
         }
-
       } else if (value === 'bottom') {
         if (arr.length === 1) {
           componentData.map(item => {
-            if (item.isCheck &&!item.isLock) {
+            if (item.isCheck && !item.isLock) {
               item.style.top = (this.canvasStyleData.height - item.style.height)
             }
           })
         } else {
-          let bottoms = arr.map(item => {return (item.style.top + item.style.height)})
-          let bottom = Math.max(...bottoms)
-          // console.log(bottom)
+          const bottoms = arr.map(item => { return (item.style.top + item.style.height) })
+          const bottom = Math.max(...bottoms)
+
           componentData.map(item => {
-            if (item.isCheck &&!item.isLock) {
+            if (item.isCheck && !item.isLock) {
               item.style.top = (bottom - item.style.height)
             }
           })
         }
-
       } else if (value === 'transverse') { // 横向
-        if(arr.length === 1) {
+        if (arr.length === 1) {
           componentData.map(item => {
             if (item.isCheck && !item.isLock) {
-              item.style.left = Math.floor((parseInt(this.canvasStyleData.width) - parseInt(item.style.width))/2)
+              item.style.left = Math.floor((parseInt(this.canvasStyleData.width) - parseInt(item.style.width)) / 2)
             }
           })
         } else {
-          let list = []
+          const list = []
           arr.map(item => {
             list.push(item.style.left)
             list.push((item.style.left + item.style.width))
-          });
-          let min = Math.floor(Math.min(...list))
-          let max = Math.floor(Math.max(...list))
-          let pip = max -min
+          })
+          const min = Math.floor(Math.min(...list))
+          const max = Math.floor(Math.max(...list))
+          let pip = max - min
           arr.map(item => {
             pip = pip - parseInt(item.style.width)
           })
-          let avg = Math.floor(pip/(arr.length - 1))
-          console.log('数值：',min,max,pip,avg)
-          arr.sort((a,b) => {return a.style.left - b.style.left})
-          let leftList = [] // 横向分布组件的left
-          for(let i=0;i<arr.length;i++) {
-            if(i === 0) {
+          const avg = Math.floor(pip / (arr.length - 1))
+
+          arr.sort((a, b) => { return a.style.left - b.style.left })
+          const leftList = [] // 横向分布组件的left
+          for (let i = 0; i < arr.length; i++) {
+            if (i === 0) {
               arr[i].style.left = min
               leftList.push(min)
             } else {
-              arr[i].style.left = Math.floor(arr[i-1].style.left + arr[i-1].style.width + avg)
+              arr[i].style.left = Math.floor(arr[i - 1].style.left + arr[i - 1].style.width + avg)
               leftList.push(arr[i].style.left)
             }
           }
-          // console.log('赋值后：；',arr,leftList)
-          componentData.sort((a,b) => {return a.style.left - b.style.left}) // 排序
-          let n = 0;
+
+          componentData.sort((a, b) => { return a.style.left - b.style.left }) // 排序
+          let n = 0
           componentData.map(item => {
-            if(item.isCheck && !item.isLock) {
+            if (item.isCheck && !item.isLock) {
               item.style.left = leftList[n]
               n++
             }
-          });
-          console.log('横向分布',componentData)
+          })
         }
-
       } else if (value === 'longitudinal') { // 纵向
-        if(arr.length === 1) {
+        if (arr.length === 1) {
           componentData.map(item => {
             if (item.isCheck && !item.isLock) {
-              item.style.top = Math.floor((this.canvasStyleData.height - item.style.height)/2)
+              item.style.top = Math.floor((this.canvasStyleData.height - item.style.height) / 2)
             }
           })
         } else {
-          let list = []
+          const list = []
           arr.map(item => {
             list.push(item.style.top)
             list.push((item.style.top + item.style.height))
-          });
-          // console.log(list)
-          let min = Math.floor(Math.min(...list))
-          let max = Math.floor(Math.max(...list))
-          let pip = max -min
+          })
+
+          const min = Math.floor(Math.min(...list))
+          const max = Math.floor(Math.max(...list))
+          let pip = max - min
           arr.map(item => {
             pip = pip - parseInt(item.style.height)
           })
-          let avg = Math.floor(pip/(arr.length - 1))
-          console.log('数值：',min,max,pip,avg)
-          arr.sort((a,b) => {return a.style.top - b.style.top})
-          let topList = [] // 横向分布组件的top
-          for(let i=0;i<arr.length;i++) {
-            if(i === 0) {
+          const avg = Math.floor(pip / (arr.length - 1))
+
+          arr.sort((a, b) => { return a.style.top - b.style.top })
+          const topList = [] // 横向分布组件的top
+          for (let i = 0; i < arr.length; i++) {
+            if (i === 0) {
               arr[i].style.top = min
               topList.push(min)
             } else {
-              arr[i].style.top = parseInt(arr[i-1].style.top + arr[i-1].style.height + avg)
+              arr[i].style.top = parseInt(arr[i - 1].style.top + arr[i - 1].style.height + avg)
               topList.push(arr[i].style.top)
             }
           }
-          // console.log('赋值后：；',topList)
-          componentData.sort((a,b) => {return a.style.top - b.style.top}) // 排序
-          let n = 0;
+
+          componentData.sort((a, b) => { return a.style.top - b.style.top }) // 排序
+          let n = 0
           componentData.map(item => {
-            if(item.isCheck && !item.isLock) {
+            if (item.isCheck && !item.isLock) {
               item.style.top = topList[n]
               n++
             }
-          });
-          // console.log('纵向分布',componentData)
+          })
         }
-
       } else if (value === 'horizontally') { // 水平居中
-        if(arr.length === 1) {
+        if (arr.length === 1) {
           componentData.map(item => {
-            if(item.isCheck && !item.isLock) {
-              item.style.left = Math.floor(parseInt(this.canvasStyleData.width - item.style.width)/2)
+            if (item.isCheck && !item.isLock) {
+              item.style.left = Math.floor(parseInt(this.canvasStyleData.width - item.style.width) / 2)
             }
           })
-        }else {
-          let obj = arr[arr.length -1] // 获取最后一个组件对象
-          let levelCentral = obj.style.left + parseInt(obj.style.width/2)  // 获取组件水平的中轴线值
-          console.log(levelCentral)
+        } else {
+          const obj = arr[arr.length - 1] // 获取最后一个组件对象
+          const levelCentral = obj.style.left + parseInt(obj.style.width / 2) // 获取组件水平的中轴线值
+
           componentData.map(item => {
-            if(item.isCheck && !item.isLock) {
-              if(item.style.left !== obj.style.left) {
-                item.style.left = levelCentral - parseInt(item.style.width/2)
+            if (item.isCheck && !item.isLock) {
+              if (item.style.left !== obj.style.left) {
+                item.style.left = levelCentral - parseInt(item.style.width / 2)
               }
             }
           })
         }
       } else if (value === 'vertically') { // 垂直居中
-        if(arr.length === 1) {
+        if (arr.length === 1) {
           componentData.map(item => {
-            if(item.isCheck && !item.isLock) {
-              item.style.top = Math.floor(parseInt(this.canvasStyleData.height - item.style.height)/2)
+            if (item.isCheck && !item.isLock) {
+              item.style.top = Math.floor(parseInt(this.canvasStyleData.height - item.style.height) / 2)
             }
           })
         } else {
-          let obj = arr[arr.length -1] // 获取最后一个组件对象
-          let verticalCentral = obj.style.top + parseInt(obj.style.height/2) // 获取组件垂直的中轴线值
-          console.log(verticalCentral)
+          const obj = arr[arr.length - 1] // 获取最后一个组件对象
+          const verticalCentral = obj.style.top + parseInt(obj.style.height / 2) // 获取组件垂直的中轴线值
+
           componentData.map(item => {
-            if(item.isCheck && !item.isLock) {
-              if(item.style.top != obj.style.top) {
-                item.style.top = verticalCentral - parseInt(item.style.height/2)
+            if (item.isCheck && !item.isLock) {
+              if (item.style.top != obj.style.top) {
+                item.style.top = verticalCentral - parseInt(item.style.height / 2)
               }
             }
           })
         }
       }
-      this.$store.commit('setComponentData',componentData)
+      this.$store.commit('setComponentData', componentData)
       this.$store.commit('recordSnapshot')
     },
     // 组件移动
     moveClick() {
       this.isMove = !this.isMove
-      console.log(this.isMove)
     },
     // 组件移动改变
     moveChange(value) {
-      console.log(value,this.moveSize)
-
       const componentData = deepCopy(this.componentData)
-      let arr = componentData.filter(item => item.isCheck && !item.isLock)
+      const arr = componentData.filter(item => item.isCheck && !item.isLock)
       if (!arr.length) {
         return
       }
-      if(value === 'left') {
-        let list = arr.filter(item => parseInt(item.style.left) === 0)
-        if(list.length) {
+      if (value === 'left') {
+        const list = arr.filter(item => parseInt(item.style.left) === 0)
+        if (list.length) {
           return
         }
-        arr.sort((a,b) => {return a.style.left - b.style.left}) // 由小到大排序
+        arr.sort((a, b) => { return a.style.left - b.style.left }) // 由小到大排序
         // 获取到最左边组件的left 左移动 moveSize距离后的值
-        let left = Math.floor(parseInt(arr[0].style.left) - this.moveSize) < 0 ? 0 : Math.floor(parseInt(arr[0].style.left) - this.moveSize)
-        console.log('left',left)
-        let spaceList = [] // 向左移动的组件间的间隔差
-        for(let i=0;i<arr.length;i++) {
-          if(i === 0) {
+        const left = Math.floor(parseInt(arr[0].style.left) - this.moveSize) < 0 ? 0 : Math.floor(parseInt(arr[0].style.left) - this.moveSize)
+
+        const spaceList = [] // 向左移动的组件间的间隔差
+        for (let i = 0; i < arr.length; i++) {
+          if (i === 0) {
             spaceList.push(0)
           } else {
-            let c = parseInt(arr[i].style.left) - parseInt(arr[i-1].style.left + arr[i-1].style.width)
+            const c = parseInt(arr[i].style.left) - parseInt(arr[i - 1].style.left + arr[i - 1].style.width)
             spaceList.push(c)
           }
         }
-        // console.log('组件间隔差：',spaceList)
-        let leftList = [] // 组件移动后left集合
-        for(let i=0;i<arr.length;i++) {
-          if(i === 0) {
+
+        const leftList = [] // 组件移动后left集合
+        for (let i = 0; i < arr.length; i++) {
+          if (i === 0) {
             leftList.push((left))
           } else {
-            leftList.push(Math.floor(leftList[i-1] + arr[i-1].style.width + spaceList[i]))
+            leftList.push(Math.floor(leftList[i - 1] + arr[i - 1].style.width + spaceList[i]))
           }
         }
-        console.log('left,list',leftList)
-        componentData.sort((a,b) => {return a.style.left - b.style.left})
-        let n = 0;
+
+        componentData.sort((a, b) => { return a.style.left - b.style.left })
+        let n = 0
         componentData.map(item => {
-          if(item.isCheck && !item.isLock) {
+          if (item.isCheck && !item.isLock) {
             item.style.left = leftList[n]
             n++
           }
         })
-      } else if(value === 'right') {
-        let list = arr.filter(item => parseInt(item.style.left + item.style.width) === this.canvasStyleData.width)
-        if(list.length) {
+      } else if (value === 'right') {
+        const list = arr.filter(item => parseInt(item.style.left + item.style.width) === this.canvasStyleData.width)
+        if (list.length) {
           return
         }
-        arr.sort((a,b) => {return b.style.left - a.style.left}) // 由大到小排序
+        arr.sort((a, b) => { return b.style.left - a.style.left }) // 由大到小排序
         // 获取到最右边组件的left 右移动 moveSize距离后的值
-        let right = Math.floor(arr[0].style.left + arr[0].style.width + this.moveSize) > this.canvasStyleData.width ? 
-          (this.canvasStyleData.width - Math.floor(arr[0].style.width)) : Math.floor(arr[0].style.left + this.moveSize)
-        console.log('right',right)
-        let spaceList = [] // 向右移动的组件间的间隔差
-        for(let i=0;i<arr.length;i++) {
-          if(i === 0) {
+        const right = Math.floor(arr[0].style.left + arr[0].style.width + this.moveSize) > this.canvasStyleData.width
+          ? (this.canvasStyleData.width - Math.floor(arr[0].style.width)) : Math.floor(arr[0].style.left + this.moveSize)
+
+        const spaceList = [] // 向右移动的组件间的间隔差
+        for (let i = 0; i < arr.length; i++) {
+          if (i === 0) {
             spaceList.push(0)
           } else {
             // arr 是有大到小排序
-            let c = parseInt(arr[i-1].style.left) - parseInt(arr[i].style.left + arr[i].style.width)
+            const c = parseInt(arr[i - 1].style.left) - parseInt(arr[i].style.left + arr[i].style.width)
             spaceList.push(c)
           }
         }
-        // console.log('间隔',spaceList)
-        let rightList = [] // 组件移动后left集合
-        for(let i=0;i<arr.length;i++) {
-          if(i === 0) {
+
+        const rightList = [] // 组件移动后left集合
+        for (let i = 0; i < arr.length; i++) {
+          if (i === 0) {
             rightList.push((right))
           } else {
-            rightList.push(Math.floor(rightList[i-1] - parseInt(arr[i].style.width) - spaceList[i]))
+            rightList.push(Math.floor(rightList[i - 1] - parseInt(arr[i].style.width) - spaceList[i]))
           }
         }
-        console.log('right,list',rightList)
-        componentData.sort((a,b) => {return b.style.left - a.style.left}) // 由大到小
-        let n = 0;
+
+        componentData.sort((a, b) => { return b.style.left - a.style.left }) // 由大到小
+        let n = 0
         componentData.map(item => {
-          if(item.isCheck && !item.isLock) {
+          if (item.isCheck && !item.isLock) {
             item.style.left = rightList[n]
             n++
           }
         })
-      } else if(value === 'top') {
-        let list = arr.filter(item => parseInt(item.style.top) === 0)
-        if(list.length) {
+      } else if (value === 'top') {
+        const list = arr.filter(item => parseInt(item.style.top) === 0)
+        if (list.length) {
           return
         }
-        arr.sort((a,b) => {return a.style.top - b.style.top}) // 由小到大
+        arr.sort((a, b) => { return a.style.top - b.style.top }) // 由小到大
         // 获取到最上边组件的top 上移动 moveSize距离后的值
-        let top = Math.floor(parseInt(arr[0].style.top) - this.moveSize) < 0 ? 0 : Math.floor(parseInt(arr[0].style.top) - this.moveSize)
-        console.log('top',top)
-        let spaceList = [] // 向上移动的组件间的间隔差
-        for(let i=0;i<arr.length;i++) {
-          if(i === 0) {
+        const top = Math.floor(parseInt(arr[0].style.top) - this.moveSize) < 0 ? 0 : Math.floor(parseInt(arr[0].style.top) - this.moveSize)
+
+        const spaceList = [] // 向上移动的组件间的间隔差
+        for (let i = 0; i < arr.length; i++) {
+          if (i === 0) {
             spaceList.push(0)
           } else {
-            let c = parseInt(arr[i].style.top) - parseInt(arr[i-1].style.top + arr[i-1].style.height)
+            const c = parseInt(arr[i].style.top) - parseInt(arr[i - 1].style.top + arr[i - 1].style.height)
             spaceList.push(c)
           }
         }
-        // console.log('组件间隔差：',spaceList)
-        let topList = [] // 组件移动后top集合
-        for(let i=0;i<arr.length;i++) {
-          if(i === 0) {
+
+        const topList = [] // 组件移动后top集合
+        for (let i = 0; i < arr.length; i++) {
+          if (i === 0) {
             topList.push((top))
           } else {
-            topList.push(Math.floor(topList[i-1] + arr[i-1].style.height + spaceList[i]))
+            topList.push(Math.floor(topList[i - 1] + arr[i - 1].style.height + spaceList[i]))
           }
         }
-        console.log('top,list',topList)
-        componentData.sort((a,b) => {return a.style.top - b.style.top})
-        let n = 0;
+
+        componentData.sort((a, b) => { return a.style.top - b.style.top })
+        let n = 0
         componentData.map(item => {
-          if(item.isCheck && !item.isLock) {
+          if (item.isCheck && !item.isLock) {
             item.style.top = topList[n]
             n++
           }
         })
-      } else if(value === 'bottom') {
-        let list = arr.filter(item => parseInt(item.style.top + item.style.height) === this.canvasStyleData.height)
-        if(list.length) {
+      } else if (value === 'bottom') {
+        const list = arr.filter(item => parseInt(item.style.top + item.style.height) === this.canvasStyleData.height)
+        if (list.length) {
           return
         }
-        arr.sort((a,b) => {return parseInt(b.style.top + b.style.height) - parseInt(a.style.top + a.style.height)}) // 由大到小排序
+        arr.sort((a, b) => { return parseInt(b.style.top + b.style.height) - parseInt(a.style.top + a.style.height) }) // 由大到小排序
         // 获取到最下面边组件的top 下移动 moveSize距离后的值
-        let bottom = Math.floor(arr[0].style.top + arr[0].style.height + this.moveSize) > this.canvasStyleData.height ? 
-          (this.canvasStyleData.height - Math.floor(arr[0].style.height)) : Math.floor(arr[0].style.top + this.moveSize)
-        console.log('bottom',bottom)
-        let spaceList = [] // 向下移动的组件间的间隔差
-        for(let i=0;i<arr.length;i++) {
-          if(i === 0) {
+        const bottom = Math.floor(arr[0].style.top + arr[0].style.height + this.moveSize) > this.canvasStyleData.height
+          ? (this.canvasStyleData.height - Math.floor(arr[0].style.height)) : Math.floor(arr[0].style.top + this.moveSize)
+
+        const spaceList = [] // 向下移动的组件间的间隔差
+        for (let i = 0; i < arr.length; i++) {
+          if (i === 0) {
             spaceList.push(0)
           } else {
             // arr 是有大到小排序
-            let c = parseInt(arr[i-1].style.top) - parseInt(arr[i].style.top + arr[i].style.height)
+            const c = parseInt(arr[i - 1].style.top) - parseInt(arr[i].style.top + arr[i].style.height)
             spaceList.push(c)
           }
         }
-        console.log('间隔',spaceList)
-        let bottomtList = [] // 组件移动后top集合
-        for(let i=0;i<arr.length;i++) {
-          if(i === 0) {
+
+        const bottomtList = [] // 组件移动后top集合
+        for (let i = 0; i < arr.length; i++) {
+          if (i === 0) {
             bottomtList.push((bottom))
           } else {
-            bottomtList.push(Math.floor(bottomtList[i-1] - parseInt(arr[i].style.height) - spaceList[i]))
+            bottomtList.push(Math.floor(bottomtList[i - 1] - parseInt(arr[i].style.height) - spaceList[i]))
           }
         }
-        console.log('bottom,list',bottomtList)
-        componentData.sort((a,b) => {return parseInt(b.style.top + b.style.height) - parseInt(a.style.top + a.style.height)}) // 由大到小
-        let n = 0;
+
+        componentData.sort((a, b) => { return parseInt(b.style.top + b.style.height) - parseInt(a.style.top + a.style.height) }) // 由大到小
+        let n = 0
         componentData.map(item => {
-          if(item.isCheck && !item.isLock) {
+          if (item.isCheck && !item.isLock) {
             item.style.top = bottomtList[n]
             n++
           }
         })
       }
-      this.$store.commit('setComponentData',componentData)
+      this.$store.commit('setComponentData', componentData)
       this.$store.commit('recordSnapshot')
     },
     changeAidedDesign() {
@@ -871,7 +845,6 @@ export default {
       this.close()
     },
     saveLinkage() {
-      console.log('saveLinkage')
       // 字段检查
       for (const key in this.targetLinkageInfo) {
         let subCheckCount = 0

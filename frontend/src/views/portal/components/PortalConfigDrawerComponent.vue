@@ -416,7 +416,7 @@ export default {
   computed: {
     titleStyleSet() {
       // {width:titleWidth+'%',textAlign:'center'}
-      console.log('this.titleFontSet', this.titleFontSet)
+
       const style = {}
       style.width = this.titleWidth + '%'
       style.textAlign = 'center'
@@ -494,7 +494,6 @@ export default {
             this.$watch(
               () => this.$refs.panelViewShow.showMain,
               (val) => {
-                console.log('this.$refs.panelViewShow.showMain ----', val)
                 this.priviewBtnEnable = val
               }
             )
@@ -595,7 +594,6 @@ export default {
 
     // 点击编辑和预览
     handleEditPreivewTab(evt) {
-      console.log('evt -- ', evt)
       if (evt === 'edit') {
         return
       }
@@ -634,7 +632,7 @@ export default {
     },
     // 选择主题设置
     handleChangeThemeColor(color) {
-      console.log('color', color)
+
       // this.setThemeColor(color);
     },
     setNavLayoutStyle(style) {
@@ -674,7 +672,6 @@ export default {
     },
     // 点击节点时候触发
     handleNodeClick(node) {
-      // console.log("node", node);
       this.currentTreeNode = node
       if (this.currentTreeNode.trendId && this.currentTreeNode.trendId.length) {
         this.handleUpdateTrend()
@@ -684,12 +681,10 @@ export default {
     },
     // 鼠标移入该节点的时候触发
     handleTreeNodeMouseEnter(node) {
-      // console.log("node enter", node);
       node.data.showOption = true
     },
     // 鼠标移除该节点的时候触发
     handleTreeNodeMouseLeave(node) {
-      // console.log("node leave", node);
       node.data.showOption = false
     },
     // 添加子节点
@@ -700,7 +695,7 @@ export default {
         )
         return
       }
-      console.log('handleAddTreeSubNode node', node)
+
       this.treeId += 1
       const treeId = this.treeId
       const level = node.data.level + 1
@@ -726,13 +721,13 @@ export default {
         const foundIndex = this.treeData.findIndex(
           (item) => item.id == node.parent.data.id
         )
-        console.log('foundINdex', foundIndex)
+
         const children = this.treeData[foundIndex].children
-        console.log('children', children)
+
         const foundChildIndex = children.findIndex(
           (item) => item.id == node.data.id
         )
-        console.log('foundChildIndex', foundChildIndex)
+
         this.treeData[foundIndex].children[foundChildIndex].children.push({
           id: treeId.toString(),
           label: '三级菜单',
@@ -750,7 +745,6 @@ export default {
     },
     // 删除一个节点
     handleDeleteTreeSubNode(node, data) {
-      console.log('handleDeleteTreeSubNode node', node)
       this.$confirm('删除该节点', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -777,7 +771,6 @@ export default {
       this.handleTopSelect(item.id)
     },
     handleTopSelect(active) {
-      console.log('active', active)
       this.topActiveTab = active
     },
     // 节点拖拽进入到其他的节点
@@ -789,7 +782,7 @@ export default {
     },
     // 选择一个趋势图
     handleTrendChange(data) {
-      console.log('data', data)
+
       //   this.$store.commit("setComponentDataCache", null);
       //   initPanelData(data, function (response) {
       //     bus.$emit("set-panel-show-type", 0);

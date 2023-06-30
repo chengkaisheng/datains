@@ -2,7 +2,6 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
 
 export function baseMixOption(chart_option, chart, cstyle = {}) {
-  console.log('组合图',chart)
   // 处理shape attr
   let customAttr = {}
   const yAxis = JSON.parse(chart.yaxis)
@@ -24,7 +23,7 @@ export function baseMixOption(chart_option, chart, cstyle = {}) {
   if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
-    let arr = []
+    const arr = []
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
       y.type = y.type ? y.type : 'bar'
@@ -63,7 +62,7 @@ export function baseMixOption(chart_option, chart, cstyle = {}) {
         if (y.type === 'pie') {
           y.radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
           y.center = [customAttr.size.pieCircleLeft + '%', customAttr.size.pieCircleTop + '%']
-          y.data.map((item,index) => {
+          y.data.map((item, index) => {
             item.itemStyle = {
               color: hexColorToRGBA(customAttr.color.colors[index % customAttr.color.colors.length], customAttr.color.alpha)
             }
@@ -79,8 +78,8 @@ export function baseMixOption(chart_option, chart, cstyle = {}) {
       chart_option.series.push(y)
     }
   }
-  console.log('chart-mix',chart_option);
-  componentStyle(chart_option, chart,cstyle)
+
+  componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
 }

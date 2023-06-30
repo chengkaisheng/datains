@@ -23,23 +23,22 @@ export function baseGaugeOptionAntV(plot, container, chart, action, cstyle = {})
   if (customAttr.label) {
     const label = JSON.parse(JSON.stringify(customAttr.label))
     const arr = label.gaugeFormatter.split('{value}')
-    console.log('数组==》',arr)
-    
+
     if (label.show) {
       labelContent = {
         formatter: ({ percent }) => {
-          if(arr.length !== 2) {
+          if (arr.length !== 2) {
             return `${(percent * 100).toFixed(0)}`
           } else {
-            return arr[0]+(percent * 100).toFixed(0)+arr[1]
+            return arr[0] + (percent * 100).toFixed(0) + arr[1]
           }
         },
         // formatter: ({ percent }) => {eval(label.gaugeFormatter)},
         style: ({ percent }) => ({
           fontSize: parseInt(label.fontSize),
           color: label.color,
-          fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
-        }),
+          fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : ''
+        })
       }
     } else {
       labelContent = false

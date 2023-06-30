@@ -1,78 +1,78 @@
 <template>
-<div>
-  <div
-    :style="getOutStyleDefault(config.style)"
-    class="component"
-    @click="handleClick"
-    @mousedown="elementMouseDown"
-  >
-    <div :style="commonStyle" class="main_view">
-      <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
-      <close-bar v-if="previewVisible" @closePreview="closePreview" />
-      <de-out-widget
-        v-if="config.type==='custom'"
-        :id="'component' + config.id"
-        class="component-custom"
-        :style="getComponentStyleDefault(config.style)"
-        style="overflow: hidden"
-        :out-style="config.style"
-        :element="config"
-        :in-screen="inScreen"
-        :edit-mode="'preview'"
-        :h="config.style.height"
-      />
-      <component 
-        :is="config.component"
-        v-else-if="config.type === 'de-jump'"
-        :id="'component' + config.id"
-        class="component-custom"
-        :style="getComponentStyleDefault(config.style)"
-        style="overflow: hidden"
-        :out-style="config.style"
-        :element="config"
-        :in-screen="inScreen"
-        :edit-mode="'preview'"
-        :h="config.style.height"
-      />
-      <component
-        :is="config.component"
-        v-else
-        ref="wrapperChild"
-        :out-style="config.style"
-        :style="getComponentStyleDefault(config.style)"
-        :prop-value="config.propValue"
-        :is-edit="false"
-        :active="componentActiveFlag"
-        :element="config"
-        :search-count="searchCount"
-        :h="config.style.height"
-        :in-screen="inScreen"
-        :edit-mode="'preview'"
-        :filters="filters"
-        :terminal="terminal"
-        :screen-shot="screenShot"
-        :video-status="videoStatus"
-      />
+  <div>
+    <div
+      :style="getOutStyleDefault(config.style)"
+      class="component"
+      @click="handleClick"
+      @mousedown="elementMouseDown"
+    >
+      <div :style="commonStyle" class="main_view">
+        <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
+        <close-bar v-if="previewVisible" @closePreview="closePreview" />
+        <de-out-widget
+          v-if="config.type==='custom'"
+          :id="'component' + config.id"
+          class="component-custom"
+          :style="getComponentStyleDefault(config.style)"
+          style="overflow: hidden"
+          :out-style="config.style"
+          :element="config"
+          :in-screen="inScreen"
+          :edit-mode="'preview'"
+          :h="config.style.height"
+        />
+        <component
+          :is="config.component"
+          v-else-if="config.type === 'de-jump'"
+          :id="'component' + config.id"
+          class="component-custom"
+          :style="getComponentStyleDefault(config.style)"
+          style="overflow: hidden"
+          :out-style="config.style"
+          :element="config"
+          :in-screen="inScreen"
+          :edit-mode="'preview'"
+          :h="config.style.height"
+        />
+        <component
+          :is="config.component"
+          v-else
+          ref="wrapperChild"
+          :out-style="config.style"
+          :style="getComponentStyleDefault(config.style)"
+          :prop-value="config.propValue"
+          :is-edit="false"
+          :active="componentActiveFlag"
+          :element="config"
+          :search-count="searchCount"
+          :h="config.style.height"
+          :in-screen="inScreen"
+          :edit-mode="'preview'"
+          :filters="filters"
+          :terminal="terminal"
+          :screen-shot="screenShot"
+          :video-status="videoStatus"
+        />
+      </div>
     </div>
+    <!-- :title="textTitle" -->
+    <el-dialog
+      :visible.sync="showVisible"
+      :width="boxStyle"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :append-to-body="inScreen"
+      :destroy-on-close="true"
+      :style="popStyle"
+    >
+      <div slot="title">
+        <p style="padding:10px;margin-bottom: 0px;" :style="backStyle">{{ textTitle }}</p>
+      </div>
+      <div>
+        <textPopShow :element="textElement" />
+      </div>
+    </el-dialog>
   </div>
-  <!-- :title="textTitle" -->
-  <el-dialog
-    :visible.sync="showVisible"
-    :width="boxStyle"
-    class="dialog-css"
-    :close-on-click-modal="false"
-    :append-to-body="inScreen"
-    :destroy-on-close="true"
-    :style="popStyle"
-  > 
-    <div slot="title">
-      <p style="padding:10px;margin-bottom: 0px;" :style="backStyle">{{textTitle}}</p>
-    </div>
-    <div>
-      <textPopShow :element="textElement" />
-    </div>
-  </el-dialog>
-</div>
 </template>
 
 <script>
@@ -133,7 +133,7 @@ export default {
     return {
       previewVisible: false,
       showVisible: false,
-      textElement: {},
+      textElement: {}
     }
   },
   computed: {
@@ -178,22 +178,22 @@ export default {
       }
     },
     boxStyle() {
-      if(this.textElement && this.textElement.options && this.textElement.options.popImgWidth) {
+      if (this.textElement && this.textElement.options && this.textElement.options.popImgWidth) {
         return this.textElement.options.popImgWidth + '%'
       } else {
         return '38%'
       }
     },
     popStyle() {
-      let style = {}
-      if(this.textElement && this.textElement.options && this.textElement.options.popTitleColor) {
+      const style = {}
+      if (this.textElement && this.textElement.options && this.textElement.options.popTitleColor) {
         style.color = this.textElement.options.popTitleColor
       }
       return style
     },
     backStyle() {
-      let style = {}
-      if(this.textElement && this.textElement.options && this.textElement.options.popPanelColor) {
+      const style = {}
+      if (this.textElement && this.textElement.options && this.textElement.options.popPanelColor) {
         style.backgroundColor = this.textElement.options.popPanelColor
       }
       return style
@@ -207,7 +207,6 @@ export default {
   },
   mounted() {
     runAnimation(this.$el, this.config.animations)
-    console.log('全屏展示。。。。。。')
   },
   methods: {
     getStyle,
@@ -250,7 +249,7 @@ export default {
         })
         result['rotate'] = style['rotate']
       }
-      // console.log('------------------------', result)
+
       return result
     },
 
@@ -262,7 +261,6 @@ export default {
           height: '100%'
         }
       } else {
-        // console.log('getStyle', getStyle(style, ['top', 'left', 'width', 'height', 'rotate']))
         return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
       }
     },
@@ -272,15 +270,13 @@ export default {
       Object.keys(events).forEach(event => {
         this[event](events[event])
       })
-      console.log('click,,,,,',this.showVisible,this.curComponent)
-      if(this.config.component === 'v-text' && this.curComponent && this.config.options && this.config.options.isPopVisible) {
+
+      if (this.config.component === 'v-text' && this.curComponent && this.config.options && this.config.options.isPopVisible) {
         this.showVisible = true
         this.textElement = this.config
       }
-
     },
     elementMouseDown(e) {
-      // console.log('mouseDown:::::',e)
       // private 设置当前组件数据及状态
       this.$store.commit('setClickComponentStatus', true)
       if (this.config.component !== 'v-text' && this.config.component !== 'rect-shape' && this.config.component !== 'de-input-search' && this.config.component !== 'de-select-grid' && this.config.component !== 'de-number-range' && this.config.component !== 'de-date') {
@@ -288,7 +284,6 @@ export default {
       }
       // 阻止冒泡事件
       e.stopPropagation()
-      console.log('修改缓存数据')
       this.$store.commit('setCurComponent', { component: this.config, index: this.index })
     },
     showViewDetails() {

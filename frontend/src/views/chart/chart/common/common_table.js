@@ -5,7 +5,7 @@ export function getCustomTheme(chart, fontFamily) {
   if (fontFamily === '') {
     fontFamily = 'sans-serif'
   }
-  console.log('common_table,antv', chart, fontFamily)
+
   const headerColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableHeaderBgColor, DEFAULT_COLOR_CASE.alpha)
   const itemColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableItemBgColor, DEFAULT_COLOR_CASE.alpha)
   const borderColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableBorderColor, DEFAULT_COLOR_CASE.alpha)
@@ -144,7 +144,6 @@ export function getCustomTheme(chart, fontFamily) {
     // size
     if (customAttr.size) {
       const s = JSON.parse(JSON.stringify(customAttr.size))
-      console.log('sssssssssssssssssssss', s)
       const h_a = s.tableHeaderAlign ? s.tableHeaderAlign : DEFAULT_SIZE.tableHeaderAlign
       const i_a = s.tableItemAlign ? s.tableItemAlign : DEFAULT_SIZE.tableItemAlign
 

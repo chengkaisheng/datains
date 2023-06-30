@@ -2,7 +2,6 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
 
 export function candlestickOption(chart_option, chart, cstyle = {}) {
-  console.log('k线图', chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -29,37 +28,36 @@ export function candlestickOption(chart_option, chart, cstyle = {}) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
 
-    let arr = []
-    for(let i = 0; i< chart.data.series.length; i++) {
+    const arr = []
+    for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
-      let arr1 = []
-      y.data.map((item,index) => {
+      const arr1 = []
+      y.data.map((item, index) => {
         arr1.push(item.value)
       })
       arr.push(arr1)
     }
     // arr.unshift(chart.data.x)
-    console.log('karr',arr)
 
-		let map = new Array(Math.max(... arr.map(item => item.length)));
-		for(let index = 0;index < map.length;index ++) {
-			for(let key in arr) {
-				if(!map[index]) {
-					map[index] = [arr[key][index]]
-				}else {
-					map[index][key] = arr[key][index]
-				}
-			} 
-		}
-    console.log('k数据',map)
+    const map = new Array(Math.max(... arr.map(item => item.length)))
+    for (let index = 0; index < map.length; index++) {
+      for (const key in arr) {
+        if (!map[index]) {
+          map[index] = [arr[key][index]]
+        } else {
+          map[index][key] = arr[key][index]
+        }
+      }
+    }
+
     chart_option.series[0] = {
       type: 'candlestick',
       data: map
-    } 
+    }
   }
 
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
-  console.log('kkkkkkkk',chart_option)
+
   return chart_option
 }

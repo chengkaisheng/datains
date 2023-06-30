@@ -23,7 +23,6 @@ export default {
   },
   computed: {
     bgStyle() {
-      console.log('this.backScreenSho===1111', this.backScreenSho)
       if (this.backScreenShot) {
         return { height: this.mainHeight }
       } else {
@@ -101,7 +100,6 @@ export default {
           if (--loadingCount === 0) {
             this.dataLoading = false
           }
-          console.log('outerParams Deocode error：', e)
         }
       }
       if (tempParam) {
@@ -126,7 +124,6 @@ export default {
           if (--loadingCount === 0) {
             this.dataLoading = false
           }
-          console.log('queryTargetPanelJumpInfo error：', e)
         }
       }
       if (loadingCount === 0) {

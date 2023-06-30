@@ -3,8 +3,8 @@
   <div v-if="element.options!== null && element.options.attrs!==null && show" class="de-select-grid-class">
     <div class="de-select-grid-search">
       <el-input
-        class="input-search"
         v-model="keyWord"
+        class="input-search"
         :placeholder="$t('deinputsearch.placeholder')"
         :size="size"
         prefix-icon="el-icon-search"
@@ -15,17 +15,20 @@
     <div class="list" :style="panelStyle">
 
       <div v-if="element.options.attrs.multiple" class="checkbox-group-container">
-        <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange" >
+        <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
           <span :style="panelCheck">{{ $t('commons.all') }}</span>
         </el-checkbox>
 
         <el-checkbox-group v-model="value" @change="handleCheckedChange">
-          <el-checkbox v-for="item in datas" :key="item.id" :label="item.id" >
+          <el-checkbox v-for="item in datas" :key="item.id" :label="item.id">
             <span :style="panelCheck">{{ item.id }}</span>
           </el-checkbox>
         </el-checkbox-group>
-        <p v-if="fieldNumber !== fieldDatas.length && (fieldNumber !== fieldDatas.filter(node => !keyWord || (node.id && node.id.includes(keyWord))).length)" 
-          class="loading_css" @click="loadDataMore">
+        <p
+          v-if="fieldNumber !== fieldDatas.length && (fieldNumber !== fieldDatas.filter(node => !keyWord || (node.id && node.id.includes(keyWord))).length)"
+          class="loading_css"
+          @click="loadDataMore"
+        >
           <span :style="panelCheck">点击加载更多</span>
         </p>
       </div>
@@ -36,8 +39,11 @@
             <span :style="panelCheck">{{ item.id }}</span>
           </el-radio>
         </el-radio-group>
-        <p v-if="fieldNumber !== fieldDatas.length && (fieldNumber !== fieldDatas.filter(node => !keyWord || (node.id && node.id.includes(keyWord))).length)" 
-          class="loading_css" @click="loadDataMore">
+        <p
+          v-if="fieldNumber !== fieldDatas.length && (fieldNumber !== fieldDatas.filter(node => !keyWord || (node.id && node.id.includes(keyWord))).length)"
+          class="loading_css"
+          @click="loadDataMore"
+        >
           <span :style="panelCheck">点击加载更多</span>
         </p>
       </div>
@@ -92,7 +98,7 @@ export default {
       isIndeterminate: false,
       checkAll: false,
       fieldNumber: 100,
-      fieldDatas: [], // 所有数据
+      fieldDatas: [] // 所有数据
     }
   },
   computed: {
@@ -115,26 +121,25 @@ export default {
     },
     inputStyle() {
       const style = {}
-      // console.log('inputstyle11111',this.element)
-      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
-        if(this.element.commonSelectFrame.backType === 'Image') {
-          if(this.element.commonSelectFrame.backImg !== '') {
+      if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        if (this.element.commonSelectFrame.backType === 'Image') {
+          if (this.element.commonSelectFrame.backImg !== '') {
             style.backgroundImage = `url(${this.element.commonSelectFrame.backImg})`
           }
           style.backgroundRepeat = 'no-repeat'
           style.backgroundSize = '100% 100%'
-        } else  {
+        } else {
           style.backgroundColor = this.element.commonSelectFrame.color
         }
         style.color = this.element.commonSelectFrame.fontColor
-        style.fontSize = this.element.commonSelectFrame.fontSize?this.element.commonSelectFrame.fontSize +'px': '14px'
+        style.fontSize = this.element.commonSelectFrame.fontSize ? this.element.commonSelectFrame.fontSize + 'px' : '14px'
       }
-      
+
       return style
     },
     panelStyle() {
       const style = {}
-      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+      if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
         // style.color = this.element.commonSelectFrame.panelColor
         style.backgroundColor = this.element.commonSelectFrame.panelBgColor
       }
@@ -142,44 +147,41 @@ export default {
     },
     panelCheck() {
       const style = {}
-      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+      if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
         style.color = this.element.commonSelectFrame.panelColor
-        style.fontSize = this.element.commonSelectFrame.panelFontSize?this.element.commonSelectFrame.panelFontSize +'px': '14px'
+        style.fontSize = this.element.commonSelectFrame.panelFontSize ? this.element.commonSelectFrame.panelFontSize + 'px' : '14px'
       }
       return style
     }
   },
   watch: {
     keyWord: {
-      handler(val1,val2) {
+      handler(val1, val2) {
         this.fieldNumber = 100
-        let data = this.fieldDatas.filter(node => !val1 || (node.id && node.id.includes(val1)))
-        if(val1 !== '') {
-          if(data.length) {
-            if(this.fieldNumber > data.length) {
+        const data = this.fieldDatas.filter(node => !val1 || (node.id && node.id.includes(val1)))
+        if (val1 !== '') {
+          if (data.length) {
+            if (this.fieldNumber > data.length) {
               this.fieldNumber = data.length
               this.datas = data
             } else {
-              let arr = []
-              for(let i=0;i<this.fieldNumber;i++) {
+              const arr = []
+              for (let i = 0; i < this.fieldNumber; i++) {
                 arr.push(data[i])
               }
               this.datas = arr
             }
-          }else {
+          } else {
             this.fieldNumber = 0
             this.datas = []
           }
-          
         } else {
-          let arr = []
-          for(let i=0;i<this.fieldNumber;i++) {
+          const arr = []
+          for (let i = 0; i < this.fieldNumber; i++) {
             arr.push(this.fieldDatas[i])
           }
           this.datas = arr
         }
-        
-        // console.log('2222222',this.datas)
       }
     },
     'viewIds': function(value, old) {
@@ -263,11 +265,11 @@ export default {
         }
         method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
           this.fieldDatas = this.optionDatas(res.data)
-          if(this.fieldNumber > this.fieldDatas.length) {
+          if (this.fieldNumber > this.fieldDatas.length) {
             this.fieldNumber = this.fieldDatas.length
           }
-          let arr = [] 
-          for(let i=0;i<this.fieldNumber;i++) {
+          const arr = []
+          for (let i = 0; i < this.fieldNumber; i++) {
             arr.push(this.fieldDatas[i])
           }
           this.datas = arr
@@ -284,12 +286,12 @@ export default {
     },
     loadDataMore() {
       this.fieldNumber += 100
-      if(this.fieldNumber > this.fieldDatas.length) {
+      if (this.fieldNumber > this.fieldDatas.length) {
         this.fieldNumber = this.fieldDatas.length
       }
-      console.log(this.fieldNumber)
-      let arr = [] 
-      for(let i=0;i<this.fieldNumber;i++) {
+
+      const arr = []
+      for (let i = 0; i < this.fieldNumber; i++) {
         arr.push(this.fieldDatas[i])
       }
       this.datas = arr

@@ -46,7 +46,6 @@ export default {
   },
   watch: {
     chart() {
-      console.log('this.chart', this.chart)
     }
   },
   created() {
@@ -76,7 +75,6 @@ export default {
       this.pluginTypes = [...this.defaultTypes, ...plugins]
       this.formatTypes()
       this.loadFinish = true
-      console.log('55555555')
     },
     formatTypes() {
       this.pluginTypes.forEach(item => {
@@ -93,7 +91,6 @@ export default {
           renderItem[category][len - 1].push(item)
         }
       })
-      console.log('this.renderMap', this.renderMap)
 
       // 填充占位符
       Object.keys(this.renderMap).forEach(key => {

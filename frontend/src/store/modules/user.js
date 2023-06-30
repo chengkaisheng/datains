@@ -74,7 +74,6 @@ const actions = {
     const { username, password, loginType } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password, loginType: loginType }).then(response => {
-        console.log('login', response)
         const { data } = response
         commit('SET_TOKEN', data.token)
         commit('SET_LOGIN_MSG', null)
@@ -127,8 +126,6 @@ const actions = {
     return new Promise((resolve, reject) => {
       getUIinfo().then(response => {
         const { data } = response
-        console.log('response: ', response)
-        console.log('data: ', data)
         const uiInfo = format(data)
         commit('SET_UI_INFO', uiInfo)
         setSysUI(uiInfo)

@@ -9,7 +9,7 @@
               展示内容:
             </el-col>
             <el-col :span="18">
-              <el-input v-model="curComponent.options.placeholder" size="small"></el-input>
+              <el-input v-model="curComponent.options.placeholder" size="small" />
             </el-col>
           </el-col>
           <el-col class="col_bottom">
@@ -20,7 +20,7 @@
               <el-color-picker v-model="curComponent.options.fontColor" class="color-picker-style" :predefine="predefineColors" />
             </el-col>
           </el-col>
-          <el-col >
+          <el-col>
             <el-col :span="6" class="jump_col_4">
               框背景:
             </el-col>
@@ -39,7 +39,7 @@
                 <el-col :span="10">
                   <el-color-picker v-model="curComponent.options.jumpBgColor" class="color-picker-style" :predefine="predefineColors" />
                 </el-col>
-                <el-col :span="14" v-if="updataUrl === ''">
+                <el-col v-if="updataUrl === ''" :span="14">
                   <el-upload
                     action=""
                     accept=".jpeg,.jpg,.png,.gif,.svg"
@@ -59,10 +59,10 @@
                     <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
                   </span>
                 </el-col>
-                <el-col :span="12" v-else>
+                <el-col v-else :span="12">
                   <div style="width: 100%;overflow-y:scroll;position: relative;">
-                    <img :src="updataUrl" alt="" style="width: 100%"/>
-                    <i class="el-icon-delete del_img" @click="handleRemove"></i>
+                    <img :src="updataUrl" alt="" style="width: 100%">
+                    <i class="el-icon-delete del_img" @click="handleRemove" />
                   </div>
                 </el-col>
               </el-row>
@@ -75,7 +75,7 @@
               字体大小:
             </el-col>
             <el-col :span="18">
-              <el-input-number v-model="curComponent.options.fontSize" :min="10" :max="30"></el-input-number>
+              <el-input-number v-model="curComponent.options.fontSize" :min="10" :max="30" />
             </el-col>
           </el-col>
           <el-col class="col_bottom">
@@ -105,7 +105,7 @@
                 <el-col :span="8">
                   <el-color-picker v-model="curComponent.options.nameBgColor" class="color-picker-style" :predefine="predefineColors" />
                 </el-col>
-                <el-col :span="16" v-if="nameUrl === ''">
+                <el-col v-if="nameUrl === ''" :span="16">
                   <el-upload
                     action=""
                     accept=".jpeg,.jpg,.png,.gif,.svg"
@@ -122,10 +122,10 @@
                     <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
                   </span>
                 </el-col>
-                <el-col :span="12" v-else>
+                <el-col v-else :span="12">
                   <div style="width: 100%;overflow-y:scroll;position: relative;">
-                    <img :src="nameUrl" alt="" style="width: 100%"/>
-                    <i class="el-icon-delete del_img" @click="handleNameRemove"></i>
+                    <img :src="nameUrl" alt="" style="width: 100%">
+                    <i class="el-icon-delete del_img" @click="handleNameRemove" />
                   </div>
                 </el-col>
               </el-row>
@@ -135,24 +135,24 @@
       </el-row>
       <el-row>
         <el-col>
-          <el-button type="primary" @click="addLink" size="small">新增</el-button>
+          <el-button type="primary" size="small" @click="addLink">新增</el-button>
         </el-col>
       </el-row>
       <el-row>
-        <el-col v-for="(item,index) in curComponent.options.jumpList"  :key="index">
+        <el-col v-for="(item,index) in curComponent.options.jumpList" :key="index">
           <el-row class="jump_row">
             <el-col :span="4" class="jump_col_4">名称：</el-col>
             <el-col :span="10">
-              <el-input v-model="item.jumpName" size="small"></el-input>
+              <el-input v-model="item.jumpName" size="small" />
             </el-col>
-            <el-col :span="4" v-if="curComponent.options.jumpList.length>1" style="padding-left: 5px;">
+            <el-col v-if="curComponent.options.jumpList.length>1" :span="4" style="padding-left: 5px;">
               <el-button type="danger" size="small" @click="delLink(index)">删除</el-button>
             </el-col>
           </el-row>
           <el-row class="jump_row">
             <el-col :span="4" class="jump_col_4">链接：</el-col>
             <el-col :span="10">
-              <el-input v-model="item.jumpLink" size="small"></el-input>
+              <el-input v-model="item.jumpLink" size="small" />
             </el-col>
           </el-row>
         </el-col>
@@ -172,7 +172,7 @@ import { mapState } from 'vuex'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 
 export default {
-  name: 'jumpSet',
+  name: 'JumpSet',
   props: {
     element: {
       type: Object,
@@ -186,7 +186,7 @@ export default {
       fileList: [],
       updataUrl: '',
       nameUrl: '',
-      nameList: [],
+      nameList: []
     }
   },
   computed: {
@@ -196,50 +196,42 @@ export default {
     ])
   },
   mounted() {
-    console.log(this.curComponent)
-    this.updataUrl = this.curComponent.options.jumpBgImg? this.curComponent.options.jumpBgImg : ''
+    this.updataUrl = this.curComponent.options.jumpBgImg ? this.curComponent.options.jumpBgImg : ''
   },
   methods: {
     save() {
-      console.log(this.updataUrl)
       this.curComponent.options.jumpBgImg = this.updataUrl
       this.curComponent.options.nameBgImg = this.nameUrl
       this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
     },
     cancel() {
-
       this.$emit('backgroundSetClose')
     },
     addLink() {
-      this.curComponent.options.jumpList.push({jumpName: '', jumpLink: ''})
+      this.curComponent.options.jumpList.push({ jumpName: '', jumpLink: '' })
     },
     delLink(index) {
-      console.log(index)
-      this.curComponent.options.jumpList.splice(index,1)
+      this.curComponent.options.jumpList.splice(index, 1)
     },
     handlePictureCardPreview(file) {
-      console.log('file---', file)
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList)
       this.uploadDisabled = false
       // this.panel.imageUrl = null
       this.curComponent.options.jumpBgImg = ''
-      this.updataUrl = ""
+      this.updataUrl = ''
       this.fileList = []
       // this.commitStyle()
     },
-    handleNameRemove(file,fileList) {
-      console.log(file,fileList)
-      this.curComponent.options.nameBgImg = ""
-      this.nameUrl = ""
+    handleNameRemove(file, fileList) {
+      this.curComponent.options.nameBgImg = ''
+      this.nameUrl = ''
       this.nameList = []
     },
     upload(file) {
-      console.log('this is upload', file)
     },
     onChange(file, fileList) {
       if (file.size / 1024 / 1024 > 10) {
@@ -247,7 +239,7 @@ export default {
         this.fileList = []
         return
       }
-      console.log('file, fileList', file, fileList)
+
       var _this = this
       _this.uploadDisabled = true
       const reader = new FileReader()
@@ -255,12 +247,10 @@ export default {
         _this.updataUrl = reader.result
         // _this.curComponent.options.heightBgImg = reader.result
         // _this.commitStyle()
-        console.log('reader.result6666666', reader.result)
       }
       reader.readAsDataURL(file.raw)
-      console.log('222222', file, fileList)
     },
-    onNameChange(file,fileList) {
+    onNameChange(file, fileList) {
       if (file.size / 1024 / 1024 > 10) {
         this.$message.error('上传的文件大小不能超过 10MB!')
         this.nameList = []
@@ -270,7 +260,6 @@ export default {
       const reader = new FileReader()
       reader.onload = function() {
         _this.nameUrl = reader.result
-        console.log('reader.result111111', reader.result)
       }
       reader.readAsDataURL(file.raw)
     }

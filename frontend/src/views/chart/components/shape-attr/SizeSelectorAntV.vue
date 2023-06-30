@@ -474,7 +474,6 @@ export default {
   methods: {
     initData() {
       const chart = JSON.parse(JSON.stringify(this.chart))
-      console.log('chartchartchartchartchartchartchartchartchartchartchartchart', chart)
       if (chart.customAttr) {
         let customAttr = null
         if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
@@ -482,7 +481,6 @@ export default {
         } else {
           customAttr = JSON.parse(chart.customAttr)
         }
-        console.log('customAttr', customAttr)
         if (customAttr.size) {
           this.sizeForm = customAttr.size
           this.sizeForm.treemapWidth = this.sizeForm.treemapWidth ? this.sizeForm.treemapWidth : 80
@@ -535,14 +533,10 @@ export default {
       this.iconHeightOption = arr2
     },
     changeBarSizeCase(e, key) {
-      console.log('this.sizeForm.automatic', this.sizeForm.automatic, e, key)
       // if (this.sizeForm.automatic && e !== true) {
       //   this.$message.warning('修改前请关闭轮播效果')
       //   return
       // }
-      // debugger
-      // console.log(e, key)
-      // console.log(this.sizeForm)
       this.$emit('onSizeChange', this.sizeForm)
     }
   }

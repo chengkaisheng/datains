@@ -8,13 +8,13 @@
     <el-row class="main-content">
       <el-row style="margin-top: 10px;">
         <el-col :span="4">
-          <span class="params-title">{{'省市编码'}}</span>
+          <span class="params-title">{{ '省市编码' }}</span>
         </el-col>
         <el-col :span="8">
-          <el-input v-model="curComponent.weatherStyle.proCityCode" placeholder="请输入省市编码"></el-input>
+          <el-input v-model="curComponent.weatherStyle.proCityCode" placeholder="请输入省市编码" />
         </el-col>
         <el-col :span="12" style="font-size: 13px;color: #888888;padding-left:10px;">
-          注意：省市编码为6位数<br/>
+          注意：省市编码为6位数<br>
           例如： '北京市':'110100','朝阳区':'110105'
         </el-col>
       </el-row>
@@ -125,8 +125,6 @@ export default {
 
   },
   mounted() {
-    console.log('this.curComponent', this.curComponent)
-    console.log('this.componentData', this.componentData)
     // let dataArr = []
     // this.componentData.forEach(res => {
     //   if (res.type === 'de-nav') {
@@ -134,12 +132,10 @@ export default {
     //     this.options.push.apply(this.options, res.options.navTabList)
     //   }
     // })
-    console.log('this.options', this.options)
   },
 
   methods: {
     addNavInfo() {
-      console.log('this.navInfoLis', this.navInfoLis)
       this.navInfoLis.push({
         name: '',
         relation: []
@@ -147,7 +143,6 @@ export default {
     },
     changeAssembly(e) {
       // 组件不能重复选择
-      console.log(e)
       // this.options.forEach(res => {
       //   res.disabled = false
       //   console.log('res', res)
@@ -161,13 +156,11 @@ export default {
       // })
     },
     blurSelect(e) {
-      console.log('失焦', e)
     },
     deleteNav(item, index) {
       this.navInfoLis.splice(index, 1)
     },
     init() {
-      console.log('componentData--------', this.componentData, this.curComponent)
       if (this.curComponent.options.bannerImgList) {
         this.curComponent.options.bannerImgList.forEach(res => {
           this.fileList.push({ url: res })
@@ -192,7 +185,6 @@ export default {
       // this.curComponent.commonBackground.innerPadding = this.backgroundOrigin.innerPadding
       // this.curComponent.commonBackground.boxWidth = Math.floor(this.backgroundOrigin.boxWidth)
       // this.curComponent.commonBackground.boxHeight = Math.floor(this.backgroundOrigin.boxHeight)
-      console.log('this.curComponent.commonBackground.boxWidth=====', this.curComponent.commonBackground)
       this.$emit('backgroundSetClose')
     },
     save() {
@@ -206,15 +198,11 @@ export default {
       //     })
       //   })
       // })
-      // console.log('this.fileList', this.fileList)
-
-      // console.log('this.imgUrlList', this.imgUrlList)
       this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
     },
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
-      console.log('const canvasStyleData', canvasStyleData)
       canvasStyleData.panel = this.panel
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
@@ -223,16 +211,13 @@ export default {
       this.commitStyle()
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList)
       var _this = this
       _this.fileList = fileList
       _this.curComponent.options.bannerImgList = []
       _this.fileList.forEach(item => {
-        console.log('itemssss', item)
         if (item.raw) {
           const reader = new FileReader()
           reader.onload = function() {
-            console.log('reader.result7777777', reader.result)
             _this.curComponent.options.bannerImgList.push(reader.result)
           }
           reader.readAsDataURL(item.raw)
@@ -246,7 +231,6 @@ export default {
       this.commitStyle()
     },
     handlePictureCardPreview(file) {
-      console.log('file---', file)
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
@@ -256,12 +240,11 @@ export default {
         this.fileList = []
         return
       }
-      console.log('file, fileList', file, fileList)
+
       var _this = this
       _this.uploadDisabled = true
       // const reader = new FileReader()
       // reader.onload = function() {
-      // console.log('reader.result', reader.result)
       // _this.imgUrlList.push(reader.result)
       // _this.curComponent.commonBackground.outerImage = reader.result
       // }
@@ -269,11 +252,9 @@ export default {
       _this.fileList = fileList
       _this.curComponent.options.bannerImgList = []
       _this.fileList.forEach(item => {
-        console.log('itemssss', item)
         if (item.raw) {
           const reader = new FileReader()
           reader.onload = function() {
-            console.log('reader.result6666666', reader.result)
             // _this.imgUrlList.push(reader.result)
             _this.curComponent.options.bannerImgList.push(reader.result)
           }
@@ -282,10 +263,8 @@ export default {
           _this.curComponent.options.bannerImgList.push(item.url)
         }
       })
-      console.log('222222', file, fileList)
     },
     upload(file) {
-      console.log('this is upload', file)
     }
 
   }
