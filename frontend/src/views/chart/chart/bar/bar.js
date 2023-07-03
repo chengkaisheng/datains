@@ -1592,6 +1592,26 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
       // label
       if (customAttr.label) {
         y.label = customAttr.label
+
+        if (customAttr.label.position === 'rightInside') {
+          y.label.position = 'insideRight'
+          y.label.align = 'right'
+        }
+
+        if (customAttr.label.position === 'rightOutside') {
+          y.label.position = 'right'
+          y.label.align = 'left'
+        }
+
+        if (customAttr.label.position === 'leftInside') {
+          y.label.position = 'insideLeft'
+          y.label.align = 'left'
+        }
+
+        if (customAttr.label.position === 'leftOutside') {
+          y.label.position = 'left'
+          y.label.align = 'right'
+        }
       }
       y.type = 'bar'
       chart_option.legend.data.push(y.name)
@@ -1601,6 +1621,7 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
 
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
+
   return chart_option
 }
 

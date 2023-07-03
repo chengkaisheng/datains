@@ -7,13 +7,13 @@
         </el-form-item>
         <el-form-item :label="$t('chart.graphLayout')" class="form-item">
           <el-select v-model="focusForm.layoutType" @change="changeFocusCase">
-            <el-option label="环形布局" value="circular"></el-option>
-            <el-option label="力引导布局" value="force"></el-option>
+            <el-option label="环形布局" value="circular" />
+            <el-option label="力引导布局" value="force" />
           </el-select>
         </el-form-item>
         <div v-if="focusForm.layoutType === 'force'">
           <el-form-item :label="$t('chart.nodalRepulsion')" class="form-item">
-            <el-slider v-model="focusForm.repulsion" show-input :show-input-controls="false" input-size="mini" :min="50" :max="1000" @change="changeFocusCase" />
+            <el-slider v-model="focusForm.repulsion" show-input :show-input-controls="false" input-size="mini" :min="50" :max="10000" @change="changeFocusCase" />
           </el-form-item>
           <el-form-item :label="$t('chart.nodeSpacing')" class="form-item">
             <el-slider v-model="focusForm.edgeLength" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeFocusCase" />
@@ -29,7 +29,7 @@
         </div>
 
         <el-form-item :label="$t('chart.reductionRate')" class="form-item">
-          <el-slider v-model="focusForm.reductionRate" show-input :show-input-controls="false" input-size="mini" :min="5" :step="5" :max="100" @change="changeFocusCase" />
+          <el-slider v-model="focusForm.reductionRate" show-input :show-input-controls="false" input-size="mini" :min="5" :step="5" :max="500" @change="changeFocusCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.shadowBlur')" class="form-item">
           <el-slider v-model="focusForm.shadowBlur" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeFocusCase" />
@@ -48,7 +48,7 @@
   </div>
 </template>
 <script>
-import {COLOR_PANEL, DEFAULT_LABEL } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_LABEL } from '../../chart/chart'
 export default {
   name: 'FocusSelector',
   props: {
@@ -64,7 +64,7 @@ export default {
   data() {
     return {
       focusForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
-      predefineColors: COLOR_PANEL,
+      predefineColors: COLOR_PANEL
     }
   },
   watch: {
@@ -92,7 +92,7 @@ export default {
         }
       }
     },
-    
+
     changeFocusCase() {
       this.$emit('onLabelChange', this.focusForm)
     }

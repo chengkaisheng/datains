@@ -179,9 +179,11 @@ export default {
         { name: this.$t('chart.outside'), value: 'outside' }
       ],
       labelPositionH: [
-        { name: this.$t('chart.text_pos_left'), value: 'left' },
+        { name: this.$t('chart.text_pos_left_inside'), value: 'leftInside' },
+        { name: this.$t('chart.text_pos_left_outside'), value: 'leftOutside' },
         { name: this.$t('chart.center'), value: 'inside' },
-        { name: this.$t('chart.text_pos_right'), value: 'right' }
+        { name: this.$t('chart.text_pos_right_inside'), value: 'rightInside' },
+        { name: this.$t('chart.text_pos_right_outside'), value: 'rightOutside' }
       ],
       labelPositionV: [
         { name: this.$t('chart.text_pos_top'), value: 'top' },
@@ -227,6 +229,7 @@ export default {
         }
         if (customAttr.label) {
           this.labelForm = customAttr.label
+          console.log('customAttr: ', customAttr)
           if (!this.labelForm.labelLine) {
             this.labelForm.labelLine = JSON.parse(JSON.stringify(DEFAULT_LABEL.labelLine))
           }
@@ -256,6 +259,7 @@ export default {
       if (!this.labelForm.show) {
         this.isSetting = false
       }
+      console.log('this.labelForm： ', this.labelForm)
       this.$emit('onLabelChange', this.labelForm)
     },
     initOptions() {

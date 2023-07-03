@@ -142,7 +142,7 @@ export const DEFAULT_SIZE = {
 export const DEFAULT_LABEL = {
   show: false,
   position: 'top',
-  align: 'right',
+  align: 'center',
   color: '#909399',
   fontSize: '10',
   formatter: '{c}',

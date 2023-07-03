@@ -269,6 +269,7 @@ export function seniorCfg(chart_option, chart) {
         }
       }
     }
+
     if (senior.assistLine && senior.assistLine.length > 0) {
       if (chart_option.series && chart_option.series.length > 0) {
         chart_option.series[0].markLine = {
