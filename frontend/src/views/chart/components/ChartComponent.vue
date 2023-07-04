@@ -300,7 +300,6 @@ export default {
       // bar-contrast 对比
       // bar-double
       if (chart.type === 'bar') {
-        console.log('BASE_BAR: ', BASE_BAR, chart)
         chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-contrast') {
         chart_option = contrastBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)

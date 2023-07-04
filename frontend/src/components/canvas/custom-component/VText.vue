@@ -72,6 +72,10 @@ export default {
     }
   },
   computed: {
+    ...mapState([
+      'mobileLayoutStatus',
+      'canvasStyleData'
+    ]),
     editStatus() {
       return this.editMode === 'edit' && !this.mobileLayoutStatus
     },
@@ -82,10 +86,6 @@ export default {
         return this.element.propValue
       }
     },
-    ...mapState([
-      'mobileLayoutStatus',
-      'canvasStyleData'
-    ]),
     textStyle() {
       const style = {}
       style.fontFamily = this.canvasStyleData.fontFamily

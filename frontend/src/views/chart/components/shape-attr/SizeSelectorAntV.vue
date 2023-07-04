@@ -186,11 +186,11 @@
         </el-form-item> -->
 
         <el-form-item :label="$t('chart.table_title_height')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.tableTitleHeight" :min="20" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.tableTitleHeight" :min="20" :max="150" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
 
         <el-form-item :label="$t('chart.table_item_height')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.tableItemHeight" :min="20" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.tableItemHeight" :min="20" :max="150" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item v-if="chart.type && !chart.type.includes('roll')" :label="$t('chart.table_column_width_config')" class="form-item">
           <el-radio-group v-model="sizeForm.tableColumnMode" @change="changeBarSizeCase">
@@ -507,7 +507,7 @@ export default {
     },
     init() {
       const arr = []
-      for (let i = 10; i <= 60; i = i + 2) {
+      for (let i = 10; i <= 128; i = i + 2) {
         arr.push({
           name: i + '',
           value: i + ''

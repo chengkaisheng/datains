@@ -19,9 +19,13 @@ export function getStyle(style, filter = []) {
     if (!filter.includes(key)) {
       if (key === 'autoWrap') { // 自动换行
         if (style[key]) {
-          result['whiteSpace'] = 'pre-line'
+          // result['word-wrap'] = 'break-word'
+          result['word-break'] = 'break-all'
+          result['white-space'] = 'pre-line'
+          result['overflow'] = 'scroll'
         } else {
-          result['whiteSpace'] = 'nowrap'
+          result['white-space'] = 'nowrap'
+          result['word-break'] = 'normal'
         }
       } else if (key !== 'rotate') {
         result[key] = style[key]

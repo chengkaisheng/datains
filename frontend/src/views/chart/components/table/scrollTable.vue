@@ -16,11 +16,11 @@
           {{ item.name }}
         </div>
       </div>
-      <div class="content">
+      <div class="content" :style="{height: `calc(100% - ${table_header_class.height})`}">
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
           <el-popover
             v-model="isVisible"
-            width="400"
+            :width="popOpen.width"
             trigger="manual"
             :disabled="!isPopShow"
             :placement="popOpen.position"
@@ -191,7 +191,8 @@ export default {
       popOpen: {
         position: '',
         left: '0px',
-        top: '0px'
+        top: '0px',
+        with: '400'
       },
       isVisible: false,
       pop_title: {
@@ -644,6 +645,8 @@ export default {
       if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
 
+        console.log('customAttr: ', customAttr)
+
         if (customAttr.color) {
           this.table_header_class.color = customAttr.color.tableFontColor
           if (customAttr.color.tableHeaderBgColor) {
@@ -670,10 +673,12 @@ export default {
           this.table_header_class.fontSize = (customAttr.size.tableTitleFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
           this.table_item_class.fontSize = (customAttr.size.tableItemFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
+          this.$set(this.table_item_class, 'height', `calc(100% - ${customAttr.size.tableTitleHeight})`)
           this.highlight = customAttr.size.highlightNumber ? customAttr.size.highlightNumber : 2
           this.tableRowsNumber = customAttr.size.tableRowsNumber ? customAttr.size.tableRowsNumber : 5
           // this.scrollId.fontSize = (Math.ceil(+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth)) + 'px'
           this.scrollId.fontSize = (+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
+          this.$set(this.scrollId, 'marginBottom', customAttr.size.tableMargin ? customAttr.size.tableMargin + 'px' : '0px')
           this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
           this.setStyle.height = customAttr.size.tableItemHeight + 'px'
           this.rollingRate = customAttr.size.tableRollingRate
@@ -692,6 +697,7 @@ export default {
         if (customAttr.label) {
           this.isPopShow = customAttr.label.popShow
           this.popOpen.position = customAttr.label.popOpen
+          this.$set(this.popOpen, 'width', customAttr.label.width)
           this.popOpen.left = customAttr.label.popLeft ? customAttr.label.popLeft + 'px' : '0px'
           this.popOpen.top = customAttr.label.popTop ? customAttr.label.popTop + 'px' : '0px'
           this.pop_title.fontSize = customAttr.label.popTitleFontSize ? customAttr.label.popTitleFontSize + 'px' : '14px'
@@ -927,6 +933,7 @@ export default {
 .bgHeightLight{
   padding:0;
   margin: 0;
+  height: 100%;
     // background-image: linear-gradient(rgb(6 26 85), rgba(6, 26, 85, 0), rgb(6 26 85));
 }
 .table_bode_li{

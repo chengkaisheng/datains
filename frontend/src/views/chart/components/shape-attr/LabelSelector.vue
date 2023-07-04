@@ -229,7 +229,6 @@ export default {
         }
         if (customAttr.label) {
           this.labelForm = customAttr.label
-          console.log('customAttr: ', customAttr)
           if (!this.labelForm.labelLine) {
             this.labelForm.labelLine = JSON.parse(JSON.stringify(DEFAULT_LABEL.labelLine))
           }
@@ -259,7 +258,6 @@ export default {
       if (!this.labelForm.show) {
         this.isSetting = false
       }
-      console.log('this.labelForm： ', this.labelForm)
       this.$emit('onLabelChange', this.labelForm)
     },
     initOptions() {

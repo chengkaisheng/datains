@@ -42,6 +42,7 @@
       :y="getShapeStyleIntDeDrag(item.style,'top')"
       :w="getShapeStyleIntDeDrag(item.style,'width')"
       :h="getShapeStyleIntDeDrag(item.style,'height')"
+      :text-style="getComponentStyle(item.style)"
       :r="item.style.rotate"
       :parent="true"
       :rotatable="rotatable"

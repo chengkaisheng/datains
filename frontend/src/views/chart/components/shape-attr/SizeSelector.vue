@@ -167,10 +167,10 @@
           <el-input-number v-model="sizeForm.tableHeightWidth" :min="0" label="描述文字" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item v-show="chart.type && !chart.type.includes('vertical')" :label="$t('chart.table_title_height')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.tableTitleHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.tableTitleHeight" :min="36" :max="150" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item v-show="chart.type && !chart.type.includes('vertical')" :label="$t('chart.table_item_height')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.tableItemHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.tableItemHeight" :min="36" :max="150" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
         <!-- 轮播速率 -->
         <el-form-item v-show="chart.type && chart.type.includes('vertical')" :label="'轮播速率'" class="form-item">

@@ -163,7 +163,10 @@ export function basePieRoseOptionAntV(plot, container, chart, action) {
       const s = JSON.parse(JSON.stringify(customAttr.size))
       options.radius = parseFloat(parseInt(s.pieOuterRadius) / 100)
       options.innerRadius = parseFloat(parseInt(s.pieInnerRadius) / 100)
-      options.label.offset = s.pieRoseOffset !== undefined ? parseInt(s.pieRoseOffset) : 10
+
+      if (Object.prototype.toString.call(options.label) === '[object Object]') {
+        options.label.offset = s.pieRoseOffset !== undefined ? parseInt(s.pieRoseOffset) : 10
+      }
     }
   }
 

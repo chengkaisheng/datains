@@ -77,6 +77,7 @@
 import { matchesSelectorToParentElements, getComputedSize, addEvent, removeEvent } from '../../utils/dom'
 import { computeWidth, computeHeight, restrictToBounds, snapToGrid, rotatedPoint, getAngle } from '../../utils/fns'
 import { events, userSelectNone, userSelectAuto } from './option.js'
+
 let eventsFor = events.mouse
 
 // private
@@ -356,6 +357,10 @@ export default {
     linkageActive: {
       type: Boolean,
       default: false
+    },
+    textStyle: {
+      type: Object,
+      default: () => ({})
     }
   },
   data: function() {
@@ -405,6 +410,16 @@ export default {
     }
   },
   computed: {
+    ...mapState([
+      'editor',
+      'curCanvasScale',
+      'canvasStyleData',
+      'linkageSettingStatus',
+      'checkboxStatus',
+      'mobileLayoutStatus',
+      'componentGap',
+      'scrollAutoMove'
+    ]),
     boxWidth() {
       return this.element.commonBackground && this.element.commonBackground.boxWidth || 0
     },
@@ -577,6 +592,12 @@ export default {
       const style = {}
       this.manualSetting2
 
+      if (this.textStyle['word-break'] === 'break-all') {
+        style['overflow'] = 'auto'
+      } else {
+        style['overflow'] = 'hidden'
+      }
+
       if (this.element.commonBackground) {
         // style['width'] = (this.config.commonBackground.boxWidth || 300) + 'px'
         // style['height'] = (this.config.commonBackground.boxHeight || 100) + 'px'
@@ -614,17 +635,7 @@ export default {
       } else {
         return 0
       }
-    },
-    ...mapState([
-      'editor',
-      'curCanvasScale',
-      'canvasStyleData',
-      'linkageSettingStatus',
-      'checkboxStatus',
-      'mobileLayoutStatus',
-      'componentGap',
-      'scrollAutoMove'
-    ])
+    }
   },
   watch: {
     'boxWidth': {

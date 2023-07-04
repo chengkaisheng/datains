@@ -1,17 +1,20 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form  ref="popForm" :model="popForm" label-width="100px" size="mini">
+      <el-form ref="popForm" :model="popForm" label-width="100px" size="mini">
         <el-form-item :label="$t('chart.show')" class="form-item">
-          <el-checkbox v-model="popForm.popShow" @change="changePopCase">{{$t('chart.show')}}</el-checkbox>
+          <el-checkbox v-model="popForm.popShow" @change="changePopCase">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <el-form-item :label="$t('chart.pop_open')" class="form-item">
           <el-radio-group v-model="popForm.popOpen" size="mini" @change="changePopCase">
-            <el-radio-button label="top">{{$t('chart.text_pos_top')}}</el-radio-button>
-            <el-radio-button label="bottom">{{$t('chart.text_pos_bottom')}}</el-radio-button>
-            <el-radio-button label="left">{{$t('chart.text_pos_left')}}</el-radio-button>
-            <el-radio-button label="right">{{$t('chart.text_pos_right')}}</el-radio-button>
+            <el-radio-button label="top">{{ $t('chart.text_pos_top') }}</el-radio-button>
+            <el-radio-button label="bottom">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
+            <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
+            <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item :label="$t('chart.pop_width')" class="form-item">
+          <el-slider v-model="popForm.width" show-input :show-input-controls="false" input-size="mini" :min="0" :step="1" :max="1000" @change="changePopCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.pop_left')" class="form-item">
           <el-slider v-model="popForm.popLeft" show-input :show-input-controls="false" input-size="mini" :min="-1000" :step="1" :max="1000" @change="changePopCase" />
@@ -36,10 +39,10 @@
         </el-form-item>
         <el-form-item :label="$t('chart.pop_title_position')" class="form-item">
           <el-radio-group v-model="popForm.popPosition" size="mini" @change="changePopCase">
-              <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
-              <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
-              <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
-            </el-radio-group>
+            <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
+            <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
+            <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
+          </el-radio-group>
         </el-form-item>
         <el-divider />
         <el-form-item :label="$t('chart.pop_content_fontSize')" class="form-item">
@@ -78,7 +81,7 @@
   </div>
 </template>
 <script>
-import {COLOR_PANEL, DEFAULT_LABEL } from '../../chart/chart'
+import { COLOR_PANEL, DEFAULT_LABEL } from '../../chart/chart'
 export default {
   name: 'PopSelectorAntV',
   props: {
@@ -96,9 +99,9 @@ export default {
       popForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
       predefineColors: COLOR_PANEL,
       lineStyle: [
-        {name: '实线',value: 'solid'},
-        {name: '虚线',value: 'dashed'},
-        {name: '点',value: 'dotted'},
+        { name: '实线', value: 'solid' },
+        { name: '虚线', value: 'dashed' },
+        { name: '点', value: 'dotted' }
       ],
       fontSize: []
     }
@@ -127,26 +130,26 @@ export default {
         if (customAttr.label) {
           this.popForm = customAttr.label
 
-          this.popForm.popShow = this.popForm.popShow? this.popForm.popShow : DEFAULT_LABEL.popShow
-          this.popForm.popOpen = this.popForm.popOpen? this.popForm.popOpen : DEFAULT_LABEL.popOpen
-          this.popForm.popLeft = this.popForm.popLeft? this.popForm.popLeft : DEFAULT_LABEL.popLeft
-          this.popForm.popTop = this.popForm.popTop? this.popForm.popTop : DEFAULT_LABEL.popTop
-          this.popForm.popTitleFontSize = this.popForm.popTitleFontSize? this.popForm.popTitleFontSize : DEFAULT_LABEL.popTitleFontSize
-          this.popForm.popTitleColor = this.popForm.popTitleColor? this.popForm.popTitleColor : DEFAULT_LABEL.popTitleColor
-          this.popForm.popTitleBackground = this.popForm.popTitleBackground? this.popForm.popTitleBackground : DEFAULT_LABEL.popTitleBackground
-          this.popForm.popHeight = this.popForm.popHeight? this.popForm.popHeight : DEFAULT_LABEL.popHeight
-          this.popForm.popPosition = this.popForm.popPosition? this.popForm.popPosition : DEFAULT_LABEL.popPosition
-          this.popForm.popContentFontSize = this.popForm.popContentFontSize? this.popForm.popContentFontSize : DEFAULT_LABEL.popContentFontSize
-          this.popForm.popContentColor = this.popForm.popContentColor? this.popForm.popContentColor : DEFAULT_LABEL.popContentColor
-          this.popForm.popContentBackground = this.popForm.popContentBackground? this.popForm.popContentBackground : DEFAULT_LABEL.popContentBackground
-          this.popForm.popContentHeight = this.popForm.popContentHeight? this.popForm.popContentHeight : DEFAULT_LABEL.popContentHeight
-          this.popForm.popContentBorderBottomColor = this.popForm.popContentBorderBottomColor? this.popForm.popContentBorderBottomColor : DEFAULT_LABEL.popContentBorderBottomColor
-          this.popForm.popContentLeft = this.popForm.popContentLeft? this.popForm.popContentLeft : DEFAULT_LABEL.popContentLeft
-          this.popForm.popContentRight = this.popForm.popContentRight? this.popForm.popContentRight : DEFAULT_LABEL.popContentRight
+          this.popForm.popShow = this.popForm.popShow ? this.popForm.popShow : DEFAULT_LABEL.popShow
+          this.popForm.popOpen = this.popForm.popOpen ? this.popForm.popOpen : DEFAULT_LABEL.popOpen
+          this.popForm.popLeft = this.popForm.popLeft ? this.popForm.popLeft : DEFAULT_LABEL.popLeft
+          this.popForm.popTop = this.popForm.popTop ? this.popForm.popTop : DEFAULT_LABEL.popTop
+          this.popForm.popTitleFontSize = this.popForm.popTitleFontSize ? this.popForm.popTitleFontSize : DEFAULT_LABEL.popTitleFontSize
+          this.popForm.popTitleColor = this.popForm.popTitleColor ? this.popForm.popTitleColor : DEFAULT_LABEL.popTitleColor
+          this.popForm.popTitleBackground = this.popForm.popTitleBackground ? this.popForm.popTitleBackground : DEFAULT_LABEL.popTitleBackground
+          this.popForm.popHeight = this.popForm.popHeight ? this.popForm.popHeight : DEFAULT_LABEL.popHeight
+          this.popForm.popPosition = this.popForm.popPosition ? this.popForm.popPosition : DEFAULT_LABEL.popPosition
+          this.popForm.popContentFontSize = this.popForm.popContentFontSize ? this.popForm.popContentFontSize : DEFAULT_LABEL.popContentFontSize
+          this.popForm.popContentColor = this.popForm.popContentColor ? this.popForm.popContentColor : DEFAULT_LABEL.popContentColor
+          this.popForm.popContentBackground = this.popForm.popContentBackground ? this.popForm.popContentBackground : DEFAULT_LABEL.popContentBackground
+          this.popForm.popContentHeight = this.popForm.popContentHeight ? this.popForm.popContentHeight : DEFAULT_LABEL.popContentHeight
+          this.popForm.popContentBorderBottomColor = this.popForm.popContentBorderBottomColor ? this.popForm.popContentBorderBottomColor : DEFAULT_LABEL.popContentBorderBottomColor
+          this.popForm.popContentLeft = this.popForm.popContentLeft ? this.popForm.popContentLeft : DEFAULT_LABEL.popContentLeft
+          this.popForm.popContentRight = this.popForm.popContentRight ? this.popForm.popContentRight : DEFAULT_LABEL.popContentRight
         }
       }
     },
-    
+
     changePopCase() {
       this.$emit('onLabelChange', this.popForm)
     },
@@ -159,7 +162,7 @@ export default {
         })
       }
       this.fontSize = arr
-    },
+    }
 
   }
 }
