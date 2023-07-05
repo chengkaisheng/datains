@@ -645,8 +645,6 @@ export default {
       if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
 
-        console.log('customAttr: ', customAttr)
-
         if (customAttr.color) {
           this.table_header_class.color = customAttr.color.tableFontColor
           if (customAttr.color.tableHeaderBgColor) {

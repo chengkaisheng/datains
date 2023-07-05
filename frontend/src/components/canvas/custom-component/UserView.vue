@@ -2258,7 +2258,6 @@ export default {
       if (param.type === 'propChange') {
         this.getData(param.viewId, false)
       } else if (param.type === 'styleChange') {
-        console.log('styleChange param.viewInfo: ', JSON.parse(param.viewInfo.customAttr))
         this.chart.customAttr = param.viewInfo.customAttr
         this.chart.customStyle = param.viewInfo.customStyle
         this.chart.senior = param.viewInfo.senior
