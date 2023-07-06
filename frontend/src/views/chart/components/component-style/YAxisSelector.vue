@@ -6,7 +6,7 @@
           <el-checkbox v-model="axisForm.show" @change="changeYAxisStyle">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="axisForm.show">
-          <el-form-item :label="$t('chart.position')" class="form-item" v-show="chart.type && chart.type !== 'bar-double'">
+          <el-form-item v-show="chart.type && chart.type !== 'bar-double'" :label="$t('chart.position')" class="form-item">
             <el-radio-group v-model="axisForm.position" size="mini" @change="changeYAxisStyle">
               <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
               <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
@@ -106,7 +106,7 @@
               <el-slider v-model="axisForm.axisLabel.width" show-input :show-input-controls="false" :min="0" :max="400" input-size="mini" @change="changeYAxisStyle" />
             </el-form-item>
             <el-form-item :label="$t('chart.axis_label_overflow')" class="form-item">
-              <el-select v-model="axisForm.axisLabel.overflow"  @change="changeYAxisStyle">
+              <el-select v-model="axisForm.axisLabel.overflow" @change="changeYAxisStyle">
                 <el-option v-for="option in overflows" :key="option.value" :label="option.name" :value="option.value" />
               </el-select>
             </el-form-item>
@@ -156,10 +156,10 @@ export default {
       isSetting: false,
       fontSize: [],
       overflows: [
-        {name: '无',value:'none'},
-        {name: '截断',value:'truncate'},
-        {name: '换行',value:'break'},
-        {name: '单词换行',value:'breakAll'},
+        { name: '无', value: 'none' },
+        { name: '截断', value: 'truncate' },
+        { name: '换行', value: 'break' },
+        { name: '单词换行', value: 'breakAll' }
       ],
       predefineColors: COLOR_PANEL
     }
@@ -201,7 +201,7 @@ export default {
     },
     init() {
       const arr = []
-      for (let i = 6; i <= 40; i = i + 2) {
+      for (let i = 6; i <= 128; i = i + 2) {
         arr.push({
           name: i + '',
           value: i + ''
