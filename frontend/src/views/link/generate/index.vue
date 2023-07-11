@@ -164,9 +164,10 @@ export default {
         if (pwd && pwd.length > 0 && pwd.length > this.pwdNums) {
           this.resetPwd()
         }
+
         /* pwd && (this.form.pwd = decrypt(pwd)) */
         /* overTime && (this.form.overTime = overTime) */
-        overTime && (this.$set(this.form, 'overTime', overTime))
+        overTime && (this.$set(this.form, 'overTime', new Date(overTime).getFullYear() > 2100 ? '' : overTime))
         this.requestShort()
       })
     },

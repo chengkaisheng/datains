@@ -249,6 +249,7 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   if (plot) {
     plot.destroy()
   }
+
   plot = new Bar(container, options)
 
   plot.off('interval:click')

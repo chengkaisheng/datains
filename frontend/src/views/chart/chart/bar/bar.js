@@ -594,9 +594,6 @@ export function rankingBarOption(chart_option, chart, cstyle = {}) {
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
-    // chart.data.series[0].forEach(res => {
-    //   console.log('res===>', res)
-    // })
   }
   chart_option.xAxis = [
     {
@@ -711,9 +708,6 @@ export function polarStackBarOption(chart_option, chart, cstyle = {}) {
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
-    // chart.data.series[0].forEach(res => {
-    //   console.log('res===>', res)
-    // })
   }
   chart_option.xAxis = [
     {
@@ -1467,11 +1461,6 @@ export function annularBarOptions(chart_option, chart, cstyle = {}) {
     }
   ]
 
-  // chart_option.angleAxis = {
-  //   // max: 3,
-  //   startAngle: 0
-  // }
-
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   chart_option.legend.top = '13%'
@@ -1485,8 +1474,17 @@ export function annularBarOptions(chart_option, chart, cstyle = {}) {
   return chart_option
 }
 
+/**
+ * 描述：纵向柱状图的option处理
+ * @param {*} chart_option
+ * @param {*} chart
+ * @param {*} cstyle
+ * @returns
+ */
 export function stackBarOption(chart_option, chart, cstyle = {}) {
   baseBarOption(chart_option, chart, cstyle)
+
+  const customAttr = JSON.parse(chart.customAttr)
 
   // ext
   chart_option.series.forEach(function(s) {
@@ -1494,7 +1492,16 @@ export function stackBarOption(chart_option, chart, cstyle = {}) {
     s.emphasis = {
       focus: 'series'
     }
+
+    s.label.formatter = customAttr.label.formatter || function(params) {
+      if (params.value === 0) {
+        return ''
+      } else {
+        return params.value
+      }
+    }
   })
+
   return chart_option
 }
 
@@ -1517,6 +1524,13 @@ export function stackBarPartOption(chart_option, chart, cstyle = {}) {
   return chart_option
 }
 
+/**
+ * 描述：横向柱状图option处理
+ * @param {*} chart_option
+ * @param {*} chart
+ * @param {*} cstyle
+ * @returns
+ */
 export function horizontalBarOption(chart_option, chart, cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
@@ -1591,7 +1605,7 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
       }
       // label
       if (customAttr.label) {
-        y.label = customAttr.label
+        y.label = JSON.parse(JSON.stringify(customAttr.label))
 
         if (customAttr.label.position === 'rightInside') {
           y.label.position = 'insideRight'
@@ -1611,6 +1625,15 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
         if (customAttr.label.position === 'leftOutside') {
           y.label.position = 'left'
           y.label.align = 'right'
+        }
+
+        // 当ecahrts横向堆叠柱状图存在自定义'{c}'这种类型的格式时，使用用户自定义，否则使用自定义formatter函数
+        y.label.formatter = customAttr.label.formatter || function(params) {
+          if (params.value === 0) { // 为0时不显示
+            return ''
+          } else {
+            return params.value
+          }
         }
       }
       y.type = 'bar'
@@ -1831,9 +1854,9 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
     }
 
     chart_option.legend.data.push(y.name)
-	  chart_option.series.push(y) // 柱体
-	  chart_option.series.push(t) // 顶部
-	  chart_option.series.push(b) // 底部
+    chart_option.series.push(y) // 柱体
+    chart_option.series.push(t) // 顶部
+    chart_option.series.push(b) // 底部
 
     chart_option.series.push(x1)
     chart_option.series.push(x2)

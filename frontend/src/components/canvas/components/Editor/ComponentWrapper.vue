@@ -142,6 +142,7 @@ export default {
         width: '100%',
         height: '100%'
       }
+
       if (this.config.commonBackground) {
         // style['width'] = (this.config.commonBackground.boxWidth || 0) + 'px'
         // style['height'] = (this.config.commonBackground.boxHeight || 0) + 'px'
@@ -162,6 +163,11 @@ export default {
         }
         style['overflow'] = 'hidden'
       }
+
+      if (this.config.style.autoWrap) {
+        style['overflow'] = 'auto'
+      }
+
       return style
     },
     componentActiveFlag() {
