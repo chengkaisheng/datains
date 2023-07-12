@@ -225,7 +225,7 @@ export default {
   .img_box div {
     width: 100%;
     word-wrap: break-word;
-	  word-break: break-all;
+    word-break: break-all;
     white-space: break-spaces;
   }
   /* .el-carousel__item h3 {

@@ -167,10 +167,28 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
           (customAttr.size.pieCircleTop !== undefined ? customAttr.size.pieCircleTop : 50) + '%'
         ]
       }
+
       // label
       if (customAttr.label) {
         chart_option.series[0].label = customAttr.label
         chart_option.series[0].labelLine = customAttr.label.labelLine
+
+        // 计算series所有data的总和
+        // let dataTotal = 0
+        // for (let i = 0; i < chart_option.series[0].data.length; i++) {
+        //   dataTotal += chart_option.series[0].data[i].value
+        // }
+
+        // chart_option.series[0].label.formatter = function(params) {
+        //   console.log('params: ', params)
+        //   if (params.percent === undefined) {
+        //     return Object.prototype.toString.call(params.value) === '[object Number]' ? params.name + Math.round(params.value / dataTotal) + '%' : params.value
+        //   } else if (params.percent === 0) {
+        //     return params.name + params.percent + '%'
+        //   } else {
+        //     return params.name + params.percent + '%'
+        //   }
+        // }
       }
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
@@ -211,11 +229,14 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
           },
           borderRadius: customAttr.size.pieRoseRadius
         }
+
         y.type = 'pie'
         chart_option.series[0].data.push(y)
       }
     }
   }
+
+  console.log('rosePieOption: ', chart_option)
 
   componentStyle(chart_option, chart, cstyle)
 

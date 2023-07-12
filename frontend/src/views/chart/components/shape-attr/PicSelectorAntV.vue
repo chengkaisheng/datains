@@ -10,8 +10,13 @@
         </el-form-item> -->
         <el-form-item label="上传图片" class="form-item">
           <div style="margin-bottom: 5px;">
-            <el-button v-if="isUpload" type="primary" size="mini" @click="submitBtn()">确定</el-button>
+            <el-button type="primary" size="mini" @click="submitBtn()">确定</el-button>
+
+            <el-input v-model="imageLink" style="margin-top: 10px;" placeholder="输入网络图片地址">
+              <el-button slot="append" title="添加网络图片" icon="el-icon-plus" @click="addImageLink" />
+            </el-input>
           </div>
+
           <el-upload
             action=""
             accept=".jpeg,.jpg,.png,.gif,.svg"
@@ -20,11 +25,12 @@
             :on-preview="handlePictureCardPreview"
             :on-remove="handleRemove"
             :http-request="upload"
-            :file-list="fileList"
+            :file-list="picForm.carouselPics"
             :on-change="onChange"
           >
             <i class="el-icon-plus" />
           </el-upload>
+
           <el-dialog :visible.sync="dialogVisible">
             <img width="100%" :src="dialogImageUrl" alt="">
           </el-dialog>
@@ -55,8 +61,14 @@ export default {
       dialogVisible: false,
       dialogImageUrl: '',
       fileList: [],
-      isUpload: false
+      isUpload: false,
+      imageLink: ''
     }
+  },
+  computed: {
+    ...mapState([
+      'curComponent'
+    ])
   },
   watch: {
     'chart': {
@@ -64,11 +76,6 @@ export default {
         this.initData()
       }
     }
-  },
-  computed: {
-    ...mapState([
-      'curComponent'
-    ])
   },
   methods: {
     initData() {
@@ -159,15 +166,25 @@ export default {
           _this.picForm.carouselPics.push(item)
         }
       })
+    },
+    addImageLink() {
+      let index = 0
+      const params = {
+        url: this.imageLink,
+        number: index++
+      }
+      this.picForm.carouselPics.push(params)
 
-      this.isUpload = true
+      console.log('this.picForm.carouselPics: ', this.picForm.carouselPics)
+
+      this.imageLink = ''
     },
     upload(file) {
     }
   }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .shape-item{
   padding: 6px;
   border: none;
@@ -209,5 +226,15 @@ export default {
 .avatar-uploader ::v-deep .el-upload-list li{
   width: 120px !important;
   height: 80px !important;
+}
+
+.link-list {
+  .image-list {
+    img {
+      width: 118px;
+      height: 78px;
+      border-radius: 6px;
+    }
+  }
 }
 </style>
