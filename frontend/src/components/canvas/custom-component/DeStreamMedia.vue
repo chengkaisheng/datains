@@ -437,7 +437,7 @@ export default {
           function() {
             // this.play()
             this.on('error', function() {
-              console.log('视频播放失败')
+              console.error('视频播放失败')
             })
           }
         )

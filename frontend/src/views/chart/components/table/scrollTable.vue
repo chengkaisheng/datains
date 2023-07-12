@@ -300,7 +300,7 @@ export default {
       const keyObj = this.dataInfo[this.highlight - 1]
       const keyValue = []
       keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
-      if (this.bannerLinkageKey === true) {
+      if (this.bannerLinkageKey) {
         this.setCondition(keyValue)
       }
       this.numberLine = ''
@@ -319,7 +319,7 @@ export default {
       const keyObj = this.dataInfo[num]
       const keyValue = []
       keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
-      if (this.bannerLinkageKey === true) {
+      if (this.bannerLinkageKey) {
         this.setCondition(keyValue)
       }
       // 未设置可弹窗
@@ -450,8 +450,10 @@ export default {
         const keyValue = []
         // let keys = this.chart.data.fields[0].datainsName
         keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
-        if (this.bannerLinkageKey === true) {
-          this.setCondition(keyValue)
+
+        // 表格轮播联动，不去调用addViewFilter
+        if (this.bannerLinkageKey) {
+          // this.setCondition(keyValue)
         } else {
           this.delTimer()
           this.$once('hook:beforeDestroy', () => {
@@ -470,6 +472,7 @@ export default {
         value: key,
         operator: 'eq'
       }
+
       this.$store.commit('addViewFilter', param)
     },
     getDetailsInfo(data) { // 设置详情信息
@@ -528,6 +531,8 @@ export default {
       })
       // this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
       this.dataInfo = arr
+
+      console.log('srcoll table: ', this.chart.data.tableRow, arr)
 
       // this.initStyle()
       if (customAttr.size) {
@@ -661,8 +666,10 @@ export default {
           this.scrollId.backgroundColor = customAttr.color.tableHeightColor
           this.scrollId.color = customAttr.color.tableHeightFontColor
         }
+
         if (customAttr.size) {
           this.table_header_class.textAlign = customAttr.size.tableHeaderAlign
+
           if (customAttr.size.bannerLinkage || customAttr.size.bannerLinkage === false) {
             this.bannerLinkageKey = customAttr.size.bannerLinkage
           }
@@ -692,6 +699,7 @@ export default {
             this.adaptWidth = true
           }
         }
+
         if (customAttr.label) {
           this.isPopShow = customAttr.label.popShow
           this.popOpen.position = customAttr.label.popOpen

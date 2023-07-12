@@ -12,7 +12,8 @@ export default {
   props: {
     element: {
       type: Object,
-      require: true
+      require: true,
+      default: () => ({})
     },
     editMode: {
       type: String,
