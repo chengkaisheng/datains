@@ -154,7 +154,11 @@ export function initPanelData(panelId, callback) {
     queryPanelJumpInfo(panelId).then(rsp => {
       store.commit('setNowPanelJumpInfo', rsp.data)
     })
-    callback(response)
+
+    // 当callback为函数时，执行回调
+    if (Object.prototype.toString.call(callback) === '[object Function]') {
+      callback(response)
+    }
   })
 }
 

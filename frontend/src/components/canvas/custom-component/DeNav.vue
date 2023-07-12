@@ -265,7 +265,7 @@ export default {
       return style
     },
     floatSize() {
-      return (this.element.options.floatSize ? this.element.options.floatSize : 12) + 'px'
+      return (this.element.options.floatSize ? (this.element.options.floatSize * this.previewCanvasScale.scalePointWidth) : 12) + 'px'
     },
     floatStyle() {
       const style = {}
