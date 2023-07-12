@@ -192,7 +192,7 @@ export default {
         position: '',
         left: '0px',
         top: '0px',
-        with: '400'
+        width: '400'
       },
       isVisible: false,
       pop_title: {
@@ -532,8 +532,6 @@ export default {
       // this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
       this.dataInfo = arr
 
-      console.log('srcoll table: ', this.chart.data.tableRow, arr)
-
       // this.initStyle()
       if (customAttr.size) {
         if (customAttr.size.carouselPics !== undefined) {
@@ -703,7 +701,7 @@ export default {
         if (customAttr.label) {
           this.isPopShow = customAttr.label.popShow
           this.popOpen.position = customAttr.label.popOpen
-          this.$set(this.popOpen, 'width', customAttr.label.width)
+          this.$set(this.popOpen, 'width', customAttr.label.popWidth)
           this.popOpen.left = customAttr.label.popLeft ? customAttr.label.popLeft + 'px' : '0px'
           this.popOpen.top = customAttr.label.popTop ? customAttr.label.popTop + 'px' : '0px'
           this.pop_title.fontSize = customAttr.label.popTitleFontSize ? customAttr.label.popTitleFontSize + 'px' : '14px'
