@@ -9,6 +9,26 @@
           <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_show')" class="form-item">
             <el-checkbox v-model="labelForm.labelLine.show" @change="changeLabelAttr">{{ $t('chart.pie_label_line_show') }}</el-checkbox>
           </el-form-item>
+          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_first_line_length')" class="form-item">
+            <el-input-number v-model="labelForm.labelLine.length" size="small" :step="1" :min="1" :max="500" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_second_line_length')" class="form-item">
+            <el-input-number v-model="labelForm.labelLine.length2" size="small" :step="1" :min="1" :max="500" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_smooth')" class="form-item">
+            <el-input-number v-model="labelForm.labelLine.smooth" size="small" :step="0.1" :min="0" :max="1" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_width')" class="form-item">
+            <el-input-number v-model="labelForm.labelLine.width" size="small" :step="1" :min="1" :max="10" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_type')" class="form-item">
+            <el-input-number v-model="labelForm.labelLine.type[0]" class="type-number" size="small" :step="1" :min="0" :max="10" @change="changeLabelAttr" />
+            <el-input-number v-model="labelForm.labelLine.type[1]" class="type-number" size="small" :step="1" :min="0" :max="10" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_dash_offset')" class="form-item">
+            <el-input-number v-model="labelForm.labelLine.dashOffset" size="small" :step="1" :min="0" :max="10" @change="changeLabelAttr" />
+          </el-form-item>
+
           <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
             <el-select v-model="labelForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
