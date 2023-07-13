@@ -43,7 +43,7 @@ const getTimeOut = () => {
 const time = getTimeOut()
 let service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  timeout: time ? time * 1000 : 10000
+  timeout: time ? time * 6000 : 60000
 })
 
 // request interceptor

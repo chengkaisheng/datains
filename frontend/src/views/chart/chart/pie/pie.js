@@ -332,16 +332,16 @@ export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
         (customAttr.size.pieCircleTop !== undefined ? customAttr.size.pieCircleTop : 50) + '%'
       ],
       label: {
-        show: false,
-        formatter: function(params) {
-          if (params.percent === undefined) {
-            return params.name + 50 + '%'
-          } else if (params.percent === 0) {
-            return params.name + params.percent + '%'
-          } else {
-            return params.name + params.percent + '%'
-          }
-        }
+        show: false
+        // formatter: function(params) {
+        //   if (params.percent === undefined) {
+        //     return params.name + 50 + '%'
+        //   } else if (params.percent === 0) {
+        //     return params.name + params.percent + '%'
+        //   } else {
+        //     return params.name + params.percent + '%'
+        //   }
+        // }
       },
       labelLine: {
         show: false
@@ -384,16 +384,16 @@ export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
       radius: [(customAttr.size.pieInnerRadius - 3) + '%', (customAttr.size.pieInnerRadius - 6) + '%'],
       label: {
         normal: {
-          position: 'center',
-          formatter: function(params) {
-            if (params.percent === undefined) {
-              return params.name + 50 + '%'
-            } else if (params.percent === 0) {
-              return params.name + params.percent + '%'
-            } else {
-              return params.name + params.percent + '%'
-            }
-          }
+          position: 'center'
+          // formatter: function(params) {
+          //   if (params.percent === undefined) {
+          //     return params.name + 50 + '%'
+          //   } else if (params.percent === 0) {
+          //     return params.name + params.percent + '%'
+          //   } else {
+          //     return params.name + params.percent + '%'
+          //   }
+          // }
 
         }
       },
@@ -427,16 +427,16 @@ export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
       radius: [(customAttr.size.pieOuterRadius + 15) + '%', (customAttr.size.pieOuterRadius + 15.5) + '%'],
       label: {
         normal: {
-          position: 'center',
-          formatter: function(params) {
-            if (params.percent === undefined) {
-              return params.name + 50 + '%'
-            } else if (params.percent === 0) {
-              return params.name + params.percent + '%'
-            } else {
-              return params.name + params.percent + '%'
-            }
-          }
+          position: 'center'
+          // formatter: function(params) {
+          //   if (params.percent === undefined) {
+          //     return params.name + 50 + '%'
+          //   } else if (params.percent === 0) {
+          //     return params.name + params.percent + '%'
+          //   } else {
+          //     return params.name + params.percent + '%'
+          //   }
+          // }
 
         }
       },
