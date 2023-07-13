@@ -1736,6 +1736,7 @@ export default {
             return true
           })
           .catch((err) => {
+            console.error('请求错误：', err)
             this.requestStatus = 'error'
             if (err.message && err.message.indexOf('timeout') > -1) {
               this.message = this.$t('panel.timeout_refresh')
