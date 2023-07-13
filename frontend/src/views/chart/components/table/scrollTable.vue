@@ -475,6 +475,8 @@ export default {
         operator: 'eq'
       }
 
+      console.log('setCondition: ', param)
+
       this.$store.commit('addViewFilter', param)
     },
     getDetailsInfo(data) { // 设置详情信息
