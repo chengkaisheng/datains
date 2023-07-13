@@ -184,7 +184,7 @@ export const DEFAULT_LABEL = {
 
   popShow: false,
   popOpen: 'right',
-  popWidth: 400,
+  popWidth: 480,
   popLeft: 0,
   popTop: 0,
   popTitleBackground: '#082456',

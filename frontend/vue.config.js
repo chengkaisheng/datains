@@ -35,8 +35,9 @@ module.exports = {
         //   target: 'http://183.194.65.250:9091/', // 外网访问
         // target: 'http://183.194.64.166:9091/',  // 服务器
         // target: 'http://192.168.3.223/',
-        target: 'http://ofmfa31n5roz.ngrok.xiaomiqiu123.top', // 张庆
+        // target: 'http://ofmfa31n5roz.ngrok.xiaomiqiu123.top', // 张庆
         // target: 'http://183.194.64.166:9527', // 张庆
+        target: 'http://192.168.237.52:9530/',
         ws: false
       }
     },
