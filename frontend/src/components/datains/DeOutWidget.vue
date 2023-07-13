@@ -13,6 +13,9 @@
       <div
         ref="deContentContainer"
         class="condition-content"
+        :style="{
+          '--test-top': '0'
+        }"
         :class="element.options.attrs.title ? '' : 'condition-content-default'"
       >
         <div class="condition-content-container">
@@ -219,7 +222,8 @@ export default {
     // overflow: auto hidden;
     overflow: hidden;
     // top: 2em; // top:2em;会导致大屏(3840*1080)下拉选择框下移，内容被遮挡
-    top: 0;
+    // top: 0;
+    top: var(--test-top);
     left: 0px;
     right: 0px;
     bottom: 0px;
