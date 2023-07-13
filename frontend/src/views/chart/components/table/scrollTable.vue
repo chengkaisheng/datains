@@ -46,7 +46,7 @@
             v-for="(items,inde) in dataInfo"
             v-show="inde<=tableRowsNumber-1"
             :key="inde"
-            :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight"
+            :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId : newHeight"
             class="table_bode_li"
             @click.stop="showDialogInfo(items,inde)"
           >
@@ -300,9 +300,9 @@ export default {
       const keyObj = this.dataInfo[this.highlight - 1]
       const keyValue = []
       keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
-      if (this.bannerLinkageKey) {
-        this.setCondition(keyValue)
-      }
+      // if (this.bannerLinkageKey) {
+      //   this.setCondition(keyValue)
+      // }
       this.numberLine = ''
 
       // 弹窗关闭判断轮播联动是否设置为是，为是时继续轮播联动
@@ -319,9 +319,11 @@ export default {
       const keyObj = this.dataInfo[num]
       const keyValue = []
       keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
-      if (this.bannerLinkageKey) {
-        this.setCondition(keyValue)
-      }
+
+      // 去除弹窗显示时，表格只显示当前选中项
+      // if (this.bannerLinkageKey) {
+      //   this.setCondition(keyValue)
+      // }
       // 未设置可弹窗
       if (!this.isPopShow) {
         return
@@ -759,6 +761,7 @@ export default {
       //     s_table[i].setAttribute('style', s)
       //   }
       // }
+      console.log('scrollId: ', this.scrollId)
     },
     getRowStyle({ row, rowIndex }) {
       if (rowIndex % 2 !== 0) {
