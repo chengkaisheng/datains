@@ -236,8 +236,6 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
     }
   }
 
-  console.log('rosePieOption: ', chart_option)
-
   componentStyle(chart_option, chart, cstyle)
 
   return chart_option

@@ -761,7 +761,6 @@ export default {
       //     s_table[i].setAttribute('style', s)
       //   }
       // }
-      console.log('scrollId: ', this.scrollId)
     },
     getRowStyle({ row, rowIndex }) {
       if (rowIndex % 2 !== 0) {
