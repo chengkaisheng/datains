@@ -44,6 +44,7 @@ export function basePieOption(chart_option, chart, cstyle = {}) {
         chart_option.series[0].labelLine = customAttr.label.labelLine
 
         console.log('customAttr: ', customAttr.label)
+
         chart_option.series[0].labelLine.length = customAttr.label.labelLine.length
         chart_option.series[0].labelLine.length2 = customAttr.label.labelLine.length2
         chart_option.series[0].labelLine.smooth = customAttr.label.labelLine.smooth
@@ -52,6 +53,11 @@ export function basePieOption(chart_option, chart, cstyle = {}) {
           type: customAttr.label.labelLine.type,
           dashOffset: customAttr.label.labelLine.dashOffset
         }
+
+        delete chart_option.series[0].label.labelLine
+        delete chart_option.series[0].labelLine.width
+        delete chart_option.series[0].labelLine.type
+        delete chart_option.series[0].labelLine.dashOffset
       }
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
@@ -185,6 +191,25 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
         chart_option.series[0].label = customAttr.label
         chart_option.series[0].labelLine = customAttr.label.labelLine
 
+        console.log('customAttr: ', customAttr.label)
+
+        chart_option.series[0].labelLine.show = customAttr.label.labelLine.show
+        chart_option.series[0].labelLine.length = customAttr.label.labelLine.length
+        chart_option.series[0].labelLine.length2 = customAttr.label.labelLine.length2
+        chart_option.series[0].labelLine.smooth = customAttr.label.labelLine.smooth
+        chart_option.series[0].labelLine.lineStyle = {
+          width: customAttr.label.labelLine.width,
+          type: customAttr.label.labelLine.type,
+          dashOffset: customAttr.label.labelLine.dashOffset
+        }
+
+        delete chart_option.series[0].label.position
+        delete chart_option.series[0].label.align
+        delete chart_option.series[0].label.labelLine
+        delete chart_option.series[0].labelLine.width
+        delete chart_option.series[0].labelLine.type
+        delete chart_option.series[0].labelLine.dashOffset
+
         // 计算series所有data的总和
         // let dataTotal = 0
         // for (let i = 0; i < chart_option.series[0].data.length; i++) {
@@ -250,7 +275,7 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
 
   componentStyle(chart_option, chart, cstyle)
 
-  console.log('rosePieOption: ', chart_option)
+  console.log('rosePieOption: ', chart_option, JSON.stringify(chart_option))
 
   return chart_option
 }
