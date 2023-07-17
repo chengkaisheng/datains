@@ -152,6 +152,7 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   plot = new Column(container, options)
 
   plot.off('interval:click')
+  plot.chart.removeInteraction('legend-filter')
   plot.on('interval:click', action)
 
   return plot
