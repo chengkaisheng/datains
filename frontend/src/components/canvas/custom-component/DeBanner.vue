@@ -218,7 +218,7 @@ export default {
   }
 }
 </script>
-<style >
+<style lang="scss">
   .img_box {
     width: 100%;
     height: 30%;

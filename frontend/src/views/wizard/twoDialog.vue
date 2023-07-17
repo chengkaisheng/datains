@@ -38,7 +38,7 @@ export default {
 <style lang="scss">
 .img_box{
   width:100%;
-  margin:20px 0;
+  // margin:20px 0;
   img{
     width:100%;
   }
