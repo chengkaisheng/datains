@@ -5,11 +5,16 @@
         <span class="title-text">
           {{ $t('commons.datasource') }}
         </span>
-        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;"
-                   @click="addFolder"/>
+        <el-button
+          icon="el-icon-plus"
+          type="text"
+          size="mini"
+          style="float: right;"
+          @click="addFolder"
+        />
 
       </el-row>
-      <el-divider/>
+      <el-divider />
       <el-row>
         <el-form>
           <el-form-item class="form-item">
@@ -39,35 +44,41 @@
             <span slot-scope="{ node, data }" class="custom-tree-node-list father">
               <span style="display: flex;flex: 1;width: 0;">
                 <span v-if="data.type !== 'folder' && data.status !== 'Error' && data.status !== 'Warning'">
-                  <svg-icon icon-class="datasource" class="ds-icon-scene"/>
+                  <svg-icon icon-class="datasource" class="ds-icon-scene" />
                 </span>
                 <span v-if="data.status === 'Error'">
-                  <svg-icon icon-class="exclamationmark" class="ds-icon-scene"/>
+                  <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
                 </span>
                 <span v-if="data.status === 'Warning'">
-                  <svg-icon icon-class="exclamationmark2" class="ds-icon-scene"/>
+                  <svg-icon icon-class="exclamationmark2" class="ds-icon-scene" />
                 </span>
                 <span v-if="data.type === 'folder'">
-                  <i class="el-icon-folder"/>
+                  <i class="el-icon-folder" />
                 </span>
-                <span v-if=" data.status === 'Error'"
-                      style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                <span
+                  v-if=" data.status === 'Error'"
+                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                >
                   <el-tooltip effect="dark" :content="$t('datasource.in_valid')" placement="right">
                     <span>
                       {{ data.name }}
                     </span>
                   </el-tooltip>
                 </span>
-                <span v-if=" data.status === 'Warning'"
-                      style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                <span
+                  v-if=" data.status === 'Warning'"
+                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                >
                   <el-tooltip effect="dark" :content="$t('datasource.warning')" placement="right">
                     <span>
                       {{ data.name }}
                     </span>
                   </el-tooltip>
                 </span>
-                <span v-if="data.status !== 'Error' && data.status !== 'Warning'"
-                      style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                <span
+                  v-if="data.status !== 'Error' && data.status !== 'Warning'"
+                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                >
                   {{ data.name }}
                 </span>
 
@@ -103,7 +114,7 @@
   </el-col>
 </template>
 <script>
-import {listDatasource, listDatasourceByType, delDs} from '@/api/system/datasource'
+import { listDatasource, listDatasourceByType, delDs } from '@/api/system/datasource'
 
 export default {
   name: 'DsTree',
@@ -151,14 +162,14 @@ export default {
       listDatasourceByType(datasource.type).then(res => {
         typeData = this.buildTree(res.data)
         if (typeData.length === 0) {
-          let index = this.tData.findIndex(item => {
+          const index = this.tData.findIndex(item => {
             if (item.id === datasource.type) {
-              return true;
+              return true
             }
           })
           this.tData.splice(index, 1)
         } else {
-          let find = false;
+          let find = false
           for (let index = 0; index < this.tData.length; index++) {
             if (typeData[0].id === this.tData[index].id) {
               this.tData[index].children = typeData[0].children
@@ -226,9 +237,9 @@ export default {
         return 'API'
       } else if (type === 'impala') {
         return 'Apache Impala'
-      }if (type === 'TiDB') {
+      } if (type === 'TiDB') {
         return 'TiDB'
-      }if (type === 'StarRocks') {
+      } if (type === 'StarRocks') {
         return 'StarRocks'
       }
     },
@@ -237,7 +248,7 @@ export default {
       this.switchMain('DsForm', {}, this.tData)
     },
     addFolderWithType(data) {
-      this.switchMain('DsForm', {type: data.id}, this.tData)
+      this.switchMain('DsForm', { type: data.id }, this.tData)
     },
     nodeClick(node, data) {
       if (node.type === 'folder') return
@@ -245,7 +256,7 @@ export default {
     },
 
     clickFileMore(param) {
-      const {optType, data} = param
+      const { optType, data } = param
       switch (optType) {
         case 'edit':
           this.edit(data)
@@ -258,13 +269,13 @@ export default {
       }
     },
     beforeClickFile(optType, data, node) {
-      return {optType, data, node}
+      return { optType, data, node }
     },
     edit(row) {
       this.switchMain('DsForm', row, this.tData)
     },
     showInfo(row) {
-      const param = {...row.data, ...{showModel: 'show'}}
+      const param = { ...row.data, ...{ showModel: 'show' }}
       this.switchMain('DsForm', param, this.tData)
     },
     _handleDelete(datasource) {
@@ -274,11 +285,11 @@ export default {
         type: 'warning'
       }).then(() => {
         delDs(datasource.id).then(res => {
-          if(res.success){
+          if (res.success) {
             this.$success(this.$t('commons.delete_success'))
             this.switchMain('DataHome', {}, this.tData)
             this.refreshType(datasource)
-          }else {
+          } else {
             this.$message({
               type: 'error',
               message: res.message

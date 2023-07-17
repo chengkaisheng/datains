@@ -249,7 +249,7 @@ export default {
   props: {
     element: {
       type: Object,
-      default: null
+      default: () => ({})
     },
     outStyle: {
       type: Object,
@@ -600,11 +600,12 @@ export default {
       deep: true
     },
     cfilters: {
-      handler: function(val1, val2) {
-        if (isChange(val1, val2) && !this.isFirstLoad) {
+      handler: function(newVal, oldVal) {
+        if (isChange(newVal, oldVal) && !this.isFirstLoad) {
           // if (this.chart.type !== 'roll-elemnt') {  //阻止滚动表格文本搜索
           //   this.getData(this.element.propValue.viewId)
           // }
+
           this.getData(this.element.propValue.viewId)
         }
       },
@@ -1735,6 +1736,7 @@ export default {
             return true
           })
           .catch((err) => {
+            console.error('请求错误：', err)
             this.requestStatus = 'error'
             if (err.message && err.message.indexOf('timeout') > -1) {
               this.message = this.$t('panel.timeout_refresh')
@@ -2255,6 +2257,7 @@ export default {
     },
     getDataEdit(param) {
       this.$store.state.styleChangeTimes++
+
       if (param.type === 'propChange') {
         this.getData(param.viewId, false)
       } else if (param.type === 'styleChange') {

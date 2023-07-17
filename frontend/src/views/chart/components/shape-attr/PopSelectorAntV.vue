@@ -14,7 +14,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item :label="$t('chart.pop_width')" class="form-item">
-          <el-slider v-model="popForm.width" show-input :show-input-controls="false" input-size="mini" :min="0" :step="1" :max="1000" @change="changePopCase" />
+          <el-slider v-model="popForm.popWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :step="1" :max="1000" @change="changePopCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.pop_left')" class="form-item">
           <el-slider v-model="popForm.popLeft" show-input :show-input-controls="false" input-size="mini" :min="-1000" :step="1" :max="1000" @change="changePopCase" />
@@ -132,6 +132,7 @@ export default {
 
           this.popForm.popShow = this.popForm.popShow ? this.popForm.popShow : DEFAULT_LABEL.popShow
           this.popForm.popOpen = this.popForm.popOpen ? this.popForm.popOpen : DEFAULT_LABEL.popOpen
+          this.popForm.popWidth = this.popForm.popWidth ? this.popForm.popWidth : DEFAULT_LABEL.popWidth
           this.popForm.popLeft = this.popForm.popLeft ? this.popForm.popLeft : DEFAULT_LABEL.popLeft
           this.popForm.popTop = this.popForm.popTop ? this.popForm.popTop : DEFAULT_LABEL.popTop
           this.popForm.popTitleFontSize = this.popForm.popTitleFontSize ? this.popForm.popTitleFontSize : DEFAULT_LABEL.popTitleFontSize

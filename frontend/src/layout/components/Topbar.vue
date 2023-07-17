@@ -93,7 +93,6 @@ export default {
     AppLink,
     Notification,
     LangSelect
-
   },
   props: {
     showTips: {

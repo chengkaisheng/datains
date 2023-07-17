@@ -9,6 +9,26 @@
           <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_show')" class="form-item">
             <el-checkbox v-model="labelForm.labelLine.show" @change="changeLabelAttr">{{ $t('chart.pie_label_line_show') }}</el-checkbox>
           </el-form-item>
+          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_first_line_length')" class="form-item">
+            <el-input-number v-model="labelForm.labelLine.length" size="small" :step="1" :min="1" :max="500" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_second_line_length')" class="form-item">
+            <el-input-number v-model="labelForm.labelLine.length2" size="small" :step="1" :min="1" :max="500" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_smooth')" class="form-item">
+            <el-input-number v-model="labelForm.labelLine.smooth" size="small" :step="0.1" :min="0" :max="1" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_width')" class="form-item">
+            <el-input-number v-model="labelForm.labelLine.width" size="small" :step="1" :min="1" :max="10" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_type')" class="form-item">
+            <el-input-number v-if="labelForm.labelLine.type" v-model="labelForm.labelLine.type[0]" class="type-number" size="small" :step="1" :min="0" :max="10" @change="changeLabelAttr" />
+            <el-input-number v-if="labelForm.labelLine.type" v-model="labelForm.labelLine.type[1]" class="type-number" size="small" :step="1" :min="0" :max="10" @change="changeLabelAttr" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && chart.type.includes('pie')" :label="$t('chart.pie_label_line_dash_offset')" class="form-item">
+            <el-input-number v-model="labelForm.labelLine.dashOffset" size="small" :step="1" :min="0" :max="10" @change="changeLabelAttr" />
+          </el-form-item>
+
           <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
             <el-select v-model="labelForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -229,9 +249,19 @@ export default {
         }
         if (customAttr.label) {
           this.labelForm = customAttr.label
+          this.labelForm.labelLine.show = customAttr.label.labelLine.show !== undefined ? customAttr.label.labelLine.show : DEFAULT_LABEL.labelLine.show
+          this.labelForm.labelLine.length = customAttr.label.labelLine.length !== undefined ? customAttr.label.labelLine.length : DEFAULT_LABEL.labelLine.length
+          this.labelForm.labelLine.length2 = customAttr.label.labelLine.length2 !== undefined ? customAttr.label.labelLine.length2 : DEFAULT_LABEL.labelLine.length2
+          this.labelForm.labelLine.smooth = customAttr.label.labelLine.smooth !== undefined ? customAttr.label.labelLine.smooth : DEFAULT_LABEL.labelLine.smooth
+          this.labelForm.labelLine.width = customAttr.label.labelLine.width !== undefined ? customAttr.label.labelLine.width : DEFAULT_LABEL.labelLine.width
+          this.labelForm.labelLine.type = customAttr.label.labelLine.type !== undefined ? customAttr.label.labelLine.type : DEFAULT_LABEL.labelLine.type
+          this.labelForm.labelLine.dashOffset = customAttr.label.labelLine.dashOffset !== undefined ? customAttr.label.labelLine.dashOffset : DEFAULT_LABEL.labelLine.dashOffset
+
           if (!this.labelForm.labelLine) {
             this.labelForm.labelLine = JSON.parse(JSON.stringify(DEFAULT_LABEL.labelLine))
           }
+
+          console.log('labelForm: ', this.labelForm)
         }
       }
     },

@@ -159,10 +159,14 @@ export function getLabel(chart) {
           fontSize: parseInt(l.fontSize)
         }
 
-        // formatter
-        if (l.antvFormatter !== undefined && l.antvFormatter !== '') {
+        // 当显示label时，value为0不显示对应的标签
+        if (customAttr.label.show) {
           label.formatter = function(text) {
-            return fn ? eval('(' + fn + ')') : ''
+            if (text.value) {
+              return fn ? eval('(' + fn + ')') : ''
+            } else {
+              return ''
+            }
           }
         }
       } else {

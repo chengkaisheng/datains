@@ -46,7 +46,7 @@
             v-for="(items,inde) in dataInfo"
             v-show="inde<=tableRowsNumber-1"
             :key="inde"
-            :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight"
+            :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId : newHeight"
             class="table_bode_li"
             @click.stop="showDialogInfo(items,inde)"
           >
@@ -192,7 +192,7 @@ export default {
         position: '',
         left: '0px',
         top: '0px',
-        with: '400'
+        width: '400'
       },
       isVisible: false,
       pop_title: {
@@ -300,9 +300,9 @@ export default {
       const keyObj = this.dataInfo[this.highlight - 1]
       const keyValue = []
       keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
-      if (this.bannerLinkageKey === true) {
-        this.setCondition(keyValue)
-      }
+      // if (this.bannerLinkageKey) {
+      //   this.setCondition(keyValue)
+      // }
       this.numberLine = ''
 
       // 弹窗关闭判断轮播联动是否设置为是，为是时继续轮播联动
@@ -319,9 +319,11 @@ export default {
       const keyObj = this.dataInfo[num]
       const keyValue = []
       keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
-      if (this.bannerLinkageKey === true) {
-        this.setCondition(keyValue)
-      }
+
+      // 去除弹窗显示时，表格只显示当前选中项
+      // if (this.bannerLinkageKey) {
+      //   this.setCondition(keyValue)
+      // }
       // 未设置可弹窗
       if (!this.isPopShow) {
         return
@@ -450,8 +452,10 @@ export default {
         const keyValue = []
         // let keys = this.chart.data.fields[0].datainsName
         keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
-        if (this.bannerLinkageKey === true) {
-          this.setCondition(keyValue)
+
+        // 表格轮播联动，不去调用addViewFilter
+        if (this.bannerLinkageKey) {
+          // this.setCondition(keyValue)
         } else {
           this.delTimer()
           this.$once('hook:beforeDestroy', () => {
@@ -470,6 +474,9 @@ export default {
         value: key,
         operator: 'eq'
       }
+
+      console.log('setCondition: ', param)
+
       this.$store.commit('addViewFilter', param)
     },
     getDetailsInfo(data) { // 设置详情信息
@@ -661,8 +668,10 @@ export default {
           this.scrollId.backgroundColor = customAttr.color.tableHeightColor
           this.scrollId.color = customAttr.color.tableHeightFontColor
         }
+
         if (customAttr.size) {
           this.table_header_class.textAlign = customAttr.size.tableHeaderAlign
+
           if (customAttr.size.bannerLinkage || customAttr.size.bannerLinkage === false) {
             this.bannerLinkageKey = customAttr.size.bannerLinkage
           }
@@ -692,10 +701,11 @@ export default {
             this.adaptWidth = true
           }
         }
+
         if (customAttr.label) {
           this.isPopShow = customAttr.label.popShow
           this.popOpen.position = customAttr.label.popOpen
-          this.$set(this.popOpen, 'width', customAttr.label.width)
+          this.$set(this.popOpen, 'width', customAttr.label.popWidth)
           this.popOpen.left = customAttr.label.popLeft ? customAttr.label.popLeft + 'px' : '0px'
           this.popOpen.top = customAttr.label.popTop ? customAttr.label.popTop + 'px' : '0px'
           this.pop_title.fontSize = customAttr.label.popTitleFontSize ? customAttr.label.popTitleFontSize + 'px' : '14px'

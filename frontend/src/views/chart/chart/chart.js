@@ -149,7 +149,13 @@ export const DEFAULT_LABEL = {
   antvFormatter: '{b}',
   gaugeFormatter: '{value}',
   labelLine: {
-    show: true
+    show: true,
+    length: 10,
+    length2: 5,
+    smooth: 0,
+    width: 2,
+    type: [0, 0],
+    dashOffset: 0
   },
   xHc: 0,
   yHc: 0,
@@ -184,6 +190,7 @@ export const DEFAULT_LABEL = {
 
   popShow: false,
   popOpen: 'right',
+  popWidth: 480,
   popLeft: 0,
   popTop: 0,
   popTitleBackground: '#082456',

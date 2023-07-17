@@ -42,6 +42,22 @@ export function basePieOption(chart_option, chart, cstyle = {}) {
       if (customAttr.label) {
         chart_option.series[0].label = customAttr.label
         chart_option.series[0].labelLine = customAttr.label.labelLine
+
+        console.log('customAttr: ', customAttr.label)
+
+        chart_option.series[0].labelLine.length = customAttr.label.labelLine.length
+        chart_option.series[0].labelLine.length2 = customAttr.label.labelLine.length2
+        chart_option.series[0].labelLine.smooth = customAttr.label.labelLine.smooth
+        chart_option.series[0].labelLine.lineStyle = {
+          width: customAttr.label.labelLine.width,
+          type: customAttr.label.labelLine.type,
+          dashOffset: customAttr.label.labelLine.dashOffset
+        }
+
+        delete chart_option.series[0].label.labelLine
+        delete chart_option.series[0].labelLine.width
+        delete chart_option.series[0].labelLine.type
+        delete chart_option.series[0].labelLine.dashOffset
       }
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
@@ -64,6 +80,8 @@ export function basePieOption(chart_option, chart, cstyle = {}) {
   }
 
   componentStyle(chart_option, chart, cstyle)
+
+  console.log('basePieOption: ', chart_option)
 
   return chart_option
 }
@@ -167,10 +185,47 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
           (customAttr.size.pieCircleTop !== undefined ? customAttr.size.pieCircleTop : 50) + '%'
         ]
       }
+
       // label
       if (customAttr.label) {
         chart_option.series[0].label = customAttr.label
         chart_option.series[0].labelLine = customAttr.label.labelLine
+
+        console.log('customAttr: ', customAttr.label)
+
+        chart_option.series[0].labelLine.show = customAttr.label.labelLine.show
+        chart_option.series[0].labelLine.length = customAttr.label.labelLine.length
+        chart_option.series[0].labelLine.length2 = customAttr.label.labelLine.length2
+        chart_option.series[0].labelLine.smooth = customAttr.label.labelLine.smooth
+        chart_option.series[0].labelLine.lineStyle = {
+          width: customAttr.label.labelLine.width,
+          type: customAttr.label.labelLine.type,
+          dashOffset: customAttr.label.labelLine.dashOffset
+        }
+
+        delete chart_option.series[0].label.position
+        delete chart_option.series[0].label.align
+        delete chart_option.series[0].label.labelLine
+        delete chart_option.series[0].labelLine.width
+        delete chart_option.series[0].labelLine.type
+        delete chart_option.series[0].labelLine.dashOffset
+
+        // 计算series所有data的总和
+        // let dataTotal = 0
+        // for (let i = 0; i < chart_option.series[0].data.length; i++) {
+        //   dataTotal += chart_option.series[0].data[i].value
+        // }
+
+        // chart_option.series[0].label.formatter = function(params) {
+        //   console.log('params: ', params)
+        //   if (params.percent === undefined) {
+        //     return Object.prototype.toString.call(params.value) === '[object Number]' ? params.name + Math.round(params.value / dataTotal) + '%' : params.value
+        //   } else if (params.percent === 0) {
+        //     return params.name + params.percent + '%'
+        //   } else {
+        //     return params.name + params.percent + '%'
+        //   }
+        // }
       }
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
@@ -211,6 +266,7 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
           },
           borderRadius: customAttr.size.pieRoseRadius
         }
+
         y.type = 'pie'
         chart_option.series[0].data.push(y)
       }
@@ -218,6 +274,8 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
   }
 
   componentStyle(chart_option, chart, cstyle)
+
+  console.log('rosePieOption: ', chart_option, JSON.stringify(chart_option))
 
   return chart_option
 }
@@ -314,6 +372,15 @@ export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
       ],
       label: {
         show: false
+        // formatter: function(params) {
+        //   if (params.percent === undefined) {
+        //     return params.name + 50 + '%'
+        //   } else if (params.percent === 0) {
+        //     return params.name + params.percent + '%'
+        //   } else {
+        //     return params.name + params.percent + '%'
+        //   }
+        // }
       },
       labelLine: {
         show: false
@@ -357,6 +424,16 @@ export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
       label: {
         normal: {
           position: 'center'
+          // formatter: function(params) {
+          //   if (params.percent === undefined) {
+          //     return params.name + 50 + '%'
+          //   } else if (params.percent === 0) {
+          //     return params.name + params.percent + '%'
+          //   } else {
+          //     return params.name + params.percent + '%'
+          //   }
+          // }
+
         }
       },
       data: [{
@@ -390,6 +467,16 @@ export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
       label: {
         normal: {
           position: 'center'
+          // formatter: function(params) {
+          //   if (params.percent === undefined) {
+          //     return params.name + 50 + '%'
+          //   } else if (params.percent === 0) {
+          //     return params.name + params.percent + '%'
+          //   } else {
+          //     return params.name + params.percent + '%'
+          //   }
+          // }
+
         }
       },
       data: [{

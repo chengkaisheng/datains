@@ -17,6 +17,7 @@
               v-if="textShow"
               class="img_box"
               :style="{
+                '--testMarginTop': '0px',
                 'background-color': item.imgBackgroundColor && item.imgOpacity? hexToRgba(item.imgBackgroundColor,item.imgOpacity) : 'none',
                 'fontFamily': canvasStyleData.fontFamily ? canvasStyleData.fontFamily : '',
                 'padding-top': textImgSpace? textImgSpace + 'px': '0px',
@@ -221,11 +222,12 @@ export default {
   .img_box {
     width: 100%;
     height: 30%;
+    margin-top: var(--testMarginTop);
   }
   .img_box div {
     width: 100%;
     word-wrap: break-word;
-	  word-break: break-all;
+    word-break: break-all;
     white-space: break-spaces;
   }
   /* .el-carousel__item h3 {
