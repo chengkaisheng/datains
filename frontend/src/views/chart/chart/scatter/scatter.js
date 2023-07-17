@@ -121,7 +121,7 @@ export function clockcatterOption(chart_option, chart, terminal = 'pc', cstyle =
         y.label = customAttr.label
       }
       y.type = 'scatter'
-      chart_option.legend.selectMode = false
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
@@ -252,6 +252,7 @@ export function baseCalendarPieOption(chart_option, chart, cstyle = {}) {
         parr.push(a)
       }
 
+      chart_option.legend.selectedMode = false
       chart_option.legend.data = larr
       const s = new Array(Math.max(... parr.map(item => item.length)))
       for (let index = 0; index < s.length; index++) {

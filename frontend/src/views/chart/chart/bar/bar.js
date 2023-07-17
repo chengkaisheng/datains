@@ -172,6 +172,7 @@ export function contrastBarOption(chart_option, chart, cstyle = {}) {
       }
       y.yAxisIndex = i
       y.type = 'bar'
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
@@ -293,6 +294,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
         y.label = customAttr.label
       }
       y.type = 'bar'
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       // chart_option.series.push(y)
     }
@@ -592,6 +594,7 @@ export function rankingBarOption(chart_option, chart, cstyle = {}) {
       }
       y.coordinateSystem = 'polar'
       y.type = 'bar'
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
@@ -706,6 +709,7 @@ export function polarStackBarOption(chart_option, chart, cstyle = {}) {
       y.emphasis = {
         focus: 'series'
       }
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
@@ -802,6 +806,7 @@ export function clockcatterOption(chart_option, chart, cstyle = {}) {
       }
       y.type = 'candlestick'
 
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
@@ -889,6 +894,8 @@ export function pyramidBarOption(chart_option, chart, cstyle = {}) {
         y.label = customAttr.label
       }
       y.type = 'bar'
+
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
@@ -1039,6 +1046,8 @@ export function triangleBarOption(chart_option, chart, cstyle = {}) {
       y.barMinHeight = 10
       y.barCategoryGap = '0%'
       // y.type = 'bar'
+
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
@@ -1127,6 +1136,7 @@ export function annularBarOption(chart_option, chart, cstyle = {}) {
       }
       y.type = 'bar'
       y.coordinateSystem = 'polar'
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
       y.label = {
@@ -1433,6 +1443,7 @@ export function annularBarOptions(chart_option, chart, cstyle = {}) {
         y.label = customAttr.label
       }
       // y.type = 'bar'
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       // chart_option.series.push(y)
     }
@@ -1638,6 +1649,7 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
         }
       }
       y.type = 'bar'
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
@@ -1854,6 +1866,7 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
       }
     }
 
+    chart_option.legend.selectedMode = false
     chart_option.legend.data.push(y.name)
     chart_option.series.push(y) // 柱体
     chart_option.series.push(t) // 顶部

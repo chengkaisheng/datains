@@ -73,6 +73,7 @@ export function baseMixOption(chart_option, chart, cstyle = {}) {
       if (customAttr.label) {
         y.label = customAttr.label
       }
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       i >= yAxis.length ? (y.yAxisIndex = 1) : (y.yAxisIndex = 0)
       chart_option.series.push(y)
