@@ -52,6 +52,7 @@ export function baseScatterOption(chart_option, chart, terminal = 'pc', cstyle =
         y.label = customAttr.label
       }
       y.type = 'scatter'
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
@@ -120,6 +121,7 @@ export function clockcatterOption(chart_option, chart, terminal = 'pc', cstyle =
         y.label = customAttr.label
       }
       y.type = 'scatter'
+      chart_option.legend.selectMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }

@@ -172,6 +172,7 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
+
   // options
   const options = {
     theme: theme,

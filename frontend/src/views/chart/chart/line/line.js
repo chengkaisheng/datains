@@ -55,6 +55,7 @@ export function baseLineOption(chart_option, chart, cstyle = {}) {
         y.label = customAttr.label
       }
       y.type = 'line'
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
@@ -62,6 +63,8 @@ export function baseLineOption(chart_option, chart, cstyle = {}) {
 
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
+
+  console.log('line option: ', chart_option)
   return chart_option
 }
 // polarLineOption
@@ -120,6 +123,7 @@ export function polarLineOption(chart_option, chart, cstyle = {}) {
       }
       y.coordinateSystem = 'polar'
       y.type = 'line'
+      chart_option.legend.selectMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
@@ -266,6 +270,7 @@ export function heatMapOption(chart_option, chart, cstyle = {}) {
         y.label = customAttr.label
       }
       y.type = 'heatmap'
+      chart_option.legend.selectMode = false
       chart_option.legend.data.push(y.name)
       // chart_option.series.data = y.data
       // 参数第一位是Y轴坐标，第二位是X坐标，第三位是数值

@@ -12,6 +12,7 @@ export function baseLiquidOption(chart_option, chart, cstyle = {}) {
 
   if (chart.data) {
     chart_option.title.text = chart.title
+    chart_option.legend.selectedMode = false
 
     // size
     if (customAttr.size) {

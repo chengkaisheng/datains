@@ -82,6 +82,7 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
         y.label = customAttr.label
       }
       y.type = 'bar'
+      chart_option.legend.selectedMode = false
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }

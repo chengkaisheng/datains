@@ -41,6 +41,7 @@ export function baseRadarOption(chart_option, chart, cstyle = {}) {
         y.label = customAttr.label
       }
       chart_option.legend.data.push(y.name)
+      chart_option.legend.selectedMode = false
 
       const d = {
         name: y.name,

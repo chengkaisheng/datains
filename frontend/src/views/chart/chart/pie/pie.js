@@ -74,6 +74,7 @@ export function basePieOption(chart_option, chart, cstyle = {}) {
           borderRadius: 0
         }
         y.type = 'pie'
+        chart_option.legend.selectedMode = false
         chart_option.series[0].data.push(y)
       }
     }
@@ -146,6 +147,8 @@ export function prominentPieOption(chart_option, chart, cstyle = {}) {
       const pieKeyValue = customAttr.size.pieKeyValue !== undefined ? customAttr.size.pieKeyValue : 0
       chart_option.series[0].data[pieKeyValue].selected = true
       chart_option.series[0].selectedMode = 'single'
+
+      chart_option.legend.selectedMode = false
     }
   }
 
@@ -268,6 +271,7 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
         }
 
         y.type = 'pie'
+        chart_option.legend.selectedMode = false
         chart_option.series[0].data.push(y)
       }
     }
@@ -303,6 +307,7 @@ export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
     chart_option.title.text = chart.title
 
     chart_option.legend.data = chart.data.x
+    chart_option.legend.selectedMode = false
 
     if (chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[0].name
