@@ -44,30 +44,30 @@ export function baseLineOptionAntV(plot, container, chart, action, cstyle = {}) 
     annotations: analyse,
     interactions: [
       {
-        type: 'element-active', cfg: {
+        type: 'element-active', enable: false, cfg: {
           start: [{ trigger: 'element:mouseenter', action: ['element-highlight:highlight', 'element-active:reset', 'cursor:pointer'] }],
           end: [{ trigger: 'element:mouseleave', action: ['element-highlight:reset', 'element-active:reset', 'cursor:default'] }]
         }
       },
       {
-        type: 'legend-active', cfg: {
+        type: 'legend-active', enable: false, cfg: {
           start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
           end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
         }
       },
       {
-        type: 'legend-filter', cfg: {
+        type: 'legend-filter', enable: false, cfg: {
           start: [{ trigger: 'legend-item:click', action: ['list-unchecked:toggle', 'data-filter:filter', 'element-active:reset', 'element-highlight:reset'] }]
         }
       },
       {
-        type: 'tooltip', cfg: {
+        type: 'tooltip', enable: false, cfg: {
           start: [{ trigger: 'point:mousemove', action: 'tooltip:show' }],
           end: [{ trigger: 'point:mouseleave', action: 'tooltip:hide' }]
         }
       },
       {
-        type: 'active-region', cfg: {
+        type: 'active-region', enable: false, cfg: {
           start: [{ trigger: 'element:mousemove', action: 'active-region:show' }],
           end: [{ trigger: 'element:mouseleave', action: 'active-region:hide' }]
         }
@@ -136,30 +136,30 @@ export function baseAreaOptionAntV(plot, container, chart, action, cstyle = {}) 
     annotations: analyse,
     interactions: [
       {
-        type: 'element-active', cfg: {
+        type: 'element-active', enable: false, cfg: {
           start: [{ trigger: 'element:mouseenter', action: ['element-highlight:highlight', 'element-active:reset', 'cursor:pointer'] }],
           end: [{ trigger: 'element:mouseleave', action: ['element-highlight:reset', 'element-active:reset', 'cursor:default'] }]
         }
       },
       {
-        type: 'legend-active', cfg: {
+        type: 'legend-active', enable: false, cfg: {
           start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
           end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
         }
       },
       {
-        type: 'legend-filter', cfg: {
+        type: 'legend-filter', enable: false, cfg: {
           start: [{ trigger: 'legend-item:click', action: ['list-unchecked:toggle', 'data-filter:filter', 'element-active:reset', 'element-highlight:reset'] }]
         }
       },
       {
-        type: 'tooltip', cfg: {
+        type: 'tooltip', enable: false, cfg: {
           start: [{ trigger: 'point:mousemove', action: 'tooltip:show' }],
           end: [{ trigger: 'point:mouseleave', action: 'tooltip:hide' }]
         }
       },
       {
-        type: 'active-region', cfg: {
+        type: 'active-region', enable: false, cfg: {
           start: [{ trigger: 'element:mousemove', action: 'active-region:show' }],
           end: [{ trigger: 'element:mouseleave', action: 'active-region:hide' }]
         }

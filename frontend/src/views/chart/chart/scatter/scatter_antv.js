@@ -12,7 +12,7 @@ import {
 
 import { Scatter } from '@antv/g2plot'
 
-export function baseScatterOptionAntV(plot, container, chart, action,cstyle = {}) {
+export function baseScatterOptionAntV(plot, container, chart, action, cstyle = {}) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -20,8 +20,8 @@ export function baseScatterOptionAntV(plot, container, chart, action,cstyle = {}
   const tooltip = getTooltip(chart)
   // style
   const legend = getLegend(chart)
-  const xAxis = getXAxis(chart,cstyle = {})
-  const yAxis = getYAxis(chart,cstyle = {})
+  const xAxis = getXAxis(chart, cstyle = {})
+  const yAxis = getYAxis(chart, cstyle = {})
   // data
   const data = chart.data.datas
   // config
@@ -47,24 +47,24 @@ export function baseScatterOptionAntV(plot, container, chart, action,cstyle = {}
     },
     interactions: [
       {
-        type: 'element-active', cfg: {
+        type: 'element-active', enable: false, cfg: {
           start: [{ trigger: 'element:mouseenter', action: ['element-highlight:highlight', 'element-active:reset', 'cursor:pointer'] }],
           end: [{ trigger: 'element:mouseleave', action: ['element-highlight:reset', 'element-active:reset', 'cursor:default'] }]
         }
       },
       {
-        type: 'legend-active', cfg: {
+        type: 'legend-active', enable: false, cfg: {
           start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
           end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
         }
       },
       {
-        type: 'legend-filter', cfg: {
+        type: 'legend-filter', enable: false, cfg: {
           start: [{ trigger: 'legend-item:click', action: ['list-unchecked:toggle', 'data-filter:filter', 'element-active:reset', 'element-highlight:reset'] }]
         }
       },
       {
-        type: 'tooltip', cfg: {
+        type: 'tooltip', enable: false, cfg: {
           start: [{ trigger: 'point:mousemove', action: 'tooltip:show' }],
           end: [{ trigger: 'point:mouseleave', action: 'tooltip:hide' }]
         }

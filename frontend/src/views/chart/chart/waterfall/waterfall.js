@@ -9,7 +9,7 @@ import {
 } from '@/views/chart/chart/common/common_antv'
 import { Waterfall } from '@antv/g2plot'
 
-export function baseWaterfallOptionAntV(plot, container, chart, action,cstyle = {}) {
+export function baseWaterfallOptionAntV(plot, container, chart, action, cstyle = {}) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -17,8 +17,8 @@ export function baseWaterfallOptionAntV(plot, container, chart, action,cstyle = 
   const tooltip = getTooltip(chart)
   // style
   // const legend = getLegend(chart)
-  const xAxis = getXAxis(chart,cstyle)
-  const yAxis = getYAxis(chart,cstyle)
+  const xAxis = getXAxis(chart, cstyle)
+  const yAxis = getYAxis(chart, cstyle)
   // fix yAxis
   if (yAxis) {
     yAxis.min = yAxis.minLimit
@@ -71,7 +71,7 @@ export function baseWaterfallOptionAntV(plot, container, chart, action,cstyle = 
     total: total,
     interactions: [
       {
-        type: 'element-active', cfg: {
+        type: 'element-active', enable: false, cfg: {
           start: [{ trigger: 'element:mouseenter', action: ['element-highlight:highlight', 'element-active:reset', 'cursor:pointer'] }],
           end: [{ trigger: 'element:mouseleave', action: ['element-highlight:reset', 'element-active:reset', 'cursor:default'] }]
         }
@@ -88,7 +88,7 @@ export function baseWaterfallOptionAntV(plot, container, chart, action,cstyle = 
       //   }
       // },
       {
-        type: 'tooltip', cfg: {
+        type: 'tooltip', enable: false, cfg: {
           start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
           end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
         }
