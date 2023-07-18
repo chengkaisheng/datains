@@ -91,6 +91,27 @@ export function componentStyle(chart_option, chart, cstyle = {}) {
         chart_option.xAxis.axisLabel.show = false
       }
 
+      // 横轴月份显示
+      const xAxisM = JSON.parse(chart.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE' || item.type === 'VARCHAR' || item.type === 'VARCHAR2') && item.dateStyle === 'M')
+      if (xAxisM.length) {
+        chart_option.xAxis.data = chart.data.x.map((item) => {
+          const month = new Date(item).getMonth() + 1
+          return `${(month) < 10 ? `0${month}` : `${month}`}月`
+        })
+      }
+
+      // 横轴季度显示
+      const xAxisQuarter = JSON.parse(chart.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE' || item.type === 'VARCHAR' || item.type === 'VARCHAR2') && item.dateStyle === 'y_Q')
+      if (xAxisQuarter.length) {
+        chart_option.xAxis.data = chart.data.x.map((item) => {
+          const month = new Date(item).getMonth() + 1
+          const quarter = Math.floor((month % 3 === 0 ? (month / 3) : (month / 3 + 1)))
+
+          console.log('quarter: ', month, quarter)
+
+          return `第${quarter}季度`
+        })
+      }
       // 轴值设置
       delete chart_option.xAxis.min
       delete chart_option.xAxis.max
