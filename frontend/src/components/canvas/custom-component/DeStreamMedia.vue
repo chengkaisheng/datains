@@ -25,6 +25,7 @@
           :destroyOnClose="true"
           class="vjs-default-skin vjs-big-play-centered vjs-16-9 video-js"
           controls
+          muted
           preload="auto"
         >
           <!-- <source src="http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8" type="application/x-mpegURL" /> -->
@@ -55,7 +56,7 @@
     </div>
     <div v-if="element.streamMediaLinks.videoType == 'webrtc'">
       <div :id="`webrtc${myPlayer[2]}`">
-        <video :id="myPlayer[2]" :ref="myPlayer[2]" controls style="width: 100%;height: 100%;object-fit: fill">
+        <video :id="myPlayer[2]" :ref="myPlayer[2]" controls muted style="width: 100%;height: 100%;object-fit: fill">
           <!--  -->
         </video>
       </div>

@@ -7,6 +7,7 @@
         class="vjs-custom-skin"
         :options="editMode==='preview'?pOption:playerOptions"
         :playsinline="true"
+        muted
         @play="onPlayerPlay($event)"
         @ended="onPlayerEnded($event)"
         @loadeddata="onPlayerLoadeddata($event)"

@@ -115,7 +115,8 @@ export default {
               : {}
           )
         },
-        autoplay: true
+        autoplay: true,
+        muted: true
       })
     },
     exec(cmd, ...args) {
