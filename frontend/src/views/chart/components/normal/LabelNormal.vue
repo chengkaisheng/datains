@@ -8,12 +8,11 @@
     >
       <span :style="label_class">
         <p v-for="item in chart.data.series" :key="item.name" :style="label_content_class">
-          {{ item.data[0] }}
+          {{ item.data[0] }} {{ unit }}
         </p>
       </span>
       <span v-if="dimensionShow" :style="label_space">
         <p :style="label_class">
-          <!--        {{ chart.data.x[0] }}-->
           {{ chart.data.series[0].name }}
         </p>
       </span>
@@ -81,7 +80,8 @@ export default {
         background: hexColorToRGBA('#ffffff', 0)
       },
       title_show: true,
-      borderRadius: '0px'
+      borderRadius: '0px',
+      unit: ''
     }
   },
   computed: {
@@ -108,16 +108,22 @@ export default {
   },
   methods: {
     init() {
-      const that = this
       this.initStyle()
-      window.onresize = function() {
-        that.calcHeight()
+      window.onresize = () => {
+        this.calcHeight()
       }
       this.setBackGroundBorder()
     },
     setBackGroundBorder() {
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
+
+        console.log('label normal: ', customStyle)
+
+        if (customStyle.text) {
+          this.unit = customStyle.text.unit
+        }
+
         if (customStyle.background) {
           this.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
           this.bg_class.borderRadius = this.borderRadius
@@ -138,6 +144,7 @@ export default {
     initStyle() {
       if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
+
         if (customAttr.color) {
           this.label_class.color = customAttr.color.dimensionColor
           this.label_content_class.color = customAttr.color.quotaColor

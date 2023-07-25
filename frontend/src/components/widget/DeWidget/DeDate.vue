@@ -74,7 +74,9 @@ export default {
       const style = {}
       if (this.element.commonSelectFrame.fontColor !== undefined) {
         style.color = this.element.commonSelectFrame.fontColor
+        style.fontSize = `${this.element.commonSelectFrame.fontSize}px`
         style['--text-color'] = this.element.commonSelectFrame.fontColor
+        style['--text-font-size'] = `${this.element.commonSelectFrame.fontSize}px`
       }
       return style
     }
@@ -221,10 +223,16 @@ export default {
   .deDate ::v-deep .el-input__inner {
     background-color: transparent;
     color: var(--text-color);
+    font-size: var(--text-font-size);
   }
 
   .deDate ::v-deep .el-range-editor.el-input__inner {
     background-color: transparent;
+  }
+
+  .deDate ::v-deep .el-range-input {
+    color: var(--text-color);
+    font-size: var(--text-font-size);
   }
 
   .deDate ::v-deep .el-range-editor .el-range-input {

@@ -62,6 +62,7 @@ export default {
         justifyContent: 'center',
         height: 'auto',
         fontWeight: '300',
+        whiteSpace: 'normal'
       },
       label_class: {
         margin: 0
@@ -146,9 +147,9 @@ export default {
           this.quotaShow = customAttr.size.quotaShow
           this.label_class.fontSize = customAttr.size.dimensionFontSize + 'px'
           this.label_content_class.fontSize = customAttr.size.quotaFontSize + 'px'
-          this.content_class.flexDirection = customAttr.size.quotaArrayStatus !== undefined? customAttr.size.quotaArrayStatus : 'column'
+          this.content_class.flexDirection = customAttr.size.quotaArrayStatus !== undefined ? customAttr.size.quotaArrayStatus : 'column'
 
-          this.content_class.fontWeight = customAttr.size.fontWeight !== undefined? customAttr.size.fontWeight : '300'
+          this.content_class.fontWeight = customAttr.size.fontWeight !== undefined ? customAttr.size.fontWeight : '300'
 
           if (!this.dimensionShow) {
             this.label_space.marginTop = '0px'
@@ -156,23 +157,23 @@ export default {
             this.label_space.marginLeft = '0px'
             this.label_space.marginRight = '0px'
           } else {
-            if(customAttr.size.quotaArrayStatus !== undefined) {
-              if(customAttr.size.quotaArrayStatus === 'column') {
+            if (customAttr.size.quotaArrayStatus !== undefined) {
+              if (customAttr.size.quotaArrayStatus === 'column') {
                 this.label_space.marginTop = customAttr.size.spaceSplit + 'px'
                 this.label_space.marginBottom = '0px'
                 this.label_space.marginLeft = '0px'
                 this.label_space.marginRight = '0px'
-              } else if(customAttr.size.quotaArrayStatus === 'column-reverse') {
+              } else if (customAttr.size.quotaArrayStatus === 'column-reverse') {
                 this.label_space.marginTop = '0px'
                 this.label_space.marginBottom = customAttr.size.spaceSplit + 'px'
                 this.label_space.marginLeft = '0px'
                 this.label_space.marginRight = '0px'
-              } else if(customAttr.size.quotaArrayStatus === 'row') {
+              } else if (customAttr.size.quotaArrayStatus === 'row') {
                 this.label_space.marginTop = '0px'
                 this.label_space.marginBottom = '0px'
                 this.label_space.marginLeft = customAttr.size.spaceSplit + 'px'
                 this.label_space.marginRight = '0px'
-              } else if(customAttr.size.quotaArrayStatus === 'row-reverse') {
+              } else if (customAttr.size.quotaArrayStatus === 'row-reverse') {
                 this.label_space.marginTop = '0px'
                 this.label_space.marginBottom = '0px'
                 this.label_space.marginLeft = '0px'

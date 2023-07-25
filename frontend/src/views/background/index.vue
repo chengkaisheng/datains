@@ -12,7 +12,6 @@
           <span class="params-title">{{ $t('panel.box_width') }}</span>
         </el-col>
         <el-col :span="8">
-          <!-- <el-input v-model="curComponent.commonBackground.boxWidth" placeholder="请输入内容" /> -->
           <el-input-number v-model="curComponent.commonBackground.boxWidth" :min="0" />
         </el-col>
       </el-row>
@@ -27,7 +26,7 @@
       </el-row>
 
       <!-- 文字轮播组件字体样式 -->
-      <div v-if="this.curComponent.component === 'de-rotation' && this.curComponent.type === 'custom'">
+      <div v-if="curComponent.component === 'de-rotation'">
         <el-row style="height: 50px;overflow: hidden">
           <el-col :span="3">
             <span class="params-title">{{ $t('panel.box_fontSize') }}</span>
@@ -309,6 +308,17 @@
           </el-col>
           <el-col :span="1">
             <el-color-picker v-model="curComponent.commonSelectFrame.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="4">
+            <span class="params-title-small">日期字体大小：</span>
+          </el-col>
+          <el-col :span="8">
+            <el-select v-model="curComponent.commonSelectFrame.fontSize" size="small">
+              <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+            </el-select>
           </el-col>
         </el-row>
       </el-row>

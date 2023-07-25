@@ -108,7 +108,7 @@ export const VIDEOLINKS = {
       pause: false
     },
     sources: [{
-      type: 'application/x-mpegURL'
+      type: 'video/mp4'
     }]
   },
   rtmp: {

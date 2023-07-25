@@ -138,24 +138,27 @@ export default {
         if (this.element.options.vertical === 'elementKey') {
           if (this.canvasStyleData.navShowKey === value.text) {
             return this.element.options.highlight
-          // return this.element.options.color
           } else {
             return this.element.options.color
           }
         } else {
           if (this.element.options.heightTabs === value.text) {
-            return this.element.options.highlight
+            // return this.element.options.highlight
+            this.element.commonBackground.fontColor
           } else {
-            return this.element.options.color
+            // return this.element.options.color
+            this.element.commonBackground.fontColor
           }
         }
       }
     },
     big_box() {
       const style = {}
+
       style.height = this.element.style.height + 'px'
       style.fontWeight = this.element.style.fontWeight
-      style.fontSize = this.element.style.fontSize + 'px'
+      style.fontSize = this.element.commonBackground.fontSize + 'px'
+      style.color = this.element.commonBackground.fontColor
       if (this.element.options.arrowSpacing) {
         style.paddingLeft = this.element.options.arrowSpacing + 'px'
         style.paddingRight = this.element.options.arrowSpacing + 'px'
@@ -168,7 +171,8 @@ export default {
     },
     boxStyle() {
       const style = {}
-      style.fontSize = (this.element.options.fontSize * this.previewCanvasScale.scalePointWidth) + 'px'
+      style.fontSize = (this.element.commonBackground.fontSize * this.previewCanvasScale.scalePointWidth) + 'px'
+      style.color = this.element.commonBackground.fontColor
       style.paddingLeft = this.element.options.spacing + 'px'
       style.paddingRight = this.element.options.spacing + 'px'
       style.width = this.boxWidth + 'px'

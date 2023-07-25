@@ -2,23 +2,21 @@
   <el-row ref="mainPlayer">
     <div v-if="element.videoLinks[element.videoLinks.videoType].sources[0].src" class="player">
       <video-player
-        v-if="showVideo"
-        ref="videoPlayer"
-        class="vjs-custom-skin"
-        :options="editMode==='preview'?pOption:playerOptions"
-        :playsinline="true"
-        muted
-        @play="onPlayerPlay($event)"
-        @ended="onPlayerEnded($event)"
-        @loadeddata="onPlayerLoadeddata($event)"
-        @waiting="onPlayerWaiting($event)"
-        @playing="onPlayerPlaying($event)"
-        @timeupdate="onPlayerTimeupdate($event)"
-        @canplay="onPlayerCanplay($event)"
-        @canplaythrough="onPlayerCanplaythrough($event)"
-        @ready="playerReadied"
-        @statechanged="playerStateChanged($event)"
-      />
+                 v-if="showVideo"
+                 class="vjs-custom-skin"
+                 ref="videoPlayer"
+                 :options="editMode==='preview' ? pOption : playerOptions"
+                 :playsinline="true"
+                 @play="onPlayerPlay($event)"
+                 @ended="onPlayerEnded($event)"
+                 @waiting="onPlayerWaiting($event)"
+                 @playing="onPlayerPlaying($event)"
+                 @loadeddata="onPlayerLoadeddata($event)"
+                 @timeupdate="onPlayerTimeupdate($event)"
+                 @canplay="onPlayerCanplay($event)"
+                 @canplaythrough="onPlayerCanplaythrough($event)"
+                 @statechanged="playerStateChanged($event)"
+                 @ready="playerReadied" />
     </div>
     <div v-else class="info-class">
       {{ $t('panel.video_add_tips') }}
@@ -33,7 +31,13 @@ import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 // import SWF_URL from 'videojs-swf/dist/video-js.swf'
 
+import 'video.js/dist/video-js.css'
+import { videoPlayer } from 'vue-video-player'
+
 export default {
+  components: {
+    videoPlayer
+  },
   props: {
     // eslint-disable-next-line vue/require-default-prop
     propValue: {
@@ -79,6 +83,10 @@ export default {
     playerOptions() {
       const videoPlayerOptions = this.element.videoLinks[this.element.videoLinks.videoType]
       videoPlayerOptions.height = this.h - (this.curGap * 2)
+      videoPlayerOptions.sources.forEach((item) => {
+        item.type = 'video/mp4'
+      })
+
       return videoPlayerOptions
     },
     ...mapState([
@@ -95,6 +103,7 @@ export default {
     this.initOption()
   },
   mounted() {
+    console.log(this.playerOptions)
     bus.$on('videoLinksChange-' + this.element.id, () => {
       this.showVideo = false
       this.$nextTick(() => {

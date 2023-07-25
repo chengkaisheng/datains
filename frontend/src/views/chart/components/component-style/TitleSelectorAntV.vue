@@ -16,6 +16,16 @@
               @input="inputOnInput($event)"
             />
           </el-form-item>
+          <el-form-item :label="$t('chart.unit')" class="form-item">
+            <el-input
+              v-model="titleForm.unit"
+              size="mini"
+              :placeholder="$t('chart.unit')"
+              clearable
+              @blur="changeTitleStyle"
+              @input="inputOnInput($event)"
+            />
+          </el-form-item>
           <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
             <el-select v-model="titleForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeTitleStyle">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -98,6 +108,8 @@ export default {
         }
         if (customStyle.text) {
           this.titleForm = customStyle.text
+
+          this.titleForm.unit = customStyle.text.unit || ''
         }
         this.titleForm.title = this.chart.title
       }

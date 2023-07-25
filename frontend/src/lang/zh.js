@@ -1006,6 +1006,7 @@ export default {
     axis_label_hidden: '标签重叠隐藏',
     axis_label_fontsize: '标签大小',
     text_style: '字体样式',
+    unit: '单位',
     text_wrap: '自动换行',
     bolder: '加粗',
     change_ds: '更换数据集',

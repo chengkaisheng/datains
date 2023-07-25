@@ -260,7 +260,8 @@ export const DEFAULT_TITLE_STYLE = {
   vPosition: 'top',
   isItalic: false,
   isBolder: false,
-  fontFamily: ''
+  fontFamily: '',
+  unit: ''
 }
 export const DEFAULT_LEGEND_STYLE = {
   show: true,

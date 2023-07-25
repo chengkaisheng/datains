@@ -27,7 +27,8 @@ export default {
   name: 'DeKmediaUni',
   props: {
     element: {
-      type: Object
+      type: Object,
+      default: () => ({})
     },
     editMode: {
       type: String,
@@ -105,7 +106,7 @@ export default {
     loadVideo(isLive) {
       this.player.loadVideo({
         src: {
-          ...defaultValue,
+          ...this.defaultValue,
           ...(
             isLive
               ? {
