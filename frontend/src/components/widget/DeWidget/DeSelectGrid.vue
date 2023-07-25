@@ -393,11 +393,12 @@ export default {
     height: 100%;
 
     .list {
+      overflow: hidden;
       overflow-y: auto;
       width: 100%;
       position: relative;
       bottom: 0;
-      height: calc(100% - 40px);
+      height: calc(100% - 60px);
       text-align: left;
     }
   }
