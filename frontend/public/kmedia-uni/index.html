@@ -13,7 +13,55 @@
   </style>
 </head>
 <body style="margin: 0px;width: 100%;height: 100%;">
+  <!-- <div id="handler-container"></div>
+  <button onclick="loadVideo(true)">加载实时流</button>
+  <button onclick="loadVideo(false)">加载录像回放</button>
+  <button onclick="exec('loadVideo')">销毁</button>
+  <br><br> -->
   <div id="app"></div>
+  <!-- <p>========== 接口测试 ==========</p>
+  <span>实时操作</span>
+	<button onclick="exec('ptz', 'left')">云台左转</button>
+	<button onclick="exec('ptz', 'stop')">关闭云台左转</button>
+	<button onclick="exec('startVoiceCall')">开启反向语音</button>
+	<button onclick="exec('stopVoiceCall')">关闭反向语音</button>
+	<button onclick="exec('startRecord')">开始录制</button>
+	<button onclick="exec('stopRecord')">结束录制</button>
+  <button onclick="exec('cancelRecord')">取消录制</button>
+  <br><br>
+  <span>回放操作</span>
+	<button onclick="exec('play')">恢复播放</button>
+	<button onclick="exec('pause')">暂停</button>
+	<button onclick="exec('currentTime', 10)">seek到10s</button>
+	<button onclick="exec('frameForward')">帧进</button>
+	<button onclick="exec('frameReverse')">帧退</button>
+	<button onclick="exec('reversePlay')">倒播</button>
+	<button onclick="exec('exitReversePlay')">退出倒播</button>
+	<button onclick="exec('changeResolution', 'D1')">切换D1分辨率</button>
+	<button onclick="startLoopVideo()">开始轮询</button>
+	<button onclick="stopLoopVideo()">停止轮询</button> -->
+  <script>
+    Date.prototype.format = function(fmt) {
+      var o = {
+        'M+': this.getMonth() + 1, // 月份
+        'd+': this.getDate(), // 日
+        'h+': this.getHours(), // 小时
+        'm+': this.getMinutes(), // 分
+        's+': this.getSeconds(), // 秒
+        'q+': Math.floor((this.getMonth() + 3) / 3), // 季度
+        'S': this.getMilliseconds() // 毫秒
+      }
+      if (/(y+)/.test(fmt)) {
+        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length))
+      }
+      for (var k in o) {
+        if (new RegExp('(' + k + ')').test(fmt)) {
+          fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)))
+        }
+      }
+      return fmt
+    }
+  </script>
   <script>
     const defaultValue = {
       websocketUrl: 'ws://2.40.54.28',
@@ -22,6 +70,20 @@
       startTime: '2021-06-04T00:00:00',
       endTime: '2021-06-05T00:00:00'
     };
+
+    const waterMark = {
+      fontSize: 16,
+      rotateAngle: -20, 
+      fontColor: "rgb(88, 196, 151)",
+      opacity: 1,
+      textAlign: 'center',
+      text: [{
+          content: '区联防中心'
+        }, {
+          content: (new Date()).format('yyyyMMddhhmmss')
+        }
+      ]
+    }
 
     var url = window.location.search
     var theRequest = new Object();
@@ -47,7 +109,28 @@
     };
     defaultValue.devId = theRequest.device_id
 
-    console.log('theRequest',theRequest,defaultValue)
+    console.log('index.html theRequest: ', theRequest, defaultValue)
+
+    // const box = document.getElementById('handler-container');
+    // ['devId', 'websocketUrl', 'nmediaId', 'startTime', 'endTime'].forEach(key => {
+    //   const p = document.createElement('p');
+    //   p.innerText = `${key}: `;
+    //   p.style.margin = '2px 0';
+
+    //   const input = document.createElement('input');
+    //   input.onchange = e => {
+    //     localStorage.setItem(key, e.target.value);
+    //     defaultValue[key] = e.target.value;
+    //   }
+    //   p.appendChild(input);
+
+    //   if (localStorage.getItem(key) !== null) {
+    //     defaultValue[key] = localStorage.getItem(key);
+    //   }
+    //   input.value = defaultValue[key];
+
+    //   box.appendChild(p);
+    // });
 
     const MODE = KMediaUni.MODE;
     let timer = null;
@@ -59,7 +142,9 @@
 				hideControlsBar: false,
 				tools: Object.values(KMediaUni.TOOLS)
 			}
-    });;
+    });
+
+    player.waterMark(waterMark)
 
     function loadVideo (isLive) {
       player.loadVideo({
