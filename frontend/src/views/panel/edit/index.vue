@@ -411,6 +411,7 @@ import { deepCopy, panelInit } from '@/components/canvas/utils/utils'
 import componentList, {
   BASE_MOBILE_STYLE,
   COMMON_BACKGROUND,
+  COMMON_WATER_MASK,
   COMMON_SELECT_FRAME,
   HYPERLINKS
 } from '@/components/canvas/custom-component/component-list' // 左侧列表数据
@@ -1087,6 +1088,10 @@ export default {
         this.currentFilterCom.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
         this.currentFilterCom.mobileStyle = BASE_MOBILE_STYLE
         this.currentFilterCom.commonBackground = this.currentFilterCom.commonBackground || deepCopy(COMMON_BACKGROUND)
+
+        if (this.dragComponentInfo.component === 'de-kmedia-uni') {
+          this.currentFilterCom.commonWaterMask = this.currentFilterCom.commonWaterMask || deepCopy(COMMON_WATER_MASK)
+        }
 
         if (
           this.dragComponentInfo.component === 'de-select' ||

@@ -31,6 +31,18 @@ export const COMMON_BACKGROUND = {
   fontSize: 16,
   fontColor: '#000000'
 }
+
+/**
+ * 水印
+ */
+export const COMMON_WATER_MASK = {
+  visible: true,
+  title: '',
+  fontSize: 16,
+  rotate: 0,
+  color: 'rgb(88, 196, 151)',
+  alpha: 100
+}
 // select frame
 export const COMMON_SELECT_FRAME = {
   enable: true,

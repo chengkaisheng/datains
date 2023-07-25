@@ -109,28 +109,13 @@
     };
     defaultValue.devId = theRequest.device_id
 
+    waterMark.fontSize = parseInt(theRequest.fontSize)
+    waterMark.fontColor = theRequest.color
+    waterMark.opacity = parseInt(theRequest.alpha) / 100
+    waterMark.rotateAngle = parseInt(theRequest.rotate)
+    waterMark.text[0].content = theRequest.title
+
     console.log('index.html theRequest: ', theRequest, defaultValue)
-
-    // const box = document.getElementById('handler-container');
-    // ['devId', 'websocketUrl', 'nmediaId', 'startTime', 'endTime'].forEach(key => {
-    //   const p = document.createElement('p');
-    //   p.innerText = `${key}: `;
-    //   p.style.margin = '2px 0';
-
-    //   const input = document.createElement('input');
-    //   input.onchange = e => {
-    //     localStorage.setItem(key, e.target.value);
-    //     defaultValue[key] = e.target.value;
-    //   }
-    //   p.appendChild(input);
-
-    //   if (localStorage.getItem(key) !== null) {
-    //     defaultValue[key] = localStorage.getItem(key);
-    //   }
-    //   input.value = defaultValue[key];
-
-    //   box.appendChild(p);
-    // });
 
     const MODE = KMediaUni.MODE;
     let timer = null;
@@ -144,7 +129,11 @@
 			}
     });
 
-    player.waterMark(waterMark)
+    console.log('theRequest: ', theRequest)
+
+    if (theRequest.visible) {
+      player.waterMark(waterMark)
+    }
 
     function loadVideo (isLive) {
       player.loadVideo({

@@ -20,10 +20,63 @@
           <span class="params-title">{{ $t('panel.box_height') }}</span>
         </el-col>
         <el-col :span="8">
-          <!-- <el-input v-model="curComponent.commonBackground.boxHeight" placeholder="请输入内容" /> -->
           <el-input-number v-model="curComponent.commonBackground.boxHeight" :min="0" />
         </el-col>
       </el-row>
+
+      <div v-if="curComponent.component === 'de-kmedia-uni'">
+        <el-row>
+          <el-col :span="3" style="padding-left: 10px;padding-top: 5px">
+            <el-checkbox v-model="curComponent.commonWaterMask.visible">{{ $t('panel.water_mask') }}</el-checkbox>
+          </el-col>
+        </el-row>
+
+        <template v-if="curComponent.commonWaterMask.visible">
+          <el-row style="height: 50px;overflow: hidden">
+            <el-col :span="3" style="padding-left: 10px;padding-top: 5px;">
+              {{ $t('panel.water_mask_title') }}
+            </el-col>
+            <el-col :span="6" style="padding-left: 10px;padding-top: 5px;">
+              <el-input v-model="curComponent.commonWaterMask.title" :placeholder="$t('panel.water_mask_title')" />
+            </el-col>
+          </el-row>
+
+          <el-row style="height: 40px;overflow: hidden">
+            <el-col :span="3" style="padding-left: 10px;padding-top: 5px;">
+              {{ $t('panel.water_mask_font_size') }}
+            </el-col>
+            <el-col :span="3" style="padding-left: 10px;padding-top: 5px;">
+              <el-select v-model="curComponent.commonWaterMask.fontSize" size="small">
+                <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+              </el-select>
+            </el-col>
+          </el-row>
+
+          <el-row style="height: 40px;overflow: hidden">
+            <el-col :span="4" style="padding-left: 10px;padding-top: 5px;">
+              {{ $t('panel.water_mask_roate') }}
+            </el-col>
+            <el-col :span="11">
+              <el-slider v-model="curComponent.commonWaterMask.rotate" show-input :show-input-controls="false" :min="-360" :max="360" input-size="mini" />
+            </el-col>
+          </el-row>
+
+          <el-row style="height: 40px;overflow: hidden">
+            <el-col :span="3" style="padding-left: 10px;padding-top: 5px;padding-right:10px;">
+              {{ $t('panel.water_mask_color') }}
+            </el-col>
+            <el-col :span="1" style="padding-left: 10px;padding-top: 5px;">
+              <el-color-picker v-model="curComponent.commonWaterMask.color" size="mini" class="color-picker-style" :predefine="predefineColors" />
+            </el-col>
+            <el-col :span="3" style="padding-left: 10px;">
+              <span class="params-title-small">不透明度：</span>
+            </el-col>
+            <el-col :span="11">
+              <el-slider v-model="curComponent.commonWaterMask.alpha" show-input :show-input-controls="false" input-size="mini" />
+            </el-col>
+          </el-row>
+        </template>
+      </div>
 
       <!-- 文字轮播组件字体样式 -->
       <div v-if="curComponent.component === 'de-rotation'">
@@ -341,7 +394,8 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import {
-  COMMON_SELECT_FRAME
+  COMMON_SELECT_FRAME,
+  COMMON_WATER_MASK
 } from '@/components/canvas/custom-component/component-list'
 
 export default {
@@ -351,6 +405,7 @@ export default {
     return {
       BackgroundShowMap: {},
       checked: false,
+      waterMask: {},
       backgroundOrigin: {},
       fileList: [],
       dialogImageUrl: '',
@@ -389,6 +444,10 @@ export default {
         this.curComponent.commonSelectFrame = deepCopy(COMMON_SELECT_FRAME)
       }
 
+      if (this.curComponent && this.curComponent.commonWaterMask === undefined) {
+        this.$set(this.curComponent, 'commonWaterMask', deepCopy(COMMON_WATER_MASK))
+      }
+
       if (this.curComponent && this.curComponent.commonBackground && this.curComponent.commonBackground.outerImage && typeof (this.curComponent.commonBackground.outerImage) === 'string') {
         this.fileList.push({ url: this.curComponent.commonBackground.outerImage })
       }
@@ -396,6 +455,8 @@ export default {
       if (this.curComponent && this.curComponent.commonSelectFrame && this.curComponent.commonSelectFrame.backImg && typeof (this.curComponent.commonSelectFrame.backImg) === 'string') {
         this.fileSelList.push({ url: this.curComponent.commonSelectFrame.backImg })
       }
+
+      this.waterMask = deepCopy(this.curComponent.commonWaterMask)
       this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
       this.selectOrigin = deepCopy(this.curComponent.commonSelectFrame)
       this.queryBackground()

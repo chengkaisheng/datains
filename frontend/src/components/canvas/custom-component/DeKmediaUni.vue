@@ -1,11 +1,11 @@
 <template>
   <div ref="myplayer" class="main-frame">
     <!-- <div :id="myPlayerKu" :ref="myPlayerKu" style="width: 100%;height: 100%;"></div> -->
-    <div v-if="element.options.devId" class="main-frame">
+    <div v-if="element.options.devId && element.commonWaterMask" class="main-frame">
       <iframe
         v-if="kframeShow"
         :id="'iframe'+element.id"
-        :src="`/kmedia-uni/index.html?device_id=${element.options.devId}`"
+        :src="`/kmedia-uni/index.html?device_id=${element.options.devId}&visible=${element.commonWaterMask.visible}&title=${element.commonWaterMask.title}&fontSize=${element.commonWaterMask.fontSize}&color=${element.commonWaterMask.color}&alpha=${element.commonWaterMask.alpha}&rotate=${element.commonWaterMask.rotate}`"
         frameborder="0"
         scrolling="auto"
         class="main-frame"
@@ -58,7 +58,8 @@ export default {
   },
   watch: {
     element: {
-      handler(val1, val2) {
+      handler(newVal, oldVal) {
+        console.log('newVal: ', newVal)
         this.kframeShow = false
         this.$nextTick(() => {
           this.kframeShow = true
