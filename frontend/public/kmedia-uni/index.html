@@ -109,17 +109,25 @@
     const option = JSON.parse(theRequest.option)
 
     waterMark.fontSize = parseInt(option.fontSize)
-    waterMark.fontColor = option.color
+    waterMark.fontColor = option.color.replace(/\x20/g, '')
     waterMark.opacity = option.alpha / 100
     waterMark.rotateAngle = option.rotate
-    for(let i=0;i<9;i++) {
-      const item = {
-        content: `${option.title}\n${(new Date()).format('yyyyMMddhhmmss')}`
-      }
-      waterMark.text.push(item)
-    }
 
-    console.log('index.html theRequest: ', theRequest, defaultValue, option, waterMark)
+    waterMark.text.push({
+      content: `${option.title}`
+    }, {
+      content: `${(new Date()).format('yyyyMMddhhmmss')}`
+    })
+    // for(let i=0;i<1;i++) {
+    //   const item = {
+    //     content: `${option.title}`
+    //   }
+    //   waterMark.text.push(item, {
+    //     content: `${(new Date()).format('yyyyMMddhhmmss')}`
+    //   })
+    // }
+
+    console.log('index.html theRequest: ', theRequest, defaultValue, option, JSON.stringify(waterMark))
 
     const MODE = KMediaUni.MODE;
     let timer = null;
