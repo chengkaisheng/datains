@@ -129,10 +129,11 @@
 			}
     });
 
-    console.log('theRequest: ', theRequest)
+    console.log('theRequest: ', theRequest, /^true$/i.test(theRequest.visible))
 
-    if (theRequest.visible) {
-      player.waterMark(waterMark)
+    if (/^true$/i.test(theRequest.visible)) {
+      player.watermark(waterMark)
+      player.watermarkPreview(true)
     }
 
     function loadVideo (isLive) {

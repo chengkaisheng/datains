@@ -1007,6 +1007,8 @@ export default {
     axis_label_fontsize: '标签大小',
     text_style: '字体样式',
     unit: '单位',
+    unit_font_size: '单位字号',
+    unit_font_color: '单位颜色',
     text_wrap: '自动换行',
     bolder: '加粗',
     change_ds: '更换数据集',

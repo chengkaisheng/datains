@@ -26,6 +26,27 @@
               @input="inputOnInput($event)"
             />
           </el-form-item>
+          <el-form-item :label="$t('chart.unit_font_size')" class="form-item">
+            <el-input
+              v-model="titleForm.unitFontSize"
+              size="mini"
+              :placeholder="$t('chart.unit_font_size')"
+              clearable
+              @blur="changeTitleStyle"
+              @input="inputOnInput($event)"
+            />
+          </el-form-item>
+          <el-form-item :label="$t('chart.unit_font_color')" class="form-item">
+            <el-input
+              v-model="titleForm.unitFontColor"
+              size="mini"
+              :placeholder="$t('chart.unit_font_color')"
+              clearable
+              @blur="changeTitleStyle"
+              @input="inputOnInput($event)"
+            />
+          </el-form-item>
+
           <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
             <el-select v-model="titleForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeTitleStyle">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -109,7 +130,9 @@ export default {
         if (customStyle.text) {
           this.titleForm = customStyle.text
 
-          this.titleForm.unit = customStyle.text.unit || ''
+          this.titleForm.unit = customStyle.text.unit || DEFAULT_TITLE_STYLE.unit
+          this.titleForm.unitFontSize = customStyle.text.unit || DEFAULT_TITLE_STYLE.unitFontSize
+          this.titleForm.unitFontColor = customStyle.text.unitFontColor || DEFAULT_TITLE_STYLE.unitFontColor
         }
         this.titleForm.title = this.chart.title
       }

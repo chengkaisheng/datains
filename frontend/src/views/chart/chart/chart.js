@@ -261,7 +261,9 @@ export const DEFAULT_TITLE_STYLE = {
   isItalic: false,
   isBolder: false,
   fontFamily: '',
-  unit: ''
+  unit: '',
+  unitFontSize: 14,
+  unitFontColor: '#121212'
 }
 export const DEFAULT_LEGEND_STYLE = {
   show: true,

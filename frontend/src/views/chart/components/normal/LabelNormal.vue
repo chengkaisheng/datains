@@ -8,7 +8,7 @@
     >
       <span :style="label_class">
         <p v-for="item in chart.data.series" :key="item.name" :style="label_content_class">
-          {{ item.data[0] }} {{ unit }}
+          {{ item.data[0] }} <span :style="unit_style">{{ unit }}</span>
         </p>
       </span>
       <span v-if="dimensionShow" :style="label_space">
@@ -81,16 +81,12 @@ export default {
       },
       title_show: true,
       borderRadius: '0px',
-      unit: ''
+      unit: '',
+      unit_style: {
+        fontSize: '14px',
+        color: '#121212'
+      }
     }
-  },
-  computed: {
-    // bg_class() {
-    //   return {
-    //     background: hexColorToRGBA('#ffffff', 0),
-    //     borderRadius: this.borderRadius
-    //   }
-    // }
   },
   watch: {
     chart() {
@@ -122,6 +118,9 @@ export default {
 
         if (customStyle.text) {
           this.unit = customStyle.text.unit
+
+          this.unit_style.fontSize = `${customStyle.text.unitFontSize}px`
+          this.unit_style.color = customStyle.text.unitFontColor
         }
 
         if (customStyle.background) {
@@ -149,6 +148,7 @@ export default {
           this.label_class.color = customAttr.color.dimensionColor
           this.label_content_class.color = customAttr.color.quotaColor
         }
+
         if (customAttr.size) {
           this.dimensionShow = customAttr.size.dimensionShow
           this.quotaShow = customAttr.size.quotaShow
