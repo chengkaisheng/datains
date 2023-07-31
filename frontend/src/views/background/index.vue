@@ -66,7 +66,7 @@
               {{ $t('panel.water_mask_color') }}
             </el-col>
             <el-col :span="1" style="padding-left: 10px;padding-top: 5px;">
-              <el-color-picker v-model="curComponent.commonWaterMask.color" size="mini" class="color-picker-style" :predefine="predefineColors" />
+              <el-color-picker v-model="curComponent.commonWaterMask.color" size="mini" class="color-picker-style" color-format="rgb" :predefine="predefineColors" />
             </el-col>
             <el-col :span="3" style="padding-left: 10px;">
               <span class="params-title-small">不透明度：</span>

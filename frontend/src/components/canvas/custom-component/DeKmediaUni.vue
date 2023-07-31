@@ -5,7 +5,7 @@
       <iframe
         v-if="kframeShow"
         :id="'iframe'+element.id"
-        :src="`/kmedia-uni/index.html?device_id=${element.options.devId}&visible=${element.commonWaterMask.visible}&title=${element.commonWaterMask.title}&fontSize=${element.commonWaterMask.fontSize}&color=${element.commonWaterMask.color}&alpha=${element.commonWaterMask.alpha}&rotate=${element.commonWaterMask.rotate}`"
+        :src="`/kmedia-uni/index.html?device_id=${element.options.devId}&option=${encodeURI(JSON.stringify(element.commonWaterMask))}`"
         frameborder="0"
         scrolling="auto"
         class="main-frame"

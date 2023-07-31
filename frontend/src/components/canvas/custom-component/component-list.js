@@ -40,7 +40,7 @@ export const COMMON_WATER_MASK = {
   title: '',
   fontSize: 16,
   rotate: 0,
-  color: 'rgb(88, 196, 151)',
+  color: 'rgb(88,196,151)',
   alpha: 100
 }
 // select frame
@@ -59,7 +59,7 @@ export const COMMON_SELECT_FRAME = {
   checkBgImg: null, // 下拉选项背景图
   panelBgColor: '#ffffff', // 面板背景色
   panelColor: '#000000', // 面板字体色
-  panelFontSize: 14, // 面板字体大小
+  panelFontSize: 14 // 面板字体大小
 }
 
 // 空组件仪表板样式
@@ -155,13 +155,13 @@ export const STREAMMEDIALINKS = {
     loop: true,
     // url: null // 网络动画视频
     params: '', // 参数
-    link: '1', // 链接类型
+    link: '1' // 链接类型
   },
   rtmp: {
     type: 'rtmp',
     cors: true, // 允许跨域
     // url: null // 网络动画视频
-    link: '1', // 链接类型
+    link: '1' // 链接类型
   },
   webrtc: {
     type: 'webrtc',
@@ -310,7 +310,7 @@ export const otherList = [
     label: '详情信息',
     icon: 'iconfont icon-text',
     defaultClass: 'text-filter'
-  },
+  }
 ]
 
 // 编辑器左侧组件列表
@@ -334,7 +334,7 @@ const list = [
       color: '#000000',
       verticalAlign: 'middle',
       fontFamily: '',
-      autoWrap: false,
+      autoWrap: false
     },
     options: {
       isPopVisible: false,
@@ -343,7 +343,7 @@ const list = [
       popPanelColor: '#ffffff', // 弹窗颜色
       popHeight: 200, // 文本弹窗图片轮播器的高度/图片高度
       popImgWidth: 100, // 图片宽度设置
-      popImgList: [],
+      popImgList: []
     },
     hyperlinks: HYPERLINKS,
     x: 1,
@@ -659,7 +659,7 @@ const list = [
       iocnSize: 40,
       fontSize: 16,
       color: '#333',
-      proCityCode: '320508', // 默认苏州市姑苏区省市编码
+      proCityCode: '320508' // 默认苏州市姑苏区省市编码
     },
     x: 1,
     y: 1,
@@ -694,9 +694,9 @@ const list = [
       jumpList: [
         {
           jumpName: '',
-          jumpLink: '',
+          jumpLink: ''
         }
-      ],
+      ]
     },
     frameLinks: FRAMELINKS,
     x: 1,
@@ -716,7 +716,7 @@ const list = [
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
       width: 300,
-      height: 200,
+      height: 200
     },
     options: {
       viewId: '',
@@ -724,7 +724,7 @@ const list = [
       nameWidth: '30',
       valueWidth: '70',
       fontSize: '14',
-      imgHeight: 100,
+      imgHeight: 100
     },
     x: 1,
     y: 1,
@@ -806,7 +806,7 @@ const list = [
       height: 200
     },
     options: {
-      devId: '',
+      devId: ''
     },
     x: 1,
     y: 1,

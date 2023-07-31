@@ -74,16 +74,13 @@
     const waterMark = {
       fontSize: 16,
       rotateAngle: -20, 
-      fontColor: "rgb(88, 196, 151)",
+      fontColor: "#58C497",
       opacity: 1,
       textAlign: 'center',
-      text: [{
-          content: '区联防中心'
-        }, {
-          content: (new Date()).format('yyyyMMddhhmmss')
-        }
-      ]
+      text: []
     }
+
+    console.log('window.location.search: ', window.location.search)
 
     var url = window.location.search
     var theRequest = new Object();
@@ -109,13 +106,20 @@
     };
     defaultValue.devId = theRequest.device_id
 
-    waterMark.fontSize = parseInt(theRequest.fontSize)
-    waterMark.fontColor = theRequest.color
-    waterMark.opacity = parseInt(theRequest.alpha) / 100
-    waterMark.rotateAngle = parseInt(theRequest.rotate)
-    waterMark.text[0].content = theRequest.title
+    const option = JSON.parse(theRequest.option)
 
-    console.log('index.html theRequest: ', theRequest, defaultValue)
+    waterMark.fontSize = parseInt(option.fontSize)
+    waterMark.fontColor = option.color
+    waterMark.opacity = option.alpha / 100
+    waterMark.rotateAngle = option.rotate
+    for(let i=0;i<9;i++) {
+      const item = {
+        content: `${option.title}\n${(new Date()).format('yyyyMMddhhmmss')}`
+      }
+      waterMark.text.push(item)
+    }
+
+    console.log('index.html theRequest: ', theRequest, defaultValue, option, waterMark)
 
     const MODE = KMediaUni.MODE;
     let timer = null;
@@ -129,9 +133,7 @@
 			}
     });
 
-    console.log('theRequest: ', theRequest, /^true$/i.test(theRequest.visible))
-
-    if (/^true$/i.test(theRequest.visible)) {
+    if (option.visible) {
       player.watermark(waterMark)
       player.watermarkPreview(true)
     }
