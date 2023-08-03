@@ -12,13 +12,13 @@
           <span class="params-title">{{ '字体大小' }}</span>
         </el-col>
         <el-col :span="8">
-          <el-input-number v-model="curComponent.options.fontSize" :min="1" />
+          <el-input-number v-model="curComponent.commonBackground.fontSize" :min="1" />
         </el-col>
         <el-col :span="4">
           <span class="params-title">{{ '字体颜色' }}</span>
         </el-col>
         <el-col :span="8">
-          <el-color-picker v-model="curComponent.options.color" />
+          <el-color-picker v-model="curComponent.commonBackground.fontColor" />
         </el-col>
       </el-row>
       <el-row style="height: 50px;overflow: hidden;margin-top:0px;">

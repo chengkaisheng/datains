@@ -2,21 +2,22 @@
   <el-row ref="mainPlayer">
     <div v-if="element.videoLinks[element.videoLinks.videoType].sources[0].src" class="player">
       <video-player
-                 v-if="showVideo"
-                 class="vjs-custom-skin"
-                 ref="videoPlayer"
-                 :options="editMode==='preview' ? pOption : playerOptions"
-                 :playsinline="true"
-                 @play="onPlayerPlay($event)"
-                 @ended="onPlayerEnded($event)"
-                 @waiting="onPlayerWaiting($event)"
-                 @playing="onPlayerPlaying($event)"
-                 @loadeddata="onPlayerLoadeddata($event)"
-                 @timeupdate="onPlayerTimeupdate($event)"
-                 @canplay="onPlayerCanplay($event)"
-                 @canplaythrough="onPlayerCanplaythrough($event)"
-                 @statechanged="playerStateChanged($event)"
-                 @ready="playerReadied" />
+        v-if="showVideo"
+        ref="videoPlayer"
+        class="vjs-custom-skin"
+        :options="editMode==='preview' ? pOption : playerOptions"
+        :playsinline="true"
+        @play="onPlayerPlay($event)"
+        @ended="onPlayerEnded($event)"
+        @waiting="onPlayerWaiting($event)"
+        @playing="onPlayerPlaying($event)"
+        @loadeddata="onPlayerLoadeddata($event)"
+        @timeupdate="onPlayerTimeupdate($event)"
+        @canplay="onPlayerCanplay($event)"
+        @canplaythrough="onPlayerCanplaythrough($event)"
+        @statechanged="playerStateChanged($event)"
+        @ready="playerReadied"
+      />
     </div>
     <div v-else class="info-class">
       {{ $t('panel.video_add_tips') }}
@@ -103,7 +104,6 @@ export default {
     this.initOption()
   },
   mounted() {
-    console.log(this.playerOptions)
     bus.$on('videoLinksChange-' + this.element.id, () => {
       this.showVideo = false
       this.$nextTick(() => {

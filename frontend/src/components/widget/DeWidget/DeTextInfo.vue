@@ -11,7 +11,7 @@
           </el-row>
         </el-col>
       </el-col>
-      <el-col v-if="carouseObj.show && carouseObj.url !== ''">
+      <el-col v-if="carouseObj.show && carouseObj.url">
         <img :src="carouseObj.url" style="width: 100%;" :style="{height: imgHeight}">
       </el-col>
     </el-row>
@@ -51,9 +51,6 @@ export default {
     ]),
     textStyle() {
       const style = {}
-      // if(this.element.commonSelectFrame) {
-      //   style.color = this.element.commonSelectFrame.fontColor
-      // }
       if (this.element.options) {
         style.color = this.element.options.fontColor ? this.element.options.fontColor : '#000000'
         style.fontSize = this.element.options.fontSize ? this.element.options.fontSize + 'px' : '14px'

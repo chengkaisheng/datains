@@ -475,13 +475,12 @@ export default {
         operator: 'eq'
       }
 
-      console.log('setCondition: ', param)
-
       this.$store.commit('addViewFilter', param)
     },
     getDetailsInfo(data) { // 设置详情信息
       const arr = []
       let url = ''
+
       data.map((item, index) => {
         if (index === (this.highlight - 1)) {
           this.axisList.map(obj => {
@@ -533,6 +532,7 @@ export default {
           isClick: index
         })
       })
+
       // this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
       this.dataInfo = arr
 

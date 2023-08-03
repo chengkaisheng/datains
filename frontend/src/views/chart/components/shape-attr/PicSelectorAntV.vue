@@ -77,6 +77,9 @@ export default {
       }
     }
   },
+  mounted() {
+    this.initData()
+  },
   methods: {
     initData() {
       const chart = JSON.parse(JSON.stringify(this.chart))
@@ -95,6 +98,7 @@ export default {
           if (customAttr.size.carouselPics === undefined) {
             this.picForm.carouselPics = []
           }
+          // console.log('this.picForm: ', this.picForm)
           if (this.picForm.carouselPics.length) {
             const arr = []
             this.picForm.carouselPics.forEach(item => {
@@ -118,23 +122,14 @@ export default {
       this.dialogVisible = true
     },
     handleRemove(file, fileList) {
-      var _this = this
-      _this.fileList = fileList
-      _this.picForm.carouselPics = []
-      _this.fileList.forEach((item, index) => {
-        if (item.raw) {
-          const reader = new FileReader()
-          reader.onload = function() {
-            _this.picForm.carouselPics.push({
-              url: reader.result,
-              number: index
-            })
-          }
-          reader.readAsDataURL(item.raw)
-        } else {
-          _this.picForm.carouselPics.push(item)
+      this.fileList = fileList
+      this.picForm.carouselPics = this.fileList.map((item, index) => {
+        return {
+          url: item.url,
+          number: index
         }
       })
+
       this.isUpload = true
     },
     onChange(file, fileList) {
@@ -148,34 +143,36 @@ export default {
         }
         return
       }
-      var _this = this
 
-      _this.fileList = fileList
-      _this.picForm.carouselPics = []
-      _this.fileList.forEach((item, index) => {
+      this.fileList = fileList
+      this.picForm.carouselPics = []
+      this.fileList.forEach((item, index) => {
         if (item.raw) {
           const reader = new FileReader()
-          reader.onload = function() {
-            _this.picForm.carouselPics.push({
+          reader.onload = () => {
+            this.picForm.carouselPics.push({
               url: reader.result,
               number: index
             })
           }
           reader.readAsDataURL(item.raw)
         } else {
-          _this.picForm.carouselPics.push(item)
+          this.picForm.carouselPics.push(item)
         }
       })
     },
     addImageLink() {
-      let index = 0
-      const params = {
+      this.fileList.push({
         url: this.imageLink,
-        number: index++
-      }
-      this.picForm.carouselPics.push(params)
+        number: 0
+      })
 
-      console.log('this.picForm.carouselPics: ', this.picForm.carouselPics)
+      this.picForm.carouselPics = this.fileList.map((item, index) => {
+        return {
+          url: item.url,
+          number: index
+        }
+      })
 
       this.imageLink = ''
     },

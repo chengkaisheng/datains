@@ -114,8 +114,6 @@ export default {
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
 
-        console.log('label normal: ', customStyle)
-
         if (customStyle.text) {
           this.unit = customStyle.text.unit
 

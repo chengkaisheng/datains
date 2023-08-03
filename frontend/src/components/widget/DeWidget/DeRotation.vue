@@ -143,11 +143,9 @@ export default {
           }
         } else {
           if (this.element.options.heightTabs === value.text) {
-            // return this.element.options.highlight
-            this.element.commonBackground.fontColor
+            return this.element.options.highlight
           } else {
-            // return this.element.options.color
-            this.element.commonBackground.fontColor
+            return this.element.options.color
           }
         }
       }
@@ -176,6 +174,7 @@ export default {
       style.paddingLeft = this.element.options.spacing + 'px'
       style.paddingRight = this.element.options.spacing + 'px'
       style.width = this.boxWidth + 'px'
+
       return style
     },
     viewIds() {

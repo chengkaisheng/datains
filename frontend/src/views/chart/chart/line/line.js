@@ -64,7 +64,6 @@ export function baseLineOption(chart_option, chart, cstyle = {}) {
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
 
-  console.log('line option: ', chart_option)
   return chart_option
 }
 // polarLineOption

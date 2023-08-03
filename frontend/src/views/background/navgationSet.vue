@@ -90,9 +90,9 @@
         </el-col>
       </el-row> -->
       <el-row>
-        <el-col :span="4">
+        <!-- <el-col :span="4">
           <span class="params-title">{{ '字体颜色' }}</span>
-        </el-col>
+        </el-col> -->
         <el-col :span="8">
           <el-color-picker v-model="curComponent.options.color" />
         </el-col>

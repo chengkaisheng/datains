@@ -43,8 +43,6 @@ export function basePieOption(chart_option, chart, cstyle = {}) {
         chart_option.series[0].label = customAttr.label
         chart_option.series[0].labelLine = customAttr.label.labelLine
 
-        console.log('customAttr: ', customAttr.label)
-
         chart_option.series[0].labelLine.length = customAttr.label.labelLine.length
         chart_option.series[0].labelLine.length2 = customAttr.label.labelLine.length2
         chart_option.series[0].labelLine.smooth = customAttr.label.labelLine.smooth
@@ -81,8 +79,6 @@ export function basePieOption(chart_option, chart, cstyle = {}) {
   }
 
   componentStyle(chart_option, chart, cstyle)
-
-  console.log('basePieOption: ', chart_option)
 
   return chart_option
 }
@@ -193,8 +189,6 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
       if (customAttr.label) {
         chart_option.series[0].label = customAttr.label
         chart_option.series[0].labelLine = customAttr.label.labelLine
-
-        console.log('customAttr: ', customAttr.label)
 
         chart_option.series[0].labelLine.show = customAttr.label.labelLine.show
         chart_option.series[0].labelLine.length = customAttr.label.labelLine.length

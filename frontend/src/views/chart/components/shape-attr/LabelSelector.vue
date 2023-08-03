@@ -260,8 +260,6 @@ export default {
           if (!this.labelForm.labelLine) {
             this.labelForm.labelLine = JSON.parse(JSON.stringify(DEFAULT_LABEL.labelLine))
           }
-
-          console.log('labelForm: ', this.labelForm)
         }
       }
     },

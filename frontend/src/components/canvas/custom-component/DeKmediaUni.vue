@@ -59,7 +59,6 @@ export default {
   watch: {
     element: {
       handler(newVal, oldVal) {
-        console.log('newVal: ', newVal)
         this.kframeShow = false
         this.$nextTick(() => {
           this.kframeShow = true

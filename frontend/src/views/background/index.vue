@@ -79,7 +79,7 @@
       </div>
 
       <!-- 文字轮播组件字体样式 -->
-      <div v-if="curComponent.component === 'de-rotation'">
+      <!-- <div v-if="curComponent.component === 'de-rotation'">
         <el-row style="height: 50px;overflow: hidden">
           <el-col :span="3">
             <span class="params-title">{{ $t('panel.box_fontSize') }}</span>
@@ -96,7 +96,7 @@
             <el-color-picker v-model="curComponent.commonBackground.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
           </el-col>
         </el-row>
-      </div>
+      </div> -->
       <el-row style="height: 50px;overflow: hidden">
         <el-col :span="3">
           <span class="params-title">{{ $t('panel.inner_padding') }}</span>
