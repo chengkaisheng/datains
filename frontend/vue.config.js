@@ -38,7 +38,7 @@ module.exports = {
         // target: 'http://ofmfa31n5roz.ngrok.xiaomiqiu123.top', // 张庆
         // target: 'http://183.194.64.166:9527', // 张庆
         // target: 'https://183.194.64.166:9527',
-        target: 'http://183.194.64.166:9527/',
+        target: 'http://192.168.43.91:9527/',
         ws: false
       }
     },

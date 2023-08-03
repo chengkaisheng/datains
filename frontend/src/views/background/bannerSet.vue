@@ -26,7 +26,7 @@
           <span class="params-title">{{ $t('panel.Rotation_interval') }}</span>
         </el-col>
         <el-col :span="7">
-          <el-input-number v-model="curComponent.options.rotationTime" :min="1" :max="100" />
+          <el-input-number v-model="curComponent.options.rotationTime" :min="0" :max="100" />
         </el-col>
         <el-col :span="1">
           <span class="params-title">{{ $t('panel.second') }}</span>

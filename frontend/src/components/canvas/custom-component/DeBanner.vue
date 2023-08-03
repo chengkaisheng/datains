@@ -196,8 +196,14 @@ export default {
       // this.swiperOption.slidesPerView = this.element.options.slidesPerView
       this.swiperOption.spaceBetween = this.element.options.pictureGap
 
+      console.log('swiper: ', this.element.options)
+
       this.swiperOption.autoplay = {
         delay: this.element.options.rotationTime * 1000, disableOnInteraction: false
+      }
+
+      if (!this.element.options.rotationTime) {
+        this.swiperOption.autoplay = false
       }
 
       this.swiperOption.coverflowEffect = this.coverflowEffect
