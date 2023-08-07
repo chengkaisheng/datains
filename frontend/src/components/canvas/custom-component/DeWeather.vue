@@ -62,6 +62,8 @@ export default {
       const style = {}
       style.fontSize = (this.element.weatherStyle.fontSize * this.previewCanvasScale.scalePointWidth) + 'px'
       style.color = this.element.weatherStyle.color
+      style.fontWeight = this.element.weatherStyle.fontWeight
+
       return style
     },
     iconStyle() {

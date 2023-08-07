@@ -658,6 +658,7 @@ const list = [
     weatherStyle: {
       iocnSize: 40,
       fontSize: 16,
+      fontWeight: 400,
       color: '#333',
       proCityCode: '320508' // 默认苏州市姑苏区省市编码
     },

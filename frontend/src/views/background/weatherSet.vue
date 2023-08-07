@@ -27,6 +27,23 @@
         </el-col>
 
       </el-row>
+
+      <el-row>
+        <el-col :span="4">
+          <span class="params-title">{{ '字体粗细' }}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-select v-model="curComponent.weatherStyle.fontWeight" placeholder="字体粗细">
+            <el-option
+              v-for="item in fontWeightOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-col>
+      </el-row>
+
       <el-row>
         <el-col :span="4">
           <span class="params-title">{{ '字体大小' }}</span>
@@ -95,7 +112,44 @@ export default {
       panel: null,
       predefineColors: COLOR_PANEL,
       textData: [],
-      options: []
+      options: [],
+      fontWeightOptions: [{
+        value: 100,
+        label: '100'
+      }, {
+        value: 200,
+        label: '200'
+      }, {
+        value: 300,
+        label: '300'
+      }, {
+        value: 400,
+        label: '400'
+      }, {
+        value: 500,
+        label: '500'
+      }, {
+        value: 600,
+        label: '600'
+      }, {
+        value: 700,
+        label: '700'
+      }, {
+        value: 800,
+        label: '800'
+      }, {
+        value: 900,
+        label: '900'
+      }, {
+        value: 'bold',
+        label: 'bold'
+      }, {
+        value: 'bolder',
+        label: 'bolder'
+      }, {
+        value: 'normal',
+        label: 'normal'
+      }]
     }
   },
   computed: {
