@@ -12,7 +12,7 @@
           <span class="params-title">{{ $t('panel.box_width') }}</span>
         </el-col>
         <el-col :span="8">
-          <el-input-number v-model="curComponent.commonBackground.boxWidth" :min="0" />
+          <el-input-number v-model="curComponent.commonBackground.boxWidth" :min="0" :step="1" step-strictly />
         </el-col>
       </el-row>
       <el-row style="height: 50px;overflow: hidden">
@@ -20,7 +20,7 @@
           <span class="params-title">{{ $t('panel.box_height') }}</span>
         </el-col>
         <el-col :span="8">
-          <el-input-number v-model="curComponent.commonBackground.boxHeight" :min="0" />
+          <el-input-number v-model="curComponent.commonBackground.boxHeight" :min="0" :step="1" step-strictly />
         </el-col>
       </el-row>
 
