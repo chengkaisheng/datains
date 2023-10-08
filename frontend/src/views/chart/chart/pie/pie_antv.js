@@ -115,7 +115,10 @@ export function basePieRoseOptionAntV(plot, container, chart, action) {
     yField: 'value',
     seriesField: 'field',
     appendPadding: getPadding(chart),
-    label: label,
+    label: {
+      ...label,
+      autoHide: true
+    },
     tooltip: tooltip,
     legend: legend,
     statistic: {

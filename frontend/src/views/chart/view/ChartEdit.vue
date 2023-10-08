@@ -383,6 +383,7 @@
                         <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
                         <span v-else-if="view.type && view.type === 'arc_map'">{{ $t('chart.drag_block_arc_map_info') }}</span>
                         /
+                        {{ view.xaxis.length }}
                         <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
                         <span
                           v-else-if="view.type && view.type === 'table-info'"
@@ -407,6 +408,7 @@
                             :dimension-data="dimension"
                             :view-type="view.type"
                             :quota-data="quota"
+                            :custom-visible="view.xaxis.length === 1"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
@@ -1390,6 +1392,15 @@
         <el-button type="primary" size="mini" @click="saveQuotaEditCompare">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="自定义排序" :visible.sync="customVisible">
+      <el-input v-model="customDimensions" type="textarea" placeholder="维度自定义排序，以英文逗号隔开" rows="5" />
+      <span slot="footer">
+        <el-button @click="customVisible = false">取消</el-button>
+
+        <el-button type="primary" @click="onCustomSort">确认</el-button>
+      </span>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -1484,6 +1495,7 @@ import Threshold from '@/views/chart/components/senior/Threshold'
 import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { pluginTypes } from '@/api/chart/chart'
+import message from '@/utils/message'
 // import ArcGIS from "@/map/init.js"
 // const Map = new ArcGIS()
 export default {
@@ -1655,8 +1667,9 @@ export default {
       quotaItemCompare: {},
       showEditQuotaCompare: false,
       preChartId: '',
-      pluginRenderOptions: []
-
+      pluginRenderOptions: [],
+      customVisible: false,
+      customDimensions: ''
     }
   },
   computed: {
@@ -2040,52 +2053,14 @@ export default {
 
       return view
     },
-    // calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
-    // this.hasEdit = true
-    // const view = this.buildParam(getData, trigger, needRefreshGroup, switchType)
-    // if (!view) return
-    // post('/chart/view/calcData/' + this.panelInfo.id, {
-    //   view: view,
-    //   requestList: {
-    //     filter: [],
-    //     drill: this.drillClickDimensionList
-    //   }
-    // }).then(response => {
-    //   const view = JSON.parse(JSON.stringify(response.data))
-    //   this.view.xaxis = view.xaxis ? JSON.parse(view.xaxis) : []
-    //   this.view.xaxisExt = view.xaxisExt ? JSON.parse(view.xaxisExt) : []
-    //   this.view.yaxis = view.yaxis ? JSON.parse(view.yaxis) : []
-    //   this.view.yaxisExt = view.yaxisExt ? JSON.parse(view.yaxisExt) : []
-    //   this.view.extStack = view.extStack ? JSON.parse(view.extStack) : []
-    //   this.view.drillFields = view.drillFields ? JSON.parse(view.drillFields) : []
-    //   this.view.extBubble = view.extBubble ? JSON.parse(view.extBubble) : []
-    //   this.view.customAttr = view.customAttr ? JSON.parse(view.customAttr) : {}
-    //   this.view.customStyle = view.customStyle ? JSON.parse(view.customStyle) : {}
-    //   this.view.customFilter = view.customFilter ? JSON.parse(view.customFilter) : {}
-    // this.view.senior = view.senior ? JSON.parse(view.senior) : {}
-    // 将视图传入echart组件
-    //   this.chart = response.data
-    //   this.data = response.data.data
-    //   // console.log(JSON.stringify(this.chart))
-    //   this.httpRequest.status = true
-    //   if (this.chart.privileges) {
-    //     this.param.privileges = this.chart.privileges
-    //   }
-    //   if (!response.data.drill) {
-    //     this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
-    //
-    //     this.resetDrill()
-    //   }
-    //   this.drill = response.data.drill
-    //   this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
-    //
-    //   this.closeChangeChart()
-    // })
-    // },
     calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
       this.changeEditStatus(true)
       const view = this.buildParam(true, 'chart', false, switchType)
+      const customAttr = JSON.parse(view.customAttr)
       if (!view) return
+      customAttr.customDimensions = this.customDimensions
+      view.customAttr = JSON.stringify(customAttr)
+      console.log('calcData: ', view)
       // 缓存 拖动的数据并调用 UserView组件的view-in-cache 方法传值
       save2Cache(this.panelInfo.id, view).then(() => {
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
@@ -2225,6 +2200,8 @@ export default {
           this.view.senior = this.view.senior ? JSON.parse(this.view.senior) : {}
           // this.view.file = this.view.file ? this.view.file : ''
           this.view.urlMap = this.view.urlMap ? this.view.urlMap : this.urlMap1
+
+          this.customDimensions = this.view.customAttr.customDimensions
           // 将视图传入echart组件
           this.chart = response.data
           this.data = response.data.data
@@ -2266,6 +2243,18 @@ export default {
     },
 
     dimensionItemChange(item) {
+      if (item.customizeSort === 'customize') {
+        this.customVisible = true
+      }
+
+      this.calcData(true)
+    },
+    onCustomSort() {
+      if (!this.customDimensions) {
+        return this.$message.error('请输入自定义排序内容')
+      }
+      this.customVisible = false
+      console.log('customDiem', this.customDimensions)
       this.calcData(true)
     },
 

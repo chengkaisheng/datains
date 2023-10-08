@@ -149,18 +149,24 @@ export default {
         name = 'qing'
       } else if (key === '阴天' || key === '阴') {
         name = 'yingtian'
-      } else if (key === '小雨') {
+      } else if (key === '小雨' || key === '雨') {
         name = 'xiaoyu'
       } else if (key === '中雨') {
         name = 'zhongyu'
       } else if (key === '大雨') {
         name = 'dayu'
-      } else if (key === '小雪') {
+      } else if (key === '暴雨') {
+        name = 'baoyu'
+      } else if (key === '大暴雨') {
+        name = 'dabaoyu'
+      } else if (key === '小雪' || key === '雪') {
         name = 'xiaoxue'
       } else if (key === '中雪') {
         name = 'zhongxue'
       } else if (key === '大雪') {
         name = 'daxue'
+      } else if (key === '阵雪') {
+        name = 'zhenxue'
       } else if (key === '雨夹雪') {
         name = '雨夹雪'
       } else if (key === '阵雨') {
@@ -181,6 +187,20 @@ export default {
         name = 'shachenbao'
       } else if (key === '冰雹') {
         name = 'bingbao'
+      } else if (key === '大风') {
+        name = 'dafeng'
+      } else if (key === '风') {
+        name = 'feng'
+      } else if (key === '飓风') {
+        name = 'jufeng'
+      } else if (key === '霜降') {
+        name = 'shaungjiang'
+      } else if (key === '台风') {
+        name = 'taifeng'
+      } else if (key === '特大暴雨') {
+        name = 'tedabaoyu'
+      } else {
+        name = 'unknow'
       }
 
       return name

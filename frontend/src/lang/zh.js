@@ -870,6 +870,7 @@ export default {
     trigger_position: '触发位置',
     asc: '升序',
     desc: '降序',
+    customize: '自定义',
     sort: '排序',
     filter: '过滤',
     none: '无',

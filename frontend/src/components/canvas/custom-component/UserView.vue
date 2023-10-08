@@ -811,42 +811,21 @@ export default {
           cache: cache,
           queryFrom: this.isEdit ? 'panel_edit' : 'panel'
         }
-        if (JSON.stringify(requestInfo.filter) === '[]') {
-        // requestInfo.filter.value = ['公司1']
-        // requestInfo.filter.operator = 'eq'
-          // const obj = {
-          //   value: ['公司1'],
-          //   operator: 'eq'
-          // }
-          // requestInfo.filter.push(obj)
-        }
 
         if (this.panelInfo.proxy) {
           // method = viewInfo
           requestInfo.proxy = { userId: this.panelInfo.proxy }
         }
-        // method(id, this.panelInfo.id, requestInfo)
-        //   .then((response) => {
-        //     if (response.success) {
-        //       if (response.data.customFilter === '[]') {
-        //         console.log('没有过滤的字段在这里----------')
-        //       } else {
-        //         console.log('有过滤需求的字段')
-        //       }
-        //     }
-        //   })
 
         method(id, this.panelInfo.id, requestInfo)
           .then((response) => {
             if (response.success) {
               const keyValeu = JSON.parse(localStorage.getItem('permissionId'))
-              if (keyValeu === null) {
-
-              }
-              // const filterData = JSON.parse(response.data.customFilter)
 
               if (response.data.customFilter === '[]' || keyValeu === null) {
                 if (response.success) {
+                  console.log('customStyle: ', JSON.parse(response.data.customAttr), response.data)
+
                   if (response.data.render === 'antv') {
                     if (response.data.data) {
                       if (response.data.xaxis) {
@@ -1217,6 +1196,48 @@ export default {
                     this.chart = response.data
                   } else {
                     this.chart = response.data
+                  }
+
+                  const x = JSON.parse(JSON.stringify(response.data.data.x))
+
+                  console.log('x: ', x)
+
+                  const customXisList = JSON.parse(response.data.xaxis).filter(item => item.customizeSort === 'customize')
+                  if (JSON.parse(response.data.customAttr).customDimensions && customXisList.length) {
+                    const customSortList = JSON.parse(response.data.customAttr).customDimensions.split(',')
+                    const datas = JSON.parse(JSON.stringify(response.data.data))
+                    const x = JSON.parse(JSON.stringify(datas.x))
+
+                    console.log('x: ', x)
+
+                    const newSort = customSortList.map((item, sortIndex) => {
+                      const trimItem = item.replace(/\t|\n|\v|\r|\f/g, '').trim()
+                      for (let i = 0; i < x.length; i++) {
+                        if (x[i] === trimItem) {
+                          return {
+                            label: trimItem,
+                            oldIndex: i,
+                            index: sortIndex
+                          }
+                        }
+                      }
+                    }).sort((a, b) => {
+                      a.index - b.index
+                    })
+
+                    for (let i = 0; i < datas.series.length; i++) {
+                      const obj = JSON.parse(JSON.stringify(datas.series[i]))
+                      console.log('自定义排序1：', newSort)
+                      const newData = newSort.map((item) => {
+                        console.log('自定义排序：', item, obj.data[item.oldIndex])
+                        return obj.data[item.oldIndex]
+                      })
+
+                      datas.series[i].data = newData
+                    }
+
+                    datas.x = newSort.map((item) => item.label)
+                    response.data.data = datas
                   }
 
                   // 主题切换

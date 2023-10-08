@@ -35,12 +35,13 @@
                 <el-form :inline="true" size="mini" class="row-style">
                   <el-form-item class="form-item">
                     <el-upload
+                      :auto-upload="autoUpload"
                       :action="baseUrl+'dataset/table/excel/upload'"
                       :multiple="false"
                       :show-file-list="false"
                       :file-list="fileList"
-                      :data="param"
-                      accept=".xls,.xlsx,"
+                      :data="formData"
+                      accept=".xls,.xlsx,.csv"
                       :before-upload="beforeUpload"
                       :on-success="uploadSuccess"
                       :on-error="uploadFail"
@@ -153,8 +154,9 @@
 import { post } from '@/api/dataset/dataset'
 import { getToken } from '@/utils/auth'
 import i18n from '@/lang'
-import {$alert} from "@/utils/message";
-import store from "@/store";
+import { $alert } from '@/utils/message'
+import store from '@/store'
+import { readExcelToJson, saveJsonToExcel } from '@/utils/utils'
 
 const token = getToken()
 
@@ -199,7 +201,9 @@ export default {
       count: 1,
       excelData: [],
       defaultExpandedKeys: [],
-      defaultCheckedKeys: []
+      defaultCheckedKeys: [],
+      autoUpload: true,
+      formData: this.param
     }
   },
   watch: {
@@ -225,7 +229,7 @@ export default {
         this.handleNodeClick(data)
       } else {
         var index = this.defaultCheckedKeys.findIndex(id => {
-          if (id == data.id) {
+          if (id === data.id) {
             return true
           }
         })
@@ -243,9 +247,9 @@ export default {
     },
     changeDatasetName() {
       for (var i = 0; i < this.excelData.length; i++) {
-        if (this.excelData[i].excelId == this.sheetObj.sheetExcelId) {
+        if (this.excelData[i].excelId === this.sheetObj.sheetExcelId) {
           for (var j = 0; j < this.excelData[i].sheets.length; j++) {
-            if (this.excelData[i].sheets[j].excelId == this.sheetObj.sheetId) {
+            if (this.excelData[i].sheets[j].excelId === this.sheetObj.sheetId) {
               this.excelData[i].sheets[j] = this.sheetObj
             }
           }
@@ -260,13 +264,34 @@ export default {
       }, 10)
     },
     beforeUpload(file) {
-      this.uploading = true
+      return new Promise(async(resolve, reject) => {
+        this.uploading = true
+
+        if (file.type === 'text/csv') {
+          const json = await readExcelToJson(file)
+          saveJsonToExcel(json, `${file.name.split('.')[0]}.xlsx`, (newFile) => {
+            newFile.uid = file.uid
+            file = newFile
+
+            this.formData.file = file
+
+            this.$nextTick(() => resolve())
+          }, (message) => {
+            this.$message.error(message)
+            this.uploading = false
+            this.$nextTick(() => reject())
+          })
+        } else {
+          this.formData.file = file
+          this.$nextTick(() => resolve())
+        }
+      })
     },
     uploadFail(response, file, fileList) {
       let myError = response.toString()
       myError = myError.replace('Error: ', '')
 
-      if(myError.indexOf('AuthenticationException') >= 0){
+      if (myError.indexOf('AuthenticationException') >= 0) {
         const message = i18n.t('login.tokenError')
         $alert(message, () => {
           store.dispatch('user/logout').then(() => {
@@ -335,7 +360,7 @@ export default {
           sheetFileMd5.push(selectNode[i].fieldsMd5)
         }
       }
-      if (selectedSheet.length == 0) {
+      if (selectedSheet.length === 0) {
         this.$message.warning(this.$t('dataset.ple_select_excel'))
         return
       }

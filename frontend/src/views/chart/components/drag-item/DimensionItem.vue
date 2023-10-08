@@ -8,8 +8,9 @@
             <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
             <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
             <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-            <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
-            <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
+            <svg-icon v-if="(!item.customizeSort && item.sort) === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
+            <svg-icon v-if="(!item.customizeSort && item.sort) === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
+            <svg-icon v-if="customVisible && item.customizeSort === 'customize'" icon-class="sort-customize" class-name="field-icon-sort" />
           </span>
           <span class="item-span-style" :title="item.name">{{ item.name }}</span>
           <field-error-tips v-if="tagType === 'danger'" />
@@ -25,7 +26,7 @@
                 <span>
                   <i class="el-icon-sort" />
                   <span>{{ $t('chart.sort') }}</span>
-                  <span class="summary-span-item">({{ $t('chart.'+item.sort) }})</span>
+                  <span class="summary-span-item">({{ $t('chart.'+ (item.customizeSort || item.sort)) }})</span>
                 </span>
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
@@ -33,6 +34,7 @@
                 <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
+                <el-dropdown-item v-if="customVisible" :command="beforeSort('customize')">{{ $t('chart.customize') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -182,6 +184,10 @@ export default {
     viewType: {
       type: String,
       required: true
+    },
+    customVisible: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -229,7 +235,13 @@ export default {
       }
     },
     sort(param) {
-      this.item.sort = param.type
+      if (param.type === 'customize') {
+        this.item.customizeSort = 'customize'
+      } else {
+        this.item.sort = param.type
+        this.item.customizeSort = ''
+      }
+      console.log('sort param: ', param, this.item)
       this.$emit('onDimensionItemChange', this.item)
     },
     beforeSort(type) {
