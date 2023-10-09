@@ -26,6 +26,8 @@
 <script>
 import axios from 'axios'
 import { mapState } from 'vuex'
+import weatherMap from './weatherMap'
+
 export default {
   props: {
     element: {
@@ -142,68 +144,8 @@ export default {
   },
   methods: {
     newIcon(key) {
-      let name = ''
-      if (key === '多云') {
-        name = 'duoyun'
-      } else if (key === '晴') {
-        name = 'qing'
-      } else if (key === '阴天' || key === '阴') {
-        name = 'yingtian'
-      } else if (key === '小雨' || key === '雨') {
-        name = 'xiaoyu'
-      } else if (key === '中雨') {
-        name = 'zhongyu'
-      } else if (key === '大雨') {
-        name = 'dayu'
-      } else if (key === '暴雨') {
-        name = 'baoyu'
-      } else if (key === '大暴雨') {
-        name = 'dabaoyu'
-      } else if (key === '小雪' || key === '雪') {
-        name = 'xiaoxue'
-      } else if (key === '中雪') {
-        name = 'zhongxue'
-      } else if (key === '大雪') {
-        name = 'daxue'
-      } else if (key === '阵雪') {
-        name = 'zhenxue'
-      } else if (key === '雨夹雪') {
-        name = '雨夹雪'
-      } else if (key === '阵雨') {
-        name = 'zhenyu'
-      } else if (key === '雷阵雨') {
-        name = 'leizhanyu'
-      } else if (key === '雷电') {
-        name = 'leidian'
-      } else if (key === '雾') {
-        name = 'wu'
-      } else if (key === '霾') {
-        name = 'mai'
-      } else if (key === '浮尘') {
-        name = 'fuchen'
-      } else if (key === '扬沙') {
-        name = 'yangsha'
-      } else if (key === '沙尘暴') {
-        name = 'shachenbao'
-      } else if (key === '冰雹') {
-        name = 'bingbao'
-      } else if (key === '大风') {
-        name = 'dafeng'
-      } else if (key === '风') {
-        name = 'feng'
-      } else if (key === '飓风') {
-        name = 'jufeng'
-      } else if (key === '霜降') {
-        name = 'shaungjiang'
-      } else if (key === '台风') {
-        name = 'taifeng'
-      } else if (key === '特大暴雨') {
-        name = 'tedabaoyu'
-      } else {
-        name = 'unknow'
-      }
-
-      return name
+      console.log('weatherMap: ', weatherMap, key)
+      return key && weatherMap[key]
     },
     getSunType() {
       axios({

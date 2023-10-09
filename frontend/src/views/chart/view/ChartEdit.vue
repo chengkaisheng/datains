@@ -383,7 +383,6 @@
                         <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
                         <span v-else-if="view.type && view.type === 'arc_map'">{{ $t('chart.drag_block_arc_map_info') }}</span>
                         /
-                        {{ view.xaxis.length }}
                         <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
                         <span
                           v-else-if="view.type && view.type === 'table-info'"

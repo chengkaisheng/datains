@@ -1198,46 +1198,44 @@ export default {
                     this.chart = response.data
                   }
 
-                  const x = JSON.parse(JSON.stringify(response.data.data.x))
-
-                  console.log('x: ', x)
-
                   const customXisList = JSON.parse(response.data.xaxis).filter(item => item.customizeSort === 'customize')
                   if (JSON.parse(response.data.customAttr).customDimensions && customXisList.length) {
                     const customSortList = JSON.parse(response.data.customAttr).customDimensions.split(',')
                     const datas = JSON.parse(JSON.stringify(response.data.data))
-                    const x = JSON.parse(JSON.stringify(datas.x))
+                    if (datas.x) {
+                      const x = JSON.parse(JSON.stringify(datas.x))
 
-                    console.log('x: ', x)
+                      console.log('x: ', x)
 
-                    const newSort = customSortList.map((item, sortIndex) => {
-                      const trimItem = item.replace(/\t|\n|\v|\r|\f/g, '').trim()
-                      for (let i = 0; i < x.length; i++) {
-                        if (x[i] === trimItem) {
-                          return {
-                            label: trimItem,
-                            oldIndex: i,
-                            index: sortIndex
+                      const newSort = customSortList.map((item, sortIndex) => {
+                        const trimItem = item.replace(/\t|\n|\v|\r|\f/g, '').trim()
+                        for (let i = 0; i < x.length; i++) {
+                          if (x[i] === trimItem) {
+                            return {
+                              label: trimItem,
+                              oldIndex: i,
+                              index: sortIndex
+                            }
                           }
                         }
-                      }
-                    }).sort((a, b) => {
-                      a.index - b.index
-                    })
-
-                    for (let i = 0; i < datas.series.length; i++) {
-                      const obj = JSON.parse(JSON.stringify(datas.series[i]))
-                      console.log('自定义排序1：', newSort)
-                      const newData = newSort.map((item) => {
-                        console.log('自定义排序：', item, obj.data[item.oldIndex])
-                        return obj.data[item.oldIndex]
+                      }).sort((a, b) => {
+                        a.index - b.index
                       })
 
-                      datas.series[i].data = newData
-                    }
+                      for (let i = 0; i < datas.series.length; i++) {
+                        const obj = JSON.parse(JSON.stringify(datas.series[i]))
+                        console.log('自定义排序1：', newSort)
+                        const newData = newSort.map((item) => {
+                          console.log('自定义排序：', item, obj.data[item.oldIndex])
+                          return obj.data[item.oldIndex]
+                        })
 
-                    datas.x = newSort.map((item) => item.label)
-                    response.data.data = datas
+                        datas.series[i].data = newData
+                      }
+
+                      datas.x = newSort.map((item) => item.label)
+                      response.data.data = datas
+                    }
                   }
 
                   // 主题切换
