@@ -407,7 +407,6 @@
                             :dimension-data="dimension"
                             :view-type="view.type"
                             :quota-data="quota"
-                            :custom-visible="view.xaxis.length === 1"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
@@ -1668,7 +1667,8 @@ export default {
       preChartId: '',
       pluginRenderOptions: [],
       customVisible: false,
-      customDimensions: ''
+      customDimensions: '',
+      currentDimension: null
     }
   },
   computed: {
@@ -2055,10 +2055,10 @@ export default {
     calcData(getData, trigger, needRefreshGroup = false, switchType = false) {
       this.changeEditStatus(true)
       const view = this.buildParam(true, 'chart', false, switchType)
-      const customAttr = JSON.parse(view.customAttr)
+      // const customAttr = JSON.parse(view.customAttr)
       if (!view) return
-      customAttr.customDimensions = this.customDimensions
-      view.customAttr = JSON.stringify(customAttr)
+      // customAttr.customDimensions = this.customDimensions
+      // view.customAttr = JSON.stringify(customAttr)
       console.log('calcData: ', view)
       // 缓存 拖动的数据并调用 UserView组件的view-in-cache 方法传值
       save2Cache(this.panelInfo.id, view).then(() => {
@@ -2244,16 +2244,19 @@ export default {
     dimensionItemChange(item) {
       if (item.customizeSort === 'customize') {
         this.customVisible = true
+        this.currentDimension = item
+        this.customDimensions = item.customDimensions
+      } else {
+        this.calcData(true)
       }
-
-      this.calcData(true)
     },
     onCustomSort() {
       if (!this.customDimensions) {
         return this.$message.error('请输入自定义排序内容')
       }
       this.customVisible = false
-      console.log('customDiem', this.customDimensions)
+      this.view.xaxis[this.currentDimension.index].customDimensions = this.customDimensions
+      console.log('customDiem', this.view.xaxis, this.currentDimension, this.customDimensions)
       this.calcData(true)
     },
 

@@ -241,6 +241,7 @@ export default {
         this.item.sort = param.type
         this.item.customizeSort = ''
       }
+      this.item.index = this.index
       console.log('sort param: ', param, this.item)
       this.$emit('onDimensionItemChange', this.item)
     },

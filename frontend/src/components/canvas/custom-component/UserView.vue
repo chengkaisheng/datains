@@ -826,6 +826,140 @@ export default {
                 if (response.success) {
                   console.log('customStyle: ', JSON.parse(response.data.customAttr), response.data)
 
+                  const customXaxisList = JSON.parse(response.data.xaxis).filter(item => item.customizeSort === 'customize')
+                  if (customXaxisList.length) {
+                    const customList = []
+                    for (let i = 0; i < customXaxisList.length; i++) {
+                      if (customXaxisList[i].customDimensions) {
+                        const customDimensionsList = customXaxisList[i].customDimensions.split(',')
+                        customList.push({
+                          id: customXaxisList[i].id,
+                          list: customDimensionsList
+                        })
+                      }
+                    }
+                    const datas = JSON.parse(JSON.stringify(response.data.data))
+
+                    let newX = []
+                    const dimensionListObj = {}
+                    if (Object.prototype.toString.call(datas.series) === '[object Array]') {
+                      for (let i = 0; i < datas.series.length; i++) {
+                        const obj = JSON.parse(JSON.stringify(datas.series[i]))
+                        for (let j = 0; j < customList.length; j++) {
+                          dimensionListObj[j] = obj.data.map((item, index) => {
+                            for (let k = 0; k < item.dimensionList.length; k++) {
+                              if (customList[j].list.indexOf(item.dimensionList[k].value) !== -1) {
+                                return {
+                                  id: customList[j].id,
+                                  label: item.dimensionList[k].value,
+                                  dataIndex: index,
+                                  sortIndex: customList[j].list.indexOf(item.dimensionList[k].value)
+                                }
+                              }
+                            }
+                          })
+                        }
+
+                        console.log('自定义排序1：', obj)
+                      }
+
+                      for (const i in dimensionListObj) {
+                        dimensionListObj[i] = dimensionListObj[i].sort((a, b) => {
+                          return a.sortIndex - b.sortIndex
+                        }).filter(item => item)
+                      }
+
+                      for (let i = 0; i < datas.series.length; i++) {
+                        const obj = JSON.parse(JSON.stringify(datas.series[i]))
+                        for (const j in dimensionListObj) {
+                          const newData = dimensionListObj[j].map((item) => {
+                            return obj.data[item.dataIndex]
+                          }).filter(item => item)
+
+                          const dimensionId = dimensionListObj[j][0].id
+                          const sortDimList = dimensionListObj[j].map((item) => item.label)
+
+                          obj.data.forEach((item, index) => {
+                            item.dimensionList.forEach((dimension) => {
+                              console.log('dimension: ', dimension, dimensionListObj[j])
+                              if (dimension.id === dimensionId && sortDimList.indexOf(dimension.value) === -1) {
+                                // newData.splice(index, 0, item)
+                                newData.push(item)
+                              }
+                            })
+                          })
+
+                          datas.series[i].data = newData
+                        }
+
+                        console.log('自定义排序3：', datas.series[i].data)
+                      }
+
+                      for (let i = 0; i < datas.series.length; i++) {
+                        const obj = JSON.parse(JSON.stringify(datas.series[i]))
+                        for (let j = 0; j < obj.data.length; j++) {
+                          newX.push(obj.data[j].dimensionList.map((item) => item.value).join('\n'))
+                        }
+                      }
+                    }
+
+                    if (Object.prototype.toString.call(datas.datas) === '[object Array]') {
+                      for (let j = 0; j < customList.length; j++) {
+                        dimensionListObj[j] = datas.datas.map((item, index) => {
+                          for (let k = 0; k < item.dimensionList.length; k++) {
+                            if (customList[j].list.indexOf(item.dimensionList[k].value) !== -1) {
+                              return {
+                                id: customList[j].id,
+                                label: item.dimensionList[k].value,
+                                dataIndex: index,
+                                sortIndex: customList[j].list.indexOf(item.dimensionList[k].value)
+                              }
+                            }
+                          }
+                        })
+                      }
+
+                      for (const i in dimensionListObj) {
+                        dimensionListObj[i] = dimensionListObj[i].sort((a, b) => {
+                          return a.sortIndex - b.sortIndex
+                        }).filter(item => item)
+                      }
+
+                      for (const j in dimensionListObj) {
+                        const newData = dimensionListObj[j].map((item) => {
+                          return datas.datas[item.dataIndex]
+                        }).filter(item => item)
+
+                        const dimensionId = dimensionListObj[j][0].id
+                        const sortDimList = dimensionListObj[j].map((item) => item.label)
+
+                        datas.datas.forEach((item, index) => {
+                          item.dimensionList.forEach((dimension) => {
+                            console.log('dimension: ', dimension, dimensionListObj[j])
+                            if (dimension.id === dimensionId && sortDimList.indexOf(dimension.value) === -1) {
+                              console.log('插入 index: ', index, dimension.value)
+                              // newData.splice(index, 0, item)
+                              newData.push(item)
+                            }
+                          })
+                        })
+
+                        datas.datas = newData
+                      }
+
+                      console.log('自定义排序3：', datas.datas)
+                      for (let j = 0; j < datas.datas.length; j++) {
+                        newX.push(datas.datas[j].dimensionList.map((item) => item.value).join('\n'))
+                      }
+                    }
+
+                    newX = newX.filter((item, index) => newX.indexOf(item) === index)
+                    console.log('自定义排序2：', dimensionListObj, datas, newX)
+
+                    datas.x = newX
+                    response.data.data = datas
+                  }
+
                   if (response.data.render === 'antv') {
                     if (response.data.data) {
                       if (response.data.xaxis) {
@@ -1196,46 +1330,6 @@ export default {
                     this.chart = response.data
                   } else {
                     this.chart = response.data
-                  }
-
-                  const customXisList = JSON.parse(response.data.xaxis).filter(item => item.customizeSort === 'customize')
-                  if (JSON.parse(response.data.customAttr).customDimensions && customXisList.length) {
-                    const customSortList = JSON.parse(response.data.customAttr).customDimensions.split(',')
-                    const datas = JSON.parse(JSON.stringify(response.data.data))
-                    if (datas.x) {
-                      const x = JSON.parse(JSON.stringify(datas.x))
-
-                      console.log('x: ', x)
-
-                      const newSort = customSortList.map((item, sortIndex) => {
-                        const trimItem = item.replace(/\t|\n|\v|\r|\f/g, '').trim()
-                        for (let i = 0; i < x.length; i++) {
-                          if (x[i] === trimItem) {
-                            return {
-                              label: trimItem,
-                              oldIndex: i,
-                              index: sortIndex
-                            }
-                          }
-                        }
-                      }).sort((a, b) => {
-                        a.index - b.index
-                      })
-
-                      for (let i = 0; i < datas.series.length; i++) {
-                        const obj = JSON.parse(JSON.stringify(datas.series[i]))
-                        console.log('自定义排序1：', newSort)
-                        const newData = newSort.map((item) => {
-                          console.log('自定义排序：', item, obj.data[item.oldIndex])
-                          return obj.data[item.oldIndex]
-                        })
-
-                        datas.series[i].data = newData
-                      }
-
-                      datas.x = newSort.map((item) => item.label)
-                      response.data.data = datas
-                    }
                   }
 
                   // 主题切换
@@ -1760,8 +1854,8 @@ export default {
             if (err.message && err.message.indexOf('timeout') > -1) {
               this.message = this.$t('panel.timeout_refresh')
             } else {
-              this.httpRequest.status = err.response.data.success
-              this.httpRequest.msg = err.response.data.message
+              this.httpRequest.status = err.response && err.response.data.success
+              this.httpRequest.msg = err.response && err.response.data.message
               if (err && err.response && err.response.data) {
                 this.message = err.response.data.message
               } else {
