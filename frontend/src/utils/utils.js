@@ -20,6 +20,8 @@ export function readExcelToJson(file) {
       for (var i = 0; i < length; i++) {
         binary += String.fromCharCode(bytes[i])
       }
+
+      console.log('XLSX: ', XLSX)
       const workbook = XLSX.read(binary, {
         type: 'binary',
         codepage: 936
