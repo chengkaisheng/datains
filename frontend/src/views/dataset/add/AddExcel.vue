@@ -34,6 +34,7 @@
               <el-col style="width: 200px;">
                 <el-form :inline="true" size="mini" class="row-style">
                   <el-form-item class="form-item">
+
                     <el-upload
                       :auto-upload="autoUpload"
                       :action="baseUrl+'dataset/table/excel/upload'"
@@ -42,6 +43,7 @@
                       :file-list="fileList"
                       :data="formData"
                       accept=".xls,.xlsx,.csv"
+                      :http-request="httpRequest"
                       :before-upload="beforeUpload"
                       :on-success="uploadSuccess"
                       :on-error="uploadFail"
@@ -157,6 +159,7 @@ import i18n from '@/lang'
 import { $alert } from '@/utils/message'
 import store from '@/store'
 import { readExcelToJson, saveJsonToExcel } from '@/utils/utils'
+import axios from 'axios'
 
 const token = getToken()
 
@@ -263,29 +266,42 @@ export default {
         that.height = currentHeight - 56 - 30 - 26 - 25 - 35 - 10 - 37 - 20 - 10
       }, 10)
     },
-    beforeUpload(file) {
-      return new Promise(async(resolve, reject) => {
-        this.uploading = true
+    beforeUpload() {
+      this.uploading = true
+    },
+    async httpRequest(e) {
+      const formData = new FormData()
+      for (const i in e.data) {
+        formData.append(i, e.data[i])
+      }
 
-        if (file.type === 'text/csv') {
-          const json = await readExcelToJson(file)
-          saveJsonToExcel(json, `${file.name.split('.')[0]}.xlsx`, (newFile) => {
-            newFile.uid = file.uid
-            file = newFile
+      if (e.file.type === 'text/csv') {
+        const json = await readExcelToJson(e.file)
+        console.log('json: ', json)
 
-            this.formData.file = file
+        saveJsonToExcel(json, `${e.file.name.split('.')[0]}.xlsx`, (newFile) => {
+          newFile.uid = e.file.uid
+          e.fieldNamefile = newFile
+        }, (message) => {
+          this.$message.error(message)
+          this.uploading = false
+        })
+      }
 
-            this.$nextTick(() => resolve())
-          }, (message) => {
-            this.$message.error(message)
-            this.uploading = false
-            this.$nextTick(() => reject())
-          })
-        } else {
-          this.formData.file = file
-          this.$nextTick(() => resolve())
+      formData.append('file', e.fieldNamefile || e.file)
+
+      console.log('e: ', e)
+
+      const { data } = await axios.post(e.action, formData, {
+        headers: {
+          ...e.headers,
+          'Content-Type': 'multipart/form-data'
         }
       })
+
+      console.log('上传成功：', data)
+
+      return data
     },
     uploadFail(response, file, fileList) {
       let myError = response.toString()
@@ -321,6 +337,7 @@ export default {
       })
     },
     uploadSuccess(response, file, fileList) {
+      console.log('response: ', response)
       this.uploading = false
       this.excelData.push(response.data)
       this.defaultExpandedKeys.push(response.data.id)
