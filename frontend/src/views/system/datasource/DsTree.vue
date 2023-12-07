@@ -57,7 +57,7 @@
                 </span>
                 <span
                   v-if=" data.status === 'Error'"
-                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                  style="margin-left: 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
                 >
                   <el-tooltip effect="dark" :content="$t('datasource.in_valid')" placement="right">
                     <span>
@@ -356,7 +356,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   font-size: 14px;
-  padding: 0 8px;
+  // padding: 0 8px;
 }
 
 .tree-list > > > .el-tree-node__expand-icon.is-leaf {

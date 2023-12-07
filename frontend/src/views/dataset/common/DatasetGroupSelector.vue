@@ -115,7 +115,7 @@
 
 <script>
 import { isKettleRunning, post } from '@/api/dataset/dataset'
-import {engineMode} from "@/api/system/engine";
+import { engineMode } from '@/api/system/engine'
 
 export default {
   name: 'DatasetGroupSelector',
@@ -275,7 +275,7 @@ export default {
             return !(ele.mode === 0 && ele.type === 'sql')
           })
           for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].mode === 1 && this.kettleRunning === false && this.engineMode !== 'simple' ) {
+            if (this.tables[i].mode === 1 && this.kettleRunning === false && this.engineMode !== 'simple') {
               this.$set(this.tables[i], 'disabled', true)
             }
           }
@@ -418,7 +418,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding:0 8px;
+    /* padding:0 8px; */
   }
 
   .custom-position {

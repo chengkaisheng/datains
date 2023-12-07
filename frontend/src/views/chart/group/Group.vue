@@ -53,7 +53,7 @@
                   <i class="el-icon-folder" />
                 </span>
                 <span
-                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                  style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
                   :title="data.name"
                 >{{ data.name }}</span>
               </span>
@@ -105,7 +105,7 @@
               <span style="display: flex;flex: 1;width: 0;">
                 <span><svg-icon :icon-class="data.modelInnerType" /></span>
                 <span
-                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                  style="margin-left: 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
                   :title="data.name"
                 >{{ data.name }}</span>
               </span>
@@ -1062,7 +1062,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding: 0 8px;
+    /* padding: 0 8px; */
   }
 
   .tree-list >>> .el-tree-node__expand-icon.is-leaf {

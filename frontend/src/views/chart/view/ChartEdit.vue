@@ -3092,7 +3092,7 @@ span {
 }
 
 .blackTheme .tab-header ::v-deep .el-tabs__item {
-  background-color: var(--MainBG);
+  background-color: var(--ContentBG) !important;
 }
 
 .tab-header ::v-deep .el-tabs__nav-scroll {
@@ -3264,8 +3264,9 @@ span {
 }
 
 .blackTheme .theme-item-class {
-  background-color: var(--MainBG) !important;
+  background-color: var(--ContentBG) !important;
   border-color: var(--TableBorderColor) !important;
+  color: var(--TextActive) !important;
 }
 
 .icon-class {

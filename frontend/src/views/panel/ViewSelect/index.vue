@@ -48,7 +48,7 @@
               <span v-else>
                 <svg-icon :icon-class="data.isPlugin && data.type && data.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + data.modelInnerType + '/svg') : data.modelInnerType" style="width: 14px;height: 14px" />
               </span>
-              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+              <span style="margin-left: 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
             </span>
             <span v-if="data.mode===1" class="child">
               <span @click.stop>
@@ -256,6 +256,6 @@ export default {
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding:0 8px;
+    // padding:0 8px;
   }
 </style>

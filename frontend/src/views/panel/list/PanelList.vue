@@ -42,7 +42,7 @@
                   <svg-icon v-if="!data.mobileLayout" icon-class="panel" class="ds-icon-scene" />
                   <svg-icon v-if="data.mobileLayout" icon-class="panel-mobile" class="ds-icon-scene" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+                <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span style="margin-left: 12px;" class="child" @click.stop>
                 <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">
@@ -97,7 +97,7 @@
                 <span v-if="data.nodeType === 'folder'">
                   <i class="el-icon-folder" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+                <span style="margin-left: 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)" class="child">
                 <span v-if="data.nodeType ==='folder'" @click.stop>
@@ -851,7 +851,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding:0 8px;
+    // padding:0 8px;
   }
 
   .dialog-css>>>.el-dialog__body {

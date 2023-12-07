@@ -417,7 +417,7 @@ div:focus {
 }
 
 .blackTheme .el-textarea__inner {
-  color: var(--TableColor) !important;
+  color: var(--InputColor) !important;
   background-color: var(--MainBG) !important;
 }
 
@@ -427,13 +427,13 @@ div:focus {
 }
 
 .blackTheme .el-input__inner {
-  background-color: var(--MainBG) !important;
-  color: var(--TableColor) !important;
+  background-color: var(--TextActive) !important;
+  color: var(--InputColor) !important;
 }
 
 .blackTheme .el-input__inner:not(:focus) {
-  color: var(--TableColor) !important;
-  border-color: var(--border-color-input) !important;
+  color: var(--InputColor) !important;
+  border-color: var(--border-color-not-input) !important;
 }
 
 .blackTheme .el-input-number__decrease {
@@ -456,7 +456,7 @@ div:focus {
 .el-pagination {
   button:disabled {
     color: var(--TableColor) !important;
-    background-color: var(--MainBG) !important;
+    background-color: var(--TextActive) !important;
   }
 }
 
@@ -475,7 +475,7 @@ div:focus {
 
 .blackTheme .fu-quick-search input {
   color: var(--TableColor) !important;
-  background-color: var(--MainBG) !important;
+  background-color: var(--TextActive) !important;
 }
 
 .blackTheme .vue-treeselect__single-value {
@@ -525,7 +525,7 @@ div:focus {
 
 .blackTheme .el-collapse-item__header {
   background-color: var(--ContentBG) !important;
-  color: var(--TextPrimary) !important;
+  color: var(--TextPrimaryWhite) !important;
   border: none !important;
 }
 
@@ -535,22 +535,64 @@ div:focus {
 }
 
 .blackTheme .content-container__header {
-  color: var(--TextPrimary);
+  color: var(--TextPrimaryWhite) !important;
 }
 
 .blackTheme .el-button--default {
+  border-color: var(--MainBG) !important;
   background-color: var(--MainBG) !important;
-  color: var(--Main) !important;
+  color: var(--TextActive) !important;
+} 
+
+.blackTheme .custom-position {
+  color: var(--TextActive) !important;
 }
 
+.blackTheme {
+  .portal-drawer-container .portal-drawer-container-container .header,
+  .portal-config-drawer-container .portal-config-drawer-container-container .header,
+  .portal-config-drawer-container .portal-config-drawer-container-container .portal-config-drawer-container-container-content .right-config-container .right-config-container-left .title,
+  .portal-drawer-container .portal-drawer-container-container .content .config-container .config-main,
+  .portal-drawer-container .portal-drawer-container-container .content .right-config-container {
+    color: var(--TextActive) !important;
+  }
+  
+  .portal-drawer-container .portal-drawer-container-container .content .right-config-container .title {
+    border-bottom-color: transparent !important;
+    border-left-color: transparent !important;
+  }
 
+  .portal-drawer-container .portal-drawer-container-container .content .right-config-container .config-wrapper .wrapper .layout .item .icon-layout {
+    color: var(--TextPrimary) !important;
+    &.active {
+      color: #409eff !important;
+    }
+  }
+}
+
+.blackTheme .el-tree__empty-text {
+  color: var(--TextActive) !important;
+}
+
+.blackTheme .el-radio {
+  color: var(--TextActive) !important;
+}
+
+.blackTheme .el-dialog__body {
+  .el-form-item__label {
+    color: #606266 !important;
+  }
+  .el-radio {
+    color: #606266 !important;
+  }
+}
 
 .blackTheme .title-text {
-  color: var(--TextPrimary) !important;
+  color: var(--TextActive) !important;
 }
 
 .blackTheme .el-tabs__item:not(.is-active) {
-  color: var(--TextPrimary);
+  color: var(--TextActive);
 }
 
 .blackTheme .el-tabs__item:hover {
@@ -565,7 +607,35 @@ div:focus {
 }
 
 .blackTheme:not(.in-panel) .elx-table {
-  color: var(--TableColor) !important;
+  color: var(--TextActive) !important;
+}
+
+.blackTheme .el-popover {
+  .el-tree {
+    color: #606266 !important;
+  }
+}
+
+.blackTheme {
+  .item-quota,
+  .item-dimension,
+  .function-style {
+    border-color: transparent !important;
+    color: #F2F6FC !important;
+    background-color: #0a7be0 !important;
+  }
+}
+
+.blackTheme {
+  .table-count {
+    color: var(--TextActive) !important;
+  }
+}
+
+.blackTheme {
+  .filter-header-text {
+    color: var(--TextActive) !important;
+  }
 }
 
 .blackTheme:not(.in-panel) .elx-body--column {
@@ -614,6 +684,11 @@ div:focus {
 
 .blackTheme .el-select-dropdown__item:hover {
   background-color: #171B22 !important;
+  color: #fff !important;
+}
+
+.blackTheme .el-table__empty-text {
+  color: var(--TextActive) !important;
 }
 
 .blackTheme .el-dropdown-menu__item:not(.is-disabled):hover {
@@ -665,18 +740,50 @@ div:focus {
   background: #38393a !important;
 }
 
+.blackTheme {
+  .el-button--text {
+    color: var(--TextPrimaryWhite) !important;
+  }
+}
+
+.blackTheme .el-tree {
+  color: var(--TextPrimaryWhite) !important;
+}
+
+.blackTheme .header-title {
+  color: #fff !important;
+}
 
 
 .blackTheme .el-message-box__btns {
   .el-button--default:not(.el-button--primary) {
-    background-color: #171b22;
-    color: #2681ff;
+    background-color: #fff !important;
+    color: #606266 !important;
+    border-color: #dcdfe6 !important;
   }
 
   .el-button--primary {
-    color: #21333b;
-    background-color: #2681ff;
-    border-color: #2681ff;
+    color: #fff !important;
+    background-color: #2681ff !important;
+    border-color: #2681ff !important;
+  }
+}
+
+.blackTheme {
+  .el-pagination__total, .el-pagination__jump {
+    color: var(--TextActive) !important;
+  }
+}
+
+.blackTheme {
+  .demonstration {
+    color: var(--TextActive) !important;
+  }
+}
+
+.blackTheme {
+  .tree-head {
+    color: var(--TextActive) !important;
   }
 }
 
@@ -696,6 +803,36 @@ div:focus {
 
 .blackTheme .el-table__body tr.current-row>td {
   background-color: #324f62;
+}
+
+.blackTheme .drag-bar {
+  height: 100%;
+  width: 1px;
+  position: absolute;
+  right: 0px;
+  top: 0;
+  cursor: col-resize;
+  background-color: var(--TextPrimary) !important;
+  border: 0px;
+}
+
+.blackTheme .svg-icon {
+  color: var(--TextActive) !important;
+}
+
+.blackTheme .el-table {
+  color: var(--TextActive) !important;
+  thead {
+    color: var(--TextActive) !important;
+  }
+}
+
+.blackTheme .el-form-item__label {
+  color: var(--TextPrimaryWhite) !important;
+}
+/* 用来设置当前页面element全局table 鼠标移入某行时的背景色*/
+.el-table--enable-row-hover .el-table__body tr:hover>td {
+  background-color: #1d1d1d !important;
 }
 
 .blue-color {

@@ -304,14 +304,14 @@ export default {
           })
         }
 
-        /* if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
-            if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
-              document.body.className = 'blackTheme'
-            } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
-              document.body.className = ''
-            }
-          } */
-        // document.body.className = 'blackTheme'
+        if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
+          if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
+            document.body.className = 'blackTheme'
+          } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
+            document.body.className = ''
+          }
+        }
+        document.body.className = 'blackTheme'
         this.axiosFinished = true
       })
     },

@@ -54,7 +54,7 @@
                 <span>
                   <i class="el-icon-folder" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+                <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)" class="child">
                 <span v-if="data.modelInnerType ==='group'" @click.stop>
@@ -147,7 +147,7 @@
                   <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
                   <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+                <span style="margin-left: 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span v-if="hasDataPermission('manage',data.privileges)" class="child">
                 <span style="margin-left: 12px;" @click.stop>
@@ -232,7 +232,7 @@ import { loadTable, getScene, addGroup, delGroup, delTable, post, isKettleRunnin
 import GroupMoveSelector from './GroupMoveSelector'
 import DsMoveSelector from './DsMoveSelector'
 import { queryAuthModel } from '@/api/authModel/authModel'
-import {engineMode} from "@/api/system/engine";
+import { engineMode } from '@/api/system/engine'
 
 export default {
   name: 'Group',
@@ -763,7 +763,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     font-size: 14px;
-    padding:0 8px;
+    /* padding:0 8px; */
   }
 
   .custom-position {

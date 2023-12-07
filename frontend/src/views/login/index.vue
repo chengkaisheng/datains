@@ -1,64 +1,71 @@
 <template>
-  <div v-show="contentShow" v-loading="loading" class="login-background">
-    <div class="login-container">
-      <el-row type="flex">
-        <el-col :span="8" :offset="8">
-          <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
-            <div class="login-logo">
-              <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="datains" custom-class="login-logo-icon" />
-              <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="">
+  <div v-show="contentShow" v-loading="loading" class="login-container">
+    <el-row
+      type="flex"
+      justify="space-between"
+    >
+      <el-col :span="10">
+        <div class="bg" />
+      </el-col>
+      <el-col :span="14">
+        <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
+          <!-- <div class="login-logo">
+            <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="datains" custom-class="login-logo-icon" />
+            <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="">
+          </div> -->
+          <div v-if="uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue" class="login-welcome">
+            {{ uiInfo['ui.loginTitle'].paramValue }}
+          </div>
+          <div v-else class="login-welcome">
+            {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || '可视化配置平台') }}
+          </div>
+          <div class="sub_title">
+            一站式大数据管理能力平台，集数据集成、数据开发、数据管理、数据治理于一体，助力企业专注数据价值的挖掘和探索
+          </div>
+          <div class="login-form">
+            <el-form-item v-if="loginTypes.length > 1">
+              <el-radio-group v-if="loginTypes.length > 1" v-model="loginForm.loginType" @change="changeLoginType">
+                <el-radio :label="0" size="mini">{{ $t('login.default_login') }}</el-radio>
+                <el-radio v-if="loginTypes.includes(1)" :label="1" size="mini">LDAP</el-radio>
+                <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item prop="username">
+              <el-input v-model="loginForm.username" placeholder="ID" autofocus :disabled="loginTypes.includes(2) && loginForm.loginType === 2" />
+            </el-form-item>
+            <el-form-item prop="password">
+              <el-input
+                v-model="loginForm.password"
+                :placeholder="$t('login.password')"
+                show-password
+                maxlength="30"
+                show-word-limit
+                autocomplete="new-password"
+                :disabled="loginTypes.includes(2) && loginForm.loginType === 2"
+                @keypress.enter.native="handleLogin"
+              />
+            </el-form-item>
+          </div>
+          <div class="login-btn">
+            <el-button type="primary" class="submit" size="default" :disabled="loginTypes.includes(2) && loginForm.loginType === 2" @click.native.prevent="handleLogin">
+              {{ $t('commons.login') }}
+            </el-button>
+            <div v-if="uiInfo && uiInfo['ui.demo.tips'] && uiInfo['ui.demo.tips'].paramValue" class="demo-tips">
+              {{ uiInfo['ui.demo.tips'].paramValue }}
             </div>
-            <div v-if="uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue" class="login-welcome">
-              {{ uiInfo['ui.loginTitle'].paramValue }}
-            </div>
-            <div v-else class="login-welcome">
-              {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || '可视化配置平台') }}
-            </div>
-            <div class="login-form">
-              <el-form-item v-if="loginTypes.length > 1">
-                <el-radio-group v-if="loginTypes.length > 1" v-model="loginForm.loginType" @change="changeLoginType">
-                  <el-radio :label="0" size="mini">{{ $t('login.default_login') }}</el-radio>
-                  <el-radio v-if="loginTypes.includes(1)" :label="1" size="mini">LDAP</el-radio>
-                  <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item prop="username">
-                <el-input v-model="loginForm.username" placeholder="ID" autofocus :disabled="loginTypes.includes(2) && loginForm.loginType === 2" />
-              </el-form-item>
-              <el-form-item prop="password">
-                <el-input
-                  v-model="loginForm.password"
-                  :placeholder="$t('login.password')"
-                  show-password
-                  maxlength="30"
-                  show-word-limit
-                  autocomplete="new-password"
-                  :disabled="loginTypes.includes(2) && loginForm.loginType === 2"
-                  @keypress.enter.native="handleLogin"
-                />
-              </el-form-item>
-            </div>
-            <div class="login-btn">
-              <el-button type="primary" class="submit" size="default" :disabled="loginTypes.includes(2) && loginForm.loginType === 2" @click.native.prevent="handleLogin">
-                {{ $t('commons.login') }}
-              </el-button>
-              <div v-if="uiInfo && uiInfo['ui.demo.tips'] && uiInfo['ui.demo.tips'].paramValue" class="demo-tips">
-                {{ uiInfo['ui.demo.tips'].paramValue }}
-              </div>
-            </div>
-            <div class="login-msg">
-              {{ msg }}
-            </div>
-          </el-form>
-        </el-col>
-        <!-- <el-col v-loading="!axiosFinished" :span="12">
+          </div>
+          <div class="login-msg">
+            {{ msg }}
+          </div>
+        </el-form>
+      </el-col>
+      <!-- <el-col v-loading="!axiosFinished" :span="12">
           <div v-if="!loginImageUrl && axiosFinished" class="login-image" />
           <div v-if="loginImageUrl && axiosFinished" class="login-image-de" :style="{background:'url(' + loginImageUrl + ') no-repeat', 'backgroundSize':'contain'}" />
         </el-col> -->
-      </el-row>
-    </div>
-    <plugin-com v-if="loginTypes.includes(2) && loginForm.loginType === 2" ref="SSOComponent" component-name="SSOComponent" />
+    </el-row>
 
+    <plugin-com v-if="loginTypes.includes(2) && loginForm.loginType === 2" ref="SSOComponent" component-name="SSOComponent" />
   </div>
 </template>
 
@@ -239,21 +246,33 @@ export default {
   // background-color: var(--MainBG, $--background-color-base);
   height: 100vh;
   // @include login-center;
-  background: url(../../assets/login-background.png) no-repeat;
-  background-size:100% 100%;
+  // background: url(../../assets/login-background.png) no-repeat;
+  // background-size:100% 100%;
   display:flex;
-  justify-content: center;
-  padding-top:20px;
+  // justify-content: center;
+  // padding-top:20px;
 }
 
 .login-container {
-  min-width: 900px;
-  width: 1280px;
-  height: 520px;
+  width: 100%;
+  height: 100vh;
+  .el-row {
+    height: 100%;
+  }
+  // min-width: 900px;
+  // width: 1280px;
+  // height: 520px;
   // background-color: var(--ContentBG, #FFFFFF);
   @media only screen and (max-width: 1280px) {
     width: 900px;
     height: 380px;
+  }
+
+  .bg {
+    width: 100%;
+    height: 100%;
+    background: url(../../assets/login-bg.png) no-repeat;
+    background-size:100% 100%;
   }
 
   .login-logo {
@@ -298,16 +317,19 @@ export default {
   }
 
   .login-welcome {
-    margin-top: 20px;
-    font-size: 25px;
-    // color: $--color-primary;
-    color: white;
-    letter-spacing: 0;
-    line-height: 18px;
-    text-align: center;
+    color: $--text-black-color;
+    font-size: 32px;
+    margin-bottom: 30px;
     @media only screen and (max-width: 1280px) {
       margin-top: 20px;
     }
+  }
+
+  .sub_title {
+    margin-bottom: 30px;
+    color: #555;
+    font-size: 14px;
+    line-height: 22px;
   }
 
   .demo-tips {
@@ -322,19 +344,20 @@ export default {
     }
   }
 
-  .login-form {
-    margin-top: 80px;
-    padding: 0 40px;
+  .el-form {
+    padding: 24vh 17vw;
+  }
 
+  .login-form {
     @media only screen and (max-width: 1280px) {
       margin-top: 40px;
     }
 
     & ::v-deep .el-input__inner {
       border-radius: 8px;
-      border: 1px solid transparent;
-      background: $colorBg;
-      color: white;
+      border: 1px solid $--border-color-gray;
+      background: $whiteBg;
+      color: $--text-black-color;
     }
     & :focus {
       border: 1px solid $--color-primary;
@@ -343,7 +366,6 @@ export default {
 
   .login-btn {
     margin-top: 22px;
-    padding: 0 40px;
     @media only screen and (max-width: 1280px) {
       margin-top: 20px;
     }
@@ -351,7 +373,7 @@ export default {
     .submit {
       width: 100%;
       border-radius: 8px;
-      background-color: rgba(10, 123, 224, 0.3);
+      background-color: #1167d7;
       border: 1px solid transparent;
     }
   }
