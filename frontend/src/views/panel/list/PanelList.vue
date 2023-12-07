@@ -42,7 +42,7 @@
                   <svg-icon v-if="!data.mobileLayout" icon-class="panel" class="ds-icon-scene" />
                   <svg-icon v-if="data.mobileLayout" icon-class="panel-mobile" class="ds-icon-scene" />
                 </span>
-                <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+                <span style="margin-left:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
               <span style="margin-left: 12px;" class="child" @click.stop>
                 <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">

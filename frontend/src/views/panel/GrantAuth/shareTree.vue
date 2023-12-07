@@ -9,7 +9,7 @@
               <span v-if="!!data.id">
                 <svg-icon icon-class="panel" class="ds-icon-scene" />
               </span>
-              <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+              <span style="margin-left:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
             </span>
 
           </span>
@@ -26,7 +26,7 @@
               <span v-if="!!data.id">
                 <svg-icon icon-class="panel" class="ds-icon-scene" />
               </span>
-              <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
+              <span style="margin-left:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ data.name }}</span>
             </span>
 
             <span class="child">

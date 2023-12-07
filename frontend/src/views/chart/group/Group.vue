@@ -53,7 +53,7 @@
                   <i class="el-icon-folder" />
                 </span>
                 <span
-                  style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                  style="margin-left:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
                   :title="data.name"
                 >{{ data.name }}</span>
               </span>
