@@ -1815,11 +1815,11 @@ export default {
   }
 
   .button-show {
-    background-color: var(--ContentBG, #ebf2fe) !important;
+    background-color: var(--ContentBG, #ebf2fe);
   }
 
   .button-closed {
-    background-color: var(--SiderBG, #ffffff) !important;
+    background-color: var(--SiderBG, #ffffff);
   }
 
   .style-aside {

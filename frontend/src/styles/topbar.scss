@@ -45,7 +45,7 @@
 
       }
       .el-menu-item.is-active {
-        background-color: var(--MenuActiveBG, $--color-primary) ;
+        background-color: var(--MenuActiveBG, $--color-primary);
         color: var(--TextActive, #f4f4f5) !important;
         opacity: 1;
       }

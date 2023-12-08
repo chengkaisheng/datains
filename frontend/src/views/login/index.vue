@@ -5,14 +5,19 @@
       justify="space-between"
     >
       <el-col :span="10">
-        <div class="bg" />
+        <div class="bg">
+          <div class="instro">
+            <h1>可视化大屏搭建</h1>
+            <h2>内置echarts/highcarts/antv三大类图表, 多数据源全量增量同步，零代码大屏搭建</h2>
+          </div>
+        </div>
       </el-col>
       <el-col :span="14">
         <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
-          <!-- <div class="login-logo">
-            <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="datains" custom-class="login-logo-icon" />
+          <div class="login-logo">
+            <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="datains" class="login-logo-icon" />
             <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="">
-          </div> -->
+          </div>
           <div v-if="uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue" class="login-welcome">
             {{ uiInfo['ui.loginTitle'].paramValue }}
           </div>
@@ -88,8 +93,8 @@ export default {
         password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', message: this.$t('commons.input_id') }],
-        password: [{ required: true, trigger: 'blur', message: this.$t('commons.input_pwd') }]
+        username: [{ required: true, trigger: 'change', message: this.$t('commons.input_id') }],
+        password: [{ required: true, trigger: 'change', message: this.$t('commons.input_pwd') }]
       },
       loading: false,
       passwordType: 'password',
@@ -242,27 +247,12 @@ export default {
   align-items: center;
 }
 
-.login-background {
-  // background-color: var(--MainBG, $--background-color-base);
-  height: 100vh;
-  // @include login-center;
-  // background: url(../../assets/login-background.png) no-repeat;
-  // background-size:100% 100%;
-  display:flex;
-  // justify-content: center;
-  // padding-top:20px;
-}
-
 .login-container {
   width: 100%;
   height: 100vh;
   .el-row {
     height: 100%;
   }
-  // min-width: 900px;
-  // width: 1280px;
-  // height: 520px;
-  // background-color: var(--ContentBG, #FFFFFF);
   @media only screen and (max-width: 1280px) {
     width: 900px;
     height: 380px;
@@ -271,13 +261,41 @@ export default {
   .bg {
     width: 100%;
     height: 100%;
-    background: url(../../assets/login-bg.png) no-repeat;
+    background: url(../../assets/login-background.png) no-repeat;
     background-size:100% 100%;
+    position: relative;
+    .instro {
+      width: 80%;
+      position: absolute;
+      top: 20%;
+      left: 50px;
+      transition: all .3s;
+      h1, h2 {
+        color: #fff;
+      }
+      h1 {
+        font-size: 32px;
+        line-height: 42px;
+        letter-spacing: 4px;
+        user-select: none;
+      }
+
+      h2 {
+        font-size: 18px;
+        line-height: 28px;
+        letter-spacing: 2px;
+        font-weight: 400;
+      }
+    }
   }
 
   .login-logo {
-    margin-top: 50px;
     text-align: center;
+    .login-logo-icon {
+      width: 60px;
+      height: 60px;
+      color: #121212;
+    }
     @media only screen and (max-width: 1280px) {
       margin-top: 20px;
     }
@@ -346,6 +364,10 @@ export default {
 
   .el-form {
     padding: 24vh 17vw;
+
+    .el-form-item {
+      margin-bottom: 30px;
+    }
   }
 
   .login-form {
