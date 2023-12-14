@@ -1,8 +1,8 @@
 const defaultLayout = {
-  panel: '260px',
-  dataset: '260px',
-  datasource: '260px',
-  system: '260px'
+  panel: '270px',
+  dataset: '270px',
+  datasource: '270px',
+  system: '270px'
 }
 const STORAGE_KEY = 'global_layout'
 

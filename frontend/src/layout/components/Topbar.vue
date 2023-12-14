@@ -24,6 +24,8 @@
       <template>
 
         <notification class="right-menu-item hover-effect" />
+
+        <svg-icon icon-class="setting" @click.stop="settingVisible = true" />
         <!-- <lang-select class="right-menu-item hover-effect" /> -->
 
       </template>
@@ -55,13 +57,24 @@
           <!-- <router-link to="/about/index">
             <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
           </router-link> -->
-          <el-dropdown-item divided @click.native="logout">
+          <el-dropdown-item @click.native="logout">
             <span style="display:block;">{{ $t('commons.exit_system') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
 
+    <el-dialog
+      title="主题设置"
+      :visible.sync="settingVisible"
+      :modal-append-to-body="false"
+    >
+      <RadioGroup :default-value="theme" :options="themeOptions" @change="selectTheme">
+        <template slot-scope="{ option }">
+          <svg-icon :class="['theme-icon', option.checked ? 'selected' : '']" :icon-class="option.icon" />
+        </template>
+      </RadioGroup>
+    </el-dialog>
   </div>
 
 </template>
@@ -87,12 +100,15 @@ import {
 import {
   initTheme
 } from '@/utils/ThemeUtil'
+import RadioGroup from '@/components/RadioGroup'
+
 export default {
   name: 'Topbar',
   components: {
     AppLink,
     Notification,
-    LangSelect
+    LangSelect,
+    RadioGroup
   },
   props: {
     showTips: {
@@ -105,13 +121,30 @@ export default {
       uiInfo: null,
       logoUrl: null,
       axiosFinished: false,
-      isPluginLoaded: false
+      isPluginLoaded: false,
+      settingVisible: false,
+      themeOptions: [{
+        label: '黑色',
+        value: 'blackTheme',
+        icon: 'dark'
+      }, {
+        label: '浅色',
+        value: '',
+        icon: 'light'
+      }, {
+        label: '护眼',
+        value: 'eyeProtected',
+        icon: 'eye-protected'
+      }, {
+        label: '蓝色',
+        value: 'blueTheme',
+        icon: 'blue'
+      }]
     }
   },
-
   computed: {
     theme() {
-      return this.$store.state.settings.theme
+      return localStorage.getItem('theme') || 'blueTheme'
     },
 
     topMenuColor() {
@@ -290,32 +323,39 @@ export default {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
+    selectTheme({ value }) {
+      this.setTheme(value)
+      localStorage.setItem('theme', value)
+    },
     loadUiInfo() {
       this.$store.dispatch('user/getUI').then(() => {
         this.uiInfo = getSysUI()
         if (this.uiInfo['ui.logo'] && this.uiInfo['ui.logo'].paramValue) {
           this.logoUrl = '/system/ui/image/' + this.uiInfo['ui.logo'].paramValue
         }
-        if (this.uiInfo['ui.theme'] && this.uiInfo['ui.theme'].paramValue) {
-          const val = this.uiInfo['ui.theme'].paramValue
-          this.$store.dispatch('settings/changeSetting', {
-            key: 'theme',
-            value: val
-          })
-        }
+        // if (this.uiInfo['ui.theme'] && this.uiInfo['ui.theme'].paramValue) {
+        //   const val = this.uiInfo['ui.theme'].paramValue
+        //   this.$store.dispatch('settings/changeSetting', {
+        //     key: 'theme',
+        //     value: val
+        //   })
+        // }
 
-        if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
-          if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
-            document.body.className = 'blackTheme'
-          } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
-            document.body.className = ''
-          }
-        }
-        document.body.className = 'blackTheme'
+        // if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
+        //   if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
+        //     document.body.className = 'blackTheme'
+        //   } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
+        //     document.body.className = ''
+        //   }
+        // }
+        // document.body.className = 'blackTheme'// 'eyeProtected'
         this.axiosFinished = true
+        this.setTheme(this.theme)
       })
     },
-
+    setTheme(themeClass) {
+      document.body.className = themeClass
+    },
     setTopMenuInfo(val) {
       this.loadUiInfo()
     },
@@ -337,6 +377,22 @@ export default {
   .el-dropdown-link {
     cursor: pointer;
     color: #1e212a;
+  }
+
+  .svg-icon {
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .theme-icon {
+    width: 64px !important;
+    height: 48px !important;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    &.selected,
+    &:hover {
+      border-color: #2681ff;
+    }
   }
 
   .el-icon-arrow-down {

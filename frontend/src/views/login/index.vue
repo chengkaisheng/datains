@@ -3,8 +3,9 @@
     <el-row
       type="flex"
       justify="space-between"
+      style="flex-wrap: nowrap;"
     >
-      <el-col :span="10">
+      <el-col :span="12">
         <div class="bg">
           <div class="instro">
             <h1>可视化大屏搭建</h1>
@@ -12,7 +13,7 @@
           </div>
         </div>
       </el-col>
-      <el-col :span="14">
+      <el-col :span="12">
         <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
           <div class="login-logo">
             <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="datains" class="login-logo-icon" />
@@ -261,8 +262,11 @@ export default {
   .bg {
     width: 100%;
     height: 100%;
-    background: url(../../assets/login-background.png) no-repeat;
-    background-size:100% 100%;
+    background-color: rgb(19, 57, 173);
+    background-image: url(../../assets/login-background.png);
+    background-repeat: no-repeat;
+    background-size: 680px 680px;
+    background-position: center 100%;
     position: relative;
     .instro {
       width: 80%;
@@ -363,7 +367,7 @@ export default {
   }
 
   .el-form {
-    padding: 24vh 17vw;
+    padding: 24vh 12vw;
 
     .el-form-item {
       margin-bottom: 30px;

@@ -1,38 +1,14 @@
 
-@import 'dark';
+@import 'blue';
 
-.blackTheme {
+.blueTheme {
   .top-nav {
     background-color: $--main-background;
     color: $--base-text-color;
-    border-bottom-color: $--main-background;
+    border-bottom-color: $--top-divider-background;
     .top-nav-logo-icon {
       margin-left: -156px;
-      filter: drop-shadow(156px 0 0 $--logo-color);
-    }
-
-    .el-menu {
-      background-color: $--main-background !important;
-      .el-menu-item {
-        background-color: $--main-background !important;
-        &:not(.is-active) {
-          color: $--base-text-color !important;
-
-          &:hover {
-            background-color: $--menu-hover-background !important;
-          }
-
-          &:focus {
-            background-color: $--menu-active-background !important;
-            opacity: 1;
-            color: $--base-text-color !important;
-          }
-        }
-        &.is-active {
-          background-color: $--menu-active-background !important;
-          color: $--tabs-highlight-color !important;
-        }
-      }
+      filter: drop-shadow(156px 0 0 $--color-text-medium);
     }
 
     .right-menu {
@@ -48,21 +24,30 @@
     color: $--base-text-color;
   }
 
+  .ms-aside-container {
+    background-color: $--main-background !important;
+  }
+
   .ms-main-container {
     background-color: $--main-content-background;
     color: $--base-text-color;
     border-color: $--main-content-background !important;
+    padding: 0 !important;
   }
 
-  .el-aside {
-    background-color: $--main-background !important;
+  .el-divider {
+    background-color: $--divider-background !important;
+    .el-divider__text {
+      background-color: $--main-content-background !important;
+      color: $--base-text-color !important;
+    }
   }
 
   #app {
     .el-menu {
-      background-color: $--main-background !important;
+      background-color: transparent !important;
       .el-menu-item, .el-submenu__title {
-        background-color: $--main-background !important;
+        background-color: transparent !important;
         &:not(.is-active) {
           color: $--base-text-color !important;
 
@@ -86,13 +71,49 @@
         }
       }
     }
+
+    .main_container {
+      // background-image: url('~@/assets/newBg.jpg'), linear-gradient($--main-background, $--main-background);
+      background-image: linear-gradient($--main-background, $--main-background);
+      background-blend-mode: lighten;
+      .hint_head,
+      .hint_content,
+      .inner_circle {
+        color: $--base-text-color !important;
+      }
+    }
   }
 
-  .bar-main {
-    background-color: $--main-background !important;
-    .svg-icon,
-    i {
+  .config-aside {
+    background-color: $--base-main-color !important;
+  }
+
+  .el-collapse,
+  .theme-border-class,
+  .field-height,
+  .de-header,
+  .el-tabs__header,
+  .panel-design-head div,
+  .preview,
+  .preview-show {
+    border-color: $--divider-background !important;
+  }
+  
+  .de-header {
+    div {
       color: $--base-text-color !important;
+    }
+  }
+
+  .button-text-divider {
+    background-color: $--divider-background !important;
+  }
+
+  .el-step {
+    .el-step__head.is-finish,
+    .el-step__title.is-finish {
+      color: $--base-primary-color !important;
+      border-color: $--base-primary-color !important;
     }
   }
 
@@ -105,21 +126,32 @@
     color: $--color-info !important;
     border-color: $--color-default !important;
   }
-
+  
   .el-popper,
   .pwd-tips,
   .two_nav {
     background-color: $--dropdown-background !important;
     color: $--base-text-color !important;
     border-color: $--base-border-color !important;
-    box-shadow: $--base-box-shadow;
+    box-shadow: $--base-box-shadow !important;
     .el-dropdown-menu__item,
     .el-select-dropdown__item {
       color: $--base-text-color !important;
     }
     .el-select-dropdown__item {
-      &.selected {
+      &.selected:not(.hover) {
         color: $--tabs-highlight-color !important;
+        span {
+          color: $--tabs-highlight-color !important;
+        }
+        &:hover {
+          color: $--base-text-color !important;
+        }
+      }
+      &.hover {
+        span {
+          color: $--base-text-color !important;
+        }
       }
     }
     .popper__arrow {
@@ -159,7 +191,10 @@
       }
     }
 
-    &.el-button--primary {
+    &.el-button--primary,
+    &.el-button--danger,
+    &.el-button--success,
+    &.el-button--warning {
       color: $--color-white !important;
       background-color: $--btn-primary-background !important;
       border-color: $--btn-primary-border-color !important;
@@ -182,9 +217,8 @@
 
   .el-dialog,
   .el-drawer__body,
-  .el-message-box,
-  .el-color-dropdown {
-    background: $--main-background !important;
+  .el-message-box {
+    background: $--main-content-background !important;
     color: $--base-text-color !important;
     border: 1px solid $--base-border-color !important;
     .el-dialog__title {
@@ -197,6 +231,10 @@
 
     .el-message-box__content {
       color: $--base-text-color !important;
+    }
+
+    .ms-aside-container {
+      background-color: transparent !important;
     }
   }
 
@@ -244,7 +282,7 @@
 
   .el-tag {
     .svg-icon {
-      color: $--color-primary !important;
+      color: $--base-primary-color !important;
     }
 
     .el-tag--info {
@@ -254,13 +292,10 @@
     }
   }
 
-  .view-panel {
-    background-color: $--main-background !important;
-  }
-
-  .el-tabs__content {
-    // background-color: $--main-background !important;
-    height: 100%;
+  .view-panel,
+  .el-collapse-item__content,
+  .attr-selector {
+    background-color: $--main-content-background !important;
   }
 
   .drag-block-style,
@@ -286,34 +321,52 @@
     }
   }
 
+  .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+    background-color: transparent !important;
+  }
+
   .el-tree {
     background-color: transparent !important;
 
     .el-tree-node {
-      &.is-focusable {
+      &.is-expanded.is-current {
         background-color: transparent !important;
       }
 
-      &.is-current>.el-tree-node__content {
+      &.is-current {
         background-color: $--menu-active-background !important;
-        &:hover {
-          background-color: $--menu-hover-background !important;
+        .el-tree-node__children {
+          .el-tree-node__content {
+            &.is-current {
+              background-color: $--menu-active-background !important;
+              color: $--color-text-medium !important;
+              &:hover {
+                background-color: $--menu-hover-background !important;
+                color: $--color-text-medium !important;
+              }
+            }
+          }
         }
       }
 
       .el-tree-node__content {
         &:hover {
           background-color: $--menu-hover-background !important;
+          color: $--color-text-medium !important;
         }
 
         &:focus-visible {
           background-color: $--menu-hover-background !important;
           outline: none;
+          color: $--color-text-medium !important;
         }
       }
 
-      &:focus>.el-tree-node__content{
-        background-color: transparent !important;
+      &:focus {
+        .el-tree-node__content{
+          background-color: transparent !important;
+          color: $--color-text-medium !important;
+        }
       }
     }
 
@@ -337,8 +390,6 @@
     color: $--base-text-color !important;
   }
 
-
-
   .custom-position {
     color: $--base-text-color !important;
     background-color: $--main-content-background !important;
@@ -350,6 +401,7 @@
   .portal-drawer-container .portal-drawer-container-container .content .config-container .config-main,
   .portal-drawer-container .portal-drawer-container-container .content .right-config-container,
   .portal-drawer-container .portal-drawer-container-container .content .config-container .config-header,
+  .portal-config-drawer-container-container #imageWrapper div,
   .portal-config-drawer-container .portal-config-drawer-container-container .portal-config-drawer-container-container-content .config-container .config-header,
   .portal-config-drawer-container .portal-config-drawer-container-container .portal-config-drawer-container-container-content .right-config-container .right-config-container-left,
   .portal-config-drawer-container .portal-config-drawer-container-container .portal-config-drawer-container-container-content .right-config-container .right-config-container-right {
@@ -387,7 +439,7 @@
     }
 
     .el-tabs__nav-wrap::after {
-      background-color: $--main-content-background !important;
+      background-color: $--divider-background !important;
     }
 
     .el-tabs__active-bar {
@@ -434,14 +486,22 @@
     }
   }
 
+  .el-header {
+    background-color: $--main-background !important;
+    color: $--base-text-color !important;
+    .limit-length-data {
+      color: $--base-text-color !important;
+    }
+  }
+
   .item-quota,
   .item-dimension,
   .function-style {
-    border-color: $--btn-primary-background !important;
-    color: $--base-text-color !important;
+    border-color: transparent !important;
+    color: $--color-white !important;
     background-color: $--btn-primary-background !important;
     .svg-icon {
-      color: $--base-text-color !important;
+      color: $--color-white !important;
     }
   }
 
@@ -480,10 +540,12 @@
 
   .el-dropdown-menu__item:not(.is-disabled):hover {
     background-color: $--dropdown-hover-background !important;
+    color: $--color-text-medium;
   }
 
   .el-dropdown-menu__item:focus {
     background-color: $--dropdown-hover-background !important;
+    color: $--color-text-medium;
   }
 
   .el-dropdown-menu__item--divided:before {
@@ -495,6 +557,7 @@
   .el-card__body {
     border-color: $--table-border-color !important;
     background-color: $--main-content-background !important;
+    color: $--base-text-color !important;
   }
 
   .CodeMirror {
@@ -539,19 +602,19 @@
 
   .el-radio-button {
     .el-radio-button__orig-radio:checked + .el-radio-button__inner {
-      background-color: $--tabs-highlight-color !important;
-      border-color: $--tabs-highlight-color !important;
-      box-shadow: -1px 0 0 0 $--tabs-highlight-color;
+      background-color: $--btn-primary-background !important;
+      border-color: $--btn-primary-border-color !important;
+      box-shadow: $--base-box-shadow;
     }
 
     &:first-child .el-radio-button__inner {
-      border-left-color: $--table-border-color;
+      border-left-color: $--btn-default-border-color;
     }
 
     .el-radio-button__inner {
-      background-color: $--table-background;
+      background-color: $--btn-default-background;
       color: $--base-text-color;
-      border: 1px solid $--table-border-color;
+      border: 1px solid $--btn-default-border-color;
     }
   }
 
@@ -595,6 +658,8 @@
   }
 
   .tree-head {
+    border-color: $--divider-background !important;
+    background-color: $--main-content-background !important;
     color: $--base-text-color !important;
   }
 
@@ -612,12 +677,45 @@
     background-color: $--color-default;
   }
 
-  .el-table__body tr.current-row>td {
-    background-color: $--table-highlight-background;
+  .fu-search-bar:after {
+    background-color: $--divider-background !important;
   }
 
-  .el-table--enable-row-hover .el-table__body tr:hover > td {
-    background-color: $--table-highlight-background !important;
+  .el-table {
+    color: $--base-text-color !important;
+    thead {
+      color: $--base-text-color !important;
+    }
+
+    th.el-table__cell.is-leaf, 
+    td.el-table__cell {
+      border-color: $--divider-background !important;
+    }
+
+    
+    &.el-table--group, 
+    &.el-table--border {
+      border-color: $--divider-background !important;
+      &::after {
+        background-color: $--divider-background !important;
+      }
+    }
+
+    &::before {
+      background-color: $--divider-background !important;
+    }
+
+    .el-table__body tr.current-row>td {
+      background-color: $--table-highlight-background;
+    }
+  
+    .el-table--enable-row-hover .el-table__body tr:hover > td {
+      background-color: $--table-highlight-background !important;
+    }
+  }
+
+  .elx-table .elx-table--border-line {
+    border-color: $--table-border-color;
   }
 
   .drag-bar {
@@ -635,14 +733,7 @@
   }
 
   .svg-icon {
-    color: $--base-text-color !important;
-  }
-
-  .el-table {
-    color: $--base-text-color !important;
-    thead {
-      color: $--base-text-color !important;
-    }
+    color: $--color-text-medium !important;
   }
 
   .el-form-item__label,

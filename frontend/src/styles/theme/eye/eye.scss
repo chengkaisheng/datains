@@ -1,0 +1,53 @@
+/* 改变主题色变量 */
+$--color-primary: #2681ff;
+$--color-success: #05AA65;
+$--color-warning: #FF9227;
+$--color-danger: #F64346;
+$--color-info: #BABEC5;
+$--color-default: #171b22;
+$--color-dark: #21333b;
+$--color-white: #FFFFFF;
+
+$--base-text-color: rgba( 16,24,40 ,0.8);
+$--base-border-color: #e5e0d5;
+$--color-text-medium: rgba( 16,24,40 ,0.8);
+
+$--main-background: #f4efe2;
+$--main-content-background:  #f9f4e7;
+
+$--item-selected-background: #525355;
+
+$--tabs-highlight-color: #8e8374;
+
+$--dropdown-background: #f9f4e7;
+$--dropdown-hover-background: rgba( 16,24,40 ,0.02);
+
+$--base-box-shadow: 0 16px 56px rgba(16,24,40,0.16);
+
+$--input-focus-border-color: #9c9892;
+$--input-blur-border-color: #e5e0d5;
+$--input-background: #f9f4e7;
+
+$--menu-hover-background: transparent;
+$--menu-active-background: transparent;
+$--menu-active-text-color: #c1b7a6;
+
+$--sider-background: #17242b;
+$--sider-text-color: #acbac3;
+
+$--table-background: #f4efe2;
+$--table-text-color: rgba( 16,24,40 ,0.8);
+$--table-border-color: #eae5d9;
+$--table-highlight-background: #f4f0e3;
+
+$--scrollbar-thumb-color: rgba(0,0,0,.15);
+
+$--btn-primary-hover-background: #9c9892;
+$--btn-primary-hover-border-color: #9c9892;
+$--btn-primary-background: #8e8374; 
+$--btn-primary-border-color: #8e8374;
+
+$--btn-default-border-color: #e5e0d5;
+$--btn-default-background: #f9f4e7; 
+$--btn-default-hover-background: #f9f4e7;
+$--btn-default-hover-border-color: #9c9892;

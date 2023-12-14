@@ -31,7 +31,9 @@
         </el-tab-pane>
       </el-tabs>
     </de-aside-container>
-    <de-main-container>
+    <de-main-container
+      v-loading="templateLoading"
+    >
       <template-item
         v-for="item in currentTemplateShowList"
         :key="item.id"
@@ -79,6 +81,7 @@ export default {
   data() {
     return {
       showShare: false,
+      templateLoading: false,
       currentTemplateShowList: [],
       currentPid: '',
       currentTemplateType: 'system',
@@ -109,8 +112,11 @@ export default {
     showCurrentTemplate(pid) {
       this.currentTemplateId = pid
       if (this.currentTemplateId) {
+        this.templateLoading = true
         find({ pid: this.currentTemplateId }).then(response => {
           this.currentTemplateShowList = response.data
+        }).finally(() => {
+          this.templateLoading = false
         })
       }
     },

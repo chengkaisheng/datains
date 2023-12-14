@@ -42,7 +42,7 @@
                 {{ $t('panel.view') }}
               </div>
             </div>
-            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+            <div class="button-text-divider" style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
               <div
                 style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
               />
@@ -70,7 +70,7 @@
               </div>
             </div>
 
-            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+            <div class="button-text-divider" style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
               <div
                 style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
               />
@@ -97,7 +97,7 @@
               </div>
             </div>
 
-            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+            <div class="button-text-divider" style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
               <div
                 style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
               />
@@ -125,7 +125,7 @@
                 复用
               </div>
             </div>
-            <div style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
+            <div class="button-text-divider" style="height: 1px; position: relative; margin: 0px auto;background-color:#E6E6E6;">
               <div
                 style="width: 60px;height: 1px;line-height: 1px;text-align: center;white-space: pre;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
               />
@@ -1641,13 +1641,8 @@ export default {
 
   .de-header {
     height: 35px !important;
+    line-height: 35px;
     border-bottom: 1px solid #E6E6E6;
-
-  }
-
-  .blackTheme .de-header {
-    background-color: var(--SiderBG) !important;
-    color: var(--TextActive);
   }
 
   .showLeftPanel {

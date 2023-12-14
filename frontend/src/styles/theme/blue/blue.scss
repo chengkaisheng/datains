@@ -1,0 +1,73 @@
+/* 改变主题色变量 */
+$--color-primary: #2681ff;
+$--color-success: #05AA65;
+$--color-warning: #FF9227;
+$--color-danger: #F64346;
+$--color-info: #BABEC5;
+$--color-default: #171b22;
+$--color-dark: #21333b;
+$--color-white: #FFFFFF;
+
+$--color-text-medium: #ffffff;
+$--base-text-color: rgb(204, 204, 204);
+$--base-border-color: rgb(64, 64, 64);
+$--base-hover-color: rgb(42, 45, 46);
+$--base-primary-color: rgb(0, 120, 212);
+$--base-primary-hover-color: rgb(2, 110, 193);
+$--base-default-color: rgb(49, 49, 49);
+$--base-default-hover-color: rgb(60, 60, 60);
+$--base-default-border-color: $--base-border-color;
+$--base-divider-color: rgb(43, 43, 43);
+$--base-main-color: rgb(24, 24, 24);
+$--base-content-color: rgb(31, 31, 31);
+$--base-input-color: rgb(36, 36, 36);
+$--base-input-focus-color: rgb(42, 42, 42);
+$--base-input-border-color: rgb(69, 69, 69);
+$--base-input-border-hover-color: rgb(91, 91, 91);
+$--base-input-border-focus-color: $--base-primary-color;
+$--base-thumb-color: rgb(77, 77, 77);
+$--base-selected-color: rgb(4, 57, 94);
+
+$--base-box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
+
+$--main-background: $--base-main-color;
+$--main-content-background:  $--base-content-color;
+
+$--top-divider-background: $--base-divider-color;
+
+$--logo-color: $--base-primary-color;
+
+$--tabs-highlight-color: $--base-primary-color;
+
+$--dropdown-background: $--base-main-color;
+$--dropdown-hover-background: $--base-primary-color;
+
+$--input-focus-border-color: $--base-input-border-focus-color;
+$--input-blur-border-color: $--base-input-border-color;
+$--input-background: $--base-input-color;
+$--input-focus-background: $--base-input-focus-color;
+
+$--menu-hover-background: $--base-selected-color;
+$--menu-active-background: $--base-selected-color;
+$--menu-active-text-color: $--base-text-color;
+
+$--table-background: $--base-main-color;
+$--table-text-color: $--base-text-color;
+$--table-border-color: $--base-border-color;
+$--table-highlight-background: $--base-default-color;
+
+$--scrollbar-thumb-color: $--base-thumb-color;
+
+$--btn-primary-hover-background: $--base-primary-hover-color;
+$--btn-primary-hover-border-color: $--base-primary-hover-color;
+$--btn-primary-background: $--base-primary-color; 
+$--btn-primary-border-color: $--base-primary-color;
+
+$--btn-default-border-color: $--base-default-border-color;
+$--btn-default-background: $--base-default-color; 
+$--btn-default-hover-background: $--base-default-hover-color;
+$--btn-default-hover-border-color: $--base-default-border-color;
+
+$--btn-text-color: $--base-primary-color;
+
+$--divider-background: $--base-divider-color;
