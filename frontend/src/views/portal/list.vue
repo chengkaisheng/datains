@@ -18,7 +18,7 @@
               {{ row.createTime || row.updateTime }}
             </template>
           </el-table-column>
-          <el-table-column label="操作">
+          <el-table-column width="200" align="center" label="操作">
             <template slot-scope="{ row }">
               <div class="table-option">
                 <el-button circle icon="el-icon-edit" size="mini" type="primary" @click="handleEditPortal(row)" />
