@@ -126,7 +126,6 @@ Vue.prototype.checkPermission = function(pers) {
   return hasPermission
 }
 new Vue({
-
   router,
   store,
   i18n,

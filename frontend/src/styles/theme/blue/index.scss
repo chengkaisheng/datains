@@ -410,7 +410,8 @@
     border-color: $--base-border-color !important;
   }
 
-  .portal-drawer-container .portal-drawer-container-container .content .right-config-container .title {
+  .portal-drawer-container .portal-drawer-container-container .content .right-config-container .title,
+  .portal-config-drawer-container .portal-config-drawer-container-container .portal-config-drawer-container-container-content .right-config-container .right-config-container-right .title {
     border-bottom-color: transparent !important;
     border-left-color: transparent !important;
   }

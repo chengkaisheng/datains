@@ -11,30 +11,6 @@
       filter: drop-shadow(156px 0 0 $--tabs-highlight-color);
     }
 
-    .el-menu {
-      background-color: $--main-background !important;
-      .el-menu-item {
-        background-color: $--main-background !important;
-        &:not(.is-active) {
-          color: $--base-text-color !important;
-
-          &:hover {
-            background-color: $--menu-hover-background !important;
-          }
-
-          &:focus {
-            background-color: $--menu-active-background !important;
-            opacity: 1;
-            color: $--base-text-color !important;
-          }
-        }
-        &.is-active {
-          background-color: $--menu-active-background !important;
-          color: $--tabs-highlight-color !important;
-        }
-      }
-    }
-
     .right-menu {
       color: $--base-text-color;
       .el-dropdown {
@@ -84,6 +60,16 @@
             color: $--menu-active-text-color !important;
           }
         }
+      }
+    }
+
+    .main_container {
+      background-image: linear-gradient($--main-background, $--main-background);
+      background-blend-mode: lighten;
+      .hint_head,
+      .hint_content,
+      .inner_circle {
+        color: $--base-text-color !important;
       }
     }
   }

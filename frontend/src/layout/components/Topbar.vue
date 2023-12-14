@@ -144,7 +144,16 @@ export default {
   },
   computed: {
     theme() {
-      return localStorage.getItem('theme') || 'blueTheme'
+      const themeStorage = localStorage.getItem('theme')
+      if (themeStorage === '') {
+        return themeStorage
+      }
+
+      if (!themeStorage) {
+        return 'blueTheme'
+      }
+
+      return themeStorage
     },
 
     topMenuColor() {
@@ -321,6 +330,7 @@ export default {
     async logout() {
       // localStorage.clear()
       await this.$store.dispatch('user/logout')
+      this.setTheme()
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
     selectTheme({ value }) {
