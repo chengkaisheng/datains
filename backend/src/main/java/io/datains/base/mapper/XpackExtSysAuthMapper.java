@@ -18,7 +18,8 @@ public interface XpackExtSysAuthMapper {
 
     List<XpackSysAuthDetailDTO> search(XpackSysAuthRequest paramXpackSysAuthRequest);
 
-    List<XpackSysAuthDetailDTO> getSysAuthByAuthSource(@Param("authSource")String authSource ,@Param("authTarget") String authTarget);
+    List<XpackSysAuthDetailDTO> getSysAuthByAuthSource(@Param("authSource")String authSource ,@Param("authTarget") String authTarget,@Param("authSourceType") String authSourceType,
+                                                       @Param("authTargetType") String authTargetType);
 
    int insertSysAuth(XpackSysAuthDetailDTO xpackSysAuthDetailDTO);
 }

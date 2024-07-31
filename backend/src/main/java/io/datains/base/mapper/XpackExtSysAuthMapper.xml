@@ -80,6 +80,12 @@
 
     <select id="getSysAuthByAuthSource" resultMap="BaseResultMapAuthDetailDTO">
         select * from sys_auth where auth_source=#{authSource} and auth_target=#{authTarget}
+        <if test="authSourceType != null">
+            and auth_source_type=#{authSourceType}
+        </if>
+        <if test="authTargetType != null">
+            and auth_target_type=#{authTargetType}
+        </if>
     </select>
 
     <select id="getSysAuth" resultMap="BaseResultMapAuthDetailDTO">

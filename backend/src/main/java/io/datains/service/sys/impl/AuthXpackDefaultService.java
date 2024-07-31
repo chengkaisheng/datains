@@ -70,7 +70,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
         XpackSysAuthDetail xpackSysAuthDetail = xpackSysAuthRequest.getAuthDetail();
         List<String> list2;
         ArrayList arrayList = new ArrayList();
-        List<XpackSysAuthDetailDTO> sysAuthByAuthSource = B.getSysAuthByAuthSource(xpackSysAuthRequest.getAuthSource(),xpackSysAuthRequest.getAuthTarget());
+        List<XpackSysAuthDetailDTO> sysAuthByAuthSource = B.getSysAuthByAuthSource(xpackSysAuthRequest.getAuthSource(),xpackSysAuthRequest.getAuthTarget(),xpackSysAuthRequest.getAuthSourceType(),xpackSysAuthRequest.getAuthTargetType());
         if (IsNullUtils.isNull(sysAuthByAuthSource)){
             XpackSysAuthDetailDTO sysAuthDetailDTO = new XpackSysAuthDetailDTO();
             sysAuthDetailDTO.setAuthSource(xpackSysAuthRequest.getAuthSource());
@@ -79,7 +79,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
             sysAuthDetailDTO.setAuthTargetType(xpackSysAuthRequest.getAuthTargetType());
             sysAuthDetailDTO.setAuthUser(str);
             B.insertSysAuth(sysAuthDetailDTO);
-            sysAuthByAuthSource = B.getSysAuthByAuthSource(xpackSysAuthRequest.getAuthSource(),xpackSysAuthRequest.getAuthTarget());
+            sysAuthByAuthSource = B.getSysAuthByAuthSource(xpackSysAuthRequest.getAuthSource(),xpackSysAuthRequest.getAuthTarget(),xpackSysAuthRequest.getAuthSourceType(),xpackSysAuthRequest.getAuthTargetType());
             List<XpackSysAuthDetail> xpackSysAuthDetails = this.authDetailsModel(xpackSysAuthRequest.getAuthSourceType());
             for (int j = 0; j <xpackSysAuthDetails.size() ; j++) {
                 XpackSysAuthDetail xpackSysAuthDetail1 = new XpackSysAuthDetail();
