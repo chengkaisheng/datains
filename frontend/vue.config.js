@@ -35,7 +35,7 @@ module.exports = {
         // target: 'http://183.194.65.250:9091/',
         // target: 'http://183.194.64.166:9091/',  // 服务器
         // target: 'http://192.168.3.223/',
-        target: 'http://wp2sewslcjhe.ngrok.xiaomiqiu123.top', // 张庆
+        target: 'http://106.54.52.9:9533', // 张庆
         // target: 'http://183.194.64.166:9527', // 张庆
         ws: false
       }
