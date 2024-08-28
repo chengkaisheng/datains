@@ -160,8 +160,9 @@
                 </el-table>
 
                 <div v-else-if="comShowDomType === 'field'">
+                  <!-- v-model="comFieldDatas" -->
                   <draggable
-                    v-model="comFieldDatas"
+                    v-model="filteredcomFieldDatas"
                     :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
                     animation="300"
                     :move="onMove"
@@ -170,7 +171,7 @@
                   >
                     <transition-group>
                       <div
-                        v-for="item in comFieldDatas.filter(item => !viewKeyWord || item.name.toLocaleLowerCase().includes(viewKeyWord))"
+                        v-for="item in filteredcomFieldDatas"
                         :key="item.id"
                         :class="myAttrs && myAttrs.fieldId && myAttrs.fieldId.includes(item.id) ? 'filter-db-row-checked' : 'filter-db-row'"
                         class="filter-db-row"
@@ -308,6 +309,9 @@ export default {
   computed: {
     filteredComFieldDatas() {
       return this.fieldDatas.filter(item => !this.keyWord || (item.name && item.name.toLocaleLowerCase().includes(this.keyWord)))
+    },
+    filteredcomFieldDatas() {
+      return this.comFieldDatas.filter(item => !this.viewKeyWord || item.name.toLocaleLowerCase().includes(this.viewKeyWord))
     },
     ...mapState([
       'componentData'
