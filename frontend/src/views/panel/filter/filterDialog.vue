@@ -76,7 +76,7 @@
                 </el-tree>
 
                 <div v-if="showDomType === 'field'">
-                  <div>11111</div>
+                  <!-- <div>11111</div> -->
                   <!-- v-model="fieldDatas" -->
                   <draggable
                     v-model="filteredComFieldDatas"
