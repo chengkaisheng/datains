@@ -487,6 +487,8 @@
                             @onQuotaItemRemove="quotaItemRemove"
                             @editItemFilter="showQuotaEditFilter"
                             @onNameEdit="showRename"
+                            @onPrecision="showPrecision"
+                            @onProportion="showProportion"
                             @editItemCompare="showQuotaEditCompare"
                           />
                         </transition-group>
@@ -685,9 +687,9 @@
                     </el-row>
                     <!-- drillFields -->
                     <el-row
-                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') 
-                        && !view.type.includes('text') && !view.type.includes('gauge') 
-                        && view.type !== 'liquid' && view.type !== 'word-cloud' 
+                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts')
+                        && !view.type.includes('text') && !view.type.includes('gauge')
+                        && view.type !== 'liquid' && view.type !== 'word-cloud'
                         && view.type !== 'table-pivot' && view.type !=='label'
                         && view.type !== 'roll-elemnt'"
                       class="padding-lr"
@@ -768,11 +770,11 @@
                   </el-collapse-item>
                   <!-- echarts相关 ↓↓↓↓-->
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick' 
-                        && view.type !== 'contrast-funnel' && view.type !== 'map' 
-                        && !view.type.includes('progress') && view.type !== 'waterfall' 
-                        && view.type !== 'graph' && view.type !== '3d-column' && view.type !== 'boxplot'
-                        && view.type !== '3dsurface' && view.type !== '3d-scatter'"
+                    v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick'
+                      && view.type !== 'contrast-funnel' && view.type !== 'map'
+                      && !view.type.includes('progress') && view.type !== 'waterfall'
+                      && view.type !== 'graph' && view.type !== '3d-column' && view.type !== 'boxplot'
+                      && view.type !== '3dsurface' && view.type !== '3d-scatter'"
                     name="size"
                     :title="$t('chart.size')"
                   >
@@ -825,7 +827,7 @@
                     v-show="view.render && view.render === 'antv' && (view.type.includes('roll') || view.type.includes('dialog'))"
                     :title="$t('chart.pop_config')"
                   >
-                    <pop-selector-ant-v 
+                    <pop-selector-ant-v
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -836,7 +838,7 @@
                     v-show="view.render && view.render === 'antv' && view.type.includes('roll') "
                     :title="$t('chart.table_width_set')"
                   >
-                    <width-selector-ant-v 
+                    <width-selector-ant-v
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -847,7 +849,7 @@
                     v-show="view.render && view.render === 'antv' && view.type.includes('roll')"
                     :title="$t('chart.pop_config')"
                   >
-                    <roll-selector 
+                    <roll-selector
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -872,7 +874,7 @@
                     name="size"
                     :title="$t('chart.size')"
                   >
-                    <size-selector-hc 
+                    <size-selector-hc
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
@@ -882,9 +884,9 @@
                   <!-- label ↓↓↓↓ -->
                   <el-collapse-item
                     v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')
-                        &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' 
-                        && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'
-                        && view.type !== 'map_bubble' && view.type !== 'boxplot' && !view.type.includes('roll')"
+                      &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud'
+                      && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'
+                      && view.type !== 'map_bubble' && view.type !== 'boxplot' && !view.type.includes('roll')"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -913,9 +915,9 @@
                   <!-- tooltipr ↓↓↓↓ -->
                   <el-collapse-item
                     v-show="view.type &&!view.type.includes('vertical') && !view.type.includes('roll')
-                      &&!view.type.includes('dialog') && !view.type.includes('table') 
-                      && !view.type.includes('progress') && !view.type.includes('text') 
-                      && view.type !== 'liquid' && view.type !== 'gauge' 
+                      &&!view.type.includes('dialog') && !view.type.includes('table')
+                      && !view.type.includes('progress') && !view.type.includes('text')
+                      && view.type !== 'liquid' && view.type !== 'gauge'
                       && view.type !== 'label' && view.type !== 'calendar'
                       && view.type !== 'map_bubble' && view.type !== 'bar-rate'"
                     name="tooltip"
@@ -955,9 +957,9 @@
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
                   <el-collapse-item
                     v-show="view.type
-                      && ((view.type.includes('bar') &&  view.type !== 'bar-rate') || view.type.includes('line')
-                      || view.type.includes('scatter') || view.type === 'chart-mix' 
-                      || view.type === 'waterfall' || view.type === '3dcolumn' 
+                      && ((view.type.includes('bar') && view.type !== 'bar-rate') || view.type.includes('line')
+                      || view.type.includes('scatter') || view.type === 'chart-mix'
+                      || view.type === 'waterfall' || view.type === '3dcolumn'
                       || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
                     name="xAxis"
                     :title="$t('chart.xAxis')"
@@ -987,8 +989,8 @@
                   <el-collapse-item
                     v-show="view.type
                       && (view.type.includes('bar') || view.type.includes('line')
-                      || view.type.includes('scatter') || view.type === 'chart-mix' 
-                      || view.type === 'waterfall' || view.type === '3dcolumn' 
+                      || view.type.includes('scatter') || view.type === 'chart-mix'
+                      || view.type === 'waterfall' || view.type === '3dcolumn'
                       || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
                     name="yAxis"
                     :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')"
@@ -1093,7 +1095,7 @@
                       && !view.type.includes('text') && view.type !== 'label'
                       && (view.type !== 'treemap' || view.render === 'antv')
                       && view.type !== 'liquid' && view.type !== 'waterfall'
-                      && view.type !== 'gauge' && view.type !== 'word-cloud' 
+                      && view.type !== 'gauge' && view.type !== 'word-cloud'
                       && !view.type.includes('progress') && view.type !== 'map_bubble'
                       && view.type !== 'graph' && view.type !== 'candlestick'
                       && view.type !== '3dsurface' && view.type !== '3d-column'
@@ -1276,6 +1278,31 @@
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeRename()">{{ $t('chart.cancel') }}</el-button>
         <el-button type="primary" size="mini" @click="saveRename">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+    <!--精度设置-->
+    <el-dialog v-dialogDrag :title="$t('chart.precision_setting')" :visible="precisionItem" :show-close="false" width="30%">
+      <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
+        <el-form-item :label="$t('chart.precision_name')" prop="name">
+          <el-input v-model="itemForm.totalaccuracy" size="mini" clearable />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closePrecision()">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="savePrecision">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
+    <!--占比设置-->
+    <el-dialog v-dialogDrag :title="$t('chart.proportion_setting')" :visible="ProportionItem" :show-close="false" width="30%">
+      <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
+        <el-form-item :label="$t('chart.proportion')" prop="name">
+          <el-input v-model="itemForm.isPercentage" size="mini" clearable />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeProportion()">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveProportion">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -1606,6 +1633,8 @@ export default {
       resultFilterEdit: false,
       chartForFilter: {},
       renameItem: false,
+      precisionItem: false,
+      ProportionItem: false,
       itemForm: {
         name: ''
       },
@@ -1740,6 +1769,8 @@ export default {
     bindPluginEvent() {
       bus.$on('show-dimension-edit-filter', this.showDimensionEditFilter)
       bus.$on('show-rename', this.showRename)
+      bus.$on('show-precision', this.showPrecision)
+      bus.$on('show-proportion', this.showProportion)
       bus.$on('show-quota-edit-filter', this.showQuotaEditFilter)
       bus.$on('show-quota-edit-compare', this.showQuotaEditCompare)
       bus.$on('show-edit-filter', this.showEditFilter)
@@ -1953,9 +1984,9 @@ export default {
           view.yaxis.splice(1, view.yaxis.length)
         }
       }
-      if(view.type === '3d-column' || view.type === '3d-scatter' || view.type === 'map_bubble') {
+      if (view.type === '3d-column' || view.type === '3d-scatter' || view.type === 'map_bubble') {
         if (view.yaxis.length > 3) {
-          view.yaxis.splice(3,1)
+          view.yaxis.splice(3, 1)
         }
       }
       // if( view.type === 'contrast-funnel') {
@@ -2482,6 +2513,14 @@ export default {
       this.itemForm = JSON.parse(JSON.stringify(val))
       this.renameItem = true
     },
+    showPrecision(val) {
+      this.itemForm = JSON.parse(JSON.stringify(val))
+      this.precisionItem = true
+    },
+    showProportion(val) {
+      this.itemForm = JSON.parse(JSON.stringify(val))
+      this.ProportionItem = true
+    },
     saveRename() {
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
@@ -2506,6 +2545,54 @@ export default {
     },
     closeRename() {
       this.renameItem = false
+      this.resetRename()
+    },
+    savePrecision() {
+      this.$refs['itemForm'].validate((valid) => {
+        if (valid) {
+          if (this.itemForm.renameType === 'quota') {
+            this.view.yaxis[this.itemForm.index].totalaccuracy = this.itemForm.totalaccuracy
+          } else if (this.itemForm.renameType === 'dimension') {
+            this.view.xaxis[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'quotaExt') {
+            this.view.yaxisExt[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'dimensionExt') {
+            this.view.xaxisExt[this.itemForm.index].name = this.itemForm.name
+          }
+          this.calcData(true)
+          this.closePrecision()
+        } else {
+          return false
+        }
+      })
+      console.log(this.view)
+    },
+    saveProportion() {
+      this.$refs['itemForm'].validate((valid) => {
+        if (valid) {
+          if (this.itemForm.renameType === 'quota') {
+            this.view.yaxis[this.itemForm.index].isPercentage = this.itemForm.isPercentage
+          } else if (this.itemForm.renameType === 'dimension') {
+            this.view.xaxis[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'quotaExt') {
+            this.view.yaxisExt[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'dimensionExt') {
+            this.view.xaxisExt[this.itemForm.index].name = this.itemForm.name
+          }
+          this.calcData(true)
+          this.closeProportion()
+        } else {
+          return false
+        }
+      })
+      console.log(this.view)
+    },
+    closePrecision() {
+      this.precisionItem = false
+      this.resetRename()
+    },
+    closeProportion() {
+      this.ProportionItem = false
       this.resetRename()
     },
     resetRename() {

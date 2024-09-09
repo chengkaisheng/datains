@@ -140,13 +140,13 @@ export default {
       longitudinal: '纵向分布',
       horizontally: '水平居中',
       vertically: '垂直居中',
-      move: '移动',
+      move: '移动'
     },
     move: {
       left: '向左移动',
       right: '向右移动',
       top: '向上移动',
-      bottom: '向下移动',
+      bottom: '向下移动'
     },
     stop: '停止',
     first_login_tips: '您使用的是初始密码，记得修改密码哦',
@@ -733,6 +733,10 @@ export default {
     var_pop: '方差',
     quick_calc: '快速计算',
     show_name_set: '显示名设置',
+    precision_setting: '精度设置',
+    precision_name: '精度',
+    proportion_setting: '占比设置',
+    proportion: '占比',
     display: '字段展示',
     relation: '关联展示',
     color: '颜色',
@@ -1791,7 +1795,7 @@ export default {
     play_once: '播放一次',
     play_circle: '循环播放',
     video_links: '视频链接',
-    interface:  '接口',
+    interface: '接口',
     links_params: '接口参数',
     web_url: '网页地址',
     video_add_tips: '请点击添加配置视频信息...',
@@ -2003,7 +2007,7 @@ export default {
   },
   detextinfo: {
     label: '文本详情',
-    placeholder: '请选择',
+    placeholder: '请选择'
   },
   detextselect: {
     label: '文本下拉',
