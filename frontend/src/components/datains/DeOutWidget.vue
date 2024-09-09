@@ -32,6 +32,7 @@
                 :in-draw="inDraw"
                 :in-screen="inScreen"
                 :size="sizeInfo"
+                :editable="true"
               />
             </div>
           </div>
@@ -96,6 +97,15 @@ export default {
       }
       return size
     },
+    // editableInfo() {
+    //   let editable
+    //   if (element.component) {
+    //     editable = true
+    //   }
+    //   // :editable="editableInfo"
+
+    //   return editable
+    // },
     ...mapState([
       'curCanvasScale'
     ])
