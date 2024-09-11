@@ -55,7 +55,14 @@ public class XAuthServer {
             xpackSysAuthDetail.setPrivilegeValue(1);
             authDetails.add(0, xpackSysAuthDetail);
         }
-        return authDetails;
+        List<XpackSysAuthDetail> authDetailes = new ArrayList<>();
+        //过滤授权按钮
+        authDetails.stream().forEach(str->{
+            if (!str.getPrivilegeName().equalsIgnoreCase("i18n_auth_grant")){
+                authDetailes.add(str);
+            }
+        });
+        return authDetailes;
     }
 
     @RequiresPermissions("auth:read")
