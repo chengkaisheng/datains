@@ -76,8 +76,10 @@
                 </el-tree>
 
                 <div v-if="showDomType === 'field'">
+                  <!-- <div>11111</div> -->
+                  <!-- v-model="fieldDatas" -->
                   <draggable
-                    v-model="fieldDatas"
+                    v-model="filteredComFieldDatas"
                     :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
                     animation="300"
                     :move="onMove"
@@ -85,8 +87,17 @@
                     @end="end"
                   >
                     <transition-group>
-                      <div
+                      <!-- <div
                         v-for="item in fieldDatas.filter(item => !keyWord || (item.name && item.name.toLocaleLowerCase().includes(keyWord)))"
+                        :key="item.id"
+                        :class="myAttrs && myAttrs.fieldId && myAttrs.fieldId.includes(item.id) ? 'filter-db-row-checked' : 'filter-db-row'"
+                        class="filter-db-row"
+                      >
+                        <i class="el-icon-s-data" />
+                        <span> {{ item.name }}</span>
+                      </div> -->
+                      <div
+                        v-for="item in filteredComFieldDatas"
                         :key="item.id"
                         :class="myAttrs && myAttrs.fieldId && myAttrs.fieldId.includes(item.id) ? 'filter-db-row-checked' : 'filter-db-row'"
                         class="filter-db-row"
@@ -149,8 +160,9 @@
                 </el-table>
 
                 <div v-else-if="comShowDomType === 'field'">
+                  <!-- v-model="comFieldDatas" -->
                   <draggable
-                    v-model="comFieldDatas"
+                    v-model="filteredcomFieldDatas"
                     :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
                     animation="300"
                     :move="onMove"
@@ -159,7 +171,7 @@
                   >
                     <transition-group>
                       <div
-                        v-for="item in comFieldDatas.filter(item => !viewKeyWord || item.name.toLocaleLowerCase().includes(viewKeyWord))"
+                        v-for="item in filteredcomFieldDatas"
                         :key="item.id"
                         :class="myAttrs && myAttrs.fieldId && myAttrs.fieldId.includes(item.id) ? 'filter-db-row-checked' : 'filter-db-row'"
                         class="filter-db-row"
@@ -295,7 +307,12 @@ export default {
     }
   },
   computed: {
-
+    filteredComFieldDatas() {
+      return this.fieldDatas.filter(item => !this.keyWord || (item.name && item.name.toLocaleLowerCase().includes(this.keyWord)))
+    },
+    filteredcomFieldDatas() {
+      return this.comFieldDatas.filter(item => !this.viewKeyWord || item.name.toLocaleLowerCase().includes(this.viewKeyWord))
+    },
     ...mapState([
       'componentData'
     ])
@@ -438,24 +455,24 @@ export default {
       })
     },
     handleNodeClick(data) {
-      console.log('点击数据11111======》',data)
+      console.log('点击数据11111======》', data)
       if (data.type !== 'group') {
         this.showFieldDatas(data)
       }
     },
     handleAllNodeClick(data) {
-      console.log('点击数据222====》',data)
-      if(data.nodeType !== "spine") {
+      console.log('点击数据222====》', data)
+      if (data.nodeType !== 'spine') {
         this.showAllFieldDatas(data)
       }
     },
-    filterNode(value,data) {
+    filterNode(value, data) {
       // console.log('过滤====》',value,data)
-      if(!value) return true
+      if (!value) return true
       return data.label.indexOf(value) !== -1
     },
     loadTree(node, resolve) {
-      console.log('lazyLoad==========>',node)
+      console.log('lazyLoad==========>', node)
       if (!this.isTreeSearch) {
         if (node.level > 0) {
           if (node.data.id) {
@@ -480,12 +497,12 @@ export default {
     findTree(cache) { // 查询所有的数据集数据
       const modelInfo = localStorage.getItem('dataset-tree')
       const userCache = (modelInfo && cache)
-      if(userCache) {
+      if (userCache) {
         this.defaultDatas = JSON.parse(modelInfo)
         this.datas = JSON.parse(modelInfo)
       }
 
-      queryAuthModel({modelType: 'dataset'}).then(res => {
+      queryAuthModel({ modelType: 'dataset' }).then(res => {
         // console.log('树数据====》',res.data)
         localStorage.setItem('dataset-tree', JSON.stringify(res.data))
         this.defaultDatas = res.data
@@ -506,7 +523,7 @@ export default {
       tail.link = true
     },
     setAllTailLink(node) {
-      const tail = this.dataSetBreads[this.dataSetBreads.length -1]
+      const tail = this.dataSetBreads[this.dataSetBreads.length - 1]
       tail.type = node.modelInnerType
       tail.link = true
     },

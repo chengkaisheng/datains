@@ -388,7 +388,6 @@ import jumpSet from '@/views/background/jumpSet'
 import textPopSet from '@/views/background/textPopSet'
 import textInfoSet from '@/views/background/textInfoSet'
 
-
 import { events } from '../../../DeDrag/option.js'
 import { addEvent, removeEvent } from '../../../../utils/dom.js'
 const eventsForBus = events.mouse
@@ -959,7 +958,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, tabSet, pictureSet, setCustom, weatherSet, jumpSet, textPopSet,textInfoSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, tabSet, pictureSet, setCustom, weatherSet, jumpSet, textPopSet, textInfoSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -1980,7 +1979,7 @@ export default {
       })
     },
     removeLastItem() {
-      // console.log('rlI:' + JSON.stringify(this.yourList))
+      console.log('rlI:' + JSON.stringify(this.yourList))
       if (this.canvasStyleData.auxiliaryMatrix) {
         this.removeItem(this.yourList.length - 1)
       }

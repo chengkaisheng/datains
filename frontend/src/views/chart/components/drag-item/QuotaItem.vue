@@ -35,7 +35,7 @@
                 <el-dropdown-item :command="beforeSwitch('bar')">{{ $t('chart.chart_bar') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSwitch('line')">{{ $t('chart.chart_line') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSwitch('scatter')">{{ $t('chart.chart_scatter') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeSwitch('pie')">{{ $t('chart.chart_pie')}}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSwitch('pie')">{{ $t('chart.chart_pie') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -97,20 +97,26 @@
             </el-dropdown>
           </el-dropdown-item>
           <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
-            <span>{{ $t('chart.filter') }}...</span>
+            <span>{{ $t('chart.filter') }}...3</span>
           </el-dropdown-item>
           <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
             <span>{{ $t('chart.show_name_set') }}</span>
           </el-dropdown-item>
+          <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('precision')">
+            <span>{{ $t('chart.precision_setting') }}</span>
+          </el-dropdown-item>
+          <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('proportion')">
+            <span>{{ $t('chart.proportion_setting') }}</span>
+          </el-dropdown-item>
           <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
             <span>{{ $t('chart.delete') }}</span>
           </el-dropdown-item>
-          <el-dropdown-item divided v-if="viewType === 'roll-elemnt'">
+          <el-dropdown-item v-if="viewType === 'roll-elemnt'" divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="checkeShow">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-view" />
-                  <span>{{$t('chart.display')}}</span>
+                  <span>{{ $t('chart.display') }}</span>
                   <span class="summary-span-item">
                     (
                     <span v-if="item.checked">展示</span>
@@ -125,12 +131,12 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item divided v-if="viewType === 'roll-elemnt'">
+          <el-dropdown-item v-if="viewType === 'roll-elemnt'" divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="relationShow">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-view" />
-                  <span>{{$t('chart.relation')}}</span>
+                  <span>{{ $t('chart.relation') }}</span>
                   <span class="summary-span-item">
                     (
                     <span v-if="item.relation">展示</span>
@@ -217,8 +223,8 @@ export default {
       if (!this.item.compareCalc) {
         this.item.compareCalc = JSON.parse(JSON.stringify(this.compareItem))
       }
-      if(this.viewType === 'roll-elemnt') {
-        if(this.item.relation === undefined) {
+      if (this.viewType === 'roll-elemnt') {
+        if (this.item.relation === undefined) {
           this.item.relation = true
         }
       }
@@ -254,6 +260,12 @@ export default {
         case 'filter':
           this.editFilter()
           break
+        case 'precision':
+          this.showPrecision()
+          break
+        case 'proportion':
+          this.showProportion()
+          break
         default:
           break
       }
@@ -276,9 +288,9 @@ export default {
     },
 
     checkeShow(param) {
-      console.log('字段展示',param)
+      console.log('字段展示', param)
       this.item.checked = param.type
-      this.$emit('onQuotaItemChange',this.item)
+      this.$emit('onQuotaItemChange', this.item)
     },
     beforeDisplay(type) {
       return {
@@ -287,7 +299,7 @@ export default {
     },
     relationShow(param) {
       this.item.relation = param.type
-      this.$emit('onDimensionItemChange',this.item)
+      this.$emit('onDimensionItemChange', this.item)
     },
     beforeRelation(type) {
       return {
@@ -296,7 +308,7 @@ export default {
     },
 
     switchChartType(param) {
-      console.log('switch',param)
+      console.log('switch', param)
       this.item.chartType = param.type
       this.$emit('onQuotaItemChange', this.item)
     },
@@ -339,6 +351,16 @@ export default {
       this.item.index = this.index
       this.item.renameType = 'quota'
       this.$emit('onNameEdit', this.item)
+    },
+    showPrecision() {
+      this.item.index = this.index
+      this.item.renameType = 'quota'
+      this.$emit('onPrecision', this.item)
+    },
+    showProportion() {
+      this.item.index = this.index
+      this.item.renameType = 'quota'
+      this.$emit('onProportion', this.item)
     },
     removeItem() {
       this.item.index = this.index

@@ -1,6 +1,7 @@
 <template>
+
   <div v-if="element.options!== null && element.options.attrs!==null && show" class="de-select-grid-class">
-    <!-- <div class="de-select-grid-search">
+    <div class="de-select-grid-search">
       <el-input
         v-model="keyWord"
         class="input-search"
@@ -10,17 +11,18 @@
         clearable
         :style="inputStyle"
       />
-    </div> -->
+    </div>
     <div class="list" :style="panelStyle">
 
       <div v-if="element.options.attrs.multiple" class="checkbox-group-container">
+        <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
+          <span :style="panelCheck">{{ $t('commons.all') }}</span>
+        </el-checkbox>
+
         <el-checkbox-group v-model="value" @change="handleCheckedChange">
-          <el-checkbox-button v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
-            <span :style="panelCheck">{{ $t('commons.all') }}</span>
-          </el-checkbox-button>
-          <el-checkbox-button v-for="item in datas" :key="item.id" :label="item.id">
+          <el-checkbox v-for="item in datas" :key="item.id" :label="item.id">
             <span :style="panelCheck">{{ item.id }}</span>
-          </el-checkbox-button>
+          </el-checkbox>
         </el-checkbox-group>
         <p
           v-if="fieldNumber !== fieldDatas.length && (fieldNumber !== fieldDatas.filter(node => !keyWord || (node.id && node.id.includes(keyWord))).length)"
@@ -32,17 +34,6 @@
       </div>
 
       <div v-else class="radio-group-container">
-        <div class="de-select-grid-search">
-          <el-input
-            v-model="keyWord"
-            class="input-search"
-            :placeholder="$t('deinputsearch.placeholder')"
-            :size="size"
-            prefix-icon="el-icon-search"
-            clearable
-            :style="inputStyle"
-          />
-        </div>
         <el-radio-group v-model="value" @change="changeRadioBox">
           <el-radio v-for="(item, index) in datas" :key="index" :label="item.id" @click.native.prevent="testChange(item)">
             <span :style="panelCheck">{{ item.id }}</span>
@@ -403,74 +394,34 @@ export default {
     height: 100%;
 
     .list {
-      // overflow-y: auto;
+      overflow-y: auto;
       width: 100%;
       position: relative;
       bottom: 0;
-      // height: calc(100% - 40px);
-      height: 100%;
+      height: calc(100% - 40px);
       text-align: left;
-
     }
   }
 
   .radio-group-container {
     background-color: transparent;
-    height: 100%;
-    overflow-y: auto;
-  }
-  .el-radio-button {
-      border-left: 1px solid rgb(220, 223, 230);
-    }
-  .radio-group-container>.el-radio-group {
-    display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* 自动填充列，每列最小100px，但会根据需要增长 */
-      gap: 10px; /* 设置网格线之间的间隔 */
-      // display: inline-block !important;
-      margin: 10px !important;
   }
 
   .radio-group-container>.el-radio-group>label {
-    display: inline-block !important;
-    // margin: 10px !important;
+    display: block !important;
+    margin: 10px !important;
   }
 
   .checkbox-group-container {
     background-color: transparent;
-    height: 100%;
-    overflow-y: auto;
-
-    // display: flex;
-    // flex-wrap: wrap;
-    // justify-content: flex-start;
-
-    .el-checkbox-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* 自动填充列，每列最小100px，但会根据需要增长 */
-      gap: 10px; /* 设置网格线之间的间隔 */
-    }
     label.el-checkbox {
-      // height: 100%;
-
-      display: inline-block !important;
+      display: block !important;
       margin: 10px !important;
-    }
-    .el-checkbox-button {
-      border-left: 1px solid rgb(220, 223, 230);
     }
 
     .el-checkbox-group>label {
-      // max-width: calc(100% / 3 - 10px);
-      // min-height: 36px;
-      display: inline-block !important;
-      // margin: 10px !important;
-    }
-
-    .el-checkbox-group>label>span {
-      border-left: 1px solid;
-      // max-width: calc(100% / 3 - 10px);
-      // display: inline-block !important;
-      // margin: 10px !important;
+      display: block !important;
+      margin: 10px !important;
     }
 
   }
