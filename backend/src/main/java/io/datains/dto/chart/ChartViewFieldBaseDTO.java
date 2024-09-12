@@ -49,4 +49,8 @@ public class ChartViewFieldBaseDTO implements Serializable {
     private String logic;
 
     private String filterType;
+
+    private String totalaccuracy;
+
+    private String isPercentage;
 }
