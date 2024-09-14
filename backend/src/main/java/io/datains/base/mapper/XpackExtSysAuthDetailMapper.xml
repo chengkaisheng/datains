@@ -6,7 +6,8 @@
         select
         sys_auth_detail.privilege_name ,
         sys_auth_detail.privilege_type ,
-        sys_auth_detail.privilege_value
+        sys_auth_detail.privilege_value,
+        sys_auth_detail.privilege_extend
         from sys_auth_detail where sys_auth_detail.auth_id =#{authTypeModel} order by sys_auth_detail.privilege_type desc
     </select>
 
