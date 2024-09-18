@@ -28,9 +28,16 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
+import javax.crypto.Cipher;
+import java.net.URLDecoder;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @RestController
 @Api(tags = "系统：用户管理")
@@ -164,5 +171,29 @@ public class SysUserController {
             return ldapUser;
         }).collect(Collectors.toList());
     }
+
+
+  /*  public static void main(String[] args) throws Exception {
+        String privateKeyString = privateKey; // 你的私钥
+        PrivateKey privateKey = loadPrivateKey(privateKeyString);
+        String decodedString = URLDecoder.decode(cardInfo, "UTF-8");//若接收到的参数为URL编码之后的需要decode以下，否则不需要
+        String encryptedMessageString = decodedString; // 加密之后的字符串
+        byte[] encryptedMessage = Base64.getDecoder().decode(encryptedMessageString);
+        String decryptedMessage = decrypt(encryptedMessage, privateKey);
+        System.out.println("解密后的信息: " + decryptedMessage);
+    }
+
+    public static PrivateKey loadPrivateKey(String privateKeyString) throws Exception {
+        byte[] privateKeyBytes = Base64.getDecoder().decode(privateKeyString);
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(privateKeyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePrivate(spec);
+    }
+
+    public static String decrypt(byte[] encryptedMessage, PrivateKey privateKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        return new String(cipher.doFinal(encryptedMessage));
+    }*/
 
 }
