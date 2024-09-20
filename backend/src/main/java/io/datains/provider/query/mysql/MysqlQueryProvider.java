@@ -11,9 +11,9 @@ import io.datains.dto.chart.ChartFieldCustomFilterDTO;
 import io.datains.dto.chart.ChartViewFieldDTO;
 import io.datains.dto.sqlObj.SQLObj;
 import io.datains.plugins.common.constants.MySQLConstants;
+import io.datains.plugins.common.constants.SQLConstants;
 import io.datains.plugins.common.constants.engine.MysqlConstants;
 import io.datains.provider.QueryProvider;
-import io.datains.plugins.common.constants.SQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,11 @@ import org.stringtemplate.v4.STGroupFile;
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -943,8 +947,12 @@ public class MysqlQueryProvider extends QueryProvider {
             if (x.getDeType() == 2 || x.getDeType() == 3) {
                 fieldName = String.format(MySQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
             } else if (x.getDeType() == 1) {
-                String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
+                    fieldName = String.format("CONCAT(YEAR(%s), '-Q', QUARTER(%s))", originField, originField);
+                } else {
+                    String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
+                    fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                }
             } else {
                 fieldName = originField;
             }
@@ -952,7 +960,11 @@ public class MysqlQueryProvider extends QueryProvider {
             if (x.getDeType() == 1) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == 0) {
-                    fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                    if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
+                        fieldName = String.format("CONCAT(YEAR(%s), '-Q', QUARTER(%s))", originField, originField);
+                    } else {
+                        fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                    }
                 } else {
                     String cast = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
                     String from_unixtime = String.format(MySQLConstants.FROM_UNIXTIME, cast, MySQLConstants.DEFAULT_DATE_FORMAT);
