@@ -47,6 +47,11 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     hidden: true
   },
+  {
+    path: '/singleSignOnLogin/:id',
+    component: () => import('@/views/login/singleSignOnLogin'),
+    hidden: true
+  },
 
   {
     path: '/404',

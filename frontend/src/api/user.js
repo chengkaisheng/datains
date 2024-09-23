@@ -92,3 +92,10 @@ export function getPublicKey() {
     method: 'get'
   })
 }
+
+export function singleSignOn(params) {
+  return request({
+    url: '/api/user/singleSignOn/' + params,
+    method: 'get'
+  })
+}
