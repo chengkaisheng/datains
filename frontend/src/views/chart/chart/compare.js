@@ -25,5 +25,10 @@ export const compareMonthList = [
 export const compareDayList = [
   { name: 'day_mom', value: 'day_mom' },
   { name: 'month_yoy', value: 'month_yoy' },
+  { name: 'quarter_yoy', value: 'quarter_yoy' },
   { name: 'year_yoy', value: 'year_yoy' }
+]
+
+export const compareYearQList = [
+  { name: 'quarter_mom', value: 'quarter_mom' }
 ]

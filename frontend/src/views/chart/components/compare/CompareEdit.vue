@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { compareDayList, compareMonthList, compareYearList } from '@/views/chart/chart/compare'
+import { compareDayList, compareMonthList, compareYearList, compareYearQList } from '@/views/chart/chart/compare'
 
 export default {
   name: 'CompareEdit',
@@ -89,6 +89,8 @@ export default {
           case 'y_M_d':
             this.compareList = compareDayList
             break
+          case 'y_Q':
+            this.compareList = compareYearQList
           default:
             break
         }
