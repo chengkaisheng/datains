@@ -418,7 +418,6 @@
                         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                       </div>
                     </el-row>
-                    <!--yaxis-->
                     <el-row
                       v-if="view.type !=='table-info' && view.type !=='label'"
                       class="padding-lr"
@@ -475,7 +474,7 @@
                         <transition-group class="draggable-group">
                           <quota-item
                             v-for="(item,index) in view.yaxis"
-                            :key="item.id"
+                            :key="(view.type === 'table-pivot' || view.type === 'table-normal') ? item.datainsName : item.id"
                             :param="param"
                             :index="index"
                             :item="item"
@@ -1499,6 +1498,7 @@ import Threshold from '@/views/chart/components/senior/Threshold'
 import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { pluginTypes } from '@/api/chart/chart'
+import { uuid } from 'vue-uuid'
 // import ArcGIS from "@/map/init.js"
 // const Map = new ArcGIS()
 export default {
@@ -1715,6 +1715,20 @@ export default {
     },
     'view.type': function(newVal, oldVal) {
       this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal)
+    },
+    'view.yaxis': function(newVal, oldVal) {
+      // antv 透视表 newVal.length > oldVal.length 代表新增了
+      if ((this.view.type === "table-pivot" || this.view.type === "table-normal") && newVal.length > oldVal.length) {
+        // console.log('1123newVal:' , newVal);
+        // console.log('1123oldVal:' , oldVal);
+        // 新旧数组进行对比，找出新数组哪一项是新增的，修改新增项的datainsName
+        let arr = newVal.filter(item => {
+          return !oldVal.find(oitem => item.datainsName === oitem.datainsName)
+        });
+        arr.forEach(item => {
+          item.datainsName = 'Z_' + uuid.v1().replace(/-/g, '');
+        })
+      }
     }
   },
   created() {
@@ -2720,8 +2734,12 @@ export default {
         const dup = list.filter(function(m) {
           return m.id === that.moveId
         })
-        if (dup && dup.length > 1) {
-          list.splice(e.newDraggableIndex, 1)
+        // antv 透视表  指标->数据列/指标   不做去重
+        if( this.view.type === "table-pivot" || this.view.type === "table-normal") {
+        } else {
+          if (dup && dup.length > 1) {
+            list.splice(e.newDraggableIndex, 1)
+          }
         }
       }
     },

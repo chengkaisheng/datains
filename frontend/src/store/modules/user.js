@@ -85,6 +85,12 @@ const actions = {
       })
     })
   },
+  singleSignOnLogin({ commit }, response) {
+    const { data } = response
+    commit('SET_TOKEN', data.token)
+    commit('SET_LOGIN_MSG', null)
+    setToken(data.token)
+  },
   refreshToken({ commit }, token) {
     commit('SET_TOKEN', token)
     setToken(token)

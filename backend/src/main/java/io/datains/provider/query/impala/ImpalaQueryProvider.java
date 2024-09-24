@@ -12,6 +12,7 @@ import io.datains.dto.chart.ChartFieldCustomFilterDTO;
 import io.datains.dto.chart.ChartViewFieldDTO;
 import io.datains.dto.sqlObj.SQLObj;
 import io.datains.plugins.common.constants.ImpalaConstants;
+import io.datains.plugins.common.constants.MySQLConstants;
 import io.datains.plugins.common.constants.SQLConstants;
 import io.datains.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,7 +26,11 @@ import org.stringtemplate.v4.STGroupFile;
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -944,8 +949,12 @@ public class ImpalaQueryProvider extends QueryProvider {
             if (x.getDeType() == 2 || x.getDeType() == 3) {
                 fieldName = String.format(ImpalaConstants.UNIX_TIMESTAMP, originField) + "*1000";
             } else if (x.getDeType() == DeTypeConstants.DE_TIME) {
-                String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                fieldName = String.format(ImpalaConstants.DATE_FORMAT, originField, format);
+                if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
+                    fieldName = String.format("CAST(YEAR(%s) AS STRING) || '-Q' || CAST(((MONTH(%s) - 1) DIV 3 + 1) AS STRING)", originField, originField);
+                } else {
+                    String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
+                    fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                }
             } else {
                 fieldName = originField;
             }
@@ -953,7 +962,11 @@ public class ImpalaQueryProvider extends QueryProvider {
             if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
-                    fieldName = String.format(ImpalaConstants.DATE_FORMAT, originField, format);
+                    if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
+                        fieldName = String.format("CAST(YEAR(%s) AS STRING) || '-Q' || CAST(((MONTH(%s) - 1) DIV 3 + 1) AS STRING)", originField, originField);
+                    } else {
+                        fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                    }
                 } else {
                     String cast = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_INT_FORMAT) + "/1000";
                     String from_unixtime = String.format(ImpalaConstants.FROM_UNIXTIME, cast, ImpalaConstants.DEFAULT_DATE_FORMAT);

@@ -4,7 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.datains.auth.entity.SysUserEntity;
 import io.datains.auth.service.AuthUserService;
-import io.datains.base.domain.*;
+import io.datains.base.domain.ChartView;
+import io.datains.base.domain.ChartViewCache;
+import io.datains.base.domain.ChartViewCacheExample;
+import io.datains.base.domain.ChartViewCacheWithBLOBs;
+import io.datains.base.domain.ChartViewExample;
+import io.datains.base.domain.ChartViewWithBLOBs;
+import io.datains.base.domain.DatasetTable;
+import io.datains.base.domain.DatasetTableField;
+import io.datains.base.domain.Datasource;
+import io.datains.base.domain.PanelView;
 import io.datains.base.mapper.ChartViewCacheMapper;
 import io.datains.base.mapper.ChartViewMapper;
 import io.datains.base.mapper.PanelViewMapper;
@@ -17,11 +26,21 @@ import io.datains.commons.exception.DEException;
 import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.BeanUtils;
 import io.datains.commons.utils.LogUtil;
-import io.datains.controller.request.chart.*;
+import io.datains.controller.request.chart.ChartDrillRequest;
+import io.datains.controller.request.chart.ChartExtFilterRequest;
+import io.datains.controller.request.chart.ChartExtRequest;
+import io.datains.controller.request.chart.ChartGroupRequest;
+import io.datains.controller.request.chart.ChartViewCacheRequest;
+import io.datains.controller.request.chart.ChartViewRequest;
 import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.controller.response.ChartDetail;
 import io.datains.controller.response.DataSetDetail;
-import io.datains.dto.chart.*;
+import io.datains.dto.chart.ChartDimensionDTO;
+import io.datains.dto.chart.ChartFieldCompareDTO;
+import io.datains.dto.chart.ChartFieldCustomFilterDTO;
+import io.datains.dto.chart.ChartGroupDTO;
+import io.datains.dto.chart.ChartViewDTO;
+import io.datains.dto.chart.ChartViewFieldDTO;
 import io.datains.dto.dataset.DataSetTableDTO;
 import io.datains.dto.dataset.DataSetTableUnionDTO;
 import io.datains.dto.dataset.DataTableInfoDTO;
@@ -29,11 +48,16 @@ import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
 import io.datains.listener.util.CacheUtils;
 import io.datains.plugins.config.SpringContextUtil;
-import io.datains.plugins.view.entity.*;
+import io.datains.plugins.view.entity.PluginChartExtFilter;
+import io.datains.plugins.view.entity.PluginChartFieldCustomFilter;
+import io.datains.plugins.view.entity.PluginViewField;
+import io.datains.plugins.view.entity.PluginViewLimit;
+import io.datains.plugins.view.entity.PluginViewParam;
+import io.datains.plugins.view.entity.PluginViewSet;
 import io.datains.plugins.view.service.ViewPluginService;
 import io.datains.provider.ProviderFactory;
-import io.datains.provider.datasource.DatasourceProvider;
 import io.datains.provider.QueryProvider;
+import io.datains.provider.datasource.DatasourceProvider;
 import io.datains.service.chart.util.ChartDataBuild;
 import io.datains.service.dataset.DataSetTableFieldsService;
 import io.datains.service.dataset.DataSetTableService;
@@ -53,7 +77,20 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -112,13 +149,13 @@ public class ChartViewService {
         return getOne(chartView.getId(), "panel_edit");
     }
 
-    public String checkTitle(ChartViewCacheRequest chartView){
+    public String checkTitle(ChartViewCacheRequest chartView) {
         ChartViewCacheExample example = new ChartViewCacheExample();
         example.createCriteria().andTitleEqualTo(chartView.getTitle()).andSceneIdEqualTo(chartView.getSceneId()).andIdNotEqualTo(chartView.getId());
-        List<ChartViewCache>  result =  chartViewCacheMapper.selectByExample(example);
-        if(CollectionUtils.isNotEmpty(result)){
-           return "fail";
-        }else{
+        List<ChartViewCache> result = chartViewCacheMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(result)) {
+            return "fail";
+        } else {
             return "success";
         }
     }
@@ -128,8 +165,8 @@ public class ChartViewService {
         // 校验名称
         ChartViewExample queryExample = new ChartViewExample();
         queryExample.createCriteria().andSceneIdEqualTo(chartView.getSceneId()).andNameEqualTo(chartView.getName());
-        List<ChartView>  result =  chartViewMapper.selectByExample(queryExample);
-        if(CollectionUtils.isNotEmpty(result)){
+        List<ChartView> result = chartViewMapper.selectByExample(queryExample);
+        if (CollectionUtils.isNotEmpty(result)) {
             DEException.throwException(Translator.get("theme_name_repeat"));
         }
         chartView.setUpdateTime(timestamp);
@@ -250,9 +287,9 @@ public class ChartViewService {
 
     @Transactional
     public ChartViewDTO getOne(String id, String queryFrom) {
-        try{
+        try {
             ChartViewDTO result;
-            if(CommonConstants.VIEW_QUERY_FROM.PANEL_EDIT.equals(queryFrom)) {
+            if (CommonConstants.VIEW_QUERY_FROM.PANEL_EDIT.equals(queryFrom)) {
                 //仪表板编辑页面 从缓存表中取数据 缓存表中没有数据则进行插入
                 result = extChartViewMapper.searchOneFromCache(id);
                 if (result == null) {
@@ -262,11 +299,11 @@ public class ChartViewService {
             } else {
                 result = extChartViewMapper.searchOne(id);
             }
-            if(result==null){
+            if (result == null) {
                 DataInsException.throwException(Translator.get("i18n_chart_delete"));
             }
             return result;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             DataInsException.throwException(e);
         }
@@ -395,7 +432,7 @@ public class ChartViewService {
                 break;
             default:
                 xAxis = xAxis.stream().filter(item -> !desensitizationList.contains(item.getDatainsName()) && datainsNames.contains(item.getDatainsName())).collect(Collectors.toList());
-                yAxis = yAxis.stream().filter(item -> !desensitizationList.contains(item.getDatainsName()) && datainsNames.contains(item.getDatainsName())).collect(Collectors.toList());
+                yAxis = yAxis.stream().filter(item -> !desensitizationList.contains(item.getDatainsName()) && (datainsNames.contains(item.getDatainsName()) || item.getDatainsName().contains("Z_"))).collect(Collectors.toList());
         }
 
         // 过滤来自仪表板的条件
@@ -435,12 +472,12 @@ public class ChartViewService {
 
         List<ChartExtFilterRequest> filters = new ArrayList<>();
         // 联动条件
-        if(ObjectUtils.isNotEmpty(requestList.getLinkageFilters())){
+        if (ObjectUtils.isNotEmpty(requestList.getLinkageFilters())) {
             filters.addAll(requestList.getLinkageFilters());
         }
 
         // 外部参数条件
-        if(ObjectUtils.isNotEmpty(requestList.getOuterParamsFilters())){
+        if (ObjectUtils.isNotEmpty(requestList.getOuterParamsFilters())) {
             filters.addAll(requestList.getOuterParamsFilters());
         }
 
@@ -515,10 +552,10 @@ public class ChartViewService {
         // 如果是插件视图 走插件内部的逻辑
         if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
             Map<String, List<ChartViewFieldDTO>> fieldMap = new HashMap<>();
-            fieldMap.put("xAxis",xAxis);
-            fieldMap.put("yAxis",yAxis);
-            fieldMap.put("extStack",extStack);
-            fieldMap.put("extBubble",extBubble);
+            fieldMap.put("xAxis", xAxis);
+            fieldMap.put("yAxis", yAxis);
+            fieldMap.put("extStack", extStack);
+            fieldMap.put("extBubble", extBubble);
             PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view);
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
@@ -530,7 +567,7 @@ public class ChartViewService {
             Map<String, Object> mapChart = pluginViewResult(pluginViewParam, view, data, isDrill);
             Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
 
-            return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal,view, isDrill, drillFilters);
+            return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters);
             // 如果是插件到此结束
         }
 
@@ -691,8 +728,7 @@ public class ChartViewService {
                         currentMap.put(StringUtils.join(dimension, "-"), item[dataIndex]);
                     }
 
-                    for (int index = 0; index < data.size(); index++) {
-                        String[] item = data.get(index);
+                    for (String[] item : data) {
                         String cTime = item[timeIndex];
                         String cValue = item[dataIndex];
 
@@ -771,7 +807,7 @@ public class ChartViewService {
         }
         // table组件，明细表，也用于导出数据
         Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
-        return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal,view, isDrill, drillFilters);
+        return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters);
     }
 
     public ChartViewDTO uniteViewResult(String sql, Map<String, Object> chartData, Map<String, Object> tabelData, ChartViewDTO view, Boolean isDrill, List<ChartExtFilterRequest> drillFilters) {
@@ -798,8 +834,6 @@ public class ChartViewService {
         pluginViewSet.setDsType(ds.getType());
         pluginViewSet.setTabelId(table.getId());
         PluginViewLimit pluginViewLimit = BeanUtils.copyBean(new PluginViewLimit(), view);
-
-
 
 
         List<PluginChartFieldCustomFilter> fieldFilters = customFilters.stream().map(filter -> gson.fromJson(gson.toJson(filter), PluginChartFieldCustomFilter.class)).collect(Collectors.toList());
@@ -865,7 +899,10 @@ public class ChartViewService {
             case "y_M_d":
                 return StringUtils.equalsIgnoreCase(calcType, "day_mom")
                         || StringUtils.equalsIgnoreCase(calcType, "month_yoy")
-                        || StringUtils.equalsIgnoreCase(calcType, "year_yoy");
+                        || StringUtils.equalsIgnoreCase(calcType, "year_yoy")
+                        || StringUtils.equalsIgnoreCase(calcType, "quarter_yoy");
+            case "y_Q":
+                return StringUtils.equalsIgnoreCase(calcType, "quarter_mom");
         }
         return false;
     }
@@ -939,6 +976,36 @@ public class ChartViewService {
                 Date date = simpleDateFormat.parse(cTime);
                 calendar.setTime(date);
                 calendar.add(Calendar.MONTH, -1);
+                lastTime = simpleDateFormat.format(calendar.getTime());
+            } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.QUARTER_MOM)) {
+                String[] cTimes = cTime.split("-");
+                int year = Integer.parseInt(cTimes[0]);
+                int quarter = Integer.parseInt(cTimes[1].replace("Q", ""));
+                if (quarter == 1) {
+                    year--;
+                    quarter = 4;
+                } else {
+                    quarter--;
+                }
+                lastTime = year + "-Q" + quarter;
+            } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.QUARTER_YOY)) {
+                SimpleDateFormat simpleDateFormat = null;
+                if (StringUtils.equalsIgnoreCase(dateStyle, "y_M")) {
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/MM");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                    }
+                } else if (StringUtils.equalsIgnoreCase(dateStyle, "y_M_d")) {
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    }
+                }
+                Date date = simpleDateFormat.parse(cTime);
+                calendar.setTime(date);
+                calendar.add(Calendar.MONTH, -3);
                 lastTime = simpleDateFormat.format(calendar.getTime());
             }
             return lastTime;
@@ -1040,8 +1107,8 @@ public class ChartViewService {
     public String chartCopy(String id, String panelId) {
         String newChartId = UUID.randomUUID().toString();
         extChartViewMapper.chartCopy(newChartId, id, panelId);
-        extChartViewMapper.copyCache(id,newChartId);
-        extPanelGroupExtendDataMapper.copyExtendData(id,newChartId,panelId);
+        extChartViewMapper.copyCache(id, newChartId);
+        extPanelGroupExtendDataMapper.copyExtendData(id, newChartId, panelId);
         chartViewCacheService.refreshCache(newChartId);
         return newChartId;
     }
@@ -1074,7 +1141,7 @@ public class ChartViewService {
     }
 
     public void initViewCache(String panelId) {
-        extChartViewMapper.deleteCacheWithPanel(null,panelId);
+        extChartViewMapper.deleteCacheWithPanel(null, panelId);
     }
 
 }
