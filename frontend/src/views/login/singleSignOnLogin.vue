@@ -171,12 +171,17 @@ export default {
     singleSignOn() {
       singleSignOn(this.$route.params.id).then(res => {
         // console.log('res', res);
-        if (res.success && res.data) {
-          this.$store.dispatch('user/singleSignOnLogin', res).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+        if (res.success && res.data && res.data.code == 200) {
+          if(res.data.code == 200) {
+            this.$store.dispatch('user/singleSignOnLogin', res).then(() => {
+              this.$router.push({ path: this.redirect || '/' })
+              this.loading = false
+            })
+          } else {
+            this.$error(res.data.msg)
             this.loading = false
-          })
-        }
+          }
+        } 
       })
     },
     clearOidcMsg() {
