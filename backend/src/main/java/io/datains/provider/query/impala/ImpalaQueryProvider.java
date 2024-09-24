@@ -12,7 +12,6 @@ import io.datains.dto.chart.ChartFieldCustomFilterDTO;
 import io.datains.dto.chart.ChartViewFieldDTO;
 import io.datains.dto.sqlObj.SQLObj;
 import io.datains.plugins.common.constants.ImpalaConstants;
-import io.datains.plugins.common.constants.MySQLConstants;
 import io.datains.plugins.common.constants.SQLConstants;
 import io.datains.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
@@ -953,7 +952,7 @@ public class ImpalaQueryProvider extends QueryProvider {
                     fieldName = String.format("CAST(YEAR(%s) AS STRING) || '-Q' || CAST(((MONTH(%s) - 1) DIV 3 + 1) AS STRING)", originField, originField);
                 } else {
                     String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                    fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                    fieldName = String.format(ImpalaConstants.DATE_FORMAT, originField, format);
                 }
             } else {
                 fieldName = originField;
@@ -965,7 +964,7 @@ public class ImpalaQueryProvider extends QueryProvider {
                     if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                         fieldName = String.format("CAST(YEAR(%s) AS STRING) || '-Q' || CAST(((MONTH(%s) - 1) DIV 3 + 1) AS STRING)", originField, originField);
                     } else {
-                        fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                        fieldName = String.format(ImpalaConstants.DATE_FORMAT, originField, format);
                     }
                 } else {
                     String cast = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_INT_FORMAT) + "/1000";
