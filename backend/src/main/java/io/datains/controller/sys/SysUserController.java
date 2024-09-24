@@ -277,12 +277,12 @@ public class SysUserController {
         Map<String,Object> map = new HashMap<>();
         try {
             String privateKeyString = privateKey; // 你的私钥
-            /*PrivateKey privateKey = loadPrivateKey(privateKeyString);
+            PrivateKey privateKey = loadPrivateKey(privateKeyString);
             String decodedString = URLDecoder.decode(carInfo, "UTF-8");//若接收到的参数为URL编码之后的需要decode以下，否则不需要
             String encryptedMessageString = decodedString; // 加密之后的字符串
             byte[] encryptedMessage = Base64.getDecoder().decode(encryptedMessageString);
-            String username = decrypt(encryptedMessage, privateKey);*/
-            String username = carInfo;
+            String username = decrypt(encryptedMessage, privateKey);
+            ///String username = carInfo;
             SysUserEntity user = authUserService.getUserByName(username);
             if (IsNullUtils.isNull(user)){
                 map.put("code",500);
