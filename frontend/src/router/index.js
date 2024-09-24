@@ -48,7 +48,7 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/singleSignOnLogin/:id',
+    path: '/singleSignOnLogin',
     component: () => import('@/views/login/singleSignOnLogin'),
     hidden: true
   },

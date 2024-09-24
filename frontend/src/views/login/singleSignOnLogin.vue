@@ -99,7 +99,8 @@ export default {
         'panel-default-tree',
         'chart-tree',
         'dataset-tree'
-      ]
+      ],
+      count: 0
     }
   },
   computed: {
@@ -150,6 +151,7 @@ export default {
   },
 
   created() {
+    
     this.$store.dispatch('user/getUI').then(() => {
       // const uiLists = this.$store.state.user.uiInfo
       // this.uiInfo = format(uiLists)
@@ -164,14 +166,37 @@ export default {
       this.$error(msg)
     }
     this.clearOidcMsg()
-    this.singleSignOn()
+    this.getMessage()
+    // this.singleSignOn()
   },
 
   methods: {
-    singleSignOn() {
-      singleSignOn(this.$route.params.id).then(res => {
+    getMessage() {
+      window.addEventListener("message", this.handleMessage);
+      this.count = 0;
+    },
+    handleMessage(e) {
+      // console.log('handleMessage', e);
+      if ("portal" == e.data.type) {
+        var cardinfo = e.data.cardInfo;
+        // console.log("cardinfo", cardinfo);
+        //登录业务代码
+        if (this.count != 0) {//由于界面打开速度不通，同一门户会间隔300ms发送一次，一共发送4次。只要接收到信息执行一次即可
+          return;
+        }
+        this.count++;
+        // 登录业务。。。。
+        this.singleSignOn(cardinfo)
+        // 成功之后关闭监听
+        window.removeEventListener('message', this.handleMessage);
+      } else {
+        // console.info(“非同一门户信息”)
+      }
+    },
+    singleSignOn(cardinfo) {
+      singleSignOn(cardinfo).then(res => {
         // console.log('res', res);
-        if (res.success && res.data && res.data.code == 200) {
+        if (res.success && res.data) {
           if(res.data.code == 200) {
             this.$store.dispatch('user/singleSignOnLogin', res).then(() => {
               this.$router.push({ path: this.redirect || '/' })
