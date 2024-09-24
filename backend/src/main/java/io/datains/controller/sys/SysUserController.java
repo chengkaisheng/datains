@@ -1,13 +1,21 @@
 package io.datains.controller.sys;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.datains.auth.api.dto.CurrentUserDto;
+import io.datains.auth.entity.SysUserEntity;
+import io.datains.auth.entity.TokenInfo;
+import io.datains.auth.service.AuthUserService;
+import io.datains.auth.util.JWTUtils;
+import io.datains.auth.util.RedisService;
+import io.datains.auth.util.UserKey;
 import io.datains.base.domain.SysRole;
-import io.datains.commons.utils.AuthUtils;
-import io.datains.commons.utils.PageUtils;
-import io.datains.commons.utils.Pager;
+import io.datains.base.domain.SysUser;
+import io.datains.base.mapper.SysUserMapper;
+import io.datains.commons.utils.*;
 import io.datains.controller.response.ExistLdapUser;
 import io.datains.controller.sys.base.BaseGridRequest;
 import io.datains.controller.sys.request.SysUserCreateRequest;
@@ -22,8 +30,11 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -33,9 +44,7 @@ import java.net.URLDecoder;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -50,6 +59,17 @@ public class SysUserController {
 
     @Resource
     private SysRoleService sysRoleService;
+
+    @Autowired
+    private AuthUserService authUserService;
+
+    @Resource
+    private SysUserMapper sysUserMapper;
+
+    @Resource
+    private RedisService redisService;
+    private static String privateKey = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAJFo3+cw4HmJeKHC2oWU5V6jChwvjKAZcNNLdyKjYiHbnFI/tHPFnOsyroTQwzP6YRwPfcTyMuPZ+cg2iCFpxRbVGJqrKAjH4O8pSW2+ZvkbmoqObxjNZLTfyiC5xJxlAKOMvdmQDvG1vkX0unf4fQgmklWr3yB6grQI+7dlhHq9AgMBAAECgYBw95wzvZo3ceDBM2OXsgS8kEfTe/FxlDI+RXvJ8krT6Qy6LXnhE56Ebzx8PL/aiuOU7EgWkN+OexL+Q7dg1g5iMbqSWGs5CQ/d68jjxXawXur9+5KFh3LEyWZI4IOph1OXhBcFQ0IjNvCFKtYyVQQDwdSA87/GRnkZcP/9I0tgtQJBAMdpiQaSlpHDlqHIk2M5GT9I00ZAgaZrvcz1/dPqwprfCwU1Pe+LO81eTYtf5ytCM+aN2jHrVw0YqaeGEyOSiBMCQQC6rEcrwNsCIC/MoQoR60omNCME0xSe7Hl0Fay8cqQZzJF8oA6Clf1uMjR/zUnTVkm/+TSlVcwZ3gbPcdHVuuvvAkB8M6RP/q9ffJXukFIUg/TQsNg+smDOOd8OsMx22Ip7EZ74kG/SKkOGJ01fGM2P6P0QhZu4ad9fXdQVbnGvP04XAkEAmW1JncuH9gpQXyapKSszKY1GjwuSckC4XlIGRGkROWcq2LyQ0IHI5456GeS33eyY9yEzRQTsmQIkpNHO/pUAnwJBAKTOBqz9jH6F5KTFmU2jKgVRlkfDKD8UnIrOm9iKtu6GIdanTw0NxpVVs3wZEz84+Tz+jmJGCPgD0RWhOxPxKx0=";
+
 
     @ApiOperation("查询用户")
     @RequiresPermissions("user:read")
@@ -74,23 +94,78 @@ public class SysUserController {
     @ApiOperation("创建用户")
     @RequiresPermissions("user:add")
     @PostMapping("/create")
-    public void create(@RequestBody SysUserCreateRequest request) {
-        sysUserService.save(request);
+    @Transactional
+    public void create(@RequestBody SysUserCreateRequest request) throws Exception {
+        int save = sysUserService.save(request);
+        if (save>0){
+            Map<String, Object> token = getToken();
+            if (token.get("code").equals(500)){
+                token.get("errMsg");
+            }
+            Map<String,Object> map = new HashMap<>();
+            SysUserEntity user = authUserService.getUserByName(request.getUsername());
+           // map.put("accessToken",token.get("token"));
+            map.put("biz_id",user.getUserId());
+            map.put("loginName",user.getUsername());
+            map.put("card_no",user.getUsername());
+            map.put("phone",user.getPhone());
+            int a = user.getEnabled()==1?1:(user.getEnabled()==0?2:0);
+            map.put("operateType",a);
+
+            List<Map<String,Object>> list = new ArrayList<>();
+            list.add(map);
+            String s = HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/syncAccountInfo", JSON.toJSONString(list),token.get("token").toString());
+            System.err.println(s);
+        }
     }
 
     @ApiOperation("更新用户")
     @RequiresPermissions("user:edit")
     @PostMapping("/update")
-    public void update(@RequestBody SysUserCreateRequest request) {
-        sysUserService.update(request);
+    @Transactional
+    public void update(@RequestBody SysUserCreateRequest request) throws Exception {
+        int update = sysUserService.update(request);
+        /*if (update>0){
+            Map<String, Object> token = getToken();
+
+            if (token.get("code").equals(500)){
+                token.get("errMsg");
+            }
+            Map<String,Object> map = new HashMap<>();
+            SysUserEntity user = authUserService.getUserByName(request.getUsername());
+           // map.put("accessToken",token.get("token"));
+            map.put("biz_id",user.getUserId());
+            map.put("loginName",user.getUsername());
+            map.put("card_no",user.getUsername());
+            map.put("phone",user.getPhone());
+            int a = user.getEnabled()==1?1:(user.getEnabled()==0?2:0);
+            map.put("operateType",a);
+            HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/syncAccountInfo", JSON.toJSONString(map),token.get("token").toString());
+        }*/
     }
 
+    @Transactional
     @ApiOperation("删除用户")
     @RequiresPermissions("user:del")
     @PostMapping("/delete/{userId}")
     @ApiImplicitParam(paramType = "path", value = "用户ID", name = "userId", required = true, dataType = "Integer")
-    public void delete(@PathVariable("userId") Long userId) {
-        sysUserService.delete(userId);
+    public void delete(@PathVariable("userId") Long userId) throws Exception {
+
+        Map<String, Object> token = getToken();
+        Map<String,Object> map = new HashMap<>();
+        SysUser user = sysUserMapper.selectByPrimaryKey(userId);
+        //map.put("accessToken",token.get("token"));
+        map.put("biz_id",user.getUserId());
+        map.put("loginName",user.getUsername());
+        map.put("card_no",user.getUsername());
+        map.put("phone",user.getPhone());
+       // int a = user.getEnabled()==1?1:(user.getEnabled()==0?2:0);
+        map.put("operateType",2);
+        List<Map<String,Object>> list = new ArrayList<>();
+        list.add(map);
+        HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/syncAccountInfo", JSON.toJSONString(list),token.get("token").toString());
+
+        int delete = sysUserService.delete(userId);
     }
 
     @ApiOperation("更新用户状态")
@@ -172,16 +247,80 @@ public class SysUserController {
         }).collect(Collectors.toList());
     }
 
+    public  Map<String,Object> getToken() throws Exception {
+        Map<String,Object> map = new HashMap<>();
+        try {
+            map.put("appId",130);
+            map.put("privateKey",privateKey);
+            String s = HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/getAccessToken", JSON.toJSONString(map),null);
+            JSONObject jsonObject = JSON.parseObject(s);
+            if (jsonObject.getString("code").equals("200")){
+                map.put("code",200);
+                map.put("token",jsonObject.getString("data"));
+            }else {
+                    map.put("code",500);
+                    map.put("token",jsonObject.getString("msg"));
+            }
+            return map;
+        }catch (Exception e){
+            map.put("code",500);
+            map.put("msg",e.getMessage());
+            return map;
+        }
 
-  /*  public static void main(String[] args) throws Exception {
+    }
+
+
+    //@ApiOperation("单点登录")
+    @GetMapping("/singleSignOn/{carInfo}")
+    public Object singleSignOn(@PathVariable("carInfo") String carInfo) throws Exception {
+        Map<String,Object> map = new HashMap<>();
+        try {
+            String privateKeyString = privateKey; // 你的私钥
+            /*PrivateKey privateKey = loadPrivateKey(privateKeyString);
+            String decodedString = URLDecoder.decode(carInfo, "UTF-8");//若接收到的参数为URL编码之后的需要decode以下，否则不需要
+            String encryptedMessageString = decodedString; // 加密之后的字符串
+            byte[] encryptedMessage = Base64.getDecoder().decode(encryptedMessageString);
+            String username = decrypt(encryptedMessage, privateKey);*/
+            String username = carInfo;
+            SysUserEntity user = authUserService.getUserByName(username);
+            if (IsNullUtils.isNull(user)){
+                map.put("code",500);
+                map.put("msg","未查找到此用户");
+                return map;
+            }
+            TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
+            String token = JWTUtils.sign(tokenInfo, user.getPassword());
+            map.put("code",200);
+            map.put("msg","成功");
+            map.put("token", token);
+            ServletUtils.setToken(token);
+            authUserService.clearCache(user.getUserId());
+            String s = redisService.get(UserKey.getById, "datains_"+user.getUserId().toString());
+            if (StringUtils.isEmpty(s)){
+                boolean set = redisService.set(UserKey.getById, "datains_"+user.getUserId().toString(), token);
+                System.err.println(set);
+            }
+            return map;
+        }catch (Exception e){
+            map.put("code",500);
+            map.put("msg",e.getMessage());
+            e.printStackTrace();
+            return map;
+        }
+
+    }
+
+
+    /*public static void main(String[] args) throws Exception {
         String privateKeyString = privateKey; // 你的私钥
         PrivateKey privateKey = loadPrivateKey(privateKeyString);
-        String decodedString = URLDecoder.decode(cardInfo, "UTF-8");//若接收到的参数为URL编码之后的需要decode以下，否则不需要
+        String decodedString = URLDecoder.decode(carInfo, "UTF-8");//若接收到的参数为URL编码之后的需要decode以下，否则不需要
         String encryptedMessageString = decodedString; // 加密之后的字符串
         byte[] encryptedMessage = Base64.getDecoder().decode(encryptedMessageString);
         String decryptedMessage = decrypt(encryptedMessage, privateKey);
         System.out.println("解密后的信息: " + decryptedMessage);
-    }
+    }*/
 
     public static PrivateKey loadPrivateKey(String privateKeyString) throws Exception {
         byte[] privateKeyBytes = Base64.getDecoder().decode(privateKeyString);
@@ -194,6 +333,6 @@ public class SysUserController {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         return new String(cipher.doFinal(encryptedMessage));
-    }*/
+    }
 
 }

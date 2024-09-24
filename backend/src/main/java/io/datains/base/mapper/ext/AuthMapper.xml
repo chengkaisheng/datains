@@ -41,6 +41,23 @@
         where user_id = #{userId}
     </select>
 
+    <select id="findUserById" resultMap="baseMap">
+        select
+            sys_user.user_id,
+            sys_user.username,
+            sys_user.nick_name,
+            sys_user.dept_id,
+            sys_user.password,
+            sys_user.enabled,
+            sys_user.email,
+            sys_user.phone,
+            sys_user.language,
+            sys_user.is_admin,
+            sys_user.`from`
+        from sys_user
+        where user_id = #{userId}
+    </select>
+
     <select id="findUserByName" resultMap="baseMap">
         select user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from` from sys_user where username = #{username}
     </select>

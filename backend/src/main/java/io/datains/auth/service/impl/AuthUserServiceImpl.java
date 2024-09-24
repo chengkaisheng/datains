@@ -50,6 +50,11 @@ public class AuthUserServiceImpl implements AuthUserService {
         return authMapper.findUser(userId);
     }
 
+    @Override
+    public SysUserEntity findUserById(Long userId) {
+        return authMapper.findUserById(userId);
+    }
+
     public SysUserEntity getUserByIdNoCache(Long userId) {
         return authMapper.findUser(userId);
     }

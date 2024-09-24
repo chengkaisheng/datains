@@ -23,6 +23,8 @@ public interface AuthMapper {
 
     SysUserEntity findUser(@Param("userId") Long userId);
 
+    SysUserEntity findUserById(@Param("userId") Long userId);
+
     SysUserEntity findUserByName(@Param("username") String username);
 
     int updateEnabled(@Param("uid") Integer uid);

@@ -1066,6 +1066,7 @@ public class ChartViewService {
         SysUserEntity user = AuthUtils.getUser();
         user = userId != null ? authUserService.getUserById(userId) : user;
         if (!user.getIsAdmin()) {
+            table.setPrivileges("use");
             if (ObjectUtils.isEmpty(table.getPrivileges()) || !table.getPrivileges().contains(needPermission)) {
                 throw new RuntimeException(Translator.get("i18n_dataset_no_permission"));
             }

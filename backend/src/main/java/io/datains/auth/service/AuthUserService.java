@@ -11,6 +11,8 @@ public interface AuthUserService {
 
     SysUserEntity getUserById(Long userId);
 
+    SysUserEntity findUserById(Long userId);
+
     SysUserEntity getUserByName(String username);
 
     SysUserEntity getLdapUserByName(String username);

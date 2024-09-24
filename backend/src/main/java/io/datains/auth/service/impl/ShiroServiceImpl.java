@@ -81,6 +81,10 @@ public class ShiroServiceImpl implements ShiroService {
 
         filterChainDefinitionMap.put("/api/auth/isPluginLoaded", ANON);
         filterChainDefinitionMap.put("/system/requestTimeOut", ANON);
+
+
+        filterChainDefinitionMap.put("/api/user/singleSignOn/*", ANON);
+
         filterChainDefinitionMap.put("/api/auth/validateName", ANON);
         filterChainDefinitionMap.put("/api/auth/isOpenLdap", ANON);
         filterChainDefinitionMap.put("/api/auth/isOpenOidc", ANON);
@@ -105,6 +109,8 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/**", "authc");
 
         filterChainDefinitionMap.put("/**", "jwt");
+        //filterChainDefinitionMap.put("/api/user/singleSignOn", ANON);
+        filterChainDefinitionMap.put("/api/user/existLdapUsers", ANON);
 
         return filterChainDefinitionMap;
     }
