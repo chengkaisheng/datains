@@ -103,7 +103,7 @@ public class AboutController {
             }
             if (!licenseVo.getMacAdress().equals(currentIpLocalMac) || !licenseVo.getMacAdress().toLowerCase().equals(currentIpLocalMac)){
                 f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
-                f2CLicenseResponse.setMessage("非此服务器授权");
+                f2CLicenseResponse.setMessage("mac地址错误");
                 return f2CLicenseResponse;
             }
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
