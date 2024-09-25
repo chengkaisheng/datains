@@ -194,7 +194,7 @@ export default {
       }
     },
     singleSignOn(cardinfo) {
-      singleSignOn(cardinfo).then(res => {
+      singleSignOn({carInfo: cardinfo}).then(res => {
         // console.log('res', res);
         if (res.success && res.data) {
           if(res.data.code == 200) {
