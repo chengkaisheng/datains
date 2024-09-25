@@ -272,17 +272,18 @@ public class SysUserController {
 
 
     //@ApiOperation("单点登录")
-    @GetMapping("/singleSignOn/{carInfo}")
-    public Object singleSignOn(@PathVariable("carInfo") String carInfo) throws Exception {
+    @PostMapping("/singleSignOn")
+    public Object singleSignOn(@RequestBody Map<String,String> maps ) throws Exception {
         Map<String,Object> map = new HashMap<>();
         try {
             String privateKeyString = privateKey; // 你的私钥
             PrivateKey privateKey = loadPrivateKey(privateKeyString);
-            String decodedString = URLDecoder.decode(carInfo, "UTF-8");//若接收到的参数为URL编码之后的需要decode以下，否则不需要
-            String encryptedMessageString = decodedString; // 加密之后的字符串
+            String decodedString = URLDecoder.decode(maps.get("carInfo"), "UTF-8");//若接收到的参数为URL编码之后的需要decode以下，否则不需要
+            String cao = decodedString.replaceAll(" +","+");
+            String encryptedMessageString = cao; // 加密之后的字符串
             byte[] encryptedMessage = Base64.getDecoder().decode(encryptedMessageString);
             String username = decrypt(encryptedMessage, privateKey);
-            ///String username = carInfo;
+            //String username = maps.get("carInfo");
             SysUserEntity user = authUserService.getUserByName(username);
             if (IsNullUtils.isNull(user)){
                 map.put("code",500);
@@ -312,15 +313,16 @@ public class SysUserController {
     }
 
 
-    /*public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         String privateKeyString = privateKey; // 你的私钥
         PrivateKey privateKey = loadPrivateKey(privateKeyString);
-        String decodedString = URLDecoder.decode(carInfo, "UTF-8");//若接收到的参数为URL编码之后的需要decode以下，否则不需要
-        String encryptedMessageString = decodedString; // 加密之后的字符串
+        String decodedString = URLDecoder.decode("Zfn7zHPS7JXg8g6uBc17+YBL041Giz73IbhNX5Q7MbXJvJ1Upw4fVIYM2kF90a9FEuMz5reA7tc+WUudTxGVDivyYSOqhzt9c9EMudb0YoQGvDUOOc2Wjy47IvGz60g+uoDqygoIsBi5k3oyuz1vvQqm6knrkmt5qlEwB1tkjm0=", "UTF-8");//若接收到的参数为URL编码之后的需要decode以下，否则不需要
+        String s = decodedString.replaceAll(" +","+");
+        String encryptedMessageString = s; // 加密之后的字符串
         byte[] encryptedMessage = Base64.getDecoder().decode(encryptedMessageString);
         String decryptedMessage = decrypt(encryptedMessage, privateKey);
         System.out.println("解密后的信息: " + decryptedMessage);
-    }*/
+    }
 
     public static PrivateKey loadPrivateKey(String privateKeyString) throws Exception {
         byte[] privateKeyBytes = Base64.getDecoder().decode(privateKeyString);

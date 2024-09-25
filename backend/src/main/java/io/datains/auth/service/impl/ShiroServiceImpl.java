@@ -83,7 +83,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/system/requestTimeOut", ANON);
 
 
-        filterChainDefinitionMap.put("/api/user/singleSignOn/*", ANON);
+        filterChainDefinitionMap.put("/api/user/singleSignOn", ANON);
 
         filterChainDefinitionMap.put("/api/auth/validateName", ANON);
         filterChainDefinitionMap.put("/api/auth/isOpenLdap", ANON);
