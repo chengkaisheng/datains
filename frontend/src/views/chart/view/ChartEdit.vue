@@ -1728,6 +1728,7 @@ export default {
         arr.forEach(item => {
           item.datainsName = 'Z_' + uuid.v1().replace(/-/g, '');
         })
+        this.fieldFilter(this.searchField); // 对左侧指标重新赋值，解决datainsName被修改导致表格不新增列的问题
       }
     }
   },
