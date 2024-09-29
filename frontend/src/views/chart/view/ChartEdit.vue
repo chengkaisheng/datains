@@ -1294,11 +1294,46 @@
 
     <!--占比设置-->
     <el-dialog v-dialogDrag :title="$t('chart.proportion_setting')" :visible="ProportionItem" :show-close="false" width="30%">
-      <el-form ref="itemForm" :model="itemForm" :rules="itemFormRules">
-        <el-form-item :label="$t('chart.proportion')" prop="name">
-          <el-input v-model="itemForm.isPercentage" size="mini" clearable />
-        </el-form-item>
-      </el-form>
+      <el-tabs v-model="proportionActiveName">
+        <el-tab-pane :label="$t('chart.singleProportion')" name="singleCol">
+          <el-form ref="proportionForm" :model="proportionForm" :rules="proportionFormRules">
+            <el-form-item :label="$t('chart.percent')" prop="singleColpercent">
+              <el-checkbox-group v-model="proportionForm.singleColpercent">
+                <el-checkbox label="%" name="singleColpercent"></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane :label="$t('chart.doubleProportion')" name="doubleCol">
+          <el-form ref="proportionForm" :model="proportionForm" :rules="proportionFormRules">
+            <el-form-item style="margin-bottom: 22px;" :label="$t('chart.proportionOne')" prop="proportionOne">
+              <el-select v-model="proportionForm.proportionOne" clearable placeholder="">
+                <el-option
+                  v-for="item in proportionList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 22px;" :label="$t('chart.proportionTwo')" prop="proportionTwo">
+              <el-select v-model="proportionForm.proportionTwo" clearable placeholder="">
+                <el-option
+                  v-for="item in proportionList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <!-- <el-form-item :label="$t('chart.percent')" prop="doubleColPercent">
+              <el-checkbox-group v-model="proportionForm.doubleColPercent">
+                <el-checkbox label="%" name="doubleColPercent"></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item> -->
+          </el-form>
+        </el-tab-pane>
+      </el-tabs>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeProportion()">{{ $t('chart.cancel') }}</el-button>
         <el-button type="primary" size="mini" @click="saveProportion">{{ $t('chart.confirm') }}</el-button>
@@ -1644,6 +1679,22 @@ export default {
           { max: 50, message: this.$t('commons.char_can_not_more_50'), trigger: 'change' }
         ]
       },
+      proportionActiveName: 'singleCol',
+      proportionForm: {
+        singleColpercent: [],
+        proportionOne: '',
+        proportionTwo: '',
+        // doubleColPercent: []
+      },
+      proportionFormRules: {
+        proportionOne: [
+          { required: false, message: this.$t('commons.input_content'), trigger: 'change' }
+        ],
+        proportionTwo: [
+          { required: false, message: this.$t('commons.input_content'), trigger: 'change' }
+        ]
+      },
+      proportionList: [],
       tabStatus: false,
       data: {},
       httpRequest: {
@@ -1725,12 +1776,13 @@ export default {
         let arr = newVal.filter(item => {
           return !oldVal.find(oitem => item.datainsName === oitem.datainsName)
         });
+        let flag = arr.length == 1 ? true : false; // length > 1 时不对datainsName进行修改
         arr.forEach(item => {
-          item.datainsName = 'Z_' + uuid.v1().replace(/-/g, '');
+          item.datainsName = flag ? 'Z_' + uuid.v1().replace(/-/g, '') : item.datainsName;
         })
         this.fieldFilter(this.searchField); // 对左侧指标重新赋值，解决datainsName被修改导致表格不新增列的问题
       }
-    }
+    },
   },
   created() {
     const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
@@ -2535,6 +2587,21 @@ export default {
     showProportion(val) {
       this.itemForm = JSON.parse(JSON.stringify(val))
       this.ProportionItem = true
+      // 供选择的列需要去掉当前列、计算过单列占比的列
+      this.proportionList = []
+      this.view.yaxis.map((item) => {
+        if((item.isPercentage !== '%') && (item.datainsName !== this.itemForm.datainsName)) {
+          let obj = {
+            value: item.datainsName,
+            label: item.name
+          };
+          this.proportionList.push(obj);
+        }
+      })
+      // 设置表单默认值
+      this.proportionForm.singleColpercent = this.itemForm.isPercentage === undefined ? [] : [this.itemForm.isPercentage]
+      this.proportionForm.proportionOne = (this.itemForm.proportionOne === undefined || this.proportionList.findIndex(item => item.value === this.itemForm.proportionOne) == '-1') ? '' : this.itemForm.proportionOne
+      this.proportionForm.proportionTwo = (this.itemForm.proportionTwo === undefined || this.proportionList.findIndex(item => item.value === this.itemForm.proportionTwo) == '-1') ? '' : this.itemForm.proportionTwo
     },
     saveRename() {
       this.$refs['itemForm'].validate((valid) => {
@@ -2583,24 +2650,25 @@ export default {
       console.log(this.view)
     },
     saveProportion() {
-      this.$refs['itemForm'].validate((valid) => {
+      this.$refs['proportionForm'].validate((valid) => {
         if (valid) {
           if (this.itemForm.renameType === 'quota') {
-            this.view.yaxis[this.itemForm.index].isPercentage = this.itemForm.isPercentage
-          } else if (this.itemForm.renameType === 'dimension') {
-            this.view.xaxis[this.itemForm.index].name = this.itemForm.name
-          } else if (this.itemForm.renameType === 'quotaExt') {
-            this.view.yaxisExt[this.itemForm.index].name = this.itemForm.name
-          } else if (this.itemForm.renameType === 'dimensionExt') {
-            this.view.xaxisExt[this.itemForm.index].name = this.itemForm.name
-          }
+            if(this.proportionActiveName === 'singleCol') {
+              this.view.yaxis[this.itemForm.index].isPercentage = this.proportionForm.singleColpercent[0]
+              this.view.yaxis[this.itemForm.index].proportionOne = ''
+              this.view.yaxis[this.itemForm.index].proportionTwo = ''
+            } else if(this.proportionActiveName === 'doubleCol') {
+              this.view.yaxis[this.itemForm.index].proportionOne = this.proportionForm.proportionOne
+              this.view.yaxis[this.itemForm.index].proportionTwo = this.proportionForm.proportionTwo
+              this.view.yaxis[this.itemForm.index].isPercentage = ''
+            }
+          } 
           this.calcData(true)
           this.closeProportion()
         } else {
-          return false
+          return false;
         }
       })
-      console.log(this.view)
     },
     closePrecision() {
       this.precisionItem = false
@@ -2608,6 +2676,10 @@ export default {
     },
     closeProportion() {
       this.ProportionItem = false
+      this.proportionForm.singleColpercent = []
+      this.proportionForm.proportionOne = ''
+      this.proportionForm.proportionTwo = ''
+      this.proportionActiveName = 'singleCol'
       this.resetRename()
     },
     resetRename() {
@@ -2736,7 +2808,7 @@ export default {
           return m.id === that.moveId
         })
         // antv 透视表  指标->数据列/指标   不做去重
-        if( this.view.type === "table-pivot" || this.view.type === "table-normal") {
+        if(this.view.type === "table-pivot" || this.view.type === "table-normal") {
         } else {
           if (dup && dup.length > 1) {
             list.splice(e.newDraggableIndex, 1)

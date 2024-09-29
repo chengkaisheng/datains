@@ -390,11 +390,13 @@ export default {
     summaryMethod({ columns, data }) {
       const yaxis = JSON.parse(this.chart.yaxis)
       const means = [] // 合计
+      let calcAccuracyList = [] // 每列的精度，需要和means一一对应
       columns.forEach((column, columnIndex) => {
         console.log(column, columnIndex)
         const x = JSON.parse(this.chart.xaxis)
         if (columnIndex === 0 && x.length > 0) {
           means.push('合计')
+          calcAccuracyList.push('')
         } else {
           if (columnIndex >= x.length) {
             const values = data.map((item) => {
@@ -424,16 +426,28 @@ export default {
                 accuracy = foundObject.totalaccuracy || 0
                 isPercentage = foundObject.isPercentage || ''
               }
+              calcAccuracyList[columnIndex] = accuracy
               means[columnIndex] = total.toFixed(Number(accuracy)) + isPercentage
             } else {
+              calcAccuracyList[columnIndex] = ''
               means[columnIndex] = ''
             }
           } else {
+            calcAccuracyList[columnIndex] = ''
             means[columnIndex] = ''
           }
         }
       })
 
+      // 进行占比计算
+      if (this.chart.calcIndexList && this.chart.calcIndexList.length > 0) {
+        // item [0,1,2] 分别是第一列，第二列，需要进行计算的第三列
+        this.chart.calcIndexList.map((item) => {
+          let calcNum = means[item[0]] / means[item[1]];
+          // means[item[2]] = isNaN(calcNum) ? '-' : means[item[2]].endsWith('%') ? (calcNum * 100).toFixed(calcAccuracyList[item[2]]) + '%' : calcNum.toFixed(calcAccuracyList[item[2]])
+          means[item[2]] = isNaN(calcNum) ? '-' : (calcNum * 100).toFixed(calcAccuracyList[item[2]]) + '%'
+        })
+      }
       // 返回一个二维数组的表尾合计(不要平均值，就不要在数组中添加)
       return [means]
     },
