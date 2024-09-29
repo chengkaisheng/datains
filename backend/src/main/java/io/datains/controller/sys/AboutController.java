@@ -101,7 +101,13 @@ public class AboutController {
             }else {
                 currentIpLocalMac = macUtil.getCurrentIpLocalMac();
             }
-            if (!licenseVo.getMacAdress().equals(currentIpLocalMac) || !licenseVo.getMacAdress().toLowerCase().equals(currentIpLocalMac)){
+            System.err.println("服务器mac:"+currentIpLocalMac);
+            System.err.println("license文件中的mac:"+licenseVo.getMacAdress());
+            String replacedString = currentIpLocalMac.replaceAll(":", "").replaceAll("-", "");
+            String licenseMac = licenseVo.getMacAdress().replaceAll(":", "").replaceAll("-", "");
+            System.err.println("服务器替换后mac:"+licenseMac);
+            System.err.println("license文件中替换后的mac:"+licenseVo.getMacAdress());
+            if (!licenseMac.equalsIgnoreCase(replacedString)){
                 f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
                 f2CLicenseResponse.setMessage("mac地址错误");
                 return f2CLicenseResponse;
@@ -171,7 +177,13 @@ public class AboutController {
                 }else {
                     currentIpLocalMac = macUtil.getCurrentIpLocalMac();
                 }
-                if (!licenseVo.getMacAdress().equals(currentIpLocalMac) || !licenseVo.getMacAdress().toLowerCase().equals(currentIpLocalMac)){
+                System.err.println("服务器mac:"+currentIpLocalMac);
+                System.err.println("license文件中的mac:"+licenseVo.getMacAdress());
+                String replacedString = currentIpLocalMac.replaceAll(":", "").replaceAll("-", "");
+                String licenseMac = licenseVo.getMacAdress().replaceAll(":", "").replaceAll("-", "");
+                System.err.println("服务器替换后mac:"+licenseMac);
+                System.err.println("license文件中替换后的mac:"+licenseMac);
+                if (!licenseMac.equalsIgnoreCase(replacedString)){
                     f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
                     return f2CLicenseResponse;
                 }
@@ -236,6 +248,13 @@ public class AboutController {
     }*/
 
     public static void main(String[] args) {
+        String originalString = "02:42:ac:13-00-04";
+        String replacedString = originalString.replaceAll(":", "").replaceAll("-", "");
+        String originalStrings = "0242Ac130004";
+        System.err.println(originalStrings.equalsIgnoreCase(replacedString));
+    }
+
+   /* public static void main(String[] args) {
 
             LicenseVo license = new LicenseVo();
             license.setCompany("上海哲锦科技");
@@ -261,165 +280,5 @@ public class AboutController {
             String s = instance.Base64Encode(dataEase);
             System.err.println(s);
 
-
-/*
-        EncryptUtil instance = EncryptUtil.getInstance();
-        String a= "[{\n" +
-                "\t\t\"path\": \"role\",\n" +
-                "\t\t\"component\": \"SystemRole\",\n" +
-                "\t\t\"redirect\": null,\n" +
-                "\t\t\"name\": \"system-role\",\n" +
-                "\t\t\"title\": \"角色管理\",\n" +
-                "\t\t\"icon\": \"role\",\n" +
-                "\t\t\"pid\": 1,\n" +
-                "\t\t\"menuId\": 5,\n" +
-                "\t\t\"permission\": \"role:read\",\n" +
-                "\t\t\"hidden\": false,\n" +
-                "\t\t\"type\": 1,\n" +
-                "\t\t\"menuSort\": 2,\n" +
-                "\t\t\"isPlugin\": true,\n" +
-                "\t\t\"noLayout\": false,\n" +
-                "\t\t\"children\": null\n" +
-                "\t}, {\n" +
-                "\t\t\"path\": \"dept\",\n" +
-                "\t\t\"component\": \"SystemDept\",\n" +
-                "\t\t\"redirect\": null,\n" +
-                "\t\t\"name\": \"system-dept\",\n" +
-                "\t\t\"title\": \"组织管理\",\n" +
-                "\t\t\"icon\": \"dept\",\n" +
-                "\t\t\"pid\": 1,\n" +
-                "\t\t\"menuId\": 4,\n" +
-                "\t\t\"permission\": \"dept:read\",\n" +
-                "\t\t\"hidden\": false,\n" +
-                "\t\t\"type\": 1,\n" +
-                "\t\t\"menuSort\": 3,\n" +
-                "\t\t\"isPlugin\": true,\n" +
-                "\t\t\"noLayout\": false,\n" +
-                "\t\t\"children\": null\n" +
-                "\t}, {\n" +
-                "\t\t\"path\": \"system-auth\",\n" +
-                "\t\t\"component\": \"SystemAuth\",\n" +
-                "\t\t\"redirect\": null,\n" +
-                "\t\t\"name\": \"system-auth\",\n" +
-                "         \"title\": \"权限管理\",\n" +
-                "\t\t\"icon\": \"password\",\n" +
-                "\t\t\"pid\": 1,\n" +
-                "\t\t\"menuId\": 41,\n" +
-                "\t\t\"permission\": \"auth:read\",\n" +
-                "\t\t\"hidden\": false,\n" +
-                "\t\t\"type\": 1,\n" +
-                "\t\t\"menuSort\": 4,\n" +
-                "\t\t\"isPlugin\": true,\n" +
-                "\t\t\"noLayout\": true,\n" +
-                "\t\t\"children\": null\n" +
-                "\t}, {\n" +
-                "\t\t\"path\": \"emailtask\",\n" +
-                "\t\t\"component\": \"EmailTask\",\n" +
-                "\t\t\"redirect\": null,\n" +
-                "\t\t\"name\": \"sys-task-email\",\n" +
-                "        \"title\": \"定时报告\",\n" +
-                "\t\t\"icon\": \"email-task\",\n" +
-                "\t\t\"pid\": 60,\n" +
-                "\t\t\"menuId\": 61,\n" +
-                "\t\t\"permission\": \"task-email:read\",\n" +
-                "\t\t\"hidden\": false,\n" +
-                "\t\t\"type\": 1,\n" +
-                "\t\t\"menuSort\": 1002,\n" +
-                "\t\t\"isPlugin\": true,\n" +
-                "\t\t\"noLayout\": false,\n" +
-                "\t\t\"children\": null\n" +
-                "\t}, {\n" +
-                "\t\t\"path\": \"dept-form\",\n" +
-                "\t\t\"component\": \"SystemDeptForm\",\n" +
-                "\t\t\"redirect\": null,\n" +
-                "\t\t\"name\": \"system-dept-form\",\n" +
-                "\t\t\"title\": \"组织表单\",\n" +
-                "\t\t\"icon\": null,\n" +
-                "\t\t\"pid\": 1,\n" +
-                "\t\t\"menuId\": 37,\n" +
-                "\t\t\"permission\": null,\n" +
-                "\t\t\"hidden\": true,\n" +
-                "\t\t\"type\": 1,\n" +
-                "\t\t\"menuSort\": 999,\n" +
-                "\t\t\"isPlugin\": true,\n" +
-                "\t\t\"noLayout\": false,\n" +
-                "\t\t\"children\": null\n" +
-                "\t}, {\n" +
-                "\t\t\"path\": \"role-form\",\n" +
-                "\t\t\"component\": \"SystemRoleForm\",\n" +
-                "\t\t\"redirect\": null,\n" +
-                "\t\t\"name\": \"system-role-form\",\n" +
-                "\t\t\"title\": \"角色表单\",\n" +
-                "\t\t\"icon\": null,\n" +
-                "\t\t\"pid\": 1,\n" +
-                "\t\t\"menuId\": 38,\n" +
-                "\t\t\"permission\": null,\n" +
-                "\t\t\"hidden\": true,\n" +
-                "\t\t\"type\": 1,\n" +
-                "\t\t\"menuSort\": 999,\n" +
-                "\t\t\"isPlugin\": true,\n" +
-                "\t\t\"noLayout\": false,\n" +
-                "\t\t\"children\": null\n" +
-                "\t}, {\n" +
-                "\t\t\"path\": \"emailtask-form\",\n" +
-                "\t\t\"component\": \"EmailTaskForm\",\n" +
-                "\t\t\"redirect\": null,\n" +
-                "\t\t\"name\": \"sys-task-email-form\",\n" +
-                "\t\t\"title\": \"报告信息\",\n" +
-                "        \"icon\": \"task\",\n" +
-                "\t\t\"pid\": 1,\n" +
-                "\t\t\"menuId\": 62,\n" +
-                "\t\t\"permission\": \"task-email:read\",\n" +
-                "\t\t\"hidden\": true,\n" +
-                "\t\t\"type\": 1,\n" +
-                "\t\t\"menuSort\": 1003,\n" +
-                "\t\t\"isPlugin\": true,\n" +
-                "\t\t\"noLayout\": false,\n" +
-                "\t\t\"children\": null\n" +
-                "\t}, {\n" +
-                "\t\t\"path\": \"/ukey\",\n" +
-                "\t\t\"component\": \"SystemUkey\",\n" +
-                "\t\t\"redirect\": null,\n" +
-                "\t\t\"name\": \"system-ukey\",\n" +
-                "\t\t\"title\": \"用户key\",\n" +
-                "\t\t\"icon\": \"ukey\",\n" +
-                "\t\t\"pid\": 0,\n" +
-                "\t\t\"menuId\": 70,\n" +
-                "\t\t\"permission\": \"\",\n" +
-                "\t\t\"hidden\": true,\n" +
-                "\t\t\"type\": 1,\n" +
-                "\t\t\"menuSort\": 1002,\n" +
-                "\t\t\"isPlugin\": true,\n" +
-                "\t\t\"noLayout\": false,\n" +
-                "\t\t\"children\": null\n" +
-                "\t}]\n" +
-                "\n";
-      *//*  a = a.replaceAll("\r|\n", "");
-        System.err.println("fwwfwgwgw"+a);
-        String trim = a.replaceAll(" ", "");
-        trim = trim.replaceAll("\\\\", "");
-        System.err.println(trim);
-        String s2 = JSON.toJSONString(trim);
-        System.err.println(s2);*//*
-        //DES加密s
-        String dataEase = instance.DESencode(a, "DataIns");
-        //Base64加密
-        String s = instance.Base64Encode(dataEase);
-        System.err.println(s);
-
-
-        *//*      String a = "Q0ZDMzE1MUYxRjU2NjU2N0M2NDk5NkYyNUI5N0Y2RDMyRDY1RkNBQTY2RThCRTkzNkU5QzE5REY3QzE2MEVDMzlDNTk0OTY3N0M0QjA1OTc3NjU4MERDMjA3NTk2QjkxRjE2NDlCQURFQTZFOEExODk4RTBGQkQ2NDEyQ0I5NkMyODc5M0MwMDhFNTAwM0MyM0I0NjdBMEM4OTQwQ0U2N0VBRjg4MEU2NzAyMEIwRkY0NTJGRjBGNDcyMzQ5RjJGNERENkYwNDM2ODM3N0RGQ0IxOUEyNTI1NEExN0E0NUMwODA4RDk1MDYwQThFNDlCQ0REQzE0Q0UzMDYwQUYxQUJCNDNBMzAxM0RGNEJBNzIxQzU3RDlEMzhDNTE2MTAwOEI5NzVBMkM2MkFFNDI5OENFNTcxRTIyNzI2NUY1MUEyNDJDN0RDNzUzRDNDODEwRjkyRDgyRDYxMjJGMzQyRTNENTY4RDI0QzU3NDlGRUYwMThBNjk3NzUyNEMzQUNC";
-         *//*
-        //Base64解密
-        String s1 = instance.Base64Decode(s);
-        System.err.println(s1);
-        //DES解密
-        String s3 = instance.DESdecode(s1,"DataIns");
-        String res = JSON.toJSON(s3).toString();
-        System.err.println(res);
-        List<PluginSysMenu> list = null;
-
-            list = JSONArray.parseArray(res,PluginSysMenu.class);
-        System.err.println(list);*/
-    }
+    }*/
 }

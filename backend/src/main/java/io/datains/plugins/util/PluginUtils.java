@@ -99,7 +99,13 @@ public class PluginUtils {
                 }else {
                     currentIpLocalMac = macUtil.getCurrentIpLocalMac();
                 }
-                if (!licenseVo.getMacAdress().equals(currentIpLocalMac) || !licenseVo.getMacAdress().toLowerCase().equals(currentIpLocalMac)){
+                System.err.println("服务器mac:"+currentIpLocalMac);
+                System.err.println("license文件中的mac:"+licenseVo.getMacAdress());
+                String replacedString = currentIpLocalMac.replaceAll(":", "").replaceAll("-", "");
+                String licenseMac = licenseVo.getMacAdress().replaceAll(":", "").replaceAll("-", "");
+                System.err.println("服务器替换后mac:"+licenseMac);
+                System.err.println("license文件中替换后的mac:"+licenseMac);
+                if (!licenseMac.equalsIgnoreCase(replacedString)){
                     f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
                     return f2CLicenseResponse;
                 }

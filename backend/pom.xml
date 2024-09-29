@@ -301,6 +301,21 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
         </dependency>
+        <!--添加数据库驱动安装包-->
+        <!--<dependency>
+            <groupId>com.dameng</groupId>
+            <artifactId>Dm8JdbcDriver18</artifactId>
+            <version>18</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/lib/DmJdbcDriver18.jar</systemPath>
+        </dependency>-->
+
+        <dependency>
+            <groupId>com.dameng</groupId>
+            <artifactId>DmJdbcDriver18</artifactId>
+            <version>8.1.1.193</version>
+        </dependency>
+
 
     </dependencies>
 

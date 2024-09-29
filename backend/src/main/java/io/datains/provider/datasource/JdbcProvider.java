@@ -9,12 +9,11 @@ import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.dto.datasource.*;
 import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
-import io.datains.plugins.common.constants.DatasourceTypes;
 import io.datains.provider.ProviderFactory;
 import io.datains.provider.QueryProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-
+import io.datains.commons.enums.DatasourceTypes;
 import javax.annotation.PostConstruct;
 import java.beans.PropertyVetoException;
 import java.io.File;
@@ -503,6 +502,13 @@ public class JdbcProvider extends DatasourceProvider {
                 driver = db2Configuration.getDriver();
                 jdbcurl = db2Configuration.getJdbc();
                 break;
+            case dm:
+                DmConfiguration dmConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), DmConfiguration.class);
+                username = dmConfiguration.getUsername();
+                password = dmConfiguration.getPassword();
+                driver = "dm.jdbc.driver.DmDriver";
+                jdbcurl = dmConfiguration.getJdbc();
+                break;
             default:
                 break;
         }
@@ -673,6 +679,9 @@ public class JdbcProvider extends DatasourceProvider {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "select TABNAME from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'T'".replace("DE_SCHEMA", db2Configuration.getSchema());
+            case dm:
+                DmConfiguration dmConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), DmConfiguration.class);
+                return String.format("select * from dba_tables WHERE owner =  '%s' ;", dmConfiguration.getDataBase());
             default:
                 return "show tables;";
         }
