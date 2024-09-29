@@ -834,6 +834,9 @@ export default {
               if (response.data.customFilter === '[]' || keyValeu === null) {
                 if (response.success) {
                   console.log('查出的数据', response.data)
+                  if((response.data.render === 'antv' || response.data.render === 'echarts') && (response.data.type === 'table-normal' || response.data.type === 'table-pivot')) {
+                    this.calcProportion(response.data) // 计算占比
+                  }
                   if (response.data.render === 'antv') {
                     if (response.data.data) {
                       if (response.data.xaxis) {
@@ -1294,6 +1297,9 @@ export default {
                   method(id, this.panelInfo.id, requestInfo).then((response) => {
                     if (response.success) {
                       console.log('查出的数据', response.data)
+                      if((response.data.render === 'antv' || response.data.render === 'echarts') && (response.data.type === 'table-normal' || response.data.type === 'table-pivot')) {
+                        this.calcProportion(response.data) // 计算占比
+                      }
                       if (response.data.render === 'antv') {
                         if (response.data.data) {
                           if (response.data.xaxis) {
@@ -1753,6 +1759,35 @@ export default {
             return true
           })
       }
+    },
+    // 计算占比
+    calcProportion(data) {
+      let yaxis = JSON.parse(data.yaxis)
+      let calcCols = [] // 需要进行计算的列
+      let calcIndexList = [] // 计算列的索引
+      yaxis.map((item) => {
+        if(item.proportionOne && item.proportionTwo) {
+          calcCols.push({
+            proportionOne: item.proportionOne,
+            proportionTwo: item.proportionTwo,
+            proportionCalc: item.datainsName,
+            totalaccuracy: item.totalaccuracy == undefined ? 0 : item.totalaccuracy,
+          });
+          calcIndexList.push([
+            data.data.fields.findIndex(fitem => fitem.datainsName === item.proportionOne),
+            data.data.fields.findIndex(fitem => fitem.datainsName === item.proportionTwo),
+            data.data.fields.findIndex(fitem => fitem.datainsName === item.datainsName)
+          ]);
+        }
+      })
+      data.calcIndexList = calcIndexList // 计算合计值的时候需要使用
+      if(calcCols.length == 0) return
+      data.data.tableRow.forEach((item) => {
+        calcCols.map((calcItem) => {
+          let calcNum = item[calcItem.proportionOne] / item[calcItem.proportionTwo];
+          item[calcItem.proportionCalc] = isNaN(calcNum) ? '-' : (calcNum * 100).toFixed(calcItem.totalaccuracy) + '%'
+        })
+      })
     },
     saveThemeInfo(data, trigger, needRefreshGroup = false, switchType = false) {
       console.log('saveTheme...', data)

@@ -304,6 +304,21 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
   totalCfg.row.subTotalsDimensions = r
   totalCfg.col.subTotalsDimensions = c
 
+  // 总计
+  totalCfg.row.calcTotals = {
+    calcFunc: (query, data, spreadsheet) => calcTotal(query, data, spreadsheet, valueFields)
+  }
+  // 小计
+  totalCfg.row.calcSubTotals = {
+    calcFunc: (query, data, spreadsheet) => calcTotal(query, data, spreadsheet, valueFields)
+  }
+  // totalCfg.row.calcGrandTotals = {
+  //   calcFunc: (query, data, spreadsheet) => {
+  //     console.log('query, data, spreadsheet', query, data, spreadsheet);
+  //     return 0
+  //   }
+  // }
+
   // options
   const s2Options = {
     width: containerDom.offsetWidth,
@@ -332,4 +347,26 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
   s2.setThemeCfg({ theme: customTheme })
 
   return s2
+}
+
+const calcTotal = (query, data, spreadsheet, valueFields) => {
+  // console.log('query, data, spreadsheet', query, data, spreadsheet);
+  let arr = valueFields.filter(item => item.datainsName === query.$$extra$$)
+  if (arr.length > 0 && arr[0].proportionOne && arr[0].proportionTwo) {
+    // 需要计算占比，需要先把另外两列求和
+    let total1 = 0
+    let total2 = 0
+    data.map(item => {
+      total1 += item[arr[0].proportionOne]
+      total2 += item[arr[0].proportionTwo]
+    })
+    return (total1 / total2 * 100).toFixed(arr[0].totalaccuracy) + '%'
+  } else {
+    // 不需要计算占比，直接求和
+    let total = 0
+    data.map(item => {
+      total += item[query.$$extra$$]
+    })
+    return total
+  }
 }
