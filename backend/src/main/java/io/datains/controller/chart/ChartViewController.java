@@ -17,7 +17,12 @@ import io.datains.service.chart.ChartViewCacheService;
 import io.datains.service.chart.ChartViewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
@@ -95,6 +100,14 @@ public class ChartViewController {
     public ChartViewDTO getData(@PathVariable String id, @PathVariable String panelId,
             @RequestBody ChartExtRequest requestList) throws Exception {
         return chartViewService.getData(id, requestList);
+    }
+    @DePermissionProxy(value = "proxy", paramIndex = 2)
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW, paramIndex = 1)
+    @ApiOperation("获取导出数据")
+    @PostMapping("/getDataExport/{id}/{panelId}")
+    public ChartViewDTO getDataExport(@PathVariable String id, @PathVariable String panelId,
+                                @RequestBody ChartExtRequest requestList) throws Exception {
+        return chartViewService.getDataExport(id, requestList);
     }
 
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW, paramIndex = 1)
