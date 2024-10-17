@@ -65,6 +65,15 @@ export function viewData(id, panelId, data) {
     data
   })
 }
+export function viewDataExport(id, panelId, data) {
+  console.log('view/getDataExport/2222222222------')
+  return request({
+    url: '/chart/view/getDataExport/' + id + '/' + panelId,
+    method: 'post',
+    hideMsg: true,
+    data
+  })
+}
 export function panelSave(data) {
   return request({
     url: 'panel/group/save',

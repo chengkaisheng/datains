@@ -14,18 +14,17 @@
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
           {{ $t('chart.items') }}
         </span> -->
-        <!-- <el-pagination
-          small
+        <el-pagination
           :current-page="currentPage.page"
           :page-sizes="[10,20,50,100]"
           :page-size="currentPage.pageSize"
           :pager-count="5"
-          layout="prev, pager, next"
+          layout="total, sizes, prev, pager, next, jumper"
           :total="currentPage.show"
           class="page-style"
           @current-change="pageClick"
           @size-change="pageChange"
-        /> -->
+        />
       </el-row>
     </div>
   </div>
@@ -471,12 +470,12 @@ export default {
   margin-top: 8px;
 }
 .page-style{
-  margin-right: auto;
+  // margin-right: auto;
 }
 .total-style{
   flex: 1;
   font-size: 12px;
-  color: #606266;
+  // color: #606266;
   white-space:nowrap;
 }
 .page-style >>> .el-input__inner{

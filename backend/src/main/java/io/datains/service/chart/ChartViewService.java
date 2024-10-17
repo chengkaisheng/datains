@@ -344,6 +344,24 @@ public class ChartViewService {
 
     }
 
+    public ChartViewDTO getDataExport(String id, ChartExtRequest request) throws Exception {
+        try {
+            ChartViewDTO view = this.getOne(id, request.getQueryFrom());
+            view.setResultMode(request.getResultMode());
+            view.setResultCount(request.getResultCount());
+            // 数据来源在模板中直接从模板取数据
+            if (CommonConstants.VIEW_DATA_FROM.TEMPLATE.equals(view.getDataFrom())) {
+                return extendDataService.getChartDataInfo(id, view);
+            } else {
+                return calcData(view, request, request.isCache());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            DataInsException.throwException(e);
+        }
+        return null;
+    }
+
     public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest requestList, boolean cache) throws Exception {
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));

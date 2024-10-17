@@ -225,7 +225,11 @@ export default {
       //   height = this.canvasStyleData.height
       // }
       console.log('修改高度====')
-      height = this.canvasStyleData.height * (this.offsetWidth / this.canvasStyleData.width)
+      if(!this.inScreen) {
+        height = '100%'
+      } else {
+        height = this.canvasStyleData.height * (this.offsetWidth / this.canvasStyleData.width)
+      }
       console.log('修改高度====', height)
       return height
     },
@@ -233,12 +237,12 @@ export default {
       if (this.backScreenShot) {
         return {
           width: '100%',
-          height: this.scaleNewHeight + 'px'
+          height: this.scaleNewHeight === '100%' ? this.scaleNewHeight : this.scaleNewHeight + 'px'
         }
       } else {
         return {
           width: '100%',
-          height: this.scaleNewHeight + 'px'
+          height: this.scaleNewHeight === '100%' ? this.scaleNewHeight : this.scaleNewHeight + 'px'
         }
       }
     },
@@ -246,12 +250,12 @@ export default {
       if (this.screenShot) {
         return {
           width: '100%',
-          height: this.scaleNewHeight + 'px'
+          height: this.scaleNewHeight === '100%' ? this.scaleNewHeight : this.scaleNewHeight + 'px'
         }
       } else {
         return {
           width: '100%',
-          height: this.scaleNewHeight + 'px'
+          height: this.scaleNewHeight === '100%' ? this.scaleNewHeight : this.scaleNewHeight + 'px'
         }
       }
     },
@@ -449,28 +453,30 @@ export default {
     changeStyleWithScale,
     getStyle,
     restore() {
-      this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
-      this.scaleSize = document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width
-      // console.log('计算宽高比----------', this.offsetWidth, this.canvasStyleData.width, document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
-      // const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
-      const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
-      this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
-      // this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
-      // this.scaleWidth = this.scaleSize * 100 // 获取宽度比
-      // 如果是后端截图方式使用 的高度伸缩比例和宽度比例相同
+      setTimeout(() => {
+        this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
+        this.scaleSize = document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width
+        // console.log('计算宽高比----------', this.offsetWidth, this.canvasStyleData.width, document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
+        // const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
+        const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
+        this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
+        // this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
+        // this.scaleWidth = this.scaleSize * 100 // 获取宽度比
+        // 如果是后端截图方式使用 的高度伸缩比例和宽度比例相同
 
-      // console.log('获取的当前元素宽度', canvasWidth, this.scaleWidth, this.canvasStyleData)
-      if (this.backScreenShot) {
-        this.scaleHeight = this.scaleWidth * 100
-      } else {
-        // this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
-        this.scaleHeight = this.scaleWidth// 获取高度比
-        // this.scaleHeight = this.scaleSize// 获取高度比
-      }
-      // console.log('原代码中的宽高比例==', this.scaleHeight, this.scaleWidth)
-      this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
-      this.$nextTick(() => {
-        this.handleScaleChange()
+        // console.log('获取的当前元素宽度', canvasWidth, this.scaleWidth, this.canvasStyleData)
+        if (this.backScreenShot) {
+          this.scaleHeight = this.scaleWidth * 100
+        } else {
+          // this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
+          this.scaleHeight = this.scaleWidth// 获取高度比
+          // this.scaleHeight = this.scaleSize// 获取高度比
+        }
+        // console.log('原代码中的宽高比例==', this.scaleHeight, this.scaleWidth)
+        this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
+        this.$nextTick(() => {
+          this.handleScaleChange()
+        })
       })
     },
     resetID(data) {
