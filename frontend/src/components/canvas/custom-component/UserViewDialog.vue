@@ -34,7 +34,6 @@ import LabelNormal from '@/views/chart/components/normal/LabelNormal'
 import DeMainContainer from '@/components/datains/DeMainContainer'
 import DeContainer from '@/components/datains/DeContainer'
 import DeAsideContainer from '@/components/datains/DeAsideContainer'
-import { export_json_to_excel } from '@/plugins/Export2Excel'
 import { mapState } from 'vuex'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import PluginCom from '@/views/system/plugin/PluginCom'
@@ -42,7 +41,6 @@ import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import ChartComponentH3 from '@/views/chart/components/ChartComponentH3'
 import ChartComponentHc from '@/views/chart/components/ChartComponentHc.vue'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
-import { viewDataExport } from '@/api/panel/panel'
 export default {
   name: 'UserView',
   components: { 
@@ -104,35 +102,9 @@ export default {
       'curComponent',
       'componentData',
       'canvasStyleData'
-    ]),
-    panelInfo() {
-      return this.$store.state.panel.panelInfo
-    },
+    ])
   },
   methods: {
-    async exportExcel() {
-      const excelHeader = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.name)
-      const excelHeaderKeys = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.datainsName)
-      let excelData = JSON.parse(JSON.stringify(this.chart.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
-      const excelName = this.chart.name
-      // resultMode 为 custom 时，需要调用接口获取全部数据
-      if(this.chart.resultMode === 'custom') {
-        let data = {
-          "filter": [],
-          "linkageFilters": [],
-          "drill": [],
-          "resultCount": 1000,
-          "resultMode": "all", // 获取全量数据
-          "queryFrom": "panel_edit",
-          "cache": false
-        }
-        let res = await viewDataExport(this.chart.id, this.panelInfo.id, data)
-        if(res.success) {
-          excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
-        }
-      }
-      export_json_to_excel(excelHeader, excelData, excelName)
-    },
 
     renderComponent() {
       console.log(this.chart)

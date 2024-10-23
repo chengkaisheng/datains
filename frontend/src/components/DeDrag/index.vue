@@ -33,11 +33,12 @@
       :style="mainSlotStyle"
     >
       <edit-bar
-        v-if="editBarShow"
+        :show="editBarShow"
         style="transform: translateZ(10px)"
         :active-model="'edit'"
         :element="element"
         @showViewDetails="showViewDetails"
+        @exportDetailData="exportDetailData"
         @amRemoveItem="amRemoveItem"
         @amAddItem="amAddItem"
         @resizeView="resizeView"
@@ -1940,6 +1941,9 @@ export default {
     },
     showViewDetails() {
       this.$emit('showViewDetails')
+    },
+    exportDetailData() {
+      this.$emit('exportDetailData')
     },
     amAddItem() {
       this.$emit('amAddItem')

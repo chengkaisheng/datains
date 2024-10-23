@@ -9,10 +9,11 @@
     ]"
   >
     <EditBarView
-      v-if="editBarViewShowFlag"
+      :show="editBarViewShowFlag"
       :is-edit="isEdit"
       :view-id="element.propValue.viewId"
       @showViewDetails="openChartDetailsDialog"
+      @exportDetailData="exportDetailData"
     />
     <div v-if="requestStatus === 'error'" class="chart-error-class">
       <div class="chart-error-message-class">
@@ -313,6 +314,7 @@ export default {
       }
     },
     editBarViewShowFlag() {
+      // return true
       return this.active && this.inTab && !this.mobileLayoutStatus
     },
     charViewShowFlag() {
@@ -2017,6 +2019,11 @@ export default {
         tableChart: tableChart
       })
     },
+    exportDetailData() {
+      eventBus.$emit('exportDetailData', {
+        chart: this.chart
+      })
+    },
 
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.chart.drillFields.length - 1) {
@@ -2349,6 +2356,18 @@ export default {
 .active > .icon-fangda {
   z-index: 2;
   display: block !important;
+}
+
+.button-download{
+  position: absolute;
+  right: 0px;
+  float:right;
+  z-index: 2;
+  border-radius:2px;
+  padding-left: 5px;
+  padding-right: 2px;
+  cursor:pointer!important;
+  background-color: #0a7be0;
 }
 
 /*.rect-shape > i {*/
