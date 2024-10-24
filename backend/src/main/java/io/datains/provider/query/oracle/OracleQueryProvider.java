@@ -14,8 +14,9 @@ import io.datains.dto.datasource.JdbcConfiguration;
 import io.datains.dto.datasource.OracleConfiguration;
 import io.datains.dto.sqlObj.SQLObj;
 import io.datains.plugins.common.constants.OracleConstants;
-import io.datains.provider.QueryProvider;
 import io.datains.plugins.common.constants.SQLConstants;
+import io.datains.plugins.util.PageInfo;
+import io.datains.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +28,11 @@ import org.stringtemplate.v4.STGroupFile;
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -323,7 +328,48 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
+    public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
+        ChartViewFieldDTO chartViewFieldDTO = new ChartViewFieldDTO();
+        chartViewFieldDTO.setOriginName("ROWNUM");
+        xAxis.add(chartViewFieldDTO);
+        List<ChartFieldCustomFilterDTO> oldWheres = new ArrayList<>();
+        ChartFieldCustomFilterDTO chartFieldCustomFilterDTO = new ChartFieldCustomFilterDTO();
+        DatasetTableField datasetTableField = new DatasetTableField();
+        datasetTableField.setOriginName("ROWNUM");
+        datasetTableField.setDeType(0);
+        chartFieldCustomFilterDTO.setField(datasetTableField);
+
+        List<ChartCustomFilterItemDTO> filterItemDTOS = new ArrayList<>();
+        if (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) {
+            ChartCustomFilterItemDTO itemDTO = new ChartCustomFilterItemDTO();
+            itemDTO.setTerm("le");
+            itemDTO.setValue(String.valueOf(pageInfo.getGoPage() * pageInfo.getPageSize()));
+            filterItemDTOS.add(itemDTO);
+        }
+        chartFieldCustomFilterDTO.setFilter(filterItemDTOS);
+        oldWheres.add(chartFieldCustomFilterDTO);
+        if (isTable) {
+            if (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) {
+                return "SELECT * FROM (" + sqlFix(originalTableInfo(table, xAxis, fieldCustomFilter, extFilterRequestList, ds, view, oldWheres)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
+            } else {
+                return "SELECT * FROM (" + sqlFix(originalTableInfo(table, xAxis, fieldCustomFilter, extFilterRequestList, ds, view, oldWheres)) + ") DE_RESULT_TMP ";
+            }
+
+        } else {
+            if (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) {
+                return "SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, extFilterRequestList, ds, view, oldWheres)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
+            } else {
+                return "SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, extFilterRequestList, ds, view, oldWheres)) + ") DE_RESULT_TMP ";
+            }
+        }
+    }
+
+    @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+        return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, extFilterRequestList, ds, view, null), view);
+    }
+
+    public String originalTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, List<ChartFieldCustomFilterDTO> oldWheres) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
@@ -364,12 +410,17 @@ public class OracleQueryProvider extends QueryProvider {
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
         String extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        // 处理oracle翻页where
+        String oldWhere = transCustomFilterList(tableObj, oldWheres);
         // 构建sql所有参数
         List<SQLObj> fields = new ArrayList<>();
         fields.addAll(xFields);
         List<String> wheres = new ArrayList<>();
+        List<String> pageWheres = new ArrayList<>();
+
         if (customWheres != null) wheres.add(customWheres);
         if (extWheres != null) wheres.add(extWheres);
+        if (oldWhere != null) pageWheres.add(oldWhere);
         List<SQLObj> groups = new ArrayList<>();
         groups.addAll(xFields);
         // 外层再次套sql
@@ -392,7 +443,19 @@ public class OracleQueryProvider extends QueryProvider {
                 .build();
         if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+
+        sql = st.render();
+
+        ST st2 = stg.getInstanceOf("previewSql");
+        st2.add("isGroup", false);
+        SQLObj tableSQL2 = SQLObj.builder()
+                .tableName(String.format(OracleConstants.BRACKETS, sql))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 2))
+                .build();
+        if (CollectionUtils.isNotEmpty(pageWheres)) st2.add("filters", pageWheres);
+        if (ObjectUtils.isNotEmpty(tableSQL)) st2.add("table", tableSQL2);
+
+        return st2.render();
     }
 
     @Override

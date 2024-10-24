@@ -10,6 +10,7 @@ import io.datains.dto.chart.ChartViewFieldDTO;
 import io.datains.dto.datasource.JdbcConfiguration;
 import io.datains.dto.sqlObj.SQLObj;
 import io.datains.plugins.common.constants.PgConstants;
+import io.datains.plugins.util.PageInfo;
 
 import java.util.List;
 
@@ -41,6 +42,20 @@ public abstract class QueryProvider {
 
     public abstract String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view);
 
+    public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
+        if (isTable) {
+            return getSQLTableInfo(table, xAxis, fieldCustomFilter, extFilterRequestList, ds, view);
+        } else {
+            return getSQLAsTmpTableInfo(table, xAxis, fieldCustomFilter, extFilterRequestList, ds, view);
+        }
+    }
+    public String getResultCount(boolean isTable, String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+        if (isTable) {
+            return "SELECT COUNT(*) from (" + getSQLTableInfo(table, xAxis, fieldCustomFilter, extFilterRequestList, ds, view) + ") COUNT_TEMP";
+        } else {
+            return "SELECT COUNT(*) from (" + getSQLAsTmpTableInfo(table, xAxis, fieldCustomFilter, extFilterRequestList, ds, view) + ") COUNT_TEMP";
+        }
+    }
     public abstract String getSQLAsTmpTableInfo(String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view);
 
     public abstract String getSQLStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, Datasource ds, ChartViewWithBLOBs view);
