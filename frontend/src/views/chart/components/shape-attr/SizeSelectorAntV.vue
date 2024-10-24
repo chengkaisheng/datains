@@ -102,8 +102,46 @@
       </el-form>
 
       <el-form v-show="chart.type && (chart.type.includes('table') || chart.type.includes('roll') || chart.type.includes('dialog'))" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
-        <el-form-item v-show="chart.type && chart.type === 'table-info'" :label="$t('chart.table_page_size')" class="form-item">
+        <!-- <el-form-item v-show="chart.type && chart.type === 'table-info'" :label="$t('chart.table_page_size')" class="form-item">
           <el-select v-model="sizeForm.tablePageSize" :placeholder="$t('chart.table_page_size')" @change="changeBarSizeCase">
+            <el-option
+              v-for="item in pageSizeOptions"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item> -->
+        <el-form-item
+          v-show="chart.type && chart.type === 'table-info'"
+          :label="$t('chart.table_page_mode')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.tablePageMode"
+            :placeholder="$t('chart.table_page_mode')"
+            @change="changeBarSizeCase('tablePageMode')"
+          >
+            <el-option
+              :label="$t('chart.page_mode_page')"
+              value="page"
+            />
+            <el-option
+              :label="$t('chart.page_mode_pull')"
+              value="pull"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="chart.type && chart.type === 'table-info' && sizeForm.tablePageMode === 'page'"
+          :label="$t('chart.table_page_size')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.tablePageSize"
+            :placeholder="$t('chart.table_page_size')"
+            @change="changeBarSizeCase('tablePageSize')"
+          >
             <el-option
               v-for="item in pageSizeOptions"
               :key="item.value"
@@ -460,6 +498,7 @@ export default {
           this.sizeForm.liquidWaveLength = this.sizeForm.liquidWaveLength ? this.sizeForm.liquidWaveLength : DEFAULT_SIZE.liquidWaveLength
           this.sizeForm.liquidWaveCount = this.sizeForm.liquidWaveCount ? this.sizeForm.liquidWaveCount : DEFAULT_SIZE.liquidWaveCount
 
+          this.sizeForm.tablePageMode = this.sizeForm.tablePageMode ? this.sizeForm.tablePageMode : DEFAULT_SIZE.tablePageMode
           this.sizeForm.tablePageSize = this.sizeForm.tablePageSize ? this.sizeForm.tablePageSize : DEFAULT_SIZE.tablePageSize
 
           this.sizeForm.tableColumnMode = this.sizeForm.tableColumnMode ? this.sizeForm.tableColumnMode : DEFAULT_SIZE.tableColumnMode

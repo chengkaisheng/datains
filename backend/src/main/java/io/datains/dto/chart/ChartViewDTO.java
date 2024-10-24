@@ -32,4 +32,6 @@ public class ChartViewDTO extends ChartViewWithBLOBs {
     private List<ChartExtFilterRequest> drillFilters;
     @ApiModelProperty("视图存放位置")
     private String position;
+    private long totalPage;
+    private long totalItems;
 }

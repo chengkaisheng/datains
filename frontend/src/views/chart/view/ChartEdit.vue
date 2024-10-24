@@ -2161,7 +2161,7 @@ export default {
       // 缓存 拖动的数据并调用 UserView组件的view-in-cache 方法传值
       console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^保存还是--走这里')
       save2Cache(this.panelInfo.id, view).then(() => {
-        bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
+        bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id, viewInfo: view })
       })
     },
     calcStyle() {
@@ -2381,7 +2381,8 @@ export default {
     onSizeChange(val) {
       console.log('12121212----------------', val)
       this.view.customAttr.size = val
-      this.calcStyle()
+      // this.calcStyle()
+      this.calcData()
     },
 
     onTextChange(val) {

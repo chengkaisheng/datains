@@ -44,4 +44,10 @@ public class ChartExtRequest {
     @ApiModelProperty(hidden = true)
     private PermissionProxy proxy;
 
+    private Long goPage;
+
+    private Long pageSize;
+
+    private Boolean excelExportFlag = false;
+
 }

@@ -9,10 +9,11 @@
     ]"
   >
     <EditBarView
-      v-if="editBarViewShowFlag"
+      :show="editBarViewShowFlag"
       :is-edit="isEdit"
       :view-id="element.propValue.viewId"
       @showViewDetails="openChartDetailsDialog"
+      @exportDetailData="exportDetailData"
     />
     <div v-if="requestStatus === 'error'" class="chart-error-class">
       <div class="chart-error-message-class">
@@ -80,6 +81,8 @@
       :search-count="searchCount"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
+      @onPageChange="pageClick"
+      :pageChangeFlag="pageChangeFlag"
     />
     <chart-component-H3
       v-else-if="charViewH3ShowFlag"
@@ -109,6 +112,8 @@
       :show-summary="chart.type === 'table-normal'"
       :chart="chart"
       class="table-class"
+      @onPageChange="pageClick"
+      :pageChangeFlag="pageChangeFlag"
     />
     <TableRoll
       v-else-if="rollShowFlag"
@@ -293,7 +298,13 @@ export default {
       pre: null,
       preCanvasPanel: null,
       sourceCustomAttrStr: null,
-      sourceCustomStyleStr: null
+      sourceCustomStyleStr: null,
+      currentPage: {
+        page: 1,
+        pageSize: 20,
+        show: 0
+      },
+      pageChangeFlag: false
     }
   },
 
@@ -313,6 +324,7 @@ export default {
       }
     },
     editBarViewShowFlag() {
+      // return true
       return this.active && this.inTab && !this.mobileLayoutStatus
     },
     charViewShowFlag() {
@@ -775,6 +787,11 @@ export default {
         }
       }
     },
+    pageClick(page) {
+      this.currentPage = page
+      this.pageChangeFlag = true
+      this.getData(this.element.propValue.viewId, false)
+    },
     getData(id, cache = true) {
       console.log('getData...,走的获取数据的通道', this.templateStatus, this.isStylePriority, this.canvasStyleData)
       console.log('getLocal', localStorage.getItem('permissionId'))
@@ -807,6 +824,14 @@ export default {
         if (this.panelInfo.proxy) {
           // method = viewInfo
           requestInfo.proxy = { userId: this.panelInfo.proxy }
+        }
+        // table-info明细表增加分页
+        if (this.chart && this.chart.customAttr) {
+          const attrSize = JSON.parse(this.chart.customAttr).size
+          if (this.chart.type === 'table-info' && (!attrSize.tablePageMode || attrSize.tablePageMode === 'page')) {
+            requestInfo.goPage = this.currentPage.page
+            requestInfo.pageSize = this.pageChangeFlag ? this.currentPage.pageSize : parseInt(attrSize.tablePageSize)
+          }
         }
         // method(id, this.panelInfo.id, requestInfo)
         //   .then((response) => {
@@ -2017,6 +2042,11 @@ export default {
         tableChart: tableChart
       })
     },
+    exportDetailData() {
+      eventBus.$emit('exportDetailData', {
+        chart: this.chart
+      })
+    },
 
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.chart.drillFields.length - 1) {
@@ -2292,6 +2322,8 @@ export default {
       this.$store.state.styleChangeTimes++
       if (param.type === 'propChange') {
         console.log('触发点-------------------------4')
+        this.chart.customAttr = param.viewInfo.customAttr
+        this.pageChangeFlag = false
         this.getData(param.viewId, false)
       } else if (param.type === 'styleChange') {
         this.chart.customAttr = param.viewInfo.customAttr
@@ -2349,6 +2381,18 @@ export default {
 .active > .icon-fangda {
   z-index: 2;
   display: block !important;
+}
+
+.button-download{
+  position: absolute;
+  right: 0px;
+  float:right;
+  z-index: 2;
+  border-radius:2px;
+  padding-left: 5px;
+  padding-right: 2px;
+  cursor:pointer!important;
+  background-color: #0a7be0;
 }
 
 /*.rect-shape > i {*/

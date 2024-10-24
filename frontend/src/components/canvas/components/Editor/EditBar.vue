@@ -1,83 +1,88 @@
 <template>
-  <div class="bar-main" :style="setNewValue">
-    <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
-    <div v-if="linkageAreaShow" style="margin-right: -1px;">
-      <el-checkbox v-model="linkageInfo.linkageActive" />
-      <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
+  <div>
+    <div v-if="downloadFlag" class="download" @click.stop="exportDetailData">
+      <i class="el-icon-download" ></i>
     </div>
-    <div v-if="checkboxShow" style="margin-right: -1px;widht: 18px" :title="element.isLock? '此组件已锁定': ''">
-      <el-checkbox v-model="element.isCheck" @change="checkChange" />
-    </div>
-    <div v-if="normalAreaShow">
-      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @tabRelation="tabRelation" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
-        <span slot="icon" :title="$t('panel.setting')">
-          <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
+    <div v-if="show" class="bar-main" :style="setNewValue">
+      <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
+      <div v-if="linkageAreaShow" style="margin-right: -1px;">
+        <el-checkbox v-model="linkageInfo.linkageActive" />
+        <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
+      </div>
+      <div v-if="checkboxShow" style="margin-right: -1px;widht: 18px" :title="element.isLock? '此组件已锁定': ''">
+        <el-checkbox v-model="element.isCheck" @change="checkChange" />
+      </div>
+      <div v-if="normalAreaShow">
+        <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @tabRelation="tabRelation" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
+          <span slot="icon" :title="$t('panel.setting')">
+            <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
+          </span>
+        </setting-menu>
+        <span :title="$t('panel.edit')">
+          <i v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)" class="icon iconfont icon-edit" @click.stop="edit" />
         </span>
-      </setting-menu>
-      <span :title="$t('panel.edit')">
-        <i v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)" class="icon iconfont icon-edit" @click.stop="edit" />
-      </span>
-      <span :title="$t('panel.matrix')">
-        <i v-if="activeModel==='edit'&&curComponent.auxiliaryMatrix" class="icon iconfont icon-shujujuzhen" @click.stop="auxiliaryMatrixChange" />
-      </span>
-      <!-- <span :title="$t('panel.suspension')">
-        <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
-      </span> -->
-      <span v-if="screenStatus" :title="$t('panel.details')">
-        <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
-      </span>
-      <span :title="$t('panel.cancel_linkage')">
-        <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
-      </span>
-      <span :title="$t('panel.switch_picture')">
-        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='picture-add'" class="icon iconfont icon-genghuan" @click.stop="goFile" />
-      </span>
-      <span :title="$t('panel.banner_set')">
-        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-banner'" class="icon iconfont icon-genghuan" @click.stop="goBannerFile" />
-      </span>
-      <span :title="$t('panel.nav_set')">
-        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-nav'" class="icon iconfont icon-genghuan" @click.stop="setNavInfo" />
-      </span>
-      <span :title="$t('panel.icons_set')">
-        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-icons'" class="icon iconfont icon-genghuan" @click.stop="setFontIcon" />
-      </span>
-      <span :title="$t('panel.picture_set')">
-        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-picture'" class="icon iconfont icon-genghuan" @click.stop="setPicture" />
-      </span>
-      <span :title="$t('panel.weather_set')">
-        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-weather'" class="icon iconfont icon-genghuan" @click.stop="setWeather" />
-      </span>
-      <span :title="$t('panel.switch_picture')">
-        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='customBottm'" class="icon iconfont icon-genghuan" @click.stop="setCustom" />
-      </span>
-      <span :title="'跳转配置'">
-        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-jump'" class="icon iconfont icon-genghuan" @click.stop="setJump" />
-      </span>
-      <span :title="'关联配置'">
-        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-text-info'" class="icon iconfont icon-genghuan" @click.stop="setTextInfo" />
-      </span>
-      <span :title="$t('panel.text_pop_set')">
-        <i v-if="activeModel==='edit' && curComponent && curComponent.type === 'v-text'" class="icon iconfont icon-genghuan" @click.stop="setText"></i>
-      </span>
-      <span :title="'锁定'">
-        <svg-icon v-if="activeModel==='edit'&&curComponent&&lockValue" :icon-class="'locking'" class="icon" style="color:#fff" @click.stop="setLockout(false)" />
-      </span>
-      <span :title="'解锁'">
-        <svg-icon v-if="activeModel==='edit'&&curComponent&&!lockValue" :icon-class="'Unlock'" class="icon" style="color:#fff" @click.stop="setLockout(true)" />
-      </span>
+        <span :title="$t('panel.matrix')">
+          <i v-if="activeModel==='edit'&&curComponent.auxiliaryMatrix" class="icon iconfont icon-shujujuzhen" @click.stop="auxiliaryMatrixChange" />
+        </span>
+        <!-- <span :title="$t('panel.suspension')">
+          <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
+        </span> -->
+        <span v-if="screenStatus" :title="$t('panel.details')">
+          <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
+        </span>
+        <span :title="$t('panel.cancel_linkage')">
+          <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
+        </span>
+        <span :title="$t('panel.switch_picture')">
+          <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='picture-add'" class="icon iconfont icon-genghuan" @click.stop="goFile" />
+        </span>
+        <span :title="$t('panel.banner_set')">
+          <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-banner'" class="icon iconfont icon-genghuan" @click.stop="goBannerFile" />
+        </span>
+        <span :title="$t('panel.nav_set')">
+          <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-nav'" class="icon iconfont icon-genghuan" @click.stop="setNavInfo" />
+        </span>
+        <span :title="$t('panel.icons_set')">
+          <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-icons'" class="icon iconfont icon-genghuan" @click.stop="setFontIcon" />
+        </span>
+        <span :title="$t('panel.picture_set')">
+          <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-picture'" class="icon iconfont icon-genghuan" @click.stop="setPicture" />
+        </span>
+        <span :title="$t('panel.weather_set')">
+          <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-weather'" class="icon iconfont icon-genghuan" @click.stop="setWeather" />
+        </span>
+        <span :title="$t('panel.switch_picture')">
+          <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='customBottm'" class="icon iconfont icon-genghuan" @click.stop="setCustom" />
+        </span>
+        <span :title="'跳转配置'">
+          <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-jump'" class="icon iconfont icon-genghuan" @click.stop="setJump" />
+        </span>
+        <span :title="'关联配置'">
+          <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-text-info'" class="icon iconfont icon-genghuan" @click.stop="setTextInfo" />
+        </span>
+        <span :title="$t('panel.text_pop_set')">
+          <i v-if="activeModel==='edit' && curComponent && curComponent.type === 'v-text'" class="icon iconfont icon-genghuan" @click.stop="setText"></i>
+        </span>
+        <span :title="'锁定'">
+          <svg-icon v-if="activeModel==='edit'&&curComponent&&lockValue" :icon-class="'locking'" class="icon" style="color:#fff" @click.stop="setLockout(false)" />
+        </span>
+        <span :title="'解锁'">
+          <svg-icon v-if="activeModel==='edit'&&curComponent&&!lockValue" :icon-class="'Unlock'" class="icon" style="color:#fff" @click.stop="setLockout(true)" />
+        </span>
+      </div>
+      <!-- 轮播图的数据修改 -->
+      <el-dialog
+        title="提示"
+        :visible.sync="dialogVisible"
+        width="30%"
+      >
+        <span>这是一段信息</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
-    <!-- 轮播图的数据修改 -->
-    <el-dialog
-      title="提示"
-      :visible.sync="dialogVisible"
-      width="30%"
-    >
-      <span>这是一段信息</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -93,6 +98,11 @@ export default {
   components: { SettingMenu, LinkageField },
 
   props: {
+    show: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     element: {
       type: Object,
       required: true
@@ -113,6 +123,11 @@ export default {
       default: false
     }
   },
+  watch: {
+    // screenStatus(val, oldVal) {
+    //   console.log('val, oldVal', val, oldVal);
+    // }
+  },
   data() {
     return {
       componentType: null,
@@ -130,6 +145,11 @@ export default {
   mounted() {
   },
   computed: {
+    downloadFlag() {
+      // return this.show && this.normalAreaShow && this.screenStatus && this.curComponent && this.curComponent.type==='view'
+      // return this.show && this.normalAreaShow && this.screenStatus && this.element && this.element.type==='view'
+      return this.screenStatus && this.element && this.element.type==='view'
+    },
     // 联动区域按钮显示
     linkageAreaShow() {
       return this.linkageSettingStatus && this.element !== this.curLinkageView && this.element.type === 'view'
@@ -200,6 +220,11 @@ export default {
   beforeDestroy() {
   },
   methods: {
+    exportDetailData() {
+      console.log('exportDetailData1');
+      
+      this.$emit('exportDetailData')
+    },
     checkChange(boo) {
       console.log('isCheck', boo, this.element.id,)
       const componentData = deepCopy(this.componentData)
@@ -244,6 +269,7 @@ export default {
       }
     },
     showViewDetails() {
+      console.log('exportDetailData1222');
       this.$emit('showViewDetails')
     },
     auxiliaryMatrixChange() {
@@ -403,9 +429,28 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .bar-main{
+  .download {
     position: absolute;
     right: 0px;
+    float:right;
+    z-index: 4;
+    border-radius:2px;
+    // padding-left: 5px;
+    // padding-right: 2px;
+    cursor:pointer!important;
+    background-color: #0a7be0;
+  }
+  .download i {
+    width: 24px;
+    height: 24px;
+    color: white;
+    float: right;
+    padding-top: 4px;
+    padding-left: 4px;
+  }
+  .bar-main{
+    position: absolute;
+    right: 24px;
     float:right;
     z-index: 2;
     border-radius:2px;
