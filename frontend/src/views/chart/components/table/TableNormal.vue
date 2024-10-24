@@ -144,11 +144,11 @@ export default {
     chart: function() {
       console.log('this.chart.data', this.chart.data)
       this.resetPage()
-      this.init()
+      this.init('init')
     }
   },
   mounted() {
-    this.init()
+    this.init('init')
     // 监听元素变动事件
     eventBus.$on('resizing', (componentId) => {
       this.chartResize()
@@ -162,10 +162,10 @@ export default {
       //   // this.saveHeadConfig()
       // }
     },
-    init() {
+    init(type) {
       this.resetHeight()
       this.$nextTick(() => {
-        this.initData()
+        this.initData(type)
         this.calcHeightDelay()
       })
       this.setBackGroundBorder()
@@ -182,9 +182,9 @@ export default {
     processData(config, data) {
       let totalSum = 0
       data.forEach((item) => {
-        console.log(item)
+        // console.log(item)
         config.forEach((val) => {
-          console.log(val)
+          // console.log(val)
           if (val.isPercentage === '%') {
             totalSum += item[val.datainsName]
           }
@@ -211,22 +211,26 @@ export default {
       })
       return processedData
     },
-    initData() {
+    initData(type) {
       const that = this
       let datas = []
       if (this.chart.data) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
-        this.currentPage.pageSize = parseInt(
-          attr.size.tablePageSize ? attr.size.tablePageSize : 20
-        )
+        // 直接在分页组件上修改的pagesize不需要从chart取pagesize
+        // 首次渲染从chart取pagesize
+        if(type === "init") {
+          this.currentPage.pageSize = parseInt(
+            attr.size.tablePageSize ? attr.size.tablePageSize : 20
+          )
+        }
         datas = this.processData(
           this.fields,
           JSON.parse(JSON.stringify(this.chart.data.tableRow))
         )
         // datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        console.log('this.fields', this.fields)
-        console.log('datas', datas)
+        // console.log('this.fields', this.fields)
+        // console.log('datas', datas)
 
         if (this.chart.type === 'table-info') {
           // 计算分页
@@ -466,7 +470,7 @@ export default {
 
     pageChange(val) {
       this.currentPage.pageSize = val
-      this.init()
+      this.init('pageSizeChange')
     },
 
     pageClick(val) {
@@ -475,11 +479,13 @@ export default {
     },
 
     resetPage() {
-      this.currentPage = {
-        page: 1,
-        pageSize: 20,
-        show: 0
-      }
+      this.currentPage.page = 1
+      this.currentPage.show = 0
+      // this.currentPage = {
+      //   page: 1,
+      //   pageSize: 20,
+      //   show: 0
+      // }
     }
   }
 }
@@ -501,6 +507,7 @@ export default {
   justify-content: flex-end;
   width: 100%;
   overflow: hidden;
+  z-index: 2;
 }
 .page-style {
   /* margin-right: auto; */

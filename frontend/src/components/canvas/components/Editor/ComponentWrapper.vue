@@ -7,7 +7,7 @@
     @mousedown="elementMouseDown"
   >
     <div :style="commonStyle" class="main_view">
-      <edit-bar v-if="componentActiveFlag" :element="config" @showViewDetails="showViewDetails" />
+      <edit-bar :show="componentActiveFlag" :element="config" @exportDetailData="exportDetailData" @showViewDetails="showViewDetails" />
       <close-bar v-if="previewVisible" @closePreview="closePreview" />
       <de-out-widget
         v-if="config.type==='custom'"
@@ -292,6 +292,9 @@ export default {
     },
     showViewDetails() {
       this.$refs.wrapperChild.openChartDetailsDialog()
+    },
+    exportDetailData() {
+      this.$refs.wrapperChild.exportDetailData()
     },
     closePreview() {
       this.previewVisible = false
