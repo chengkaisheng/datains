@@ -8,7 +8,7 @@
       <div v-if="chart.type === 'table-normal'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-normal-drill' : 'table-dom-normal'" />
       <div v-if="chart.type === 'table-info'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-info-drill' : 'table-dom-info'" />
       <div v-if="chart.type === 'table-pivot'" :id="chartId" style="width: 100%;overflow: hidden;" class="table-dom-normal" />
-      <el-row v-show="chart.type === 'table-info'" class="table-page">
+      <el-row v-show="chart.type === 'table-info' && showPage" class="table-page">
         <!-- <span class="total-style">
           {{ $t('chart.total') }}
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
@@ -19,7 +19,7 @@
           :page-sizes="[10,20,50,100]"
           :page-size="currentPage.pageSize"
           :pager-count="5"
-          layout="total, sizes, prev, pager, next, jumper"
+          layout="total, sizes, prev, pager, next"
           :total="currentPage.show"
           class="page-style"
           @current-change="pageClick"
@@ -64,6 +64,10 @@ export default {
       type: Number,
       required: false,
       default: 0
+    },
+    pageChangeFlag: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -102,7 +106,8 @@ export default {
         pageSize: 20,
         show: 0
       },
-      tableData: []
+      tableData: [],
+      showPage: false
     }
   },
 
@@ -145,18 +150,24 @@ export default {
   },
   methods: {
     initData() {
+      this.showPage = false
       let datas = []
       if (this.chart.data && this.chart.data.fields) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
-        this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
+        // if (this.currentPage.pageSize < attr.size.tablePageSize) {
+        //   this.currentPage.page = 1
+        // }
+        this.currentPage.pageSize = this.pageChangeFlag ? this.currentPage.pageSize : parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        if (this.chart.type === 'table-info') {
-          // 计算分页
-          this.currentPage.show = datas.length
-          const pageStart = (this.currentPage.page - 1) * this.currentPage.pageSize
-          const pageEnd = pageStart + this.currentPage.pageSize
-          datas = datas.slice(pageStart, pageEnd)
+        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
+          this.currentPage.show = this.chart.totalItems
+          this.showPage = true
+          // 前端计算分页
+          // this.currentPage.show = datas.length
+          // const pageStart = (this.currentPage.page - 1) * this.currentPage.pageSize
+          // const pageEnd = pageStart + this.currentPage.pageSize
+          // datas = datas.slice(pageStart, pageEnd)
         }
       } else {
         this.fields = []
@@ -427,14 +438,16 @@ export default {
 
     pageChange(val) {
       this.currentPage.pageSize = val
-      this.initData()
-      this.drawView()
+      this.$emit('onPageChange', this.currentPage)
+      // this.initData()
+      // this.drawView()
     },
 
     pageClick(val) {
       this.currentPage.page = val
-      this.initData()
-      this.drawView()
+      this.$emit('onPageChange', this.currentPage)
+      // this.initData()
+      // this.drawView()
     },
 
     resetPage() {

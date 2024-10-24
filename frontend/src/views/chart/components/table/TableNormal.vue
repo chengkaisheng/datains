@@ -36,7 +36,7 @@
         </ux-table-column>
       </ux-grid>
 
-      <el-row v-show="chart.type === 'table-info'" class="table-page">
+      <el-row v-show="chart.type === 'table-info' && showPage" class="table-page">
         <!-- <span class="total-style">
           {{ $t('chart.total') }}
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
@@ -47,7 +47,7 @@
           :page-sizes="[10,20,50,100]"
           :page-size="currentPage.pageSize"
           :pager-count="5"
-          layout="total, sizes, prev, pager, next, jumper"
+          layout="total, sizes, prev, pager, next"
           :total="currentPage.show"
           class="page-style"
           @current-change="pageClick"
@@ -81,6 +81,10 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    pageChangeFlag: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -128,7 +132,8 @@ export default {
         page: 1,
         pageSize: 20,
         show: 0
-      }
+      },
+      showPage: false
     }
   },
   computed: {
@@ -143,12 +148,12 @@ export default {
   watch: {
     chart: function() {
       console.log('this.chart.data', this.chart.data)
-      this.resetPage()
-      this.init('init')
+      // this.resetPage()
+      this.init()
     }
   },
   mounted() {
-    this.init('init')
+    this.init()
     // 监听元素变动事件
     eventBus.$on('resizing', (componentId) => {
       this.chartResize()
@@ -162,10 +167,10 @@ export default {
       //   // this.saveHeadConfig()
       // }
     },
-    init(type) {
+    init() {
       this.resetHeight()
       this.$nextTick(() => {
-        this.initData(type)
+        this.initData()
         this.calcHeightDelay()
       })
       this.setBackGroundBorder()
@@ -211,19 +216,17 @@ export default {
       })
       return processedData
     },
-    initData(type) {
+    initData() {
+      this.showPage = false
       const that = this
       let datas = []
       if (this.chart.data) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
-        // 直接在分页组件上修改的pagesize不需要从chart取pagesize
-        // 首次渲染从chart取pagesize
-        if(type === "init") {
-          this.currentPage.pageSize = parseInt(
-            attr.size.tablePageSize ? attr.size.tablePageSize : 20
-          )
-        }
+        // if (this.currentPage.pageSize < attr.size.tablePageSize) {
+        //   this.currentPage.page = 1
+        // }
+        this.currentPage.pageSize = this.pageChangeFlag ? this.currentPage.pageSize : parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         datas = this.processData(
           this.fields,
           JSON.parse(JSON.stringify(this.chart.data.tableRow))
@@ -232,13 +235,14 @@ export default {
         // console.log('this.fields', this.fields)
         // console.log('datas', datas)
 
-        if (this.chart.type === 'table-info') {
-          // 计算分页
-          this.currentPage.show = datas.length
-          const pageStart =
-            (this.currentPage.page - 1) * this.currentPage.pageSize
-          const pageEnd = pageStart + this.currentPage.pageSize
-          datas = datas.slice(pageStart, pageEnd)
+        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
+          this.currentPage.show = this.chart.totalItems
+          this.showPage = true
+          // 前端计算分页
+          // this.currentPage.show = datas.length
+          // const pageStart = (this.currentPage.page - 1) * this.currentPage.pageSize
+          // const pageEnd = pageStart + this.currentPage.pageSize
+          // datas = datas.slice(pageStart, pageEnd)
         }
       } else {
         this.fields = []
@@ -470,22 +474,24 @@ export default {
 
     pageChange(val) {
       this.currentPage.pageSize = val
-      this.init('pageSizeChange')
+      this.$emit('onPageChange', this.currentPage)
+      // this.init('pageSizeChange')
     },
 
     pageClick(val) {
       this.currentPage.page = val
-      this.init()
+      this.$emit('onPageChange', this.currentPage)
+      // this.init()
     },
 
     resetPage() {
-      this.currentPage.page = 1
-      this.currentPage.show = 0
-      // this.currentPage = {
-      //   page: 1,
-      //   pageSize: 20,
-      //   show: 0
-      // }
+      // this.currentPage.page = 1
+      // this.currentPage.show = 0
+      this.currentPage = {
+        page: 1,
+        pageSize: 20,
+        show: 0
+      }
     }
   }
 }

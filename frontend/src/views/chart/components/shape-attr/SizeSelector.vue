@@ -170,6 +170,26 @@
             <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
+        <el-form-item
+          v-show="chart.type && chart.type === 'table-info'"
+          :label="$t('chart.table_page_mode')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.tablePageMode"
+            :placeholder="$t('chart.table_page_mode')"
+            @change="changeBarSizeCase('tablePageMode')"
+          >
+            <el-option
+              :label="$t('chart.page_mode_page')"
+              value="page"
+            />
+            <el-option
+              :label="$t('chart.page_mode_pull')"
+              value="pull"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item v-show="chart.type && chart.type === 'table-info'" :label="$t('chart.table_page_size')" class="form-item">
           <el-select v-model="sizeForm.tablePageSize" :placeholder="$t('chart.table_page_size')" @change="changeBarSizeCase">
             <el-option
@@ -492,6 +512,7 @@ export default {
           this.sizeForm.liquidWaveLength = this.sizeForm.liquidWaveLength ? this.sizeForm.liquidWaveLength : DEFAULT_SIZE.liquidWaveLength
           this.sizeForm.liquidWaveCount = this.sizeForm.liquidWaveCount ? this.sizeForm.liquidWaveCount : DEFAULT_SIZE.liquidWaveCount
 
+          this.sizeForm.tablePageMode = this.sizeForm.tablePageMode ? this.sizeForm.tablePageMode : DEFAULT_SIZE.tablePageMode
           this.sizeForm.tablePageSize = this.sizeForm.tablePageSize ? this.sizeForm.tablePageSize : DEFAULT_SIZE.tablePageSize
         }
       }
