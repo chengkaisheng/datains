@@ -1,7 +1,6 @@
 <template>
   <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
     <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
-    1111
     <div
       v-if="chart.data && chart.data.x && chart.data.x.length > 0 && chart.data.series && chart.data.series.length > 0 && chart.data.series[0].data && chart.data.series[0].data.length > 0"
       id="label-content"

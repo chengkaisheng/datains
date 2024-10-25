@@ -79,7 +79,7 @@ import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
 import bus from '@/utils/bus'
 import { buildFilterMap } from '@/utils/conditionUtil'
-import { viewDataExport } from '@/api/panel/panel'
+import { viewDataExport, viewData } from '@/api/panel/panel'
 import { export_json_to_excel } from '@/plugins/Export2Excel'
 export default {
   components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
@@ -555,11 +555,12 @@ export default {
         "linkageFilters": [],
         "drill": [],
         "resultCount": 1000,
-        "resultMode": "all", // 获取全量数据
-        "queryFrom": "panel_edit",
-        "cache": false
+        "resultMode": "all",
+        "queryFrom": "panel",
+        "cache": false,
+        excelExportFlag: true
       }
-      let res = await viewDataExport(this.showChartInfo.id, this.panelInfo.id, data)
+      let res = await viewData(this.showChartInfo.id, this.panelInfo.id, data)
       if(res.success) {
         excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       }
