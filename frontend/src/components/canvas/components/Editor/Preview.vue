@@ -550,21 +550,18 @@ export default {
       const excelHeaderKeys = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.datainsName)
       let excelData = JSON.parse(JSON.stringify(this.showChartInfo.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       const excelName = this.showChartInfo.name
-      // resultMode 为 custom 时，需要调用接口获取全部数据
-      if(this.showChartInfo.resultMode === 'custom') {
-        let data = {
-          "filter": [],
-          "linkageFilters": [],
-          "drill": [],
-          "resultCount": 1000,
-          "resultMode": "all", // 获取全量数据
-          "queryFrom": "panel_edit",
-          "cache": false
-        }
-        let res = await viewDataExport(this.showChartInfo.id, this.panelInfo.id, data)
-        if(res.success) {
-          excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
-        }
+      let data = {
+        "filter": [],
+        "linkageFilters": [],
+        "drill": [],
+        "resultCount": 1000,
+        "resultMode": "all", // 获取全量数据
+        "queryFrom": "panel_edit",
+        "cache": false
+      }
+      let res = await viewDataExport(this.showChartInfo.id, this.panelInfo.id, data)
+      if(res.success) {
+        excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       }
       export_json_to_excel(excelHeader, excelData, excelName)
     },

@@ -44,15 +44,33 @@
         </span> -->
         <el-pagination
           :current-page="currentPage.page"
-          :page-sizes="[10,20,50,100]"
-          :page-size="currentPage.pageSize"
+          
           :pager-count="5"
-          layout="total, sizes, prev, pager, next"
+          layout="total, slot, prev, pager, next"
           :total="currentPage.show"
           class="page-style"
           @current-change="pageClick"
-          @size-change="pageChange"
-        />
+          
+          
+        >
+          <div key="1" class="custom-sizes">
+            <el-select 
+              size="mini"
+              :key="Math.random()"
+              :popper-append-to-body="!customSelectShow" 
+              v-model="currentPage.pageSize" 
+              @change="pageChange"
+              @visible-change="visibleChange"
+              placeholder="">
+              <el-option
+                v-for="item in customSizesList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+        </el-pagination>
       </el-row>
     </el-row>
   </div>
@@ -133,7 +151,26 @@ export default {
         pageSize: 20,
         show: 0
       },
-      showPage: false
+      showPage: false,
+      customSelectShow: false,
+      customSizesList: [
+        {
+          label: '10条/页',
+          value: 10
+        },
+        {
+          label: '20条/页',
+          value: 20
+        },
+        {
+          label: '50条/页',
+          value: 50
+        },
+        {
+          label: '100条/页',
+          value: 100
+        }
+      ]
     }
   },
   computed: {
@@ -483,6 +520,12 @@ export default {
       this.$emit('onPageChange', this.currentPage)
       // this.init()
     },
+    visibleChange(val) {
+      if(val) {
+        let fullScreen = document.getElementsByClassName('fullscreen')
+        this.customSelectShow = fullScreen.length > 0
+      }
+    },
 
     resetPage() {
       // this.currentPage.page = 1
@@ -526,5 +569,15 @@ export default {
 }
 .page-style >>> .el-input__inner {
   height: 24px;
+}
+.custom-sizes {
+  display: inline-block;
+  font-size: 13px;
+  min-width: 35.5px;
+  height: 28px;
+  line-height: 28px;
+  vertical-align: top;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 </style>
