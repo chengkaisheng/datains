@@ -4,16 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.datains.auth.entity.SysUserEntity;
 import io.datains.auth.service.AuthUserService;
-import io.datains.base.domain.ChartView;
-import io.datains.base.domain.ChartViewCache;
-import io.datains.base.domain.ChartViewCacheExample;
-import io.datains.base.domain.ChartViewCacheWithBLOBs;
-import io.datains.base.domain.ChartViewExample;
-import io.datains.base.domain.ChartViewWithBLOBs;
-import io.datains.base.domain.DatasetTable;
-import io.datains.base.domain.DatasetTableField;
-import io.datains.base.domain.Datasource;
-import io.datains.base.domain.PanelView;
+import io.datains.base.domain.*;
 import io.datains.base.mapper.ChartViewCacheMapper;
 import io.datains.base.mapper.ChartViewMapper;
 import io.datains.base.mapper.PanelViewMapper;
@@ -26,21 +17,11 @@ import io.datains.commons.exception.DEException;
 import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.BeanUtils;
 import io.datains.commons.utils.LogUtil;
-import io.datains.controller.request.chart.ChartDrillRequest;
-import io.datains.controller.request.chart.ChartExtFilterRequest;
-import io.datains.controller.request.chart.ChartExtRequest;
-import io.datains.controller.request.chart.ChartGroupRequest;
-import io.datains.controller.request.chart.ChartViewCacheRequest;
-import io.datains.controller.request.chart.ChartViewRequest;
+import io.datains.controller.request.chart.*;
 import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.controller.response.ChartDetail;
 import io.datains.controller.response.DataSetDetail;
-import io.datains.dto.chart.ChartDimensionDTO;
-import io.datains.dto.chart.ChartFieldCompareDTO;
-import io.datains.dto.chart.ChartFieldCustomFilterDTO;
-import io.datains.dto.chart.ChartGroupDTO;
-import io.datains.dto.chart.ChartViewDTO;
-import io.datains.dto.chart.ChartViewFieldDTO;
+import io.datains.dto.chart.*;
 import io.datains.dto.dataset.DataSetTableDTO;
 import io.datains.dto.dataset.DataSetTableUnionDTO;
 import io.datains.dto.dataset.DataTableInfoDTO;
@@ -49,12 +30,7 @@ import io.datains.i18n.Translator;
 import io.datains.listener.util.CacheUtils;
 import io.datains.plugins.config.SpringContextUtil;
 import io.datains.plugins.util.PageInfo;
-import io.datains.plugins.view.entity.PluginChartExtFilter;
-import io.datains.plugins.view.entity.PluginChartFieldCustomFilter;
-import io.datains.plugins.view.entity.PluginViewField;
-import io.datains.plugins.view.entity.PluginViewLimit;
-import io.datains.plugins.view.entity.PluginViewParam;
-import io.datains.plugins.view.entity.PluginViewSet;
+import io.datains.plugins.view.entity.*;
 import io.datains.plugins.view.service.ViewPluginService;
 import io.datains.provider.ProviderFactory;
 import io.datains.provider.QueryProvider;
@@ -78,20 +54,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -707,13 +670,15 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, extFilterList, view));
                 }
             }
-            if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
-                String querySql = datasourceRequest.getQuery();
-                datasourceRequest.setQuery(totalPageSql);
-                List<String[]> tmpData = datasourceProvider.getData(datasourceRequest);
-                totalItems = CollectionUtils.isEmpty(tmpData) ? 0 : Long.parseLong(tmpData.get(0)[0]);
-                totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
-                datasourceRequest.setQuery(querySql);
+            if (!requestList.getExcelExportFlag()) {
+                if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
+                    String querySql = datasourceRequest.getQuery();
+                    datasourceRequest.setQuery(totalPageSql);
+                    List<String[]> tmpData = datasourceProvider.getData(datasourceRequest);
+                    totalItems = CollectionUtils.isEmpty(tmpData) ? 0 : Long.parseLong(tmpData.get(0)[0]);
+                    totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
+                    datasourceRequest.setQuery(querySql);
+                }
             }
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {
@@ -737,13 +702,16 @@ public class ChartViewService {
             } else {
                 datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, fieldCustomFilter, extFilterList, ds, view));
             }
-            if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
-                datasourceRequest.setQuery(totalPageSql);
-                List<String[]> tmpData = datasourceProvider.getData(datasourceRequest);
-                totalItems = CollectionUtils.isEmpty(tmpData) ? 0 : Long.valueOf(tmpData.get(0)[0]);
-                totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
+            if (!requestList.getExcelExportFlag()) {
+                if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
+                    String querySql = datasourceRequest.getQuery();
+                    datasourceRequest.setQuery(totalPageSql);
+                    List<String[]> tmpData = datasourceProvider.getData(datasourceRequest);
+                    totalItems = CollectionUtils.isEmpty(tmpData) ? 0 : Long.parseLong(tmpData.get(0)[0]);
+                    totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
+                    datasourceRequest.setQuery(querySql);
+                }
             }
-
             // 仪表板有参数不使用缓存
             if (!cache || CollectionUtils.isNotEmpty(requestList.getFilter())
                     || CollectionUtils.isNotEmpty(requestList.getLinkageFilters())
