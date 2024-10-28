@@ -240,11 +240,65 @@
               </el-col>
             </el-col>
           </el-row>
+          
           <el-row v-if="curComponent.component === 'de-select-grid'" style="margin-top: 10px;">
             <el-col style="margin-bottom: 10px;">
               <el-col :span="4" ><span class="params-title-small">列表字体颜色：</span></el-col>
               <el-col :span="1">
                 <el-color-picker v-model="curComponent.commonSelectFrame.panelColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+              </el-col>
+            </el-col>
+            <el-col style="margin-bottom: 10px;">
+              <el-col :span="4" ><span class="params-title-small">多选框背景设置：</span></el-col>
+              <el-col :span="20">
+                <el-col style="margin-bottom: 10px;">
+                  <el-radio-group v-model="curComponent.commonSelectFrame.checkBoxBackType" style="width: 100%;">
+                    <el-col :span="10">
+                      <el-radio label="color">颜色</el-radio>
+                    </el-col>
+                    <el-col :span="14">
+                      <el-radio label="Image">图片</el-radio>
+                    </el-col>
+                  </el-radio-group>
+                </el-col>
+                <el-col>
+                  <el-col :span="10">
+                    <el-color-picker v-model="curComponent.commonSelectFrame.checkBoxBgColor" size="mini" :show-alpha="true" class="color-picker-style" :predefine="predefineColors" />
+                  </el-col>
+                  <el-col :span="14">
+                    <el-col style="width: 130px!important;">
+                      <el-upload
+                        action=""
+                        accept=".jpeg,.jpg,.png,.gif,.svg"
+                        class="avatar-uploader"
+                        list-type="picture-card"
+                        :class="{disabled:uploadCheckDisabled}"
+                        :on-preview="handleCheckPreview"
+                        :on-remove="handleCheckRemove"
+                        :http-request="upload"
+                        :file-list="fileCheckList"
+                        :on-change="onCheckChange"
+                      >
+                        <i class="el-icon-plus" />
+                      </el-upload>
+                      <el-dialog top="25vh" width="600px" :modal-append-to-body="false" :visible.sync="dialogDownVisible">
+                        <img width="100%" :src="dialogCheckImageUrl" alt="">
+                      </el-dialog>
+                    </el-col>
+                  </el-col>
+                </el-col>
+              </el-col>
+            </el-col>
+            <el-col style="margin-bottom: 10px;">
+              <el-col :span="4" ><span class="params-title-small">多选框边框颜色：</span></el-col>
+              <el-col :span="1">
+                <el-color-picker v-model="curComponent.commonSelectFrame.checkBoxBorderColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+              </el-col>
+            </el-col>
+            <el-col style="margin-bottom: 10px;">
+              <el-col :span="4" ><span class="params-title-small">多选框边框宽度：</span></el-col>
+              <el-col :span="15">
+                <el-slider v-model="curComponent.commonSelectFrame.checkBoxBorderWidth" show-input :show-input-controls="false" input-size="mini" :max="15" />
               </el-col>
             </el-col>
             <el-col>
@@ -329,6 +383,10 @@ export default {
       dialogDownImageUrl: '',
       dialogDownVisible: false,
       uploadDownDisabled: false,
+      fileCheckList: [],
+      dialogCheckImageUrl: '',
+      dialogCheckVisible: false,
+      uploadCheckDisabled: false,
       panel: null,
       predefineColors: COLOR_PANEL
     }
@@ -347,7 +405,7 @@ export default {
   },
   methods: {
     init() {
-      console.log('this.curComponent', this.curComponent)
+      console.log('this.curComponent', this.curComponent, COMMON_SELECT_FRAME)
       if(this.curComponent && this.curComponent.commonSelectFrame === undefined) {
         this.curComponent.commonSelectFrame = deepCopy(COMMON_SELECT_FRAME)
       }
@@ -358,6 +416,10 @@ export default {
 
       if(this.curComponent && this.curComponent.commonSelectFrame && this.curComponent.commonSelectFrame.backImg && typeof (this.curComponent.commonSelectFrame.backImg) === 'string') {
         this.fileSelList.push({url: this.curComponent.commonSelectFrame.backImg})
+      }
+
+      if(this.curComponent && this.curComponent.commonSelectFrame && this.curComponent.commonSelectFrame.checkBoxBgImg && typeof (this.curComponent.commonSelectFrame.checkBoxBgImg) === 'string') {
+        this.fileCheckList.push({url: this.curComponent.commonSelectFrame.checkBoxBgImg})
       }
       this.backgroundOrigin = deepCopy(this.curComponent.commonBackground)
       this.selectOrigin =deepCopy(this.curComponent.commonSelectFrame)
@@ -401,6 +463,10 @@ export default {
         this.curComponent.commonSelectFrame.checkBgImg = this.selectOrigin.checkBgImg
         this.curComponent.commonSelectFrame.panelBgColor = this.selectOrigin.panelBgColor
         this.curComponent.commonSelectFrame.panelColor = this.selectOrigin.panelColor
+        this.curComponent.commonSelectFrame.checkBoxBgColor = this.selectOrigin.checkBoxBgColor
+        this.curComponent.commonSelectFrame.checkBoxBgImg = this.selectOrigin.checkBoxBgImg
+        this.curComponent.commonSelectFrame.checkBoxBorderColor = this.selectOrigin.checkBoxBorderColor
+        this.curComponent.commonSelectFrame.checkBoxBorderWidth = this.selectOrigin.checkBoxBorderWidth
       }
 
       if(this.curComponent.component === 'Picture') {
@@ -447,6 +513,11 @@ export default {
       this.fileDownList = []
       this.commitStyle()
     },
+    handleCheckRemove(file,fileList) {
+      this.uploadCheckDisabled = false,
+      this.fileCheckList = []
+      this.commitStyle()
+    },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
@@ -458,6 +529,10 @@ export default {
     handleDownPreview(file) {
       this.dialogDownImageUrl = file.url
       this.dialogDownVisible = true
+    },
+    handleCheckPreview(file) {
+      this.dialogCheckImageUrl = file.url
+      this.dialogCheckVisible = true
     },
     onChange(file, fileList) {
       console.log('file', file)
@@ -499,6 +574,20 @@ export default {
       const reader = new FileReader()
       reader.onload = function() {
         _this.curComponent.commonSelectFrame.checkBgImg = reader.result
+      }
+      reader.readAsDataURL(file.raw)
+    },
+    onCheckChange(file,fileList) {
+      if (file.size / 1024 / 1024 > 10) {
+        this.$message.error('上传的文件大小不能超过 10MB!')
+        this.fileCheckList = []
+        return
+      }
+      var _this = this
+      _this.uploadCheckDisabled = true
+      const reader = new FileReader()
+      reader.onload = function() {
+        _this.curComponent.commonSelectFrame.checkBoxBgImg = reader.result
       }
       reader.readAsDataURL(file.raw)
     },

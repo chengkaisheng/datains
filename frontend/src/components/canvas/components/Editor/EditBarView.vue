@@ -3,7 +3,7 @@
     <div class="download" @click.stop="exportDetailData">
       <i class="el-icon-download" ></i>
     </div>
-    <div v-if="show" class="bar-main">
+    <div v-if="show" :class="['bar-main', downloadFlag ? 'bar-main-right' : '']">
       <div>
         <span v-if="isEdit" :title="$t('panel.edit')">
           <i class="icon iconfont icon-edit" @click.stop="edit" />
@@ -103,7 +103,7 @@ export default {
   }
   .bar-main{
     position: absolute;
-    right: 24px;
+    right: 0;
     float:right;
     z-index: 2;
     border-radius:2px;
@@ -111,6 +111,9 @@ export default {
     padding-right: 2px;
     cursor:pointer!important;
     background-color: #0a7be0;
+  }
+  .bar-main-right {
+    right: 24px;
   }
   .bar-main i{
     color: white;

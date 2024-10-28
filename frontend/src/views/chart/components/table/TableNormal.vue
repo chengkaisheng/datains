@@ -44,7 +44,7 @@
         </span> -->
         <el-pagination
           :current-page="currentPage.page"
-          
+          :page-size="currentPage.pageSize"
           :pager-count="5"
           layout="total, slot, prev, pager, next"
           :total="currentPage.show"
