@@ -543,7 +543,18 @@ export default {
     },
     exportDetailData(chartInfo) {
       this.showChartInfo = chartInfo.chart
-      this.exportExcel()
+      this.debounce(this.exportExcel, 500)()
+    },
+    debounce(fn, wait) {
+      let timer = null;
+      return () => {
+        if(timer) {
+          clearTimeout(timer);
+        }
+        timer = setTimeout(() => {
+          fn.apply(this, arguments);
+        }, wait);
+      }
     },
     async exportExcel() {
       const excelHeader = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.name)

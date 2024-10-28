@@ -45,6 +45,11 @@ export const COMMON_SELECT_FRAME = {
   checkBgImg: null, // 下拉选项背景图
   panelBgColor: '#ffffff', // 面板背景色
   panelColor: '#000000', // 面板字体色
+  checkBoxBackType: 'color', // 多选框背景设置类型
+  checkBoxBgColor: '#ffffff', // 多选框背景色
+  checkBoxBgImg: null, // 多选框背景图
+  checkBoxBorderColor: '#DCDFE6', // 多选框边框颜色
+  checkBoxBorderWidth: 1, // 多选框边框宽度
 }
 
 // 空组件仪表板样式
