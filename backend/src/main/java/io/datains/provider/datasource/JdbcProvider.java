@@ -12,6 +12,7 @@ import io.datains.i18n.Translator;
 import io.datains.plugins.common.constants.DatasourceTypes;
 import io.datains.provider.ProviderFactory;
 import io.datains.provider.QueryProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service("jdbc")
 public class JdbcProvider extends DatasourceProvider {
     private static Map<String, DruidDataSource> jdbcConnection = new HashMap<>();
@@ -71,6 +73,7 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
+        log.info("执行sql:::{}", dsr.getQuery());
         try (Connection connection = getConnectionFromPool(dsr); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(dsr.getQuery()))) {
 
             list = fetchResult(rs);
@@ -139,14 +142,14 @@ public class JdbcProvider extends DatasourceProvider {
 
     @Override
     public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
-        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")){
+        if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")) {
             datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
             return fetchResultField(datasourceRequest);
         }
         List<TableField> list = new LinkedList<>();
         try (Connection connection = getConnectionFromPool(datasourceRequest)) {
             if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
-                Method setRemarksReporting = extendedJdbcClassLoader.loadClass("oracle.jdbc.driver.OracleConnection").getMethod("setRemarksReporting",boolean.class);
+                Method setRemarksReporting = extendedJdbcClassLoader.loadClass("oracle.jdbc.driver.OracleConnection").getMethod("setRemarksReporting", boolean.class);
                 setRemarksReporting.invoke(((DruidPooledConnection) connection).getConnection(), true);
             }
             DatabaseMetaData databaseMetaData = connection.getMetaData();
@@ -175,10 +178,10 @@ public class JdbcProvider extends DatasourceProvider {
         } catch (SQLException e) {
             DataInsException.throwException(e);
         } catch (Exception e) {
-            if(datasourceRequest.getDatasource().getType().equalsIgnoreCase("ds_doris")){
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("ds_doris")) {
                 datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
                 return fetchResultField(datasourceRequest);
-            }else {
+            } else {
                 DataInsException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
             }
 
@@ -406,7 +409,7 @@ public class JdbcProvider extends DatasourceProvider {
     }
 
     private Connection getConnectionFromPool(DatasourceRequest datasourceRequest) throws Exception {
-        if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mongo.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())){
+        if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mongo.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())) {
             return getConnection(datasourceRequest);
         }
         DruidDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
@@ -738,7 +741,7 @@ public class JdbcProvider extends DatasourceProvider {
             case sqlServer:
                 return "select name from sys.schemas;";
             case db2:
-                return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER'".replace("USER", db2Configuration.getUsername().toUpperCase()) ;
+                return "select SCHEMANAME from syscat.SCHEMATA   WHERE \"DEFINER\" ='USER'".replace("USER", db2Configuration.getUsername().toUpperCase());
             case pg:
                 return "SELECT nspname FROM pg_namespace;";
             case redshift:
