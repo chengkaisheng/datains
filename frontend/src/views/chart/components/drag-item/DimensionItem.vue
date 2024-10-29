@@ -125,6 +125,25 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
+          <!-- <el-dropdown-item v-if="viewType === 'table-info'">
+            <el-dropdown-item
+              v-if="item.hidden"
+              icon="el-icon-view"
+              :command="beforeClickItem('show')"
+            >
+              <span>{{ $t('chart.show') }}</span>
+            </el-dropdown-item>
+            <el-dropdown-item
+              v-else
+              :command="beforeClickItem('hide')"
+            >
+              <svg-icon
+                style="margin-right: 5px"
+                icon-class="hide"
+              />
+              <span>{{ $t('chart.hide') }}</span>
+            </el-dropdown-item>
+          </el-dropdown-item> -->
         </el-dropdown-menu>
       </span>
     </el-dropdown>

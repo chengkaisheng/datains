@@ -149,6 +149,7 @@ export default {
       scaleSize: 1,
       onsizeKey: false,
       comShow: true,
+      timerDownLoad: null
     }
   },
   created() {
@@ -542,16 +543,18 @@ export default {
       }
     },
     exportDetailData(chartInfo) {
+      console.log('123123');
+      
       this.showChartInfo = chartInfo.chart
       this.debounce(this.exportExcel, 500)()
     },
     debounce(fn, wait) {
-      let timer = null;
+      this.timerDownLoad = null;
       return () => {
-        if(timer) {
-          clearTimeout(timer);
+        if(this.timerDownLoad) {
+          clearTimeout(this.timerDownLoad);
         }
-        timer = setTimeout(() => {
+        this.timerDownLoad = setTimeout(() => {
           fn.apply(this, arguments);
         }, wait);
       }

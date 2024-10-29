@@ -553,7 +553,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .table-class >>> .body--wrapper {
   background: rgba(1, 1, 1, 0);
 }
@@ -571,6 +571,29 @@ export default {
   overflow: hidden;
   z-index: 2;
 }
+.total-style {
+  flex: 1;
+  font-size: 12px;
+  /* color: #606266; */
+  white-space: nowrap;
+}
+.page-style >>> .el-input__inner {
+  height: 24px;
+}
+.custom-sizes {
+  display: inline-block;
+  font-size: 13px;
+  min-width: 35.5px;
+  height: 28px;
+  line-height: 28px;
+  vertical-align: top;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+</style>
+
+<style lang="scss" scoped>
 ::v-deep .el-pagination {
   .el-pagination__total {
     color: inherit;
@@ -605,25 +628,6 @@ export default {
     color: inherit;
     background-color: transparent;
   }
-}
-.total-style {
-  flex: 1;
-  font-size: 12px;
-  /* color: #606266; */
-  white-space: nowrap;
-}
-.page-style >>> .el-input__inner {
-  height: 24px;
-}
-.custom-sizes {
-  display: inline-block;
-  font-size: 13px;
-  min-width: 35.5px;
-  height: 28px;
-  line-height: 28px;
-  vertical-align: top;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
 }
 .custom-sizes-popper {
   .el-select-dropdown__item {
