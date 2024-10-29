@@ -1106,6 +1106,8 @@ export default {
     pie_outer_radius_size: '外径大小',
     pie_rose_label_offset: '标签偏移量',
     table_page_mode: '分页模式',
+    table_page_background: '分页背景',
+    table_page_fontcolor: '分页字体色',
     page_mode_page: '分页',
     page_mode_pull: '下拉',
     table_page_size: '分页',

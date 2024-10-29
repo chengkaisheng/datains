@@ -50,13 +50,14 @@
           :total="currentPage.show"
           class="page-style"
           @current-change="pageClick"
-          
+          :style="paginstionStyle"
           
         >
           <div key="1" class="custom-sizes">
             <el-select 
               size="mini"
               :key="Math.random()"
+              :popper-class="['custom-' + chart.id, 'custom-sizes-popper']"
               :popper-append-to-body="!customSelectShow" 
               v-model="currentPage.pageSize" 
               @change="pageChange"
@@ -170,7 +171,8 @@ export default {
           label: '100条/页',
           value: 100
         }
-      ]
+      ],
+      paginstionStyle: {}
     }
   },
   computed: {
@@ -350,6 +352,7 @@ export default {
             : ''
         }
         if (customAttr.size) {
+          this.setPaginationStyle(customAttr.size.tablePageBackground, customAttr.size.tablePageFontcolor)
           this.table_header_class.fontSize =
             customAttr.size.tableTitleFontSize + 'px'
           this.table_item_class.fontSize =
@@ -423,6 +426,12 @@ export default {
           s_table[i].setAttribute('style', s)
         }
       }
+    },
+    setPaginationStyle(tablePageBackground, tablePageFontcolor) {
+      const style = {}
+      style.background = tablePageBackground
+      style.color = tablePageFontcolor
+      this.paginstionStyle = style
     },
     getRowStyle({ row, rowIndex }) {
       if (rowIndex % 2 !== 0) {
@@ -524,6 +533,10 @@ export default {
       if(val) {
         let fullScreen = document.getElementsByClassName('fullscreen')
         this.customSelectShow = fullScreen.length > 0
+
+        let selectDropDown = document.getElementsByClassName(`custom-${this.chart.id}`)
+        selectDropDown[0].style.background = this.paginstionStyle.background
+        selectDropDown[0].style.color = this.paginstionStyle.color
       }
     },
 
@@ -540,7 +553,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .table-class >>> .body--wrapper {
   background: rgba(1, 1, 1, 0);
 }
@@ -558,8 +571,40 @@ export default {
   overflow: hidden;
   z-index: 2;
 }
-.page-style {
-  /* margin-right: auto; */
+::v-deep .el-pagination {
+  .el-pagination__total {
+    color: inherit;
+  }
+  .el-pager {
+    .el-icon-more {
+      color: inherit;
+    }
+    li {
+      background-color: transparent;
+    }
+  }
+  .custom-sizes {
+    color: inherit;
+    .el-input__inner {
+      background-color: transparent;
+      border: 0;
+      color: inherit;
+    }
+    .el-input__suffix {
+      color: inherit;
+      .el-icon-arrow-up {
+        color: inherit;
+      }
+    }
+  }
+  .btn-prev {
+    color: inherit;
+    background-color: transparent;
+  }
+  .btn-next {
+    color: inherit;
+    background-color: transparent;
+  }
 }
 .total-style {
   flex: 1;
@@ -579,5 +624,10 @@ export default {
   vertical-align: top;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+}
+.custom-sizes-popper {
+  .el-select-dropdown__item {
+    color: inherit;
+  }
 }
 </style>

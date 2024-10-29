@@ -22,13 +22,14 @@
           :total="currentPage.show"
           class="page-style"
           @current-change="pageClick"
-          
+          :style="paginstionStyle"
           
         >
           <div key="1" class="custom-sizes">
             <el-select 
               size="mini"
               :key="Math.random()"
+              :popper-class="['custom-' + chart.id, 'custom-sizes-popper']"
               :popper-append-to-body="!customSelectShow" 
               v-model="currentPage.pageSize" 
               @change="pageChange"
@@ -144,7 +145,8 @@ export default {
           label: '100条/页',
           value: 100
         }
-      ]
+      ],
+      paginstionStyle: {}
     }
   },
 
@@ -166,6 +168,7 @@ export default {
       handler(newVal, oldVla) {
         this.initData()
         this.initTitle()
+        this.setPaginationStyle()
         this.calcHeightDelay()
         new Promise((resolve) => { resolve() }).then(() => {
           console.log('22222', '触发此处')
@@ -216,6 +219,7 @@ export default {
     preDraw() {
       this.initData()
       this.initTitle()
+      this.setPaginationStyle()
       this.calcHeightDelay()
       new Promise((resolve) => { resolve() }).then(() => {
         this.drawView()
@@ -388,6 +392,7 @@ export default {
     chartResize() {
       this.initData()
       this.initTitle()
+      this.setPaginationStyle()
       this.calcHeightDelay()
       new Promise((resolve) => { resolve() }).then(() => {
         this.drawView()
@@ -453,6 +458,17 @@ export default {
         }
       }
     },
+    setPaginationStyle() {
+      if (this.chart.customAttr) {
+        const customAttr = JSON.parse(this.chart.customAttr)
+        if (customAttr.size) {
+          const style = {}
+          style.background = customAttr.size.tablePageBackground
+          style.color = customAttr.size.tablePageFontcolor
+          this.paginstionStyle = style
+        }
+      }
+    },
 
     calcHeightRightNow() {
       this.$nextTick(() => {
@@ -490,6 +506,10 @@ export default {
       if(val) {
         let fullScreen = document.getElementsByClassName('fullscreen')
         this.customSelectShow = fullScreen.length > 0
+
+        let selectDropDown = document.getElementsByClassName(`custom-${this.chart.id}`)
+        selectDropDown[0].style.background = this.paginstionStyle.background
+        selectDropDown[0].style.color = this.paginstionStyle.color
       }
     },
 
@@ -525,8 +545,40 @@ export default {
   overflow: hidden;
   margin-top: 8px;
 }
-.page-style{
-  // margin-right: auto;
+::v-deep .el-pagination {
+  .el-pagination__total {
+    color: inherit;
+  }
+  .el-pager {
+    .el-icon-more {
+      color: inherit;
+    }
+    li {
+      background-color: transparent;
+    }
+  }
+  .custom-sizes {
+    color: inherit;
+    .el-input__inner {
+      background-color: transparent;
+      border: 0;
+      color: inherit;
+    }
+    .el-input__suffix {
+      color: inherit;
+      .el-icon-arrow-up {
+        color: inherit;
+      }
+    }
+  }
+  .btn-prev {
+    color: inherit;
+    background-color: transparent;
+  }
+  .btn-next {
+    color: inherit;
+    background-color: transparent;
+  }
 }
 .total-style{
   flex: 1;
@@ -546,5 +598,10 @@ export default {
   vertical-align: top;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+}
+.custom-sizes-popper {
+  .el-select-dropdown__item {
+    color: inherit;
+  }
 }
 </style>

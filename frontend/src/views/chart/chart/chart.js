@@ -66,6 +66,8 @@ export const DEFAULT_SIZE = {
   tableItemHeight: 36,
   tablePageMode: 'page',
   tablePageSize: '20',
+  tablePageBackground: '#ffffff',
+  tablePageFontcolor: '#303133',
   tableColumnMode: 'custom',
   tableColumnWidth: 100,
   tableHeaderAlign: 'left',

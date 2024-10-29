@@ -200,6 +200,20 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item
+          v-show="chart.type && chart.type === 'table-info'"
+          :label="$t('chart.table_page_background')"
+          class="form-item"
+        >
+          <el-color-picker :show-alpha="true" v-model="sizeForm.tablePageBackground" @change="changeBarSizeCase" :predefine="predefineColors" />
+        </el-form-item>
+        <el-form-item
+          v-show="chart.type && chart.type === 'table-info'"
+          :label="$t('chart.table_page_fontcolor')"
+          class="form-item"
+        >
+          <el-color-picker v-model="sizeForm.tablePageFontcolor" @change="changeBarSizeCase" :predefine="predefineColors" />
+        </el-form-item>
       </el-form>
 
       <el-form v-show="chart.type && chart.type.includes('gauge')" ref="sizeFormGauge" :model="sizeForm" label-width="100px" size="mini">
@@ -514,6 +528,8 @@ export default {
 
           this.sizeForm.tablePageMode = this.sizeForm.tablePageMode ? this.sizeForm.tablePageMode : DEFAULT_SIZE.tablePageMode
           this.sizeForm.tablePageSize = this.sizeForm.tablePageSize ? this.sizeForm.tablePageSize : DEFAULT_SIZE.tablePageSize
+          this.sizeForm.tablePageBackground = this.sizeForm.tablePageBackground ? this.sizeForm.tablePageBackground : DEFAULT_SIZE.tablePageBackground
+          this.sizeForm.tablePageFontcolor = this.sizeForm.tablePageFontcolor ? this.sizeForm.tablePageFontcolor : DEFAULT_SIZE.tablePageFontcolor
         }
       }
     },

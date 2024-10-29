@@ -150,6 +150,20 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item
+          v-show="chart.type && chart.type === 'table-info'"
+          :label="$t('chart.table_page_background')"
+          class="form-item"
+        >
+          <el-color-picker :show-alpha="true" v-model="sizeForm.tablePageBackground" @change="changeBarSizeCase" :predefine="predefineColors" />
+        </el-form-item>
+        <el-form-item
+          v-show="chart.type && chart.type === 'table-info'"
+          :label="$t('chart.table_page_fontcolor')"
+          class="form-item"
+        >
+          <el-color-picker v-model="sizeForm.tablePageFontcolor" @change="changeBarSizeCase" :predefine="predefineColors" />
+        </el-form-item>
         <el-form-item :label="$t('chart.table_title_fontsize')" class="form-item">
           <el-select v-model="sizeForm.tableTitleFontSize" :placeholder="$t('chart.table_title_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -388,7 +402,7 @@
 </template>
 
 <script>
-import { DEFAULT_SIZE } from '../../chart/chart'
+import { DEFAULT_SIZE, COLOR_PANEL } from '../../chart/chart'
 export default {
   name: 'SizeSelectorAntV',
   props: {
@@ -404,7 +418,7 @@ export default {
   data() {
     return {
       sizeForm: JSON.parse(JSON.stringify(DEFAULT_SIZE)),
-
+      predefineColors: COLOR_PANEL,
       lineSymbolOptions: [
         // { name: this.$t('chart.line_symbol_none'), value: 'none' },
         { name: this.$t('chart.line_symbol_circle'), value: 'circle' },
@@ -500,6 +514,8 @@ export default {
 
           this.sizeForm.tablePageMode = this.sizeForm.tablePageMode ? this.sizeForm.tablePageMode : DEFAULT_SIZE.tablePageMode
           this.sizeForm.tablePageSize = this.sizeForm.tablePageSize ? this.sizeForm.tablePageSize : DEFAULT_SIZE.tablePageSize
+          this.sizeForm.tablePageBackground = this.sizeForm.tablePageBackground ? this.sizeForm.tablePageBackground : DEFAULT_SIZE.tablePageBackground
+          this.sizeForm.tablePageFontcolor = this.sizeForm.tablePageFontcolor ? this.sizeForm.tablePageFontcolor : DEFAULT_SIZE.tablePageFontcolor
 
           this.sizeForm.tableColumnMode = this.sizeForm.tableColumnMode ? this.sizeForm.tableColumnMode : DEFAULT_SIZE.tableColumnMode
           this.sizeForm.tableColumnWidth = this.sizeForm.tableColumnWidth ? this.sizeForm.tableColumnWidth : DEFAULT_SIZE.tableColumnWidth
