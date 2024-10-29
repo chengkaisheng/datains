@@ -301,6 +301,12 @@
                 <el-slider v-model="curComponent.commonSelectFrame.checkBoxBorderWidth" show-input :show-input-controls="false" input-size="mini" :max="15" />
               </el-col>
             </el-col>
+            <el-col style="margin-bottom: 10px;">
+              <el-col :span="4" ><span class="params-title-small">多选框边框圆角：</span></el-col>
+              <el-col :span="15">
+                <el-slider v-model="curComponent.commonSelectFrame.checkBoxBorderRadius" show-input :show-input-controls="false" input-size="mini" :max="100" />
+              </el-col>
+            </el-col>
             <el-col>
               <el-col :span="4" ><span class="params-title-small">列表背景颜色：</span></el-col>
               <el-col :span="1">
@@ -405,7 +411,7 @@ export default {
   },
   methods: {
     init() {
-      console.log('this.curComponent', this.curComponent, COMMON_SELECT_FRAME)
+      // console.log('this.curComponent', this.curComponent)
       if(this.curComponent && this.curComponent.commonSelectFrame === undefined) {
         this.curComponent.commonSelectFrame = deepCopy(COMMON_SELECT_FRAME)
       }
@@ -467,6 +473,7 @@ export default {
         this.curComponent.commonSelectFrame.checkBoxBgImg = this.selectOrigin.checkBoxBgImg
         this.curComponent.commonSelectFrame.checkBoxBorderColor = this.selectOrigin.checkBoxBorderColor
         this.curComponent.commonSelectFrame.checkBoxBorderWidth = this.selectOrigin.checkBoxBorderWidth
+        this.curComponent.commonSelectFrame.checkBoxBorderRadius = this.selectOrigin.checkBoxBorderRadius
       }
 
       if(this.curComponent.component === 'Picture') {

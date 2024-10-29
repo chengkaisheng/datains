@@ -50,6 +50,7 @@ export const COMMON_SELECT_FRAME = {
   checkBoxBgImg: null, // 多选框背景图
   checkBoxBorderColor: '#DCDFE6', // 多选框边框颜色
   checkBoxBorderWidth: 1, // 多选框边框宽度
+  checkBoxBorderRadius: 1, // 多选框边框圆角
 }
 
 // 空组件仪表板样式

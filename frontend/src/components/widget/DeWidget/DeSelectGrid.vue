@@ -16,10 +16,10 @@
       <div v-if="element.options.attrs.multiple" class="checkbox-group-container">
         <el-checkbox-group v-model="value" @change="handleCheckedChange">
           <el-checkbox-button v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
-            <span :style="checkBoxStyle" style="display: block;width: 100%;height: 100%;padding: 10px 20px;border-radius: 4px;">{{ $t('commons.all') }}</span>
+            <span :style="checkBoxStyle" style="display: block;width: 100%;height: 100%;padding: 10px 20px;">{{ $t('commons.all') }}</span>
           </el-checkbox-button>
           <el-checkbox-button v-for="item in datas" :key="item.id" :label="item.id">
-            <span :style="checkBoxStyle" style="display: block;width: 100%;height: 100%;padding: 10px 20px;border-radius: 4px;">{{ item.id }}</span>
+            <span :style="checkBoxStyle" style="display: block;width: 100%;height: 100%;padding: 10px 20px;">{{ item.id }}</span>
           </el-checkbox-button>
         </el-checkbox-group>
         <p
@@ -174,6 +174,7 @@ export default {
           style.backgroundColor = this.element.commonSelectFrame.checkBoxBgColor
         }
         style.color = this.element.commonSelectFrame.panelColor
+        style.borderRadius = this.element.commonSelectFrame.checkBoxBorderRadius + 'px'
         style.border = `${this.element.commonSelectFrame.checkBoxBorderWidth}px solid ${this.element.commonSelectFrame.checkBoxBorderColor}`
       }
       return style
@@ -494,6 +495,7 @@ export default {
       width: 100%;
       height: 100%;
       border: 0 !important;
+      background-color: transparent;
     }
     ::v-deep .is-checked {
       .el-checkbox-button__inner {
