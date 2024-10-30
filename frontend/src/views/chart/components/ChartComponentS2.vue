@@ -29,7 +29,7 @@
             <el-select 
               size="mini"
               :key="Math.random()"
-              :popper-class="['custom-' + chart.id, 'custom-sizes-popper']"
+              :popper-class="'custom-' + chart.id"
               :popper-append-to-body="!customSelectShow" 
               v-model="currentPage.pageSize" 
               @change="pageChange"
@@ -189,17 +189,28 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    processData(config, data) {
+      const processedData = []
+      data.forEach((v) => {
+        const processedItem = { ...v }
+        config.forEach((i) => {
+          // fields.deType 为 2-数值 3-数值（小数） 增加千分位
+          if (i.deType === 2 || i.deType === 3) {
+            processedItem[i.datainsName] = v[i.datainsName].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+          }
+        })
+        processedData.push(processedItem)
+      })
+      return processedData
+    },
     initData() {
       this.showPage = false
       let datas = []
       if (this.chart.data && this.chart.data.fields) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
-        // if (this.currentPage.pageSize < attr.size.tablePageSize) {
-        //   this.currentPage.page = 1
-        // }
         this.currentPage.pageSize = this.pageChangeFlag ? this.currentPage.pageSize : parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
-        datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+        datas = this.processData(this.fields, JSON.parse(JSON.stringify(this.chart.data.tableRow)))
         if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
           this.currentPage.show = this.chart.totalItems
           this.showPage = true
@@ -602,9 +613,7 @@ export default {
     background-color: transparent;
   }
 }
-.custom-sizes-popper {
-  .el-select-dropdown__item {
-    color: inherit;
-  }
+.el-select-dropdown__item {
+  color: inherit;
 }
 </style>

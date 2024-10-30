@@ -4,7 +4,11 @@ import { DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 
 export function baseTableInfo(s2, container, chart, action, tableData, fontFamily = '') {
   const containerDom = document.getElementById(container)
-
+  const xaxis = JSON.parse(chart.xaxis)
+  const nameMap = xaxis.reduce((pre, next) => {
+    pre[next.datainsName] = next
+    return pre
+  }, {})
   // fields
   const fields = chart.data.fields
   if (!fields || fields.length === 0) {
@@ -40,6 +44,10 @@ export function baseTableInfo(s2, container, chart, action, tableData, fontFamil
 
     // build field
     fields.forEach(ele => {
+      const f = nameMap[ele.datainsName]
+      if (!f || f.hidden === true) {
+        return
+      }
       if (removeField.indexOf(ele.datainsName) < 0) {
         // 用下钻字段替换当前字段
         if (drillExp.datainsName === ele.datainsName) {
@@ -59,6 +67,10 @@ export function baseTableInfo(s2, container, chart, action, tableData, fontFamil
     })
   } else {
     fields.forEach(ele => {
+      const f = nameMap[ele.datainsName]
+      if (!f || f.hidden === true) {
+        return
+      }
       columns.push(ele.datainsName)
       meta.push({
         field: ele.datainsName,
@@ -105,7 +117,11 @@ export function baseTableInfo(s2, container, chart, action, tableData, fontFamil
 export function baseTableNormal(s2, container, chart, action, tableData, fontFamily = '') {
   // console.log('s2, container, chart, action, tableData', s2, container, chart, action, tableData)
   const containerDom = document.getElementById(container)
-
+  const xaxis = JSON.parse(chart.xaxis)
+  const nameMap = xaxis.reduce((pre, next) => {
+    pre[next.datainsName] = next
+    return pre
+  }, {})
   // fields
   const fields = chart.data.fields
   if (!fields || fields.length === 0) {
@@ -140,6 +156,10 @@ export function baseTableNormal(s2, container, chart, action, tableData, fontFam
 
     // build field
     fields.forEach(ele => {
+      const f = nameMap[ele.datainsName]
+      if (!f || f.hidden === true) {
+        return
+      }
       if (removeField.indexOf(ele.datainsName) < 0) {
         // 用下钻字段替换当前字段
         if (drillExp.datainsName === ele.datainsName) {
@@ -159,6 +179,10 @@ export function baseTableNormal(s2, container, chart, action, tableData, fontFam
     })
   } else {
     fields.forEach(ele => {
+      const f = nameMap[ele.datainsName]
+      if (!f || f.hidden === true) {
+        return
+      }
       columns.push(ele.datainsName)
       meta.push({
         field: ele.datainsName,
@@ -205,13 +229,34 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
 
   // row and column
   const columnFields = JSON.parse(chart.xaxis)
+  const xnameMap = columnFields.reduce((pre, next) => {
+    pre[next.datainsName] = next
+    return pre
+  }, {})
   const rowFields = JSON.parse(chart.xaxisExt)
+  const xenameMap = rowFields.reduce((pre, next) => {
+    pre[next.datainsName] = next
+    return pre
+  }, {})
   const valueFields = JSON.parse(chart.yaxis)
+  const ynameMap = valueFields.reduce((pre, next) => {
+    pre[next.datainsName] = next
+    return pre
+  }, {})
+  const nameMap = { ...xnameMap, ...xenameMap, ...ynameMap }
   const c = []; const r = []; const v = []
   columnFields.forEach(ele => {
+    const f = xnameMap[ele.datainsName]
+    if (!f || f.hidden === true) {
+      return
+    }
     c.push(ele.datainsName)
   })
   rowFields.forEach(ele => {
+    const f = xenameMap[ele.datainsName]
+    if (!f || f.hidden === true) {
+      return
+    }
     r.push(ele.datainsName)
   })
   valueFields.forEach(ele => {
@@ -247,6 +292,10 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
 
     // build field
     fields.forEach(ele => {
+      const f = nameMap[ele.datainsName]
+      if (!f || f.hidden === true) {
+        return
+      }
       if (removeField.indexOf(ele.datainsName) < 0) {
         // 用下钻字段替换当前字段
         if (drillExp.datainsName === ele.datainsName) {
@@ -266,6 +315,10 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
     })
   } else {
     fields.forEach(ele => {
+      const f = nameMap[ele.datainsName]
+      if (!f || f.hidden === true) {
+        return
+      }
       columns.push(ele.datainsName)
       meta.push({
         field: ele.datainsName,

@@ -164,6 +164,10 @@
         <el-form-item v-show="chart.type && !chart.type.includes('vertical')" :label="$t('chart.table_item_height')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableItemHeight" :min="36" :max="100" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
+        <!-- echarts table-normal table-info 表头最小宽度 -->
+        <el-form-item v-show="chart.render && chart.render === 'echarts' && chart.type && chart.type.includes('table')" :label="$t('chart.table_header_min_width')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.tableHeaderMinWidth" :min="0" :max="500" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
+        </el-form-item>
         <!-- 轮播速率 -->
         <el-form-item v-show="chart.type && chart.type.includes('vertical')" :label="'轮播速率'" class="form-item">
           <el-select v-model="sizeForm.automaticTime" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
@@ -526,6 +530,7 @@ export default {
           this.sizeForm.liquidWaveLength = this.sizeForm.liquidWaveLength ? this.sizeForm.liquidWaveLength : DEFAULT_SIZE.liquidWaveLength
           this.sizeForm.liquidWaveCount = this.sizeForm.liquidWaveCount ? this.sizeForm.liquidWaveCount : DEFAULT_SIZE.liquidWaveCount
 
+          this.sizeForm.tableHeaderMinWidth = this.sizeForm.tableHeaderMinWidth ? this.sizeForm.tableHeaderMinWidth : DEFAULT_SIZE.tableHeaderMinWidth
           this.sizeForm.tablePageMode = this.sizeForm.tablePageMode ? this.sizeForm.tablePageMode : DEFAULT_SIZE.tablePageMode
           this.sizeForm.tablePageSize = this.sizeForm.tablePageSize ? this.sizeForm.tablePageSize : DEFAULT_SIZE.tablePageSize
           this.sizeForm.tablePageBackground = this.sizeForm.tablePageBackground ? this.sizeForm.tablePageBackground : DEFAULT_SIZE.tablePageBackground

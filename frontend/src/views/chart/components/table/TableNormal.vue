@@ -29,6 +29,8 @@
           :resizable="true"
           sortable
           :title="field.name"
+          :min-width="tableHeaderMinWidth"
+          show-header-overflow="tooltip"
         >
           <!--        <template slot="header">-->
           <!--          <span>{{ field.name }}</span>-->
@@ -57,7 +59,7 @@
             <el-select 
               size="mini"
               :key="Math.random()"
-              :popper-class="['custom-' + chart.id, 'custom-sizes-popper']"
+              :popper-class="'custom-' + chart.id"
               :popper-append-to-body="!customSelectShow" 
               v-model="currentPage.pageSize" 
               @change="pageChange"
@@ -172,7 +174,8 @@ export default {
           value: 100
         }
       ],
-      paginstionStyle: {}
+      paginstionStyle: {},
+      tableHeaderMinWidth: 200
     }
   },
   computed: {
@@ -250,6 +253,10 @@ export default {
               }
             }
           }
+          // fields.deType 为 2-数值 3-数值（小数） 增加千分位
+          if (i.deType === 2 || i.deType === 3) {
+            processedItem[i.datainsName] = v[i.datainsName].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+          }
         })
         processedData.push(processedItem)
       })
@@ -260,19 +267,19 @@ export default {
       const that = this
       let datas = []
       if (this.chart.data) {
+        const xaxis = JSON.parse(this.chart.xaxis)
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
-        // if (this.currentPage.pageSize < attr.size.tablePageSize) {
-        //   this.currentPage.page = 1
-        // }
+        this.tableHeaderMinWidth = attr.size.tableHeaderMinWidth ? attr.size.tableHeaderMinWidth : 200
         this.currentPage.pageSize = this.pageChangeFlag ? this.currentPage.pageSize : parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
+        this.fields = this.fields.filter(field => {
+          let xaxisItem = xaxis.find(item => item.datainsName === field.datainsName)
+          return xaxisItem.hidden !== true
+        })
         datas = this.processData(
           this.fields,
           JSON.parse(JSON.stringify(this.chart.data.tableRow))
         )
-        // datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        // console.log('this.fields', this.fields)
-        // console.log('datas', datas)
 
         if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
           this.currentPage.show = this.chart.totalItems
@@ -629,9 +636,7 @@ export default {
     background-color: transparent;
   }
 }
-.custom-sizes-popper {
-  .el-select-dropdown__item {
-    color: inherit;
-  }
+.el-select-dropdown__item {
+  color: inherit;
 }
 </style>
