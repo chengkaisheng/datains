@@ -32,7 +32,7 @@
     <!-- display:displayClass(item) -->
     <de-drag
       v-for="(item, index) in componentData"
-
+      :currentComponentType="currentComponentType"
       ref="deDragRef"
       :key="item.id"
       :style="{opacity:opacityClass(item),visibility:displayClass(item)}"
@@ -1117,7 +1117,8 @@ export default {
       yourList: [],
       linkJumpSetVisible: false,
       linkJumpSetViewId: null,
-      editShow: false
+      editShow: false,
+      currentComponentType: []
     }
   },
   computed: {
@@ -1319,10 +1320,23 @@ export default {
         _this.positionBoxInfoArray = positionBox
       }, 500)
     }
+    this.$nextTick(() => {
+      this.getComponentType()
+    })
   },
   created() {
   },
   methods: {
+    getComponentType() {
+      let timer = setTimeout(() => {
+        if(Array.isArray(this.$refs.wrapperChild) && this.$refs.wrapperChild.length > 0) {
+          this.$refs.wrapperChild.map(item => {
+            item.chart && this.currentComponentType.push({ [item.chart.id]: item.chart.type})
+          })
+        }
+        // console.log('123', this.$refs.wrapperChild, this.currentComponentType);
+      }, 1000)
+    },
     // showOrNot(item) {
     //   console.log('判断展示数据', item, this.canvasStyleData)
     //   // return true

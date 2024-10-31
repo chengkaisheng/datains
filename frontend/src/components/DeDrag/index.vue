@@ -34,6 +34,7 @@
     >
       <edit-bar
         :show="editBarShow"
+        :currentComponentType="currentComponentType"
         style="transform: translateZ(10px)"
         :active-model="'edit'"
         :element="element"
@@ -357,6 +358,10 @@ export default {
     linkageActive: {
       type: Boolean,
       default: false
+    },
+    currentComponentType: {
+      type: Array,
+      default: () => []
     }
   },
   data: function() {

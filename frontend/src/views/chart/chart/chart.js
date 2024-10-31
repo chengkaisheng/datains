@@ -14,6 +14,7 @@ export const DEFAULT_COLOR_CASE = {
   tableHeaderBgColor: '#e1eaff',
   tableItemBgColor: '#ffffff',
   tableFontColor: '#000000',
+  tableQuotaItemFontColor: '#000000',
   tableInfoFontColor: '#000000',
   tableHeightColor: '#fff',
   tableHeightFontColor: '#333',

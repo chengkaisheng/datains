@@ -121,6 +121,10 @@ export default {
     previewVisible: {
       type: Boolean,
       default: false
+    },
+    currentComponentType: {
+      type: [String , Array],
+      required: false,
     }
   },
   watch: {
@@ -146,9 +150,15 @@ export default {
   },
   computed: {
     downloadFlag() {
-      // return this.show && this.normalAreaShow && this.screenStatus && this.curComponent && this.curComponent.type==='view'
-      // return this.show && this.normalAreaShow && this.screenStatus && this.element && this.element.type==='view'
-      return this.screenStatus && this.element && this.element.type==='view'
+      let type = ''
+      // console.log('123this.currentComponentType', this.currentComponentType);
+      
+      if(Array.isArray(this.currentComponentType) && this.currentComponentType.length > 0) {
+        type = this.currentComponentType[this.element.id]
+      } else if(typeof this.currentComponentType === 'string') {
+        type = this.currentComponentType
+      }
+      return this.screenStatus && this.element && this.element.type==='view' && (type.includes('table') || type === 'roll-elemnt' || type === 'vertical-ele')
     },
     // 联动区域按钮显示
     linkageAreaShow() {

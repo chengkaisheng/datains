@@ -13,6 +13,7 @@ export function getCustomTheme(chart, fontFamily) {
   const itemAlign = DEFAULT_SIZE.tableItemAlign
 
   const theme = {
+    paletteBasicColors0: '#000000',
     background: {
       color: '#00000000'
     },
@@ -140,6 +141,8 @@ export function getCustomTheme(chart, fontFamily) {
       theme.dataCell.cell.verticalBorderColor = b_c
       theme.dataCell.bolderText.fill = c.tableFontColor
       theme.dataCell.text.fill = c.tableInfoFontColor
+
+      theme.paletteBasicColors0 = c.tableQuotaItemFontColor
     }
     // size
     if (customAttr.size) {

@@ -255,7 +255,7 @@ export default {
           }
           // fields.deType 为 2-数值 3-数值（小数） 增加千分位
           if (i.deType === 2 || i.deType === 3) {
-            processedItem[i.datainsName] = v[i.datainsName].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            processedItem[i.datainsName] = !v[i.datainsName] ? v[i.datainsName] : v[i.datainsName].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
           }
         })
         processedData.push(processedItem)
@@ -274,7 +274,7 @@ export default {
         this.currentPage.pageSize = this.pageChangeFlag ? this.currentPage.pageSize : parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         this.fields = this.fields.filter(field => {
           let xaxisItem = xaxis.find(item => item.datainsName === field.datainsName)
-          return xaxisItem.hidden !== true
+          return xaxisItem ? xaxisItem.hidden !== true : true
         })
         datas = this.processData(
           this.fields,
@@ -464,7 +464,7 @@ export default {
               if (typeof valueStr === 'string' && valueStr.endsWith('%')) {
                 return Number(valueStr.slice(0, -1))
               } else {
-                return Number(valueStr)
+                return typeof valueStr === 'string' ? Number(valueStr.replace(/,/g, '')) : Number(valueStr)
               }
             })
             // 合计
@@ -487,7 +487,7 @@ export default {
                 isPercentage = foundObject.isPercentage || ''
               }
               calcAccuracyList[columnIndex] = accuracy
-              means[columnIndex] = total.toFixed(Number(accuracy)) + isPercentage
+              means[columnIndex] = total.toFixed(Number(accuracy)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + isPercentage
             } else {
               calcAccuracyList[columnIndex] = ''
               means[columnIndex] = ''

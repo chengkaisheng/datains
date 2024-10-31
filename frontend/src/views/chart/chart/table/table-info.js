@@ -5,7 +5,8 @@ import { DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 export function baseTableInfo(s2, container, chart, action, tableData, fontFamily = '') {
   const containerDom = document.getElementById(container)
   const xaxis = JSON.parse(chart.xaxis)
-  const nameMap = xaxis.reduce((pre, next) => {
+  const yaxis = JSON.parse(chart.yaxis)
+  const nameMap = [...xaxis, ...yaxis].reduce((pre, next) => {
     pre[next.datainsName] = next
     return pre
   }, {})
@@ -118,7 +119,8 @@ export function baseTableNormal(s2, container, chart, action, tableData, fontFam
   // console.log('s2, container, chart, action, tableData', s2, container, chart, action, tableData)
   const containerDom = document.getElementById(container)
   const xaxis = JSON.parse(chart.xaxis)
-  const nameMap = xaxis.reduce((pre, next) => {
+  const yaxis = JSON.parse(chart.yaxis)
+  const nameMap = [...xaxis, ...yaxis].reduce((pre, next) => {
     pre[next.datainsName] = next
     return pre
   }, {})
@@ -397,7 +399,19 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
 
   // theme
   const customTheme = getCustomTheme(chart, fontFamily)
-  s2.setThemeCfg({ theme: customTheme })
+  const s2Palette = {
+    basicColors: [
+      customTheme.paletteBasicColors0
+    ],
+    semanticColors: {
+      red: '#FF4D4F',
+      green: '#29A294',
+    },
+  }
+  s2.setThemeCfg({ 
+    theme: customTheme,
+    palette: s2Palette,
+  })
 
   return s2
 }
@@ -410,16 +424,16 @@ const calcTotal = (query, data, spreadsheet, valueFields) => {
     let total1 = 0
     let total2 = 0
     data.map(item => {
-      total1 += item[arr[0].proportionOne]
-      total2 += item[arr[0].proportionTwo]
+      total1 += typeof item[arr[0].proportionOne] === 'string' ? Number(item[arr[0].proportionOne].replace(/,/g, '')) : item[arr[0].proportionOne]
+      total2 += typeof item[arr[0].proportionTwo] === 'string' ? Number(item[arr[0].proportionTwo].replace(/,/g, '')) : item[arr[0].proportionTwo]
     })
     return (total1 / total2 * 100).toFixed(arr[0].totalaccuracy) + '%'
   } else {
     // 不需要计算占比，直接求和
     let total = 0
     data.map(item => {
-      total += item[query.$$extra$$]
+      total += typeof item[query.$$extra$$] === 'string' ? Number(item[query.$$extra$$].replace(/,/g, '')) : item[query.$$extra$$]
     })
-    return total
+    return total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
 }

@@ -7,7 +7,7 @@
     @mousedown="elementMouseDown"
   >
     <div :style="commonStyle" class="main_view">
-      <edit-bar :show="componentActiveFlag" :element="config" @exportDetailData="exportDetailData" @showViewDetails="showViewDetails" />
+      <edit-bar :show="componentActiveFlag" :currentComponentType="currentComponentType" :element="config" @exportDetailData="exportDetailData" @showViewDetails="showViewDetails" />
       <close-bar v-if="previewVisible" @closePreview="closePreview" />
       <de-out-widget
         v-if="config.type==='custom'"
@@ -134,8 +134,18 @@ export default {
       previewVisible: false,
       showVisible: false,
       textElement: {},
+      currentComponentType: ''
     }
   },
+  // watch: {
+  //   'this.$refs.wrapperChild': {
+  //     handler() {
+  //       console.log('this.$refs.wrapperChild', this.$refs.wrapperChild);
+        
+  //     },
+  //     deep: true
+  //   }
+  // },
   computed: {
     commonStyle() {
       const style = {
@@ -208,6 +218,9 @@ export default {
   mounted() {
     runAnimation(this.$el, this.config.animations)
     console.log('全屏展示。。。。。。')
+    this.$nextTick(() => {
+      this.getComponentType()
+    })
   },
   methods: {
     getStyle,
@@ -298,6 +311,18 @@ export default {
     },
     closePreview() {
       this.previewVisible = false
+    },
+    getComponentType() {
+      let timer = setTimeout(() => {
+        this.currentComponentType = this.$refs.wrapperChild.chart ? this.$refs.wrapperChild.chart.type : ''
+        // console.log('123', this.$refs.wrapperChild, this.currentComponentType);
+        
+        // if(!(this.currentComponentType.includes('table') || this.currentComponentType === 'roll-elemnt' || this.currentComponentType === 'vertical-ele')) {
+        //   this.getComponentType()
+        // } else {
+        //   clearTimeout(timer)
+        // }
+      }, 500)
     }
   }
 }

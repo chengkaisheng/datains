@@ -11,6 +11,7 @@
     <EditBarView
       :show="editBarViewShowFlag"
       :is-edit="isEdit"
+      :type="chart.type"
       :view-id="element.propValue.viewId"
       @showViewDetails="openChartDetailsDialog"
       @exportDetailData="exportDetailData"

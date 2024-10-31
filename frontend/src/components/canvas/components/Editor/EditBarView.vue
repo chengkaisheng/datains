@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="download" @click.stop="exportDetailData">
+    <div v-show="type.includes('table')" class="download" @click.stop="exportDetailData">
       <i class="el-icon-download" ></i>
     </div>
-    <div v-if="show" :class="['bar-main', downloadFlag ? 'bar-main-right' : '']">
+    <div v-if="show" :class="['bar-main', type.includes('table') ? 'bar-main-right' : '']">
       <div>
         <span v-if="isEdit" :title="$t('panel.edit')">
           <i class="icon iconfont icon-edit" @click.stop="edit" />
@@ -35,6 +35,10 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    type: {
+      type: String,
+      required: true,
     }
   },
   data() {
