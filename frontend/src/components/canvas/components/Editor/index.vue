@@ -1331,11 +1331,16 @@ export default {
       let timer = setTimeout(() => {
         if(Array.isArray(this.$refs.wrapperChild) && this.$refs.wrapperChild.length > 0) {
           this.$refs.wrapperChild.map(item => {
-            item.chart && this.currentComponentType.push({ [item.chart.id]: item.chart.type})
+            item.chart && this.currentComponentType.push({
+              id: item.chart.id,
+              type: item.chart.type
+            })
           })
         }
-        // console.log('123', this.$refs.wrapperChild, this.currentComponentType);
-      }, 1000)
+        console.log('123componentData', this.componentData);
+        
+        console.log('123', this.$refs.wrapperChild, this.currentComponentType);
+      }, 1500)
     },
     // showOrNot(item) {
     //   console.log('判断展示数据', item, this.canvasStyleData)

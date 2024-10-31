@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-show="type.includes('table')" class="download" @click.stop="exportDetailData">
+    <div v-if="show && type.includes('table')" class="download" @click.stop="exportDetailData">
       <i class="el-icon-download" ></i>
     </div>
     <div v-if="show" :class="['bar-main', type.includes('table') ? 'bar-main-right' : '']">

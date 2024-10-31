@@ -131,6 +131,25 @@ export default {
     // screenStatus(val, oldVal) {
     //   console.log('val, oldVal', val, oldVal);
     // }
+    currentComponentType: {
+      handler(val, oldVal) {
+        let type = ''
+      
+        if(Array.isArray(this.currentComponentType) && this.currentComponentType.length > 0) {
+          this.currentComponentType.map(item => {
+            if(item.id === this.element.propValue.viewId) {
+              type = item.type
+            }
+          })
+          
+        } else if(typeof this.currentComponentType === 'string') {
+          type = this.currentComponentType
+        }
+        this.type = type === undefined ? '' : type
+        // console.log('123this.currentComponentType', type, this.currentComponentType);
+      },
+      deep: true
+    }
   },
   data() {
     return {
@@ -143,22 +162,15 @@ export default {
         'customBottm'
       ],
       timer: null,
-      check: false
+      check: false,
+      type: ''
     }
   },
   mounted() {
   },
   computed: {
     downloadFlag() {
-      let type = ''
-      // console.log('123this.currentComponentType', this.currentComponentType);
-      
-      if(Array.isArray(this.currentComponentType) && this.currentComponentType.length > 0) {
-        type = this.currentComponentType[this.element.id]
-      } else if(typeof this.currentComponentType === 'string') {
-        type = this.currentComponentType
-      }
-      return this.screenStatus && this.element && this.element.type==='view' && (type.includes('table') || type === 'roll-elemnt' || type === 'vertical-ele')
+      return this.screenStatus && this.element && this.element.type==='view' && (this.type.includes('table') || this.type === 'roll-elemnt' || this.type === 'vertical-ele')
     },
     // 联动区域按钮显示
     linkageAreaShow() {

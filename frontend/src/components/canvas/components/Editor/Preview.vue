@@ -543,23 +543,17 @@ export default {
       }
     },
     exportDetailData(chartInfo) {
-      console.log('123123');
+      // console.log('123123');
       
       this.showChartInfo = chartInfo.chart
-      this.debounce(this.exportExcel, 500)()
-    },
-    debounce(fn, wait) {
-      this.timerDownLoad = null;
-      return () => {
-        if(this.timerDownLoad) {
-          clearTimeout(this.timerDownLoad);
-        }
-        this.timerDownLoad = setTimeout(() => {
-          fn.apply(this, arguments);
-        }, wait);
-      }
+      this.exportExcel()
     },
     async exportExcel() {
+      let flag = localStorage.getItem('exportDataFlag')
+      if(flag === 'true') {
+        return
+      } 
+      localStorage.setItem('exportDataFlag', 'true')
       const excelHeader = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.name)
       const excelHeaderKeys = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.datainsName)
       let excelData = JSON.parse(JSON.stringify(this.showChartInfo.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
@@ -579,6 +573,9 @@ export default {
         excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       }
       export_json_to_excel(excelHeader, excelData, excelName)
+      setTimeout(() => {
+        localStorage.setItem('exportDataFlag', 'false')
+      }, 1000)
     },
     // exportExcel() {
     //   this.$refs['userViewDialog'].exportExcel()
