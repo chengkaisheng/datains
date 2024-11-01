@@ -399,18 +399,8 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
 
   // theme
   const customTheme = getCustomTheme(chart, fontFamily)
-  const s2Palette = {
-    basicColors: [
-      customTheme.paletteBasicColors0
-    ],
-    semanticColors: {
-      red: '#FF4D4F',
-      green: '#29A294',
-    },
-  }
   s2.setThemeCfg({ 
-    theme: customTheme,
-    palette: s2Palette,
+    theme: customTheme
   })
 
   return s2

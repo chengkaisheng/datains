@@ -518,9 +518,8 @@ export default {
       return trackMenuInfo
     },
     chartType() {
-      if(this.chart.type.includes('table') || this.chart.type === 'roll-elemnt' || this.chart.type === 'vertical-ele') {
-        this.$emit('update:currentComponentType', this.chart.type)
-      }
+      // console.log('123123', this.chart.type, this.chart);
+      this.$emit('update:currentComponentType', this.chart.type)
       return this.chart.type
     },
     hw() {

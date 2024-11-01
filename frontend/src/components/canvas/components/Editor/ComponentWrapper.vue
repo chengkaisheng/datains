@@ -138,15 +138,6 @@ export default {
       currentComponentType: ''
     }
   },
-  // watch: {
-  //   'this.$refs.wrapperChild': {
-  //     handler() {
-  //       console.log('this.$refs.wrapperChild', this.$refs.wrapperChild);
-        
-  //     },
-  //     deep: true
-  //   }
-  // },
   computed: {
     commonStyle() {
       const style = {

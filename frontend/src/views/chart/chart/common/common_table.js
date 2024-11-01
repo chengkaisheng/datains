@@ -13,7 +13,6 @@ export function getCustomTheme(chart, fontFamily) {
   const itemAlign = DEFAULT_SIZE.tableItemAlign
 
   const theme = {
-    paletteBasicColors0: '#000000',
     background: {
       color: '#00000000'
     },
@@ -29,6 +28,12 @@ export function getCustomTheme(chart, fontFamily) {
         // fontFamily: fontFamily
       },
       text: {
+        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        textAlign: headerAlign,
+        fontFamily: fontFamily
+      },
+      measureText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign,
@@ -54,6 +59,12 @@ export function getCustomTheme(chart, fontFamily) {
         textAlign: headerAlign,
         fontFamily: fontFamily
       },
+      measureText: {
+        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        textAlign: headerAlign,
+        fontFamily: fontFamily
+      },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
@@ -69,6 +80,12 @@ export function getCustomTheme(chart, fontFamily) {
         // fontFamily: fontFamily
       },
       text: {
+        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        textAlign: headerAlign,
+        fontFamily: fontFamily
+      },
+      measureText: {
         fill: DEFAULT_COLOR_CASE.tableFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign,
@@ -94,6 +111,12 @@ export function getCustomTheme(chart, fontFamily) {
         fill: DEFAULT_COLOR_CASE.tableInfoFontColor,
         fontSize: DEFAULT_SIZE.tableItemFontSize,
         textAlign: itemAlign,
+        fontFamily: fontFamily
+      },
+      measureText: {
+        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fontSize: DEFAULT_SIZE.tableTitleFontSize,
+        textAlign: headerAlign,
         fontFamily: fontFamily
       },
       bolderText: {
@@ -122,18 +145,21 @@ export function getCustomTheme(chart, fontFamily) {
       theme.cornerCell.cell.verticalBorderColor = b_c
       theme.cornerCell.bolderText.fill = c.tableFontColor
       theme.cornerCell.text.fill = c.tableFontColor
+      theme.cornerCell.measureText.fill = c.tableFontColor
 
       theme.rowCell.cell.backgroundColor = h_c
       theme.rowCell.cell.horizontalBorderColor = b_c
       theme.rowCell.cell.verticalBorderColor = b_c
       theme.rowCell.bolderText.fill = c.tableFontColor
       theme.rowCell.text.fill = c.tableFontColor
+      theme.rowCell.measureText.fill = c.tableFontColor
 
       theme.colCell.cell.backgroundColor = h_c
       theme.colCell.cell.horizontalBorderColor = b_c
       theme.colCell.cell.verticalBorderColor = b_c
       theme.colCell.bolderText.fill = c.tableFontColor
       theme.colCell.text.fill = c.tableFontColor
+      theme.colCell.measureText.fill = c.tableFontColor
 
       theme.dataCell.cell.backgroundColor = i_c
       theme.dataCell.cell.crossBackgroundColor = i_c
@@ -141,8 +167,7 @@ export function getCustomTheme(chart, fontFamily) {
       theme.dataCell.cell.verticalBorderColor = b_c
       theme.dataCell.bolderText.fill = c.tableFontColor
       theme.dataCell.text.fill = c.tableInfoFontColor
-
-      theme.paletteBasicColors0 = c.tableQuotaItemFontColor
+      theme.dataCell.measureText.fill = c.tableInfoFontColor
     }
     // size
     if (customAttr.size) {
@@ -155,21 +180,29 @@ export function getCustomTheme(chart, fontFamily) {
       theme.cornerCell.bolderText.textAlign = h_a
       theme.cornerCell.text.fontSize = parseInt(s.tableTitleFontSize)
       theme.cornerCell.text.textAlign = h_a
+      theme.cornerCell.measureText.fontSize = parseInt(s.tableTitleFontSize)
+      theme.cornerCell.measureText.textAlign = h_a
 
       theme.rowCell.bolderText.fontSize = parseInt(s.tableTitleFontSize)
       theme.rowCell.bolderText.textAlign = h_a
       theme.rowCell.text.fontSize = parseInt(s.tableTitleFontSize)
       theme.rowCell.text.textAlign = h_a
+      theme.rowCell.measureText.fontSize = parseInt(s.tableTitleFontSize)
+      theme.rowCell.measureText.textAlign = h_a
 
       theme.colCell.bolderText.fontSize = parseInt(s.tableTitleFontSize)
       theme.colCell.bolderText.textAlign = h_a
       theme.colCell.text.fontSize = parseInt(s.tableTitleFontSize)
       theme.colCell.text.textAlign = h_a
+      theme.colCell.measureText.fontSize = parseInt(s.tableTitleFontSize)
+      theme.colCell.measureText.textAlign = h_a
 
       theme.dataCell.bolderText.fontSize = parseInt(s.tableItemFontSize)
       theme.dataCell.bolderText.textAlign = i_a
       theme.dataCell.text.fontSize = parseInt(s.tableItemFontSize)
       theme.dataCell.text.textAlign = i_a
+      theme.dataCell.measureText.fontSize = parseInt(s.tableItemFontSize)
+      theme.dataCell.measureText.textAlign = i_a
     }
   }
 
