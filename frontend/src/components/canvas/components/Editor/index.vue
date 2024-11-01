@@ -151,6 +151,7 @@
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
+        :currentComponentType.sync="currentComponentType"
         :filters="filterMap[item.propValue && item.propValue.viewId]"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
@@ -1118,7 +1119,7 @@ export default {
       linkJumpSetVisible: false,
       linkJumpSetViewId: null,
       editShow: false,
-      currentComponentType: []
+      currentComponentType: ''
     }
   },
   computed: {
@@ -1320,28 +1321,10 @@ export default {
         _this.positionBoxInfoArray = positionBox
       }, 500)
     }
-    this.$nextTick(() => {
-      this.getComponentType()
-    })
   },
   created() {
   },
   methods: {
-    getComponentType() {
-      let timer = setTimeout(() => {
-        if(Array.isArray(this.$refs.wrapperChild) && this.$refs.wrapperChild.length > 0) {
-          this.$refs.wrapperChild.map(item => {
-            item.chart && this.currentComponentType.push({
-              id: item.chart.id,
-              type: item.chart.type
-            })
-          })
-        }
-        console.log('123componentData', this.componentData);
-        
-        console.log('123', this.$refs.wrapperChild, this.currentComponentType);
-      }, 1500)
-    },
     // showOrNot(item) {
     //   console.log('判断展示数据', item, this.canvasStyleData)
     //   // return true

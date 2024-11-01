@@ -38,6 +38,7 @@
         :is="config.component"
         v-else
         ref="wrapperChild"
+        :currentComponentType.sync="currentComponentType"
         :out-style="config.style"
         :style="getComponentStyleDefault(config.style)"
         :prop-value="config.propValue"
@@ -218,9 +219,6 @@ export default {
   mounted() {
     runAnimation(this.$el, this.config.animations)
     console.log('全屏展示。。。。。。')
-    this.$nextTick(() => {
-      this.getComponentType()
-    })
   },
   methods: {
     getStyle,
@@ -311,18 +309,6 @@ export default {
     },
     closePreview() {
       this.previewVisible = false
-    },
-    getComponentType() {
-      let timer = setTimeout(() => {
-        this.currentComponentType = this.$refs.wrapperChild.chart ? this.$refs.wrapperChild.chart.type : ''
-        // console.log('123', this.$refs.wrapperChild, this.currentComponentType);
-        
-        // if(!(this.currentComponentType.includes('table') || this.currentComponentType === 'roll-elemnt' || this.currentComponentType === 'vertical-ele')) {
-        //   this.getComponentType()
-        // } else {
-        //   clearTimeout(timer)
-        // }
-      }, 500)
     }
   }
 }

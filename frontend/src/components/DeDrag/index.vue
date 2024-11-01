@@ -360,8 +360,8 @@ export default {
       default: false
     },
     currentComponentType: {
-      type: Array,
-      default: () => []
+      type: String,
+      default: ''
     }
   },
   data: function() {

@@ -597,7 +597,15 @@ export default {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
-
+.table-class >>> .elx-table--body-wrapper {
+  /* 隐藏滚动条的整个容器 */
+  -ms-overflow-style: none;  /* IE 和 Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+/* 针对Webkit内核浏览器的隐藏滚动条样式 */
+.table-class >>> .elx-table--body-wrapper::-webkit-scrollbar {
+  display: none;
+}
 </style>
 
 <style lang="scss" scoped>

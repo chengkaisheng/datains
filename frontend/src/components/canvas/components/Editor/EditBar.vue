@@ -123,34 +123,35 @@ export default {
       default: false
     },
     currentComponentType: {
-      type: [String , Array],
+      type: String,
       required: false,
+      default: ''
     }
   },
-  watch: {
-    // screenStatus(val, oldVal) {
-    //   console.log('val, oldVal', val, oldVal);
-    // }
-    currentComponentType: {
-      handler(val, oldVal) {
-        let type = ''
+  // watch: {
+  //   // screenStatus(val, oldVal) {
+  //   //   console.log('val, oldVal', val, oldVal);
+  //   // }
+  //   currentComponentType: {
+  //     handler(val, oldVal) {
+  //       let type = ''
       
-        if(Array.isArray(this.currentComponentType) && this.currentComponentType.length > 0) {
-          this.currentComponentType.map(item => {
-            if(item.id === this.element.propValue.viewId) {
-              type = item.type
-            }
-          })
+  //       if(Array.isArray(this.currentComponentType) && this.currentComponentType.length > 0) {
+  //         this.currentComponentType.map(item => {
+  //           if(item.id === this.element.propValue.viewId) {
+  //             type = item.type
+  //           }
+  //         })
           
-        } else if(typeof this.currentComponentType === 'string') {
-          type = this.currentComponentType
-        }
-        this.type = type === undefined ? '' : type
-        // console.log('123this.currentComponentType', type, this.currentComponentType);
-      },
-      deep: true
-    }
-  },
+  //       } else if(typeof this.currentComponentType === 'string') {
+  //         type = this.currentComponentType
+  //       }
+  //       this.type = type === undefined ? '' : type
+  //       // console.log('123this.currentComponentType', type, this.currentComponentType);
+  //     },
+  //     deep: true
+  //   }
+  // },
   data() {
     return {
       componentType: null,
@@ -162,15 +163,14 @@ export default {
         'customBottm'
       ],
       timer: null,
-      check: false,
-      type: ''
+      check: false
     }
   },
   mounted() {
   },
   computed: {
     downloadFlag() {
-      return this.screenStatus && this.element && this.element.type==='view' && (this.type.includes('table') || this.type === 'roll-elemnt' || this.type === 'vertical-ele')
+      return this.screenStatus && this.element && this.element.type==='view' && (this.currentComponentType.includes('table') || this.currentComponentType === 'roll-elemnt' || this.currentComponentType === 'vertical-ele')
     },
     // 联动区域按钮显示
     linkageAreaShow() {
