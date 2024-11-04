@@ -8,7 +8,7 @@
       <div v-if="chart.type === 'table-normal'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-normal-drill' : 'table-dom-normal'" />
       <div v-if="chart.type === 'table-info'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-info-drill' : 'table-dom-info'" />
       <div v-if="chart.type === 'table-pivot'" :id="chartId" style="width: 100%;overflow: hidden;" class="table-dom-normal" />
-      <el-row v-show="chart.type === 'table-info' && showPage" class="table-page">
+      <el-row v-show="(chart.type === 'table-info') && showPage" class="table-page">
         <!-- <span class="total-style">
           {{ $t('chart.total') }}
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
@@ -196,7 +196,7 @@ export default {
         config.forEach((i) => {
           // fields.deType 为 2-数值 3-数值（小数） 增加千分位
           if (i.deType === 2 || i.deType === 3) {
-            processedItem[i.datainsName] = v[i.datainsName].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            processedItem[i.datainsName] = v[i.datainsName] ? v[i.datainsName].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : v[i.datainsName]
           }
         })
         processedData.push(processedItem)
@@ -211,7 +211,7 @@ export default {
         const attr = JSON.parse(this.chart.customAttr)
         this.currentPage.pageSize = this.pageChangeFlag ? this.currentPage.pageSize : parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         datas = this.processData(this.fields, JSON.parse(JSON.stringify(this.chart.data.tableRow)))
-        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
+        if ((this.chart.type === 'table-info' || this.chart.type === 'table-pivot') && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
           this.currentPage.show = this.chart.totalItems
           this.showPage = true
           // 前端计算分页
@@ -541,6 +541,9 @@ export default {
 }
 .table-dom-normal{
   height:100%;
+}
+.table-dom-pivot {
+  height:calc(100% - 36px);
 }
 .table-dom-info-drill{
   height:calc(100% - 36px - 12px);

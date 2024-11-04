@@ -262,6 +262,10 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
     r.push(ele.datainsName)
   })
   valueFields.forEach(ele => {
+    const f = ynameMap[ele.datainsName]
+    if (!f || f.hidden === true) {
+      return
+    }
     v.push(ele.datainsName)
   })
 

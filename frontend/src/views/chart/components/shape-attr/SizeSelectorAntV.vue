@@ -174,13 +174,13 @@
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="$t('chart.table_Highlight')" class="form-item">
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type && chart.type.includes('roll')" :label="$t('chart.table_Highlight')" class="form-item">
           <el-slider v-model="sizeForm.highlightNumber" show-input :show-input-controls="false" input-size="mini" :min="1" :max="50" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'表格展示行数'" class="form-item">
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type && chart.type.includes('roll')" :label="'表格展示行数'" class="form-item">
           <el-slider v-model="sizeForm.tableRowsNumber" show-input :show-input-controls="false" input-size="mini" :min="1" :max="50" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮字体大小'" class="form-item">
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type && chart.type.includes('roll')" :label="'高亮字体大小'" class="form-item">
           <el-select v-model="sizeForm.heightLightFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
@@ -201,12 +201,12 @@
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
         </el-form-item> -->
-        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'轮播速率'" class="form-item">
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type && chart.type.includes('roll')" :label="'轮播速率'" class="form-item">
           <el-select v-model="sizeForm.automaticTime" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
             <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'轮播联动'" class="form-item">
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type && chart.type.includes('roll')" :label="'轮播联动'" class="form-item">
           <!-- <el-select v-model="sizeForm.bannerLinkage" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
             <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select> -->
@@ -252,7 +252,7 @@
             <i class="el-icon-info" style="cursor: pointer;color: #606266;margin-left: 4px;" />
           </el-tooltip>
         </el-form-item>
-        <el-form-item v-show="sizeForm.tableColumnMode === 'custom' && !chart.type.includes('roll')" label="" class="form-item form-item-slider">
+        <el-form-item v-show="sizeForm.tableColumnMode === 'custom' && chart.type && !chart.type.includes('roll')" label="" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.tableColumnWidth" :min="10" :max="500" show-input :show-input-controls="false" input-size="mini" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>

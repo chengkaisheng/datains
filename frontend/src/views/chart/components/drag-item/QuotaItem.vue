@@ -60,7 +60,27 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-
+          <el-dropdown-item v-if="viewType.includes('table')">
+            <el-dropdown-item
+              v-if="item.hidden"
+              icon="el-icon-view"
+              :command="beforeClickItem('show')"
+              style="padding: 0;"
+            >
+              <span>{{ $t('chart.show') }}</span>
+            </el-dropdown-item>
+            <el-dropdown-item
+              v-else
+              :command="beforeClickItem('hide')"
+              style="padding: 0;"
+            >
+              <svg-icon
+                style="margin-right: 5px"
+                icon-class="hide"
+              />
+              <span>{{ $t('chart.hide') }}</span>
+            </el-dropdown-item>
+          </el-dropdown-item>
           <!--同比/环比-->
           <el-dropdown-item v-show="chart.type !== 'table-info'">
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="quickCalc">
@@ -266,6 +286,10 @@ export default {
         case 'proportion':
           this.showProportion()
           break
+        case 'show':
+        case 'hide':
+          this.toggleItem(param.type === 'hide')
+          break
         default:
           break
       }
@@ -380,7 +404,11 @@ export default {
     },
     getItemTagType() {
       this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)
-    }
+    },
+    toggleItem(status) {
+      this.item.hidden = status
+      this.$emit('onQuotaItemChange', this.item)
+    },
   }
 }
 </script>
