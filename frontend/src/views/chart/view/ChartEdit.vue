@@ -3286,6 +3286,7 @@ span {
 }
 
 .tab-header ::v-deep .el-tabs__content {
+  height: 100%;
 }
 
 .draggable-group {

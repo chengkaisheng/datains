@@ -222,6 +222,12 @@
           <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && (chart.type.includes('table')||chart.type.includes('roll')||chart.type.includes('dialog'))) || sourceType==='panelTable'" :label="$t('chart.table_border_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
+          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && (chart.type.includes('table'))) || sourceType==='panelTable'" :label="$t('chart.table_scrollbar_thumbColor')" class="form-item">
+            <el-color-picker v-model="colorForm.tableScrollBarThumbColor" show-alpha class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
+          <el-form-item v-show="(chart.render && chart.render === 'antv' && chart.type && (chart.type.includes('table'))) || sourceType==='panelTable'" :label="$t('chart.table_scrollbar_thumbHoverColor')" class="form-item">
+            <el-color-picker v-model="colorForm.tableScrollBarThumbHoverColor" show-alpha class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
           <!--              暂时不支持该功能-->
           <!--              <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.stripe')" class="form-item">-->
           <!--                <el-checkbox v-model="colorForm.tableStripe" @change="changeColorCase">{{ $t('chart.stripe') }}</el-checkbox>-->
@@ -459,6 +465,8 @@ export default {
           }
 
           this.colorForm.tableBorderColor = this.colorForm.tableBorderColor ? this.colorForm.tableBorderColor : DEFAULT_COLOR_CASE.tableBorderColor
+          this.colorForm.tableScrollBarThumbColor = this.colorForm.tableScrollBarThumbColor ? this.colorForm.tableScrollBarThumbColor : DEFAULT_COLOR_CASE.tableScrollBarThumbColor
+          this.colorForm.tableScrollBarThumbHoverColor = this.colorForm.tableScrollBarThumbHoverColor ? this.colorForm.tableScrollBarThumbHoverColor : DEFAULT_COLOR_CASE.tableScrollBarThumbHoverColor
         }
       }
       console.log('this.colorForm,,,', this.colorForm)

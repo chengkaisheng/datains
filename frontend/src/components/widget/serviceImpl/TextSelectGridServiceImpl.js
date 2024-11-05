@@ -10,6 +10,7 @@ const leftPanel = {
 const dialogPanel = {
   options: {
     attrs: {
+      showSearchInput: false,
       multiple: false,
       placeholder: 'detextgridselect.placeholder',
       viewIds: [],
@@ -49,6 +50,7 @@ class TextSelectGridServiceImpl extends WidgetService {
     super(options)
     this.filterDialog = true
     this.showSwitch = true
+    this.showSearchInput = true
   }
 
   initLeftPanel() {

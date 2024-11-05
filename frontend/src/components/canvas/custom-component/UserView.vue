@@ -1812,7 +1812,7 @@ export default {
       if(calcCols.length == 0) return
       data.data.tableRow.forEach((item) => {
         calcCols.map((calcItem) => {
-          let calcNum = item[calcItem.proportionOne] / item[calcItem.proportionTwo];
+          let calcNum =item[calcItem.proportionTwo] === 0 ? NaN : item[calcItem.proportionOne] / item[calcItem.proportionTwo];
           item[calcItem.proportionCalc] = isNaN(calcNum) ? '-' : (calcNum * 100).toFixed(calcItem.totalaccuracy) + '%'
         })
       })

@@ -63,6 +63,17 @@
       </div>
 
     </el-col>
+    <el-col v-if="widget.showSearchInput && element.component === 'de-select-grid' && !attrs.multiple" :span="16">
+      <div class="filter-options-left">
+        <el-switch
+          v-if="widget.showSearchInput && element.component === 'de-select-grid' && !attrs.multiple"
+          v-model="attrs.showSearchInput"
+          active-text="搜索框显示"
+          inactive-text="搜索框隐藏"
+          @change="multipleChange"
+        />
+      </div>
+    </el-col>
   </el-row>
 </template>
 

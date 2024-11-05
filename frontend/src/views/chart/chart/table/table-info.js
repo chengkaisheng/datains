@@ -421,6 +421,9 @@ const calcTotal = (query, data, spreadsheet, valueFields) => {
       total1 += typeof item[arr[0].proportionOne] === 'string' ? Number(item[arr[0].proportionOne].replace(/,/g, '')) : item[arr[0].proportionOne]
       total2 += typeof item[arr[0].proportionTwo] === 'string' ? Number(item[arr[0].proportionTwo].replace(/,/g, '')) : item[arr[0].proportionTwo]
     })
+    if (total2 === 0) {
+      return null
+    }
     return (total1 / total2 * 100).toFixed(arr[0].totalaccuracy) + '%'
   } else {
     // 不需要计算占比，直接求和

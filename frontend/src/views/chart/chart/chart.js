@@ -23,6 +23,8 @@ export const DEFAULT_COLOR_CASE = {
   textPopBackColor: '#0c4f96',
   popupBackColor: '#1b2642',
   tableBorderColor: '#cfdaf4',
+  tableScrollBarThumbColor: 'rgba(0,0,0,0.15)',
+  tableScrollBarThumbHoverColor: 'rgba(0,0,0,0.4)',
   progressLabelColor: '#000000',
 
   innerRing: '#eeeeee',

@@ -128,12 +128,6 @@ export default {
       default: ''
     }
   },
-  watch: {
-    show(val, oldVal) {
-      console.log('123 show', val, oldVal);
-      
-    }
-  },
   data() {
     return {
       componentType: null,

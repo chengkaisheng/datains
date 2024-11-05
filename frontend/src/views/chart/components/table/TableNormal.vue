@@ -502,7 +502,7 @@ export default {
       if (this.chart.calcIndexList && this.chart.calcIndexList.length > 0) {
         // item [0,1,2] 分别是第一列，第二列，需要进行计算的第三列
         this.chart.calcIndexList.map((item) => {
-          let calcNum = means[item[0]] / means[item[1]];
+          let calcNum = means[item[1]] === 0 ? NaN : means[item[0]] / means[item[1]];
           // means[item[2]] = isNaN(calcNum) ? '-' : means[item[2]].endsWith('%') ? (calcNum * 100).toFixed(calcAccuracyList[item[2]]) + '%' : calcNum.toFixed(calcAccuracyList[item[2]])
           means[item[2]] = isNaN(calcNum) ? '-' : (calcNum * 100).toFixed(calcAccuracyList[item[2]]) + '%'
         })

@@ -32,7 +32,7 @@
       </div>
 
       <div v-else class="radio-group-container">
-        <div class="de-select-grid-search">
+        <div v-if="element.options.attrs.showSearchInput" class="de-select-grid-search">
           <el-input
             v-model="keyWord"
             class="input-search"
