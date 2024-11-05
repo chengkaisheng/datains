@@ -32,7 +32,6 @@
     <!-- display:displayClass(item) -->
     <de-drag
       v-for="(item, index) in componentData"
-
       ref="deDragRef"
       :key="item.id"
       :style="{opacity:opacityClass(item),visibility:displayClass(item)}"
@@ -151,6 +150,7 @@
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
+        :currentComponentType.sync="item.currentComponentType"
         :filters="filterMap[item.propValue && item.propValue.viewId]"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
@@ -1117,7 +1117,8 @@ export default {
       yourList: [],
       linkJumpSetVisible: false,
       linkJumpSetViewId: null,
-      editShow: false
+      editShow: false,
+      currentComponentType: ''
     }
   },
   computed: {

@@ -11,6 +11,7 @@
     <EditBarView
       :show="editBarViewShowFlag"
       :is-edit="isEdit"
+      :type="chart.type"
       :view-id="element.propValue.viewId"
       @showViewDetails="openChartDetailsDialog"
       @exportDetailData="exportDetailData"
@@ -517,6 +518,8 @@ export default {
       return trackMenuInfo
     },
     chartType() {
+      // console.log('123123', this.chart.type, this.chart);
+      this.$emit('update:currentComponentType', this.chart.type)
       return this.chart.type
     },
     hw() {

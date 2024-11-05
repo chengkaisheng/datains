@@ -4,7 +4,12 @@ import { DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 
 export function baseTableInfo(s2, container, chart, action, tableData, fontFamily = '') {
   const containerDom = document.getElementById(container)
-
+  const xaxis = JSON.parse(chart.xaxis)
+  const yaxis = JSON.parse(chart.yaxis)
+  const nameMap = [...xaxis, ...yaxis].reduce((pre, next) => {
+    pre[next.datainsName] = next
+    return pre
+  }, {})
   // fields
   const fields = chart.data.fields
   if (!fields || fields.length === 0) {
@@ -40,6 +45,10 @@ export function baseTableInfo(s2, container, chart, action, tableData, fontFamil
 
     // build field
     fields.forEach(ele => {
+      const f = nameMap[ele.datainsName]
+      if (!f || f.hidden === true) {
+        return
+      }
       if (removeField.indexOf(ele.datainsName) < 0) {
         // 用下钻字段替换当前字段
         if (drillExp.datainsName === ele.datainsName) {
@@ -59,6 +68,10 @@ export function baseTableInfo(s2, container, chart, action, tableData, fontFamil
     })
   } else {
     fields.forEach(ele => {
+      const f = nameMap[ele.datainsName]
+      if (!f || f.hidden === true) {
+        return
+      }
       columns.push(ele.datainsName)
       meta.push({
         field: ele.datainsName,
@@ -105,7 +118,12 @@ export function baseTableInfo(s2, container, chart, action, tableData, fontFamil
 export function baseTableNormal(s2, container, chart, action, tableData, fontFamily = '') {
   // console.log('s2, container, chart, action, tableData', s2, container, chart, action, tableData)
   const containerDom = document.getElementById(container)
-
+  const xaxis = JSON.parse(chart.xaxis)
+  const yaxis = JSON.parse(chart.yaxis)
+  const nameMap = [...xaxis, ...yaxis].reduce((pre, next) => {
+    pre[next.datainsName] = next
+    return pre
+  }, {})
   // fields
   const fields = chart.data.fields
   if (!fields || fields.length === 0) {
@@ -140,6 +158,10 @@ export function baseTableNormal(s2, container, chart, action, tableData, fontFam
 
     // build field
     fields.forEach(ele => {
+      const f = nameMap[ele.datainsName]
+      if (!f || f.hidden === true) {
+        return
+      }
       if (removeField.indexOf(ele.datainsName) < 0) {
         // 用下钻字段替换当前字段
         if (drillExp.datainsName === ele.datainsName) {
@@ -159,6 +181,10 @@ export function baseTableNormal(s2, container, chart, action, tableData, fontFam
     })
   } else {
     fields.forEach(ele => {
+      const f = nameMap[ele.datainsName]
+      if (!f || f.hidden === true) {
+        return
+      }
       columns.push(ele.datainsName)
       meta.push({
         field: ele.datainsName,
@@ -205,16 +231,41 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
 
   // row and column
   const columnFields = JSON.parse(chart.xaxis)
+  const xnameMap = columnFields.reduce((pre, next) => {
+    pre[next.datainsName] = next
+    return pre
+  }, {})
   const rowFields = JSON.parse(chart.xaxisExt)
+  const xenameMap = rowFields.reduce((pre, next) => {
+    pre[next.datainsName] = next
+    return pre
+  }, {})
   const valueFields = JSON.parse(chart.yaxis)
+  const ynameMap = valueFields.reduce((pre, next) => {
+    pre[next.datainsName] = next
+    return pre
+  }, {})
+  const nameMap = { ...xnameMap, ...xenameMap, ...ynameMap }
   const c = []; const r = []; const v = []
   columnFields.forEach(ele => {
+    const f = xnameMap[ele.datainsName]
+    if (!f || f.hidden === true) {
+      return
+    }
     c.push(ele.datainsName)
   })
   rowFields.forEach(ele => {
+    const f = xenameMap[ele.datainsName]
+    if (!f || f.hidden === true) {
+      return
+    }
     r.push(ele.datainsName)
   })
   valueFields.forEach(ele => {
+    const f = ynameMap[ele.datainsName]
+    if (!f || f.hidden === true) {
+      return
+    }
     v.push(ele.datainsName)
   })
 
@@ -247,6 +298,10 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
 
     // build field
     fields.forEach(ele => {
+      const f = nameMap[ele.datainsName]
+      if (!f || f.hidden === true) {
+        return
+      }
       if (removeField.indexOf(ele.datainsName) < 0) {
         // 用下钻字段替换当前字段
         if (drillExp.datainsName === ele.datainsName) {
@@ -266,6 +321,10 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
     })
   } else {
     fields.forEach(ele => {
+      const f = nameMap[ele.datainsName]
+      if (!f || f.hidden === true) {
+        return
+      }
       columns.push(ele.datainsName)
       meta.push({
         field: ele.datainsName,
@@ -344,7 +403,9 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
 
   // theme
   const customTheme = getCustomTheme(chart, fontFamily)
-  s2.setThemeCfg({ theme: customTheme })
+  s2.setThemeCfg({ 
+    theme: customTheme
+  })
 
   return s2
 }
@@ -357,16 +418,16 @@ const calcTotal = (query, data, spreadsheet, valueFields) => {
     let total1 = 0
     let total2 = 0
     data.map(item => {
-      total1 += item[arr[0].proportionOne]
-      total2 += item[arr[0].proportionTwo]
+      total1 += typeof item[arr[0].proportionOne] === 'string' ? Number(item[arr[0].proportionOne].replace(/,/g, '')) : item[arr[0].proportionOne]
+      total2 += typeof item[arr[0].proportionTwo] === 'string' ? Number(item[arr[0].proportionTwo].replace(/,/g, '')) : item[arr[0].proportionTwo]
     })
     return (total1 / total2 * 100).toFixed(arr[0].totalaccuracy) + '%'
   } else {
     // 不需要计算占比，直接求和
     let total = 0
     data.map(item => {
-      total += item[query.$$extra$$]
+      total += typeof item[query.$$extra$$] === 'string' ? Number(item[query.$$extra$$].replace(/,/g, '')) : item[query.$$extra$$]
     })
-    return total
+    return total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
 }

@@ -79,7 +79,7 @@ import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
 import bus from '@/utils/bus'
 import { buildFilterMap } from '@/utils/conditionUtil'
-import { viewDataExport } from '@/api/panel/panel'
+import { viewDataExport, viewData } from '@/api/panel/panel'
 import { export_json_to_excel } from '@/plugins/Export2Excel'
 export default {
   components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
@@ -149,6 +149,7 @@ export default {
       scaleSize: 1,
       onsizeKey: false,
       comShow: true,
+      timerDownLoad: null
     }
   },
   created() {
@@ -542,31 +543,39 @@ export default {
       }
     },
     exportDetailData(chartInfo) {
+      // console.log('123123');
+      
       this.showChartInfo = chartInfo.chart
       this.exportExcel()
     },
     async exportExcel() {
+      let flag = localStorage.getItem('exportDataFlag')
+      if(flag === 'true') {
+        return
+      } 
+      localStorage.setItem('exportDataFlag', 'true')
       const excelHeader = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.name)
       const excelHeaderKeys = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.datainsName)
       let excelData = JSON.parse(JSON.stringify(this.showChartInfo.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       const excelName = this.showChartInfo.name
-      // resultMode 为 custom 时，需要调用接口获取全部数据
-      if(this.showChartInfo.resultMode === 'custom') {
-        let data = {
-          "filter": [],
-          "linkageFilters": [],
-          "drill": [],
-          "resultCount": 1000,
-          "resultMode": "all", // 获取全量数据
-          "queryFrom": "panel_edit",
-          "cache": false
-        }
-        let res = await viewDataExport(this.showChartInfo.id, this.panelInfo.id, data)
-        if(res.success) {
-          excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
-        }
+      let data = {
+        "filter": [],
+        "linkageFilters": [],
+        "drill": [],
+        "resultCount": 1000,
+        "resultMode": "all",
+        "queryFrom": "panel",
+        "cache": false,
+        excelExportFlag: true
+      }
+      let res = await viewData(this.showChartInfo.id, this.panelInfo.id, data)
+      if(res.success) {
+        excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       }
       export_json_to_excel(excelHeader, excelData, excelName)
+      setTimeout(() => {
+        localStorage.setItem('exportDataFlag', 'false')
+      }, 1000)
     },
     // exportExcel() {
     //   this.$refs['userViewDialog'].exportExcel()

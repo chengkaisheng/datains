@@ -16,10 +16,10 @@
       <div v-if="element.options.attrs.multiple" class="checkbox-group-container">
         <el-checkbox-group v-model="value" @change="handleCheckedChange">
           <el-checkbox-button v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
-            <span :style="panelCheck">{{ $t('commons.all') }}</span>
+            <span :style="checkBoxStyle" style="display: block;width: 100%;height: 100%;padding: 10px 20px;">{{ $t('commons.all') }}</span>
           </el-checkbox-button>
           <el-checkbox-button v-for="item in datas" :key="item.id" :label="item.id">
-            <span :style="panelCheck">{{ item.id }}</span>
+            <span :style="checkBoxStyle" style="display: block;width: 100%;height: 100%;padding: 10px 20px;">{{ item.id }}</span>
           </el-checkbox-button>
         </el-checkbox-group>
         <p
@@ -158,6 +158,24 @@ export default {
       const style = {}
       if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
         style.color = this.element.commonSelectFrame.panelColor
+      }
+      return style
+    },
+    checkBoxStyle() {
+      const style = {}
+      if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        if (this.element.commonSelectFrame.checkBoxBackType === 'Image') {
+          if (this.element.commonSelectFrame.checkBoxBgImg !== '') {
+            style.backgroundImage = `url(${this.element.commonSelectFrame.checkBoxBgImg})`
+          }
+          style.backgroundRepeat = 'no-repeat'
+          style.backgroundSize = '100% 100%'
+        } else {
+          style.backgroundColor = this.element.commonSelectFrame.checkBoxBgColor
+        }
+        style.color = this.element.commonSelectFrame.panelColor
+        style.borderRadius = this.element.commonSelectFrame.checkBoxBorderRadius + 'px'
+        style.border = `${this.element.commonSelectFrame.checkBoxBorderWidth}px solid ${this.element.commonSelectFrame.checkBoxBorderColor}`
       }
       return style
     }
@@ -419,9 +437,9 @@ export default {
     height: 100%;
     overflow-y: auto;
   }
-  .el-radio-button {
-      border-left: 1px solid rgb(220, 223, 230);
-    }
+  // .el-radio-button {
+  //     border-left: 1px solid rgb(220, 223, 230);
+  //   }
   .radio-group-container>.el-radio-group {
     display: grid;
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* 自动填充列，每列最小100px，但会根据需要增长 */
@@ -447,7 +465,7 @@ export default {
     .el-checkbox-group {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* 自动填充列，每列最小100px，但会根据需要增长 */
-      gap: 10px; /* 设置网格线之间的间隔 */
+      gap: 5px; /* 设置网格线之间的间隔 */
     }
     label.el-checkbox {
       // height: 100%;
@@ -455,9 +473,9 @@ export default {
       display: inline-block !important;
       margin: 10px !important;
     }
-    .el-checkbox-button {
-      border-left: 1px solid rgb(220, 223, 230);
-    }
+    // .el-checkbox-button {
+      // border-left: 1px solid rgb(220, 223, 230);
+    // }
 
     .el-checkbox-group>label {
       // max-width: calc(100% / 3 - 10px);
@@ -467,10 +485,29 @@ export default {
     }
 
     .el-checkbox-group>label>span {
-      border-left: 1px solid;
+      // border-left: 1px solid;
       // max-width: calc(100% / 3 - 10px);
       // display: inline-block !important;
       // margin: 10px !important;
+    }
+    ::v-deep .el-checkbox-button__inner {
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      border: 0 !important;
+      background-color: transparent;
+    }
+    ::v-deep .is-checked {
+      .el-checkbox-button__inner {
+        box-shadow: none !important;
+        background-color: inherit !important;
+        span {
+          color: #fff !important;
+          background-color: #409EFF !important;
+          border-color: #409EFF !important;
+          background-image: none !important;
+        }
+      }
     }
 
   }

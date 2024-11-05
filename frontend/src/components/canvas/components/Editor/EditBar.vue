@@ -3,7 +3,7 @@
     <div v-if="downloadFlag" class="download" @click.stop="exportDetailData">
       <i class="el-icon-download" ></i>
     </div>
-    <div v-if="show" class="bar-main" :style="setNewValue">
+    <div v-if="show" :class="['bar-main', downloadFlag ? 'bar-main-right' : '']" :style="setNewValue">
       <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
       <div v-if="linkageAreaShow" style="margin-right: -1px;">
         <el-checkbox v-model="linkageInfo.linkageActive" />
@@ -121,12 +121,18 @@ export default {
     previewVisible: {
       type: Boolean,
       default: false
+    },
+    currentComponentType: {
+      type: String,
+      required: false,
+      default: ''
     }
   },
   watch: {
-    // screenStatus(val, oldVal) {
-    //   console.log('val, oldVal', val, oldVal);
-    // }
+    show(val, oldVal) {
+      console.log('123 show', val, oldVal);
+      
+    }
   },
   data() {
     return {
@@ -146,9 +152,8 @@ export default {
   },
   computed: {
     downloadFlag() {
-      // return this.show && this.normalAreaShow && this.screenStatus && this.curComponent && this.curComponent.type==='view'
-      // return this.show && this.normalAreaShow && this.screenStatus && this.element && this.element.type==='view'
-      return this.screenStatus && this.element && this.element.type==='view'
+      // console.log('123', this.element, this.currentComponentType);
+      return this.element && this.element.type==='view' && (this.currentComponentType.includes('table') || this.currentComponentType === 'roll-elemnt' || this.currentComponentType === 'vertical-ele')
     },
     // 联动区域按钮显示
     linkageAreaShow() {
@@ -450,7 +455,7 @@ export default {
   }
   .bar-main{
     position: absolute;
-    right: 24px;
+    right: 0;
     float:right;
     z-index: 2;
     border-radius:2px;
@@ -459,6 +464,9 @@ export default {
     cursor:pointer!important;
     background-color: #0a7be0;
     // bottom:-25px;
+  }
+  .bar-main-right {
+    right: 24px;
   }
   .bar-main i{
     color: white;

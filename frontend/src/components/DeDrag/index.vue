@@ -34,6 +34,7 @@
     >
       <edit-bar
         :show="editBarShow"
+        :currentComponentType="element.currentComponentType"
         style="transform: translateZ(10px)"
         :active-model="'edit'"
         :element="element"

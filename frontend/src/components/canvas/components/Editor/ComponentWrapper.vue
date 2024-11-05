@@ -7,7 +7,7 @@
     @mousedown="elementMouseDown"
   >
     <div :style="commonStyle" class="main_view">
-      <edit-bar :show="componentActiveFlag" :element="config" @exportDetailData="exportDetailData" @showViewDetails="showViewDetails" />
+      <edit-bar :show="componentActiveFlag" :currentComponentType="currentComponentType" :element="config" @exportDetailData="exportDetailData" @showViewDetails="showViewDetails" />
       <close-bar v-if="previewVisible" @closePreview="closePreview" />
       <de-out-widget
         v-if="config.type==='custom'"
@@ -38,6 +38,7 @@
         :is="config.component"
         v-else
         ref="wrapperChild"
+        :currentComponentType.sync="currentComponentType"
         :out-style="config.style"
         :style="getComponentStyleDefault(config.style)"
         :prop-value="config.propValue"
@@ -134,6 +135,7 @@ export default {
       previewVisible: false,
       showVisible: false,
       textElement: {},
+      currentComponentType: ''
     }
   },
   computed: {

@@ -8,7 +8,7 @@
       <div v-if="chart.type === 'table-normal'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-normal-drill' : 'table-dom-normal'" />
       <div v-if="chart.type === 'table-info'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-info-drill' : 'table-dom-info'" />
       <div v-if="chart.type === 'table-pivot'" :id="chartId" style="width: 100%;overflow: hidden;" class="table-dom-normal" />
-      <el-row v-show="chart.type === 'table-info' && showPage" class="table-page">
+      <el-row v-show="(chart.type === 'table-info') && showPage" class="table-page">
         <!-- <span class="total-style">
           {{ $t('chart.total') }}
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
@@ -16,15 +16,34 @@
         </span> -->
         <el-pagination
           :current-page="currentPage.page"
-          :page-sizes="[10,20,50,100]"
           :page-size="currentPage.pageSize"
           :pager-count="5"
-          layout="total, sizes, prev, pager, next"
+          layout="total, slot, prev, pager, next"
           :total="currentPage.show"
           class="page-style"
           @current-change="pageClick"
-          @size-change="pageChange"
-        />
+          :style="paginstionStyle"
+          
+        >
+          <div key="1" class="custom-sizes">
+            <el-select 
+              size="mini"
+              :key="Math.random()"
+              :popper-class="'custom-' + chart.id"
+              :popper-append-to-body="!customSelectShow" 
+              v-model="currentPage.pageSize" 
+              @change="pageChange"
+              @visible-change="visibleChange"
+              placeholder="">
+              <el-option
+                v-for="item in customSizesList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+        </el-pagination>
       </el-row>
     </div>
   </div>
@@ -107,7 +126,27 @@ export default {
         show: 0
       },
       tableData: [],
-      showPage: false
+      showPage: false,
+      customSelectShow: false,
+      customSizesList: [
+        {
+          label: '10条/页',
+          value: 10
+        },
+        {
+          label: '20条/页',
+          value: 20
+        },
+        {
+          label: '50条/页',
+          value: 50
+        },
+        {
+          label: '100条/页',
+          value: 100
+        }
+      ],
+      paginstionStyle: {}
     }
   },
 
@@ -129,6 +168,7 @@ export default {
       handler(newVal, oldVla) {
         this.initData()
         this.initTitle()
+        this.setPaginationStyle()
         this.calcHeightDelay()
         new Promise((resolve) => { resolve() }).then(() => {
           console.log('22222', '触发此处')
@@ -149,18 +189,29 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    processData(config, data) {
+      const processedData = []
+      data.forEach((v) => {
+        const processedItem = { ...v }
+        config.forEach((i) => {
+          // fields.deType 为 2-数值 3-数值（小数） 增加千分位
+          if (i.deType === 2 || i.deType === 3) {
+            processedItem[i.datainsName] = v[i.datainsName] ? v[i.datainsName].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : v[i.datainsName]
+          }
+        })
+        processedData.push(processedItem)
+      })
+      return processedData
+    },
     initData() {
       this.showPage = false
       let datas = []
       if (this.chart.data && this.chart.data.fields) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
-        // if (this.currentPage.pageSize < attr.size.tablePageSize) {
-        //   this.currentPage.page = 1
-        // }
         this.currentPage.pageSize = this.pageChangeFlag ? this.currentPage.pageSize : parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
-        datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
+        datas = this.processData(this.fields, JSON.parse(JSON.stringify(this.chart.data.tableRow)))
+        if ((this.chart.type === 'table-info' || this.chart.type === 'table-pivot') && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
           this.currentPage.show = this.chart.totalItems
           this.showPage = true
           // 前端计算分页
@@ -179,6 +230,7 @@ export default {
     preDraw() {
       this.initData()
       this.initTitle()
+      this.setPaginationStyle()
       this.calcHeightDelay()
       new Promise((resolve) => { resolve() }).then(() => {
         this.drawView()
@@ -351,6 +403,7 @@ export default {
     chartResize() {
       this.initData()
       this.initTitle()
+      this.setPaginationStyle()
       this.calcHeightDelay()
       new Promise((resolve) => { resolve() }).then(() => {
         this.drawView()
@@ -416,6 +469,17 @@ export default {
         }
       }
     },
+    setPaginationStyle() {
+      if (this.chart.customAttr) {
+        const customAttr = JSON.parse(this.chart.customAttr)
+        if (customAttr.size) {
+          const style = {}
+          style.background = customAttr.size.tablePageBackground
+          style.color = customAttr.size.tablePageFontcolor
+          this.paginstionStyle = style
+        }
+      }
+    },
 
     calcHeightRightNow() {
       this.$nextTick(() => {
@@ -449,6 +513,16 @@ export default {
       // this.initData()
       // this.drawView()
     },
+    visibleChange(val) {
+      if(val) {
+        let fullScreen = document.getElementsByClassName('fullscreen')
+        this.customSelectShow = fullScreen.length > 0
+
+        let selectDropDown = document.getElementsByClassName(`custom-${this.chart.id}`)
+        selectDropDown[0].style.background = this.paginstionStyle.background
+        selectDropDown[0].style.color = this.paginstionStyle.color
+      }
+    },
 
     resetPage() {
       this.currentPage = {
@@ -461,12 +535,15 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .table-dom-info{
   height:calc(100% - 36px);
 }
 .table-dom-normal{
   height:100%;
+}
+.table-dom-pivot {
+  height:calc(100% - 36px);
 }
 .table-dom-info-drill{
   height:calc(100% - 36px - 12px);
@@ -482,16 +559,64 @@ export default {
   overflow: hidden;
   margin-top: 8px;
 }
-.page-style{
-  // margin-right: auto;
-}
 .total-style{
   flex: 1;
   font-size: 12px;
-  // color: #606266;
+  /* color: #606266; */
   white-space:nowrap;
 }
 .page-style >>> .el-input__inner{
   height: 24px;
+}
+.custom-sizes {
+  display: inline-block;
+  font-size: 13px;
+  min-width: 35.5px;
+  height: 28px;
+  line-height: 28px;
+  vertical-align: top;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+</style>
+
+<style lang="scss" scoped>
+::v-deep .el-pagination {
+  .el-pagination__total {
+    color: inherit;
+  }
+  .el-pager {
+    .el-icon-more {
+      color: inherit;
+    }
+    li {
+      background-color: transparent;
+    }
+  }
+  .custom-sizes {
+    color: inherit;
+    .el-input__inner {
+      background-color: transparent;
+      border: 0;
+      color: inherit;
+    }
+    .el-input__suffix {
+      color: inherit;
+      .el-icon-arrow-up {
+        color: inherit;
+      }
+    }
+  }
+  .btn-prev {
+    color: inherit;
+    background-color: transparent;
+  }
+  .btn-next {
+    color: inherit;
+    background-color: transparent;
+  }
+}
+.el-select-dropdown__item {
+  color: inherit;
 }
 </style>

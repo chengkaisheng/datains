@@ -17,8 +17,7 @@
         :width-resize="true"
         :header-row-style="table_header_class"
         :row-style="getRowStyle"
-        class="table-class"
-        :class="chart.id"
+        :class="[chart.id, 'table-class', chart.type === 'table-normal' ? 'table-normal-class' : '']"
         :show-summary="showSummary"
         :summary-method="summaryMethod"
       >
@@ -29,6 +28,8 @@
           :resizable="true"
           sortable
           :title="field.name"
+          :min-width="tableHeaderMinWidth"
+          show-header-overflow="tooltip"
         >
           <!--        <template slot="header">-->
           <!--          <span>{{ field.name }}</span>-->
@@ -44,15 +45,34 @@
         </span> -->
         <el-pagination
           :current-page="currentPage.page"
-          :page-sizes="[10,20,50,100]"
           :page-size="currentPage.pageSize"
           :pager-count="5"
-          layout="total, sizes, prev, pager, next"
+          layout="total, slot, prev, pager, next"
           :total="currentPage.show"
           class="page-style"
           @current-change="pageClick"
-          @size-change="pageChange"
-        />
+          :style="paginstionStyle"
+          
+        >
+          <div key="1" class="custom-sizes">
+            <el-select 
+              size="mini"
+              :key="Math.random()"
+              :popper-class="'custom-' + chart.id"
+              :popper-append-to-body="!customSelectShow" 
+              v-model="currentPage.pageSize" 
+              @change="pageChange"
+              @visible-change="visibleChange"
+              placeholder="">
+              <el-option
+                v-for="item in customSizesList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </div>
+        </el-pagination>
       </el-row>
     </el-row>
   </div>
@@ -133,7 +153,28 @@ export default {
         pageSize: 20,
         show: 0
       },
-      showPage: false
+      showPage: false,
+      customSelectShow: false,
+      customSizesList: [
+        {
+          label: '10条/页',
+          value: 10
+        },
+        {
+          label: '20条/页',
+          value: 20
+        },
+        {
+          label: '50条/页',
+          value: 50
+        },
+        {
+          label: '100条/页',
+          value: 100
+        }
+      ],
+      paginstionStyle: {},
+      tableHeaderMinWidth: 200
     }
   },
   computed: {
@@ -211,6 +252,10 @@ export default {
               }
             }
           }
+          // fields.deType 为 2-数值 3-数值（小数） 增加千分位
+          if (i.deType === 2 || i.deType === 3) {
+            processedItem[i.datainsName] = !v[i.datainsName] ? v[i.datainsName] : v[i.datainsName].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+          }
         })
         processedData.push(processedItem)
       })
@@ -221,19 +266,19 @@ export default {
       const that = this
       let datas = []
       if (this.chart.data) {
+        const xaxis = JSON.parse(this.chart.xaxis)
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
-        // if (this.currentPage.pageSize < attr.size.tablePageSize) {
-        //   this.currentPage.page = 1
-        // }
+        this.tableHeaderMinWidth = attr.size.tableHeaderMinWidth ? attr.size.tableHeaderMinWidth : 200
         this.currentPage.pageSize = this.pageChangeFlag ? this.currentPage.pageSize : parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
+        this.fields = this.fields.filter(field => {
+          let xaxisItem = xaxis.find(item => item.datainsName === field.datainsName)
+          return xaxisItem ? xaxisItem.hidden !== true : true
+        })
         datas = this.processData(
           this.fields,
           JSON.parse(JSON.stringify(this.chart.data.tableRow))
         )
-        // datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        // console.log('this.fields', this.fields)
-        // console.log('datas', datas)
 
         if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
           this.currentPage.show = this.chart.totalItems
@@ -313,6 +358,7 @@ export default {
             : ''
         }
         if (customAttr.size) {
+          this.setPaginationStyle(customAttr.size.tablePageBackground, customAttr.size.tablePageFontcolor)
           this.table_header_class.fontSize =
             customAttr.size.tableTitleFontSize + 'px'
           this.table_item_class.fontSize =
@@ -387,6 +433,12 @@ export default {
         }
       }
     },
+    setPaginationStyle(tablePageBackground, tablePageFontcolor) {
+      const style = {}
+      style.background = tablePageBackground
+      style.color = tablePageFontcolor
+      this.paginstionStyle = style
+    },
     getRowStyle({ row, rowIndex }) {
       if (rowIndex % 2 !== 0) {
         return this.table_item_class_stripe
@@ -411,7 +463,7 @@ export default {
               if (typeof valueStr === 'string' && valueStr.endsWith('%')) {
                 return Number(valueStr.slice(0, -1))
               } else {
-                return Number(valueStr)
+                return typeof valueStr === 'string' ? Number(valueStr.replace(/,/g, '')) : Number(valueStr)
               }
             })
             // 合计
@@ -434,7 +486,7 @@ export default {
                 isPercentage = foundObject.isPercentage || ''
               }
               calcAccuracyList[columnIndex] = accuracy
-              means[columnIndex] = total.toFixed(Number(accuracy)) + isPercentage
+              means[columnIndex] = total.toFixed(Number(accuracy)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + isPercentage
             } else {
               calcAccuracyList[columnIndex] = ''
               means[columnIndex] = ''
@@ -483,6 +535,16 @@ export default {
       this.$emit('onPageChange', this.currentPage)
       // this.init()
     },
+    visibleChange(val) {
+      if(val) {
+        let fullScreen = document.getElementsByClassName('fullscreen')
+        this.customSelectShow = fullScreen.length > 0
+
+        let selectDropDown = document.getElementsByClassName(`custom-${this.chart.id}`)
+        selectDropDown[0].style.background = this.paginstionStyle.background
+        selectDropDown[0].style.color = this.paginstionStyle.color
+      }
+    },
 
     resetPage() {
       // this.currentPage.page = 1
@@ -515,9 +577,6 @@ export default {
   overflow: hidden;
   z-index: 2;
 }
-.page-style {
-  /* margin-right: auto; */
-}
 .total-style {
   flex: 1;
   font-size: 12px;
@@ -526,5 +585,65 @@ export default {
 }
 .page-style >>> .el-input__inner {
   height: 24px;
+}
+.custom-sizes {
+  display: inline-block;
+  font-size: 13px;
+  min-width: 35.5px;
+  height: 28px;
+  line-height: 28px;
+  vertical-align: top;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.table-normal-class >>> .elx-table--body-wrapper {
+  /* 隐藏滚动条的整个容器 */
+  -ms-overflow-style: none;  /* IE 和 Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+/* 针对Webkit内核浏览器的隐藏滚动条样式 */
+.table-normal-class >>> .elx-table--body-wrapper::-webkit-scrollbar {
+  display: none;
+}
+</style>
+
+<style lang="scss" scoped>
+::v-deep .el-pagination {
+  .el-pagination__total {
+    color: inherit;
+  }
+  .el-pager {
+    .el-icon-more {
+      color: inherit;
+    }
+    li {
+      background-color: transparent;
+    }
+  }
+  .custom-sizes {
+    color: inherit;
+    .el-input__inner {
+      background-color: transparent;
+      border: 0;
+      color: inherit;
+    }
+    .el-input__suffix {
+      color: inherit;
+      .el-icon-arrow-up {
+        color: inherit;
+      }
+    }
+  }
+  .btn-prev {
+    color: inherit;
+    background-color: transparent;
+  }
+  .btn-next {
+    color: inherit;
+    background-color: transparent;
+  }
+}
+.el-select-dropdown__item {
+  color: inherit;
 }
 </style>
