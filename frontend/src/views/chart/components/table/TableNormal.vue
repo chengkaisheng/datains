@@ -242,7 +242,7 @@ export default {
         config.forEach((i) => {
           // 设置精度值
           if(i.totalaccuracy) {
-            processedItem[i.datainsName] = v[i.datainsName] ? v[i.datainsName].toFixed(i.totalaccuracy) : v[i.datainsName]
+            processedItem[i.datainsName] = typeof v[i.datainsName] === 'number' ? v[i.datainsName].toFixed(i.totalaccuracy) : v[i.datainsName]
           }
           if (typeof processedItem[i.datainsName] === 'number') {
             if (i.isPercentage === '%') {

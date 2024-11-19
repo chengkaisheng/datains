@@ -196,7 +196,7 @@ export default {
         config.forEach((i) => {
           // 设置精度值
           if(i.totalaccuracy) {
-            processedItem[i.datainsName] = v[i.datainsName] ? v[i.datainsName].toFixed(i.totalaccuracy) : v[i.datainsName]
+            processedItem[i.datainsName] = typeof v[i.datainsName] === 'number' ? v[i.datainsName].toFixed(i.totalaccuracy) : v[i.datainsName]
           }
           // fields.deType 为 2-数值 3-数值（小数） 增加千分位
           if (i.deType === 2 || i.deType === 3) {
