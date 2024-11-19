@@ -371,6 +371,14 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
   totalCfg.row.calcSubTotals = {
     calcFunc: (query, data, spreadsheet) => calcTotal(query, data, spreadsheet, valueFields)
   }
+  // 总计
+  totalCfg.col.calcTotals = {
+    calcFunc: (query, data, spreadsheet) => calcTotal(query, data, spreadsheet, valueFields)
+  }
+  // 小计
+  totalCfg.col.calcSubTotals = {
+    calcFunc: (query, data, spreadsheet) => calcTotal(query, data, spreadsheet, valueFields)
+  }
   // totalCfg.row.calcGrandTotals = {
   //   calcFunc: (query, data, spreadsheet) => {
   //     console.log('query, data, spreadsheet', query, data, spreadsheet);
@@ -411,8 +419,9 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
 }
 
 const calcTotal = (query, data, spreadsheet, valueFields) => {
-  // console.log('query, data, spreadsheet', query, data, spreadsheet);
+  // console.log('123 query, data, spreadsheet', query, data, spreadsheet, valueFields);
   let arr = valueFields.filter(item => item.datainsName === query.$$extra$$)
+  if(arr.length == 0) return null
   if (arr.length > 0 && arr[0].proportionOne && arr[0].proportionTwo) {
     // 需要计算占比，需要先把另外两列求和
     let total1 = 0
@@ -431,6 +440,6 @@ const calcTotal = (query, data, spreadsheet, valueFields) => {
     data.map(item => {
       total += typeof item[query.$$extra$$] === 'string' ? Number(item[query.$$extra$$].replace(/,/g, '')) : item[query.$$extra$$]
     })
-    return total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return total.toFixed(arr[0].totalaccuracy).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
 }
