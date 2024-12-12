@@ -15,6 +15,7 @@
     @focus="setOptionWidth"
     @blur="onBlur"
     :style="selectStyle"
+    filterable 
   >
   <!-- :size="size" -->
     <!-- popper-class -->
