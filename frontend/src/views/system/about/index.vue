@@ -24,10 +24,11 @@
             :closable="false">
           </el-alert>
           <el-row>
-            <el-col class="col_box">
+            <!-- 隐藏 -->
+            <!-- <el-col class="col_box">
               <el-col :span="10" class="box_title">{{ $t('about.auth_to') }}：</el-col>
               <el-col :span="14">{{ license.corporation }}</el-col>
-            </el-col>
+            </el-col> -->
             <el-col class="col_box">
               <el-col :span="10" class="box_title">{{ $t('about.expiration_time') }}：</el-col>
               <el-col :span="14">

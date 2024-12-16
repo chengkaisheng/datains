@@ -240,13 +240,17 @@ export default {
       data.forEach((v) => {
         const processedItem = { ...v }
         config.forEach((i) => {
-          if (typeof v[i.datainsName] === 'number') {
+          // 设置精度值
+          if(i.totalaccuracy) {
+            processedItem[i.datainsName] = typeof v[i.datainsName] === 'number' ? v[i.datainsName].toFixed(i.totalaccuracy) : v[i.datainsName]
+          }
+          if (typeof processedItem[i.datainsName] === 'number') {
             if (i.isPercentage === '%') {
               if (totalSum === 0) {
                 processedItem[i.datainsName] = '0%'
               } else {
                 processedItem[i.datainsName] = `${(
-                  (v[i.datainsName] / totalSum) *
+                  (processedItem[i.datainsName] / totalSum) *
                   100
                 ).toFixed(2)}%`
               }
@@ -254,7 +258,7 @@ export default {
           }
           // fields.deType 为 2-数值 3-数值（小数） 增加千分位
           if (i.deType === 2 || i.deType === 3) {
-            processedItem[i.datainsName] = !v[i.datainsName] ? v[i.datainsName] : v[i.datainsName].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            processedItem[i.datainsName] = !processedItem[i.datainsName] ? processedItem[i.datainsName] : processedItem[i.datainsName].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
           }
         })
         processedData.push(processedItem)
@@ -502,7 +506,7 @@ export default {
       if (this.chart.calcIndexList && this.chart.calcIndexList.length > 0) {
         // item [0,1,2] 分别是第一列，第二列，需要进行计算的第三列
         this.chart.calcIndexList.map((item) => {
-          let calcNum = means[item[0]] / means[item[1]];
+          let calcNum = means[item[1]] === 0 ? NaN : means[item[0]] / means[item[1]];
           // means[item[2]] = isNaN(calcNum) ? '-' : means[item[2]].endsWith('%') ? (calcNum * 100).toFixed(calcAccuracyList[item[2]]) + '%' : calcNum.toFixed(calcAccuracyList[item[2]])
           means[item[2]] = isNaN(calcNum) ? '-' : (calcNum * 100).toFixed(calcAccuracyList[item[2]]) + '%'
         })

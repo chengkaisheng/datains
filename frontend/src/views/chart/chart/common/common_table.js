@@ -125,6 +125,10 @@ export function getCustomTheme(chart, fontFamily) {
         textAlign: itemAlign,
         fontFamily: fontFamily
       }
+    },
+    scrollBar: {
+      thumbColor: 'rgba(0,0,0,0.15)',
+      thumbHoverColor: 'rgba(0,0,0,0.4)',
     }
   }
 
@@ -168,6 +172,9 @@ export function getCustomTheme(chart, fontFamily) {
       theme.dataCell.bolderText.fill = c.tableFontColor
       theme.dataCell.text.fill = c.tableInfoFontColor
       theme.dataCell.measureText.fill = c.tableInfoFontColor
+
+      c.tableScrollBarThumbColor && (theme.scrollBar.thumbColor = c.tableScrollBarThumbColor)
+      c.tableScrollBarThumbHoverColor && (theme.scrollBar.thumbHoverColor = c.tableScrollBarThumbHoverColor)
     }
     // size
     if (customAttr.size) {

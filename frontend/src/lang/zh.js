@@ -1187,6 +1187,8 @@ export default {
     table_pivot_row: '数据行',
     field_error_tips: '该字段所对应的数据集原始字段发生变更（包括维度、指标，字段类型，字段被删除等），建议重新编辑',
     table_border_color: '边框颜色',
+    table_scrollbar_thumbColor: '滚动条颜色',
+    table_scrollbar_thumbHoverColor: '滚动条鼠标悬停颜色',
     table_header_align: '表头对齐方式',
     table_item_align: '表格对齐方式',
     table_align_left: '左对齐',

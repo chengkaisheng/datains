@@ -523,6 +523,9 @@ export default {
           return 'auto'
         }
       }
+      if(!this.resizing) {
+        this.width = this.width === 0 ? 300 : this.width
+      }
       return this.width + 'px'
     },
     // 根据top bottom 算出元素的宽度
@@ -531,6 +534,9 @@ export default {
         if (!this.heightTouched) {
           return 'auto'
         }
+      }
+      if(!this.resizing) {
+        this.height = this.height === 0 ? 200 : this.height
       }
       return this.height + 'px'
     },
@@ -634,6 +640,12 @@ export default {
     ])
   },
   watch: {
+    // 'width': {
+    //   handler: function(val1, val2) {
+    //     console.log('val1, val2', val1, val2, this.resizing);
+        
+    //   }
+    // },
     'boxWidth': {
       handler: function(val1, val2) {
         console.log('监听视图层变化=============2222222222222', val1, val2)
@@ -1021,6 +1033,7 @@ export default {
         this.rotating = true
       } else {
         this.resizing = true
+        this.resizingFlag = true
       }
       // 新增保存矩形信息
       // 获取父元素的位置大小信息
