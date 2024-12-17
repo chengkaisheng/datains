@@ -2156,7 +2156,7 @@ export default {
     firstOfYear: '当年首月'
   },
   wizard: {
-    welcome_title: '欢迎使用可视化配置平台',
+    welcome_title: '欢迎使用医保BI数据分析平台',
     welcome_hint: '数据可视化自助探索分析工具',
     demo_video: '演示视频',
     quick_start: '快速入门',

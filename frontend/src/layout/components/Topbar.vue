@@ -1,7 +1,11 @@
 <template>
   <div class="top-nav">
     <div v-loading="!axiosFinished" class="log">
-      <svg-icon v-if="!logoUrl && axiosFinished" icon-class="datains-logo2" custom-class="top-nav-logo-icon" />
+      <div v-if="!logoUrl && axiosFinished" class="custom-logo">
+        <img :src="require('@/assets/datains-logo.png')" alt="" srcset="">
+        <span class="custom-logo-title">医保BI数据分析平台</span>
+      </div>
+      <!-- <svg-icon v-if="!logoUrl && axiosFinished" icon-class="datains-logo2" custom-class="top-nav-logo-icon" /> -->
       <img v-if="logoUrl && axiosFinished" :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
     </div>
     <el-menu
@@ -363,4 +367,18 @@ export default {
 
   }
 
+.custom-logo {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  img {
+    width: 22px;
+  }
+  .custom-logo-title {
+    margin-left: 10px;
+    color: #409eff;
+    font-size: 16px;
+    font-weight: 400;
+  }
+}
 </style>

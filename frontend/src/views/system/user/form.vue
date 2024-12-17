@@ -10,9 +10,9 @@
       <el-form-item :label="$t('commons.nick_name')" prop="nickName">
         <el-input v-model="form.nickName" />
       </el-form-item>
-      <el-form-item :label="$t('commons.email')" prop="email">
+      <!-- <el-form-item :label="$t('commons.email')" prop="email">
         <el-input v-model="form.email" />
-      </el-form-item>
+      </el-form-item> -->
       <!-- <el-form-item v-if="formType !== 'modify'" :label="$t('commons.password')" prop="password">
         <el-input v-model="form.password" autocomplete="off" show-password />
       </el-form-item>
@@ -124,9 +124,9 @@ export default {
           }
         ],
         email: [
-          { required: true, message: this.$t('user.input_email'), trigger: 'blur' },
+          { required: false, message: this.$t('user.input_email'), trigger: 'blur' },
           {
-            required: true,
+            required: false,
             pattern: /^[a-zA-Z0-9_._-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
             message: this.$t('user.email_format_is_incorrect'),
             trigger: 'blur'
