@@ -1,5 +1,7 @@
 package io.datains.service.sys;
 
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import io.datains.auth.api.dto.CurrentUserDto;
 import io.datains.auth.service.ExtAuthService;
 import io.datains.base.domain.SysUser;
@@ -24,7 +26,6 @@ import io.datains.controller.sys.response.SysUserRole;
 import io.datains.i18n.Translator;
 import io.datains.plugins.common.entity.XpackLdapUserEntity;
 import io.datains.plugins.xpack.oidc.dto.SSOUserInfo;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +36,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,6 +76,7 @@ public class SysUserService {
     @Transactional
     public int save(SysUserCreateRequest request) {
         checkUsername(request);
+        autoEmail(request);
         checkEmail(request);
         checkNickName(request);
         SysUser user = BeanUtils.copyBean(new SysUser(), request);
@@ -119,7 +120,7 @@ public class SysUserService {
             // oidc默认角色是普通员工
             List<Long> roleIds = new ArrayList<Long>();
             roleIds.add(2L);
-            saveUserRoles( dbUser.getUserId(), roleIds);
+            saveUserRoles(dbUser.getUserId(), roleIds);
         }
     }
 
@@ -151,7 +152,7 @@ public class SysUserService {
             sysUserMapper.insert(sysUser);
             SysUser dbUser = findOne(sysUser);
             if (null != dbUser && null != dbUser.getUserId()) {
-                saveUserRoles( dbUser.getUserId(), request.getRoleIds());
+                saveUserRoles(dbUser.getUserId(), request.getRoleIds());
             }
         });
     }
@@ -303,24 +304,24 @@ public class SysUserService {
         if (StringUtils.isNotBlank(userName)) {
             example.createCriteria().andUsernameEqualTo(userName);
             List<SysUser> users = sysUserMapper.selectByExample(example);
-            if(CollectionUtils.isNotEmpty(users)) {
-                throw new RuntimeException("用户ID【"+userName+"】已存在,请联系管理员");
+            if (CollectionUtils.isNotEmpty(users)) {
+                throw new RuntimeException("用户ID【" + userName + "】已存在,请联系管理员");
             }
         }
 
         if (StringUtils.isNotBlank(nickName)) {
             example.createCriteria().andNickNameEqualTo(nickName);
             List<SysUser> users = sysUserMapper.selectByExample(example);
-            if(CollectionUtils.isNotEmpty(users)) {
-                throw new RuntimeException("用户姓名【"+nickName+"】已存在,请联系管理员");
+            if (CollectionUtils.isNotEmpty(users)) {
+                throw new RuntimeException("用户姓名【" + nickName + "】已存在,请联系管理员");
             }
         }
         example.clear();
         if (StringUtils.isNotBlank(email)) {
             example.createCriteria().andEmailEqualTo(email);
             List<SysUser> users = sysUserMapper.selectByExample(example);
-            if(CollectionUtils.isNotEmpty(users)) {
-                throw new RuntimeException("用户邮箱【"+email+"】已存在,请联系管理员");
+            if (CollectionUtils.isNotEmpty(users)) {
+                throw new RuntimeException("用户邮箱【" + email + "】已存在,请联系管理员");
             }
         }
     }
@@ -348,6 +349,29 @@ public class SysUserService {
         List<SysUser> sysUsers = sysUserMapper.selectByExample(sysUserExample);
         if (CollectionUtils.isNotEmpty(sysUsers)) {
             throw new RuntimeException(Translator.get("i18n_username_exists"));
+        }
+    }
+
+    private void autoEmail(SysUserCreateRequest request) {
+        //自动填充邮箱
+        while (true) {
+            if (StrUtil.isEmpty(request.getEmail())) {
+                request.setEmail(RandomUtil.randomNumbers(11) + "@example.com");
+            } else {
+                return;
+            }
+            SysUserExample sysUserExample = new SysUserExample();
+            SysUserExample.Criteria criteria = sysUserExample.createCriteria();
+            if (request.getUserId() != null) {
+                criteria.andUserIdNotEqualTo(request.getUserId());
+            }
+            criteria.andEmailEqualTo(request.getEmail());
+            List<SysUser> sysUsers = sysUserMapper.selectByExample(sysUserExample);
+            if (CollectionUtils.isNotEmpty(sysUsers)) {
+                request.setEmail(null);
+            } else {
+                return;
+            }
         }
     }
 

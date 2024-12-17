@@ -29,7 +29,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -152,18 +151,18 @@ public class SysUserController {
     public void delete(@PathVariable("userId") Long userId) throws Exception {
 
         Map<String, Object> token = getToken();
-        Map<String,Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
         SysUser user = sysUserMapper.selectByPrimaryKey(userId);
         //map.put("accessToken",token.get("token"));
-        map.put("biz_id",user.getUserId());
-        map.put("loginName",user.getUsername());
-        map.put("card_no",user.getUsername());
-        map.put("phone",user.getPhone());
-       // int a = user.getEnabled()==1?1:(user.getEnabled()==0?2:0);
-        map.put("operateType",2);
-        List<Map<String,Object>> list = new ArrayList<>();
+        map.put("biz_id", user.getUserId());
+        map.put("loginName", user.getUsername());
+        map.put("card_no", user.getUsername());
+        map.put("phone", user.getPhone());
+        // int a = user.getEnabled()==1?1:(user.getEnabled()==0?2:0);
+        map.put("operateType", 2);
+        List<Map<String, Object>> list = new ArrayList<>();
         list.add(map);
-        HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/syncAccountInfo", JSON.toJSONString(list),token.get("token").toString());
+        HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/syncAccountInfo", JSON.toJSONString(list), token.get("token").toString());
 
         int delete = sysUserService.delete(userId);
     }
@@ -247,24 +246,24 @@ public class SysUserController {
         }).collect(Collectors.toList());
     }
 
-    public  Map<String,Object> getToken() throws Exception {
-        Map<String,Object> map = new HashMap<>();
+    public Map<String, Object> getToken() throws Exception {
+        Map<String, Object> map = new HashMap<>();
         try {
-            map.put("appId",130);
-            map.put("privateKey",privateKey);
-            String s = HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/getAccessToken", JSON.toJSONString(map),null);
+            map.put("appId", 130);
+            map.put("privateKey", privateKey);
+            String s = HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/getAccessToken", JSON.toJSONString(map), null);
             JSONObject jsonObject = JSON.parseObject(s);
-            if (jsonObject.getString("code").equals("200")){
-                map.put("code",200);
-                map.put("token",jsonObject.getString("data"));
-            }else {
-                    map.put("code",500);
-                    map.put("token",jsonObject.getString("msg"));
+            if (jsonObject.getString("code").equals("200")) {
+                map.put("code", 200);
+                map.put("token", jsonObject.getString("data"));
+            } else {
+                map.put("code", 500);
+                map.put("token", jsonObject.getString("msg"));
             }
             return map;
-        }catch (Exception e){
-            map.put("code",500);
-            map.put("msg",e.getMessage());
+        } catch (Exception e) {
+            map.put("code", 500);
+            map.put("msg", e.getMessage());
             return map;
         }
 
@@ -273,39 +272,39 @@ public class SysUserController {
 
     //@ApiOperation("单点登录")
     @PostMapping("/singleSignOn")
-    public Object singleSignOn(@RequestBody Map<String,String> maps ) throws Exception {
-        Map<String,Object> map = new HashMap<>();
+    public Object singleSignOn(@RequestBody Map<String, String> maps) throws Exception {
+        Map<String, Object> map = new HashMap<>();
         try {
             String privateKeyString = privateKey; // 你的私钥
             PrivateKey privateKey = loadPrivateKey(privateKeyString);
             String decodedString = URLDecoder.decode(maps.get("carInfo"), "UTF-8");//若接收到的参数为URL编码之后的需要decode以下，否则不需要
-            String cao = decodedString.replaceAll(" +","+");
+            String cao = decodedString.replaceAll(" +", "+");
             String encryptedMessageString = cao; // 加密之后的字符串
             byte[] encryptedMessage = Base64.getDecoder().decode(encryptedMessageString);
             String username = decrypt(encryptedMessage, privateKey);
             //String username = maps.get("carInfo");
             SysUserEntity user = authUserService.getUserByName(username);
-            if (IsNullUtils.isNull(user)){
-                map.put("code",500);
-                map.put("msg","未查找到此用户");
+            if (IsNullUtils.isNull(user)) {
+                map.put("code", 500);
+                map.put("msg", "未查找到此用户");
                 return map;
             }
             TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
             String token = JWTUtils.sign(tokenInfo, user.getPassword());
-            map.put("code",200);
-            map.put("msg","成功");
+            map.put("code", 200);
+            map.put("msg", "成功");
             map.put("token", token);
             ServletUtils.setToken(token);
             authUserService.clearCache(user.getUserId());
-            String s = redisService.get(UserKey.getById, "datains_"+user.getUserId().toString());
-            if (StringUtils.isEmpty(s)){
-                boolean set = redisService.set(UserKey.getById, "datains_"+user.getUserId().toString(), token);
+            String s = redisService.get(UserKey.getById, "datains_" + user.getUserId().toString());
+            if (StringUtils.isEmpty(s)) {
+                boolean set = redisService.set(UserKey.getById, "datains_" + user.getUserId().toString(), token);
                 System.err.println(set);
             }
             return map;
-        }catch (Exception e){
-            map.put("code",500);
-            map.put("msg",e.getMessage());
+        } catch (Exception e) {
+            map.put("code", 500);
+            map.put("msg", e.getMessage());
             e.printStackTrace();
             return map;
         }
@@ -317,7 +316,7 @@ public class SysUserController {
         String privateKeyString = privateKey; // 你的私钥
         PrivateKey privateKey = loadPrivateKey(privateKeyString);
         String decodedString = URLDecoder.decode("Zfn7zHPS7JXg8g6uBc17+YBL041Giz73IbhNX5Q7MbXJvJ1Upw4fVIYM2kF90a9FEuMz5reA7tc+WUudTxGVDivyYSOqhzt9c9EMudb0YoQGvDUOOc2Wjy47IvGz60g+uoDqygoIsBi5k3oyuz1vvQqm6knrkmt5qlEwB1tkjm0=", "UTF-8");//若接收到的参数为URL编码之后的需要decode以下，否则不需要
-        String s = decodedString.replaceAll(" +","+");
+        String s = decodedString.replaceAll(" +", "+");
         String encryptedMessageString = s; // 加密之后的字符串
         byte[] encryptedMessage = Base64.getDecoder().decode(encryptedMessageString);
         String decryptedMessage = decrypt(encryptedMessage, privateKey);

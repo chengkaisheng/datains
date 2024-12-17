@@ -1,9 +1,6 @@
 package io.datains.controller.sys;
 
 
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datains.base.domain.License;
 import io.datains.base.mapper.LicenseMapper;
@@ -16,7 +13,6 @@ import io.datains.commons.utils.MacUtil;
 import io.datains.controller.ResultHolder;
 import io.datains.controller.sys.response.LicenseVo;
 import io.datains.exception.DataInsException;
-import io.datains.plugins.common.dto.PluginSysMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -114,7 +110,7 @@ public class LicenseController {
                 }else {
                     currentIpLocalMac = macUtil.getCurrentIpLocalMac();
                 }
-                if (!licenseVo.getMacAdress().equals(currentIpLocalMac) || !licenseVo.getMacAdress().toLowerCase().equals(currentIpLocalMac)){
+                if (!licenseVo.getMacAdress().equalsIgnoreCase(currentIpLocalMac)){
                     f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
                     return f2CLicenseResponse;
                 }
