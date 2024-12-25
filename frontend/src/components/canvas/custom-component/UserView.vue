@@ -799,7 +799,7 @@ export default {
       console.log('getData...,走的获取数据的通道', this.templateStatus, this.isStylePriority, this.canvasStyleData)
       console.log('getLocal', localStorage.getItem('permissionId'))
       if (id) {
-        // this.requestStatus = 'waiting'
+        this.requestStatus = 'waiting'
         this.message = null
 
         // 增加判断 仪表板公共连接中使用viewInfo 正常使用viewData
@@ -1286,17 +1286,17 @@ export default {
                     )
                   )
                   this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
-                  // this.requestStatus = 'merging'
+                  this.requestStatus = 'merging'
                   // if (this.chart.type !== 'roll-elemnt') {
 
                   // }
                   this.mergeScale()
 
-                  // this.requestStatus = 'success'
+                  this.requestStatus = 'success'
                   this.httpRequest.status = true
                   console.log('thissssss', this.chart)
                 } else {
-                  // this.requestStatus = 'error'
+                  this.requestStatus = 'error'
                   this.message = response.message
                 }
               } else {
@@ -1748,16 +1748,16 @@ export default {
                         )
                       )
                       this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
-                      // this.requestStatus = 'merging'
+                      this.requestStatus = 'merging'
                       this.mergeScale()
                       // if (this.chart.type !== 'roll-elemnt') {
                       //   this.mergeScale()
                       // }
-                      // this.requestStatus = 'success'
+                      this.requestStatus = 'success'
                       this.httpRequest.status = true
                       console.log('thissssss', this.chart)
                     } else {
-                      // this.requestStatus = 'error'
+                      this.requestStatus = 'error'
                       this.message = response.message
                     }
                     this.isFirstLoad = false
