@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div v-if="show && type.includes('table')" class="download" @click.stop="exportDetailData">
+    <div v-if="hasDataPermission('export',panelInfo.privileges) && show && type.includes('table')" class="download" @click.stop="exportDetailData">
       <i class="el-icon-download" ></i>
     </div>
-    <div v-if="show" :class="['bar-main', type.includes('table') ? 'bar-main-right' : '']">
+    <div v-if="show" :class="['bar-main', hasDataPermission('export',panelInfo.privileges) && type.includes('table') ? 'bar-main-right' : '']">
       <div>
         <span v-if="isEdit" :title="$t('panel.edit')">
           <i class="icon iconfont icon-edit" @click.stop="edit" />
@@ -53,6 +53,9 @@ export default {
     }
   },
   computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
     ...mapState([
       'linkageSettingStatus',
       'componentData',

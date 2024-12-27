@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div v-if="downloadFlag" class="download" @click.stop="exportDetailData">
+    <div v-if="hasDataPermission('export',panelInfo.privileges) && downloadFlag" class="download" @click.stop="exportDetailData">
       <i class="el-icon-download" ></i>
     </div>
-    <div v-if="show" :class="['bar-main', downloadFlag ? 'bar-main-right' : '']" :style="setNewValue">
+    <div v-if="show" :class="['bar-main', hasDataPermission('export',panelInfo.privileges) && downloadFlag ? 'bar-main-right' : '']" :style="setNewValue">
       <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
       <div v-if="linkageAreaShow" style="margin-right: -1px;">
         <el-checkbox v-model="linkageInfo.linkageActive" />
@@ -145,6 +145,9 @@ export default {
   mounted() {
   },
   computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
     downloadFlag() {
       // console.log('123', this.element, this.currentComponentType);
       return this.element && this.element.type==='view' && (this.currentComponentType.includes('table') || this.currentComponentType === 'roll-elemnt' || this.currentComponentType === 'vertical-ele')
