@@ -52,4 +52,14 @@
         </where>
     </update>
 
+    <update id="authDetailsChange2">
+        UPDATE sys_auth_detail
+        SET privilege_value = #{privilegeValue}
+        <where>
+            auth_id in
+            <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
+            and privilege_type = #{privilegeType}
+        </where>
+    </update>
+
 </mapper>

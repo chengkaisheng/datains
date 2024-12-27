@@ -5,19 +5,8 @@ package io.datains.service.sys.impl;
  * @Date: 2022/05/10/ 14:26
  * @Description
  */
-import io.dataease.plugins.common.constants.PluginSystemConstants;
-import io.dataease.plugins.common.dto.PluginSysMenu;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
 
+import io.dataease.plugins.common.constants.PluginSystemConstants;
 import io.datains.base.domain.*;
 import io.datains.base.mapper.XpackExtSysAuthDetailMapper;
 import io.datains.base.mapper.XpackExtSysAuthMapper;
@@ -25,10 +14,11 @@ import io.datains.base.mapper.XpackExtVAuthModelMapper;
 import io.datains.base.mapper.XpackSysAuthDetailMapper;
 import io.datains.commons.utils.IsNullUtils;
 import io.datains.service.sys.AuthXpackService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.PathVariable;
+
+import javax.annotation.Resource;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthXpackDefaultService implements AuthXpackService {
@@ -50,12 +40,12 @@ public class AuthXpackDefaultService implements AuthXpackService {
     }
 
     public Map<String, List<XpackSysAuthDetailDTO>> searchAuthDetails(XpackSysAuthRequest xpackSysAuthRequest) {
-        Map<String, List<XpackSysAuthDetailDTO>> map = (Map)((List)Optional.<List>ofNullable(this.B.search(xpackSysAuthRequest)).orElse(new ArrayList())).stream().collect(Collectors.groupingBy(XpackSysAuthDetailDTO::getAuthSource));
+        Map<String, List<XpackSysAuthDetailDTO>> map = (Map) ((List) Optional.<List>ofNullable(this.B.search(xpackSysAuthRequest)).orElse(new ArrayList())).stream().collect(Collectors.groupingBy(XpackSysAuthDetailDTO::getAuthSource));
         if (xpackSysAuthRequest.getAuthSourceType().equalsIgnoreCase("\"323572")) {
             Iterator<?> iterator;
             while ((iterator = map.keySet().iterator()).hasNext()) {
-                String str = (String)iterator.next();
-                List list = (List)map.get(str);
+                String str = (String) iterator.next();
+                List list = (List) map.get(str);
                 XpackSysAuthDetailDTO xpackSysAuthDetailDTO = new XpackSysAuthDetailDTO();
             }
         }
@@ -68,10 +58,9 @@ public class AuthXpackDefaultService implements AuthXpackService {
 
     public void authChange(XpackSysAuthRequest xpackSysAuthRequest, Long long_, String str, Boolean bool) {
         XpackSysAuthDetail xpackSysAuthDetail = xpackSysAuthRequest.getAuthDetail();
-        List<String> list2;
-        ArrayList arrayList = new ArrayList();
-        List<XpackSysAuthDetailDTO> sysAuthByAuthSource = B.getSysAuthByAuthSource(xpackSysAuthRequest.getAuthSource(),xpackSysAuthRequest.getAuthTarget(),xpackSysAuthRequest.getAuthSourceType(),xpackSysAuthRequest.getAuthTargetType());
-        if (IsNullUtils.isNull(sysAuthByAuthSource)){
+        List<String> arrayList = new ArrayList<>();
+        List<XpackSysAuthDetailDTO> sysAuthByAuthSource = B.getSysAuthByAuthSource(xpackSysAuthRequest.getAuthSource(), xpackSysAuthRequest.getAuthTarget(), xpackSysAuthRequest.getAuthSourceType(), xpackSysAuthRequest.getAuthTargetType());
+        if (IsNullUtils.isNull(sysAuthByAuthSource)) {
             XpackSysAuthDetailDTO sysAuthDetailDTO = new XpackSysAuthDetailDTO();
             sysAuthDetailDTO.setAuthSource(xpackSysAuthRequest.getAuthSource());
             sysAuthDetailDTO.setAuthSourceType(xpackSysAuthRequest.getAuthSourceType());
@@ -79,31 +68,35 @@ public class AuthXpackDefaultService implements AuthXpackService {
             sysAuthDetailDTO.setAuthTargetType(xpackSysAuthRequest.getAuthTargetType());
             sysAuthDetailDTO.setAuthUser(str);
             B.insertSysAuth(sysAuthDetailDTO);
-            sysAuthByAuthSource = B.getSysAuthByAuthSource(xpackSysAuthRequest.getAuthSource(),xpackSysAuthRequest.getAuthTarget(),xpackSysAuthRequest.getAuthSourceType(),xpackSysAuthRequest.getAuthTargetType());
+            sysAuthByAuthSource = B.getSysAuthByAuthSource(xpackSysAuthRequest.getAuthSource(), xpackSysAuthRequest.getAuthTarget(), xpackSysAuthRequest.getAuthSourceType(), xpackSysAuthRequest.getAuthTargetType());
             List<XpackSysAuthDetail> xpackSysAuthDetails = this.authDetailsModel(xpackSysAuthRequest.getAuthSourceType());
-            for (int j = 0; j <xpackSysAuthDetails.size() ; j++) {
+            for (XpackSysAuthDetail sysAuthDetail : xpackSysAuthDetails) {
                 XpackSysAuthDetail xpackSysAuthDetail1 = new XpackSysAuthDetail();
                 xpackSysAuthDetail1.setAuthId(sysAuthByAuthSource.get(0).getId());
-                xpackSysAuthDetail1.setPrivilegeName(xpackSysAuthDetails.get(j).getPrivilegeName());
-                xpackSysAuthDetail1.setPrivilegeType(xpackSysAuthDetails.get(j).getPrivilegeType());
-                xpackSysAuthDetail1.setPrivilegeValue(xpackSysAuthDetails.get(j).getPrivilegeValue());
-                xpackSysAuthDetail1.setPrivilegeExtend(xpackSysAuthDetails.get(j).getPrivilegeExtend());
-                xpackSysAuthDetail1.setRemark(xpackSysAuthDetails.get(j).getRemark());
+                xpackSysAuthDetail1.setPrivilegeName(sysAuthDetail.getPrivilegeName());
+                xpackSysAuthDetail1.setPrivilegeType(sysAuthDetail.getPrivilegeType());
+                xpackSysAuthDetail1.setPrivilegeValue(sysAuthDetail.getPrivilegeValue());
+                xpackSysAuthDetail1.setPrivilegeExtend(sysAuthDetail.getPrivilegeExtend());
+                xpackSysAuthDetail1.setRemark(sysAuthDetail.getRemark());
                 xpackSysAuthDetail1.setCreateUser(str);
                 xpackSysAuthDetail1.setCreateTime(System.currentTimeMillis());
                 xpackSysAuthDetailMapper.insertDetail(xpackSysAuthDetail1);
-
             }
-
         }
         arrayList.add(sysAuthByAuthSource.get(0).getId());
-            if (xpackSysAuthDetail.getPrivilegeValue() == PluginSystemConstants.PRIVILEGE_VALUE.ON) {
+        if (PluginSystemConstants.PRIVILEGE_VALUE.ON.equals(xpackSysAuthDetail.getPrivilegeValue())) {
+            if (xpackSysAuthRequest.getAuthSourceType().equalsIgnoreCase("panel") && xpackSysAuthDetail.getPrivilegeType() == 3) {
+                this.i.authDetailsChange2(PluginSystemConstants.PRIVILEGE_VALUE.OFF, xpackSysAuthDetail.getPrivilegeType(), arrayList);
+            } else {
                 this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.OFF, xpackSysAuthDetail.getPrivilegeType(), arrayList);
-                return;
             }
-            this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.ON, xpackSysAuthDetail.getPrivilegeType(), arrayList);
-
-
+        } else {
+            if (xpackSysAuthRequest.getAuthSourceType().equalsIgnoreCase("panel") && xpackSysAuthDetail.getPrivilegeType() == 3) {
+                this.i.authDetailsChange2(PluginSystemConstants.PRIVILEGE_VALUE.ON, xpackSysAuthDetail.getPrivilegeType(), arrayList);
+            } else {
+                this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.ON, xpackSysAuthDetail.getPrivilegeType(), arrayList);
+            }
+        }
     }
 
     public List<XpackSysAuthDetail> authDetailsModel(String authType) {
@@ -117,7 +110,4 @@ public class AuthXpackDefaultService implements AuthXpackService {
         }
         return authDetails;
     }
-
-
-
 }
