@@ -140,7 +140,7 @@
                 @node-click="handleNodeClick"
               >
                 <span slot-scope="{ node, data }">
-                  <span :class="data.auth ? '' : 'custom-node-label'">{{ node.label }}</span>
+                  <span :class="[data.auth ? '' : 'custom-node-auth-label', 'custom-node-label']">{{ node.label }}</span>
                 </span>
               </el-tree>
               <el-option
@@ -952,6 +952,9 @@ span {
   width: 100% !important;
 }
 .custom-node-label {
+  font-size: 14px;
+}
+.custom-node-auth-label {
   color: #ccc;
 }
 .enumCheckFieldList {

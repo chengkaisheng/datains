@@ -100,7 +100,7 @@
                   @node-click="handleNodeClick"
                 >
                   <span slot-scope="{ node, data }">
-                    <span :class="data.auth ? '' : 'custom-node-label'">{{ node.label }}</span>
+                    <span :class="[data.auth ? '' : 'custom-node-auth-label', 'custom-node-label']">{{ node.label }}</span>
                   </span>
                 </el-tree>
                 <el-option
@@ -315,7 +315,7 @@ export default {
       if(!node.auth) return;
       this.selectValue = node.id;
       this.selectLabel = node.name;
-      this.rowPermissionForm.authTargetId = node.id;
+      this.columnPermissionForm.authTargetId = node.id;
     },
     executeAxios(url, type, data, callBack) {
       var param = {
@@ -597,5 +597,11 @@ export default {
 <style scoped>
 .dialog-css {
   /* your styles */
+}
+.custom-node-label {
+  font-size: 14px;
+}
+.custom-node-auth-label {
+  color: #ccc;
 }
 </style>
