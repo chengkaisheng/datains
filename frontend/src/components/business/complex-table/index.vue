@@ -9,7 +9,7 @@
       <div>
         <slot name="toolbar" />
       </div>
-      <fu-search-bar ref="search" v-bind="searchConfig" @exec="search">
+      <fu-search-bar v-if="searchConfig" ref="search" v-bind="searchConfig" @exec="search">
         <template #complex>
           <slot name="complex" />
         </template>

@@ -1,5 +1,5 @@
 <template>
-  <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
+  <el-row id="viewTable" style="height: 100%;overflow-y: hidden;width: 100%;">
     <el-row style="height: 26px;">
       <span class="title-text" style="line-height: 26px;">
         {{ table.name }}
@@ -64,13 +64,15 @@
       </el-tab-pane>
       <el-tab-pane v-if="isPluginLoaded && hasDataPermission('manage',param.privileges)" :lazy="true"
                    :label="$t('dataset.row_permissions')" name="rowPermissions">
-        <plugin-com v-if="isPluginLoaded && tabActive=='rowPermissions'" ref="RowPermissions"
-                    component-name="RowPermissions" :obj="table"/>
+        <!-- <plugin-com v-if="isPluginLoaded && tabActive=='rowPermissions'" ref="RowPermissions"
+                    component-name="RowPermissions" :obj="table"/> -->
+        <RowPermissions v-if="isPluginLoaded && tabActive=='rowPermissions'" ref="RowPermissions" :param="param" :obj="table"></RowPermissions>
       </el-tab-pane>
-      <el-tab-pane v-if="isPluginLoaded && hasDataPermission('manage',param.privileges)" :lazy="true"
+      <el-tab-pane v-if="isPluginLoaded && hasDataPermission('manage',param.privileges)"
                    :label="$t('dataset.column_permissions')" name="columnPermissions">
-        <plugin-com v-if="isPluginLoaded && tabActive=='columnPermissions'" ref="ColumnPermissions"
-                    component-name="ColumnPermissions" :obj="table"/>
+        <!-- <plugin-com v-if="isPluginLoaded && tabActive=='columnPermissions'" ref="ColumnPermissions"
+                    component-name="ColumnPermissions" :obj="table"/> -->
+        <ColumnPermissions v-if="isPluginLoaded && tabActive=='columnPermissions'" ref="ColumnPermissions" :param="param" :obj="table"></ColumnPermissions>
       </el-tab-pane>
     </el-tabs>
   </el-row>
@@ -80,6 +82,8 @@
 import {post} from '@/api/dataset/dataset'
 import TabDataPreview from './TabDataPreview'
 import UpdateInfo from './UpdateInfo'
+import ColumnPermissions from './ColumnPermissions'
+import RowPermissions from './RowPermissions'
 import DatasetChartDetail from '../common/DatasetChartDetail'
 import UnionView from './UnionView'
 import FieldEdit from './FieldEdit'
@@ -88,7 +92,7 @@ import PluginCom from '@/views/system/plugin/PluginCom'
 
 export default {
   name: 'ViewTable',
-  components: {FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview, PluginCom},
+  components: {FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, ColumnPermissions, RowPermissions, TabDataPreview, PluginCom},
   props: {
     param: {
       type: Object,
