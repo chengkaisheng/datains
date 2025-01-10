@@ -1,6 +1,7 @@
 package io.datains.base.mapper;
 
 import io.datains.base.domain.Item;
+import io.datains.base.domain.SysDept;
 import io.datains.dto.DataSetRowPermissionsDTO;
 import io.datains.dto.DatasetRowPermissions;
 import io.datains.dto.XpackGridExample;

@@ -61,6 +61,13 @@ public class RowPermissionsController {
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
         return rowPermissionService.searchRowPermissions(request);
     }
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @ApiOperation("删除")
+    @PostMapping("/delete")
+    public void dataSetRowPermissionInfo(@RequestBody DatasetRowPermissions datasetRowPermissions) {
+        RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
+        rowPermissionService.delete(datasetRowPermissions.getId());
+    }
 
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("删除")

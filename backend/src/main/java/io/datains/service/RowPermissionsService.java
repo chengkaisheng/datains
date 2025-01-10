@@ -1,15 +1,17 @@
 package io.datains.service;
 
+import io.datains.base.domain.AuthDept;
+import io.datains.base.domain.Item;
+import io.datains.base.domain.SysDept;
 import io.datains.base.mapper.ExtRowPermissionMapper;
+import io.datains.base.mapper.SysDeptMapper;
 import io.datains.dto.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * @Author Mr.zhang
@@ -17,11 +19,11 @@ import java.util.UUID;
  * @Description
  */
 @Service
-public class RowPermissionsService extends RowPermissionService
-{
+public class RowPermissionsService extends RowPermissionService {
     @Autowired(required = false)
     private ExtRowPermissionMapper ALLATORIxDEMO;
-
+    @Resource
+    private SysDeptMapper sysDeptMapper;
 
     @Override
     public List<DataSetRowPermissionsDTO> searchRowPermissions(DataSetRowPermissionsDTO var1) {
@@ -35,7 +37,7 @@ public class RowPermissionsService extends RowPermissionService
 
     @Override
     public void save(DatasetRowPermissions var1) {
-        if (StringUtils.isEmpty((CharSequence)var1.getId())) {
+        if (StringUtils.isEmpty((CharSequence) var1.getId())) {
             var1.setId(UUID.randomUUID().toString());
             var1.setUpdateTime(Long.valueOf(System.currentTimeMillis()));
             this.ALLATORIxDEMO.insert(var1);
@@ -96,12 +98,75 @@ public class RowPermissionsService extends RowPermissionService
                 return this.ALLATORIxDEMO.searchAuthRoles(datasetRowPermissions);
             }
             case 2: {
-                return this.ALLATORIxDEMO.searchAuthDepts(datasetRowPermissions);
+                return this.searchAuthDepts(datasetRowPermissions);
             }
             default: {
                 return new ArrayList<Object>();
             }
         }
+    }
+
+    private List<Item> searchAuthDepts1(DatasetRowPermissions datasetRowPermissions) {
+        Map<Long, SysDept> orgMap = new HashMap<>();
+        List<SysDept> depts = this.sysDeptMapper.selectAll();
+        for (SysDept dept : depts) {
+            orgMap.put(dept.getDeptId(), dept);
+        }
+        List<Item> items = this.ALLATORIxDEMO.searchAuthDepts(datasetRowPermissions);
+        for (Item item : items) {
+            SysDept dept = orgMap.get(item.getId());
+            if (dept.getPid() != 0) {
+                SysDept p = orgMap.get(dept.getPid());
+                item.setName(p.getName() + "-" + dept.getName());
+            }
+        }
+        return items;
+    }
+
+    private List<AuthDept> searchAuthDepts(DatasetRowPermissions datasetRowPermissions) {
+        Map<Long, AuthDept> orgMap = new HashMap<>();
+        List<Item> items = this.ALLATORIxDEMO.searchAuthDepts(datasetRowPermissions);
+        for (Item item : items) {
+            orgMap.put(item.getId(), new AuthDept());
+        }
+        List<SysDept> depts = this.sysDeptMapper.selectAll();
+        List<AuthDept> orgList = new ArrayList<>();
+        for (SysDept dept : depts) {
+            if (!orgMap.containsKey(dept.getDeptId())) {
+                orgMap.put(dept.getDeptId(), new AuthDept(dept.getDeptId(), dept.getPid(), dept.getName(), false));
+            } else {
+                orgMap.put(dept.getDeptId(), new AuthDept(dept.getDeptId(), dept.getPid(), dept.getName(), true));
+            }
+            orgList.add(orgMap.get(dept.getDeptId()));
+        }
+        Set<Long> retainedIds = new HashSet<>();
+        // 筛选需要保留的组织
+        for (AuthDept org : orgList) {
+            if (org.getAuth()) {
+                // 如果当前组织需要保留，则将其及其所有父组织加入 retainedIds
+                Long currentId = org.getId();
+                while (currentId != 0) { // pid 为 0 表示根节点
+                    retainedIds.add(currentId);
+                    currentId = orgMap.get(currentId).getPid();
+                }
+            }
+        }
+        // 构建树形结构
+        List<AuthDept> result = new ArrayList<>();
+        for (AuthDept org : orgList) {
+            if (retainedIds.contains(org.getId())) {
+                // 如果当前组织需要保留
+                if (org.getPid() == 0) {
+                    // 如果是根节点，直接加入结果列表
+                    result.add(org);
+                } else {
+                    // 否则找到其父组织，并加入父组织的 children 列表
+                    AuthDept parent = orgMap.get(org.getPid());
+                    parent.addChild(org);
+                }
+            }
+        }
+        return result;
     }
 
     @Override

@@ -27,6 +27,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @ApiIgnore
 @RestController
 @RequestMapping("plugin/dataset/columnPermissions")
@@ -42,15 +43,15 @@ public class ColumnPermissionsController {
         request.setAuthTargetId(datasetColumnPermissions.getAuthTargetId());
         request.setDatasetId(datasetColumnPermissions.getDatasetId());
         List<DataSetColumnPermissionsDTO> columnPermissionsDTOS = columnPermissionService.searchPermissions(request);
-        if(StringUtils.isEmpty(datasetColumnPermissions.getId())){
-            if(!CollectionUtils.isEmpty(columnPermissionsDTOS)){
+        if (StringUtils.isEmpty(datasetColumnPermissions.getId())) {
+            if (!CollectionUtils.isEmpty(columnPermissionsDTOS)) {
                 throw new Exception(Translator.get("i18n_cp_exist"));
             }
-        }else {
-            if(!CollectionUtils.isEmpty(columnPermissionsDTOS) && columnPermissionsDTOS.size() > 1){
+        } else {
+            if (!CollectionUtils.isEmpty(columnPermissionsDTOS) && columnPermissionsDTOS.size() > 1) {
                 throw new Exception(Translator.get("i18n_cp_exist"));
             }
-            if(columnPermissionsDTOS.size() == 1 && !columnPermissionsDTOS.get(0).getId().equalsIgnoreCase(datasetColumnPermissions.getId())){
+            if (columnPermissionsDTOS.size() == 1 && !columnPermissionsDTOS.get(0).getId().equalsIgnoreCase(datasetColumnPermissions.getId())) {
                 throw new Exception(Translator.get("i18n_cp_exist"));
             }
         }
@@ -62,7 +63,7 @@ public class ColumnPermissionsController {
     @PostMapping("/list")
     public List<DataSetColumnPermissionsDTO> searchPermissions(@RequestBody DataSetColumnPermissionsDTO request) {
         ColumnPermissionService columnPermissionService = SpringContextUtil.getBean(ColumnPermissionService.class);
-       return columnPermissionService.searchPermissions(request);
+        return columnPermissionService.searchPermissions(request);
     }
 
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
@@ -73,6 +74,14 @@ public class ColumnPermissionsController {
         columnPermissionService.delete(datasetColumnPermissions.getId());
     }
 
+    @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @ApiOperation("删除")
+    @PostMapping("/delete/{id}")
+    public void delete(@PathVariable("id") String id) {
+        ColumnPermissionService columnPermissionService = SpringContextUtil.getBean(ColumnPermissionService.class);
+        columnPermissionService.delete(id);
+    }
+
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("分页查询")
     @PostMapping("/pageList/{datasetId}/{goPage}/{pageSize}")
@@ -80,7 +89,7 @@ public class ColumnPermissionsController {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         ColumnPermissionService columnPermissionService = SpringContextUtil.getBean(ColumnPermissionService.class);
         List<XpackConditionEntity> conditionEntities = request.getConditions() == null ? new ArrayList<>() : request.getConditions();
-        XpackConditionEntity entity =  new XpackConditionEntity();
+        XpackConditionEntity entity = new XpackConditionEntity();
         entity.setField("dataset_column_permissions.dataset_id");
         entity.setOperator("eq");
         entity.setValue(datasetId);

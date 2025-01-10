@@ -18,6 +18,8 @@ public interface SysDeptMapper {
 
     List<SysDept> selectByExample(SysDeptExample example);
 
+    List<SysDept> selectAll();
+
     SysDept selectByPrimaryKey(Long deptId);
 
     int updateByExampleSelective(@Param("record") SysDept record, @Param("example") SysDeptExample example);

@@ -88,7 +88,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from sys_dept
     where dept_id = #{deptId,jdbcType=BIGINT}
@@ -104,12 +104,12 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.datains.base.domain.SysDept">
-    insert into sys_dept (dept_id, pid, sub_count, 
-      `name`, dept_sort, create_by, 
+    insert into sys_dept (dept_id, pid, sub_count,
+      `name`, dept_sort, create_by,
       update_by, create_time, update_time
       )
-    values (#{deptId,jdbcType=BIGINT}, #{pid,jdbcType=BIGINT}, #{subCount,jdbcType=INTEGER}, 
-      #{name,jdbcType=VARCHAR}, #{deptSort,jdbcType=INTEGER}, #{createBy,jdbcType=VARCHAR}, 
+    values (#{deptId,jdbcType=BIGINT}, #{pid,jdbcType=BIGINT}, #{subCount,jdbcType=INTEGER},
+      #{name,jdbcType=VARCHAR}, #{deptSort,jdbcType=INTEGER}, #{createBy,jdbcType=VARCHAR},
       #{updateBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}
       )
   </insert>
@@ -180,7 +180,10 @@
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+    <select id="selectAll" resultType="io.datains.base.domain.SysDept">
+      select * from sys_dept
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
     update sys_dept
     <set>
       <if test="record.deptId != null">
