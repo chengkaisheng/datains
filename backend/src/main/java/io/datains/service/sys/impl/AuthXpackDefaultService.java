@@ -17,7 +17,10 @@ import io.datains.service.sys.AuthXpackService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +43,11 @@ public class AuthXpackDefaultService implements AuthXpackService {
     }
 
     public Map<String, List<XpackSysAuthDetailDTO>> searchAuthDetails(XpackSysAuthRequest xpackSysAuthRequest) {
-        Map<String, List<XpackSysAuthDetailDTO>> map = (Map) ((List) Optional.<List>ofNullable(this.B.search(xpackSysAuthRequest)).orElse(new ArrayList())).stream().collect(Collectors.groupingBy(XpackSysAuthDetailDTO::getAuthSource));
+        List<XpackSysAuthDetailDTO> xpackSysAuthDetails = this.B.search(xpackSysAuthRequest);
+        if (xpackSysAuthDetails == null) {
+            xpackSysAuthDetails = new ArrayList<>();
+        }
+        Map<String, List<XpackSysAuthDetailDTO>> map = xpackSysAuthDetails.stream().collect(Collectors.groupingBy(XpackSysAuthDetailDTO::getAuthSource));
         if (xpackSysAuthRequest.getAuthSourceType().equalsIgnoreCase("\"323572")) {
             Iterator<?> iterator;
             while ((iterator = map.keySet().iterator()).hasNext()) {
