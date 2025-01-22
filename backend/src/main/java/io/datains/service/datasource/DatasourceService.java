@@ -34,8 +34,6 @@ import io.datains.provider.datasource.DatasourceProvider;
 import io.datains.service.dataset.DataSetGroupService;
 import io.datains.service.message.DeMsgutil;
 import io.datains.service.sys.SysAuthService;
-import io.datains.base.domain.*;
-import io.datains.dto.datasource.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -192,6 +190,7 @@ public class DatasourceService {
         }
         checkName(updataDsRequest.getName(),updataDsRequest.getType(),updataDsRequest.getId());
         Datasource datasource = new Datasource();
+        datasource.setId(updataDsRequest.getId());
         datasource.setName(updataDsRequest.getName());
         datasource.setDesc(updataDsRequest.getDesc());
         datasource.setConfiguration(updataDsRequest.getConfiguration());
