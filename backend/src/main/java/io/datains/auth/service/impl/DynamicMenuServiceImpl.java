@@ -2,6 +2,7 @@ package io.datains.auth.service.impl;
 
 import io.datains.auth.api.dto.DynamicMenuDto;
 import io.datains.auth.api.dto.MenuMeta;
+import io.datains.auth.api.dto.PluginSysMenuCustom;
 import io.datains.auth.service.DynamicMenuService;
 import io.datains.base.domain.SysMenu;
 import io.datains.base.mapper.SysMenuMapper;
@@ -39,7 +40,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         List<SysMenu> sysMenus = extSysMenuMapper.querySysMenu();
         List<DynamicMenuDto> dynamicMenuDtos = sysMenus.stream().map(this::convert).collect(Collectors.toList());
         //增加插件中的菜单
-        List<PluginSysMenu> pluginSysMenus = PluginUtils.pluginMenus();
+        List<PluginSysMenuCustom> pluginSysMenus = PluginUtils.getMenusPluginSysMenuCustom();
         if (CollectionUtils.isNotEmpty(pluginSysMenus)) {
             pluginSysMenus = pluginSysMenus.stream().filter(menu -> menu.getType() <= 1).collect(Collectors.toList());
             List<DynamicMenuDto> pluginDtos = pluginSysMenus.stream().map(this::convert).collect(Collectors.toList());
@@ -74,7 +75,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         return dynamicMenuDto;
     }
 
-    private DynamicMenuDto convert(PluginSysMenu sysMenu) {
+    private DynamicMenuDto convert(PluginSysMenuCustom sysMenu) {
         DynamicMenuDto dynamicMenuDto = new DynamicMenuDto();
         dynamicMenuDto.setId(sysMenu.getMenuId());
         dynamicMenuDto.setPid(sysMenu.getPid());
@@ -90,8 +91,8 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         dynamicMenuDto.setPermission(sysMenu.getPermission());
         dynamicMenuDto.setMenuSort(sysMenu.getMenuSort());
         dynamicMenuDto.setHidden(sysMenu.getHidden());
-        dynamicMenuDto.setIsPlugin(true);
-        dynamicMenuDto.setNoLayout(!!sysMenu.isNoLayout());
+        dynamicMenuDto.setIsPlugin(sysMenu.getIsPlugin());
+        dynamicMenuDto.setNoLayout(sysMenu.isNoLayout());
         return dynamicMenuDto;
     }
 

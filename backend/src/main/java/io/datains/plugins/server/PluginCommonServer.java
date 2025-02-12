@@ -1,13 +1,9 @@
 package io.datains.plugins.server;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import io.datains.commons.utils.EncryptUtil;
 import io.datains.commons.utils.ServletUtils;
 import io.datains.plugins.common.dto.PluginSysMenu;
 import io.datains.plugins.common.dto.StaticResource;
 import io.datains.plugins.common.service.PluginComponentService;
-import io.datains.plugins.common.service.PluginMenuService;
 import io.datains.plugins.config.SpringContextUtil;
 import io.datains.plugins.util.PluginUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +14,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
+
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -83,7 +79,7 @@ public class PluginCommonServer {
     @GetMapping("/async/{menuId}")
     public void menuInfo(@PathVariable Long menuId) throws IOException {
             AtomicReference<PluginSysMenu> atomicReference = new AtomicReference<>();
-            List<PluginSysMenu> menus = getMenus();
+            List<PluginSysMenu> menus = PluginUtils.getMenus();
             if (menus.stream().anyMatch(menu -> {
                 atomicReference.set(menu);
                 return menu.getMenuId() == menuId;
@@ -119,33 +115,6 @@ public class PluginCommonServer {
                 }
             }
             return;
-    }
-
-
-    public List<PluginSysMenu> getMenus() throws IOException {
-        try{
-            ClassLoader classLoader = PluginUtils.class.getClassLoader();
-            /*String fileName = menusDir;
-            Path path = Paths.get(fileName);
-            byte[] bytes = Files.readAllBytes(path);
-            List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);*/
-            InputStream inputStream = classLoader.getResourceAsStream("menus/menus.key");
-            InputStreamReader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-            BufferedReader br = new BufferedReader(isr);
-            EncryptUtil instance = EncryptUtil.getInstance();
-            String s1 = instance.Base64Decode(br.readLine());
-            System.err.println(s1);
-            //DES解密
-            String s3 = instance.DESdecode(s1,"DataIns");
-            String res = JSON.toJSON(s3).toString();
-            System.err.println(res);
-            List<PluginSysMenu> list = null;
-
-            list = JSONArray.parseArray(res,PluginSysMenu.class);
-            return list;
-        }catch (Exception e) {
-            return null;
-        }
     }
 
   /*  @GetMapping("/component/{componentName}")

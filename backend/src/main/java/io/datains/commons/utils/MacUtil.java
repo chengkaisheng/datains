@@ -4,6 +4,10 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -12,16 +16,13 @@ import java.util.*;
  * @Description
  */
 public class MacUtil {
-    public static void main(String[] args) {
-        /*System.out.println(getCurrentIpLocalMac());*/
-        System.out.println(getAllLocalMac());
-    }
+    private static final String mac = "/opt/datains/hostinfo/address";
 
     /**
      * 获取当前所用ip的mac地址
      * @return
      */
-    public String getCurrentIpLocalMac(){
+    public static String getCurrentIpLocalMac(){
         InetAddress ia = null;
         try {
             ia = InetAddress.getLocalHost();
@@ -60,14 +61,13 @@ public class MacUtil {
      * 获取本地所有mac文件
      * @return
      */
-    public static List<String> getAllLocalMac(){
+    public static List<String> getAllLocalMac() {
         // 使用set集合，避免重复
         Set<String> macs = new HashSet<>();
-
         try {
             Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
             while (enumeration.hasMoreElements()) {
-                StringBuffer stringBuffer = new StringBuffer();
+                StringBuilder stringBuffer = new StringBuilder();
                 NetworkInterface networkInterface = enumeration.nextElement();
                 if (networkInterface != null) {
                     byte[] bytes = networkInterface.getHardwareAddress();
@@ -81,21 +81,63 @@ public class MacUtil {
                             // 把无符号整数参数所表示的值转换成以十六进制表示的字符串
                             String str = Integer.toHexString(tmp);
                             if (str.length() == 1) {
-                                stringBuffer.append("0" + str);
+                                stringBuffer.append("0").append(str);
                             } else {
                                 stringBuffer.append(str);
                             }
                         }
-                        String mac = stringBuffer.toString();
+                        String mac = stringBuffer.toString().toLowerCase()
+                                .replace("-", "")
+                                .replace(":", "");
                         macs.add(mac);
                     }
                 }
+            }
+            //获取宿主机的mac地址
+            Map<String, String> map = estimate();
+            if (map.get("code").equals("200")) {
+                String mac = map.get("mac").toLowerCase()
+                        .replace("-", "")
+                        .replace(":", "");
+                macs.add(mac);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         // Set 转 List
-        List<String> macList = new ArrayList<>(macs);
-        return macList;
+        return new ArrayList<>(macs);
+    }
+    public static Map<String, String> estimate() {
+        String os = System.getProperty("os.name");
+        //Windows操作系统
+        if (os != null && os.toLowerCase().startsWith("windows")) {
+            Map<String, String> map = new HashMap<>();
+            String currentIpLocalMac = getCurrentIpLocalMac();
+            map.put("code", "200");
+            map.put("mac", currentIpLocalMac);
+            return map;
+        } else {//Linux操作系统
+            return linuxGetMac();
+        }
+    }
+    public static  Map<String, String> linuxGetMac() {
+        try {
+            Map<String, String> map = new HashMap<>();
+            String fileName = mac;
+            Path path = Paths.get(fileName);
+            byte[] bytes = Files.readAllBytes(path);
+            List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+            if (IsNullUtils.isNotNull(allLines.size())) {
+                map.put("code", "200");
+                map.put("mac", allLines.get(0));
+                return map;
+            }
+            map.put("code", "500");
+            return map;
+        } catch (Exception e) {
+            Map<String, String> map = new HashMap<>();
+            map.put("code", "500");
+            return map;
+        }
     }
 }

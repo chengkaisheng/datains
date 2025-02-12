@@ -6,16 +6,15 @@ import io.datains.commons.constants.AuthConstants;
 import io.datains.commons.utils.AuthUtils;
 import io.datains.controller.handler.annotation.I18n;
 import io.datains.listener.util.CacheUtils;
-import io.datains.plugins.config.SpringContextUtil;
 import io.datains.service.sys.AuthXpackService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -93,6 +92,40 @@ public class XAuthServer {
 
             }
         });
+    }
+
+    @RequiresPermissions("auth:read")
+    @PostMapping("/authChangeBatch")
+    @Transactional(rollbackFor = Exception.class)
+    public void authChangeBatch(@RequestBody XpackSysAuthRequestDTO requests) {
+        if (!CollectionUtils.isEmpty(requests.getAuths())) {
+            CurrentUserDto user = AuthUtils.getUser();
+            for (XpackSysAuthRequest request : requests.getAuths()) {
+                sysAuthService.authChange(request, user.getUserId(), user.getUsername(), user.getIsAdmin());
+                // 当权限发生变化 前端实时刷新对应菜单
+                Optional.ofNullable(request.getAuthSourceType()).ifPresent(type -> {
+                    if (StringUtils.equals("menu", type)) {
+                        CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
+                        CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
+                        CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
+                    }
+                    String authCacheKey = getAuthCacheKey(request);
+                    if (StringUtils.isNotBlank(authCacheKey)) {
+                        if (StringUtils.equals("dept", request.getAuthTargetType())) {
+                            List<String> authTargets = getAuthModels(request.getAuthTarget(), request.getAuthTargetType(),
+                                    user.getUserId(), user.getIsAdmin());
+                            if (CollectionUtils.isNotEmpty(authTargets)) {
+                                authTargets.forEach(deptId -> {
+                                    CacheUtils.remove(authCacheKey, request.getAuthTargetType() + deptId);
+                                });
+                            }
+                        } else {
+                            CacheUtils.remove(authCacheKey, request.getAuthTargetType() + request.getAuthTarget());
+                        }
+                    }
+                });
+            }
+        }
     }
 
     private List<String> getAuthModels(String id, String type, Long userId, Boolean isAdmin) {
