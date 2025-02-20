@@ -647,7 +647,9 @@ export default {
     select_organization: '请选择组织',
     search_by_name: '根据名称搜索',
     special_characters_are_not_supported: '格式错误(不支持特殊字符，且不能以\'-\'开头结尾)',
-    select: '选择组织'
+    select: '选择组织',
+    manager_org: '组织负责人',
+    select_manager: '选择负责人',
   },
   system_parameter_setting: {
     mailbox_service_settings: '邮件设置',
