@@ -2,8 +2,9 @@ package io.datains.base.mapper;
 
 import io.datains.base.domain.SysUser;
 import io.datains.base.domain.SysUserExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface SysUserMapper {
     long countByExample(SysUserExample example);
@@ -19,6 +20,8 @@ public interface SysUserMapper {
     List<SysUser> selectByExample(SysUserExample example);
 
     SysUser selectByPrimaryKey(Long userId);
+
+    List<SysUser> selectByUserIds(@Param("userIds") List<Long> userIds);
 
     int updateByExampleSelective(@Param("record") SysUser record, @Param("example") SysUserExample example);
 

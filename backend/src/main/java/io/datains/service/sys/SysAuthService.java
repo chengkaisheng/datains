@@ -13,6 +13,8 @@ public class SysAuthService {
 
     @Resource
     private ExtSysAuthMapper extSysAuthMapper;
+    @Resource
+    private SysDeptLeaderAuthService sysDeptLeaderAuthService;
 
     public void checkTreeNoManageCount(String modelType, String nodeId) {
         if (extSysAuthMapper.checkTreeNoManageCount(AuthUtils.getUser().getUserId(), modelType, nodeId)) {
@@ -20,9 +22,10 @@ public class SysAuthService {
         }
     }
 
-    public void copyAuth(String authSource,String authSourceType){
+    public void copyAuth(String authSource, String authSourceType) {
         String userName = AuthUtils.getUser().getUsername();
-        extSysAuthMapper.copyAuth(authSource,authSourceType,userName);
+        extSysAuthMapper.copyAuth(authSource, authSourceType, userName);
+        sysDeptLeaderAuthService.addAuthToLeaders(AuthUtils.getUser().getUserId(), authSource, authSourceType);
     }
 
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.datains.base.mapper.SysDeptLeaderAuthMapper">
+    <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_dept_leader_auth (
+        dept_id,
+        user_id,
+        auth_source,
+        auth_source_type,
+        privilege_type,
+        create_time,
+        update_time
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.deptId},
+            #{item.userId},
+            #{item.authSource},
+            #{item.authSourceType},
+            #{item.privilegeType},
+            #{item.createTime},
+            #{item.updateTime}
+            )
+        </foreach>
+    </insert>
+    <select id="selectByDeptId" resultType="io.datains.base.domain.SysDeptLeaderAuth">
+        SELECT *
+        FROM sys_dept_leader_auth
+        WHERE dept_id = #{deptId}
+    </select>
+    <delete id="batchDeleteByDeptIds">
+        DELETE FROM sys_dept_leader_auth
+        WHERE dept_id IN
+        <foreach collection="deptIds" item="deptId" open="(" separator="," close=")">
+            #{deptId}
+        </foreach>
+    </delete>
+    <delete id="deleteByAuthSource">
+        DELETE
+        FROM sys_dept_leader_auth
+        WHERE auth_source = #{authSource}
+    </delete>
+</mapper>

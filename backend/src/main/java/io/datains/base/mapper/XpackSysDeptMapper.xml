@@ -96,7 +96,7 @@
             and update_time = #{updateTime,jdbcType=BIGINT}
         </if>
     </delete>
-    <insert id="insert" parameterType="io.datains.base.domain.XpackSysDept">
+    <insert id="insert" parameterType="io.datains.base.domain.XpackSysDept" useGeneratedKeys="true" keyProperty="deptId">
     insert into sys_dept (dept_id, pid, sub_count,
       `name`, dept_sort, create_by,
       update_by, create_time, update_time

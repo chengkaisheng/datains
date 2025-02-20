@@ -24,6 +24,7 @@ import io.datains.listener.util.CacheUtils;
 import io.datains.service.chart.ChartViewService;
 import io.datains.service.dataset.DataSetTableService;
 import io.datains.service.sys.SysAuthService;
+import io.datains.service.sys.SysDeptLeaderAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
@@ -86,6 +87,8 @@ public class PanelGroupService {
     private PanelTemplateMapper templateMapper;
     @Resource
     private ExtPanelGroupExtendDataMapper extPanelGroupExtendDataMapper;
+    @Resource
+    private SysDeptLeaderAuthService sysDeptLeaderAuthService;
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
@@ -205,6 +208,9 @@ public class PanelGroupService {
         extPanelLinkJumpMapper.deleteJumpTargetViewInfoWithPanel(id);
         extPanelLinkJumpMapper.deleteJumpInfoWithPanel(id);
         extPanelLinkJumpMapper.deleteJumpWithPanel(id);
+
+        //清理组织负责人权限
+        sysDeptLeaderAuthService.deleteByAuthSource(id);
     }
 
 

@@ -80,8 +80,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    user_id, dept_id, username, nick_name, gender, phone, email, `password`, is_admin, 
-    enabled, create_by, update_by, pwd_reset_time, create_time, update_time, `language`, 
+    user_id, dept_id, username, nick_name, gender, phone, email, `password`, is_admin,
+    enabled, create_by, update_by, pwd_reset_time, create_time, update_time, `language`,
     `from`, sub
   </sql>
   <select id="selectByExample" parameterType="io.datains.base.domain.SysUserExample" resultMap="BaseResultMap">
@@ -99,7 +99,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from sys_user
     where user_id = #{userId,jdbcType=BIGINT}
@@ -115,18 +115,18 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.datains.base.domain.SysUser">
-    insert into sys_user (user_id, dept_id, username, 
-      nick_name, gender, phone, 
-      email, `password`, is_admin, 
-      enabled, create_by, update_by, 
-      pwd_reset_time, create_time, update_time, 
+    insert into sys_user (user_id, dept_id, username,
+      nick_name, gender, phone,
+      email, `password`, is_admin,
+      enabled, create_by, update_by,
+      pwd_reset_time, create_time, update_time,
       `language`, `from`, sub
       )
-    values (#{userId,jdbcType=BIGINT}, #{deptId,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR}, 
-      #{nickName,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
-      #{email,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{isAdmin,jdbcType=BIT}, 
-      #{enabled,jdbcType=BIGINT}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}, 
-      #{pwdResetTime,jdbcType=BIGINT}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
+    values (#{userId,jdbcType=BIGINT}, #{deptId,jdbcType=BIGINT}, #{username,jdbcType=VARCHAR},
+      #{nickName,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
+      #{email,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{isAdmin,jdbcType=BIT},
+      #{enabled,jdbcType=BIGINT}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR},
+      #{pwdResetTime,jdbcType=BIGINT}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT},
       #{language,jdbcType=VARCHAR}, #{from,jdbcType=INTEGER}, #{sub,jdbcType=VARCHAR}
       )
   </insert>
@@ -251,7 +251,13 @@
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+    <select id="selectByUserIds" resultType="io.datains.base.domain.SysUser">
+        select * from sys_user where user_id in
+        <foreach collection="userIds" item="userId" index="index" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
     update sys_user
     <set>
       <if test="record.userId != null">

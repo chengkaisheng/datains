@@ -272,6 +272,11 @@
       and update_time = #{updateTime,jdbcType=BIGINT},
     </if>
   </select>
+  <select id="selectByAuthIdAndPrivilegeType" resultType="io.datains.base.domain.XpackSysAuthDetail">
+    select * from sys_auth_detail
+    where auth_id = #{authId,jdbcType=VARCHAR}
+    and privilege_type = #{privilegeType,jdbcType=INTEGER}
+  </select>
 
   <update id="updateByPrimaryKeySelective" parameterType="io.datains.base.domain.XpackSysAuthDetail">
     update sys_auth_detail

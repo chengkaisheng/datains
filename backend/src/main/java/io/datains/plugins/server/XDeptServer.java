@@ -2,14 +2,14 @@ package io.datains.plugins.server;
 
 
 import io.datains.auth.service.ExtAuthService;
+import io.datains.base.domain.SysUser;
 import io.datains.base.domain.XpackGridRequest;
 import io.datains.base.domain.XpackMoveDept;
 import io.datains.base.domain.XpackSysDept;
 import io.datains.commons.utils.BeanUtils;
 import io.datains.controller.sys.response.DeptNodeResponse;
-
 import io.datains.controller.sys.response.DeptTreeNode;
-import io.datains.controller.sys.response.XpackDeptTreeNode;
+import io.datains.dto.XpackSysDeptDTO;
 import io.datains.service.sys.DeptService;
 import io.datains.service.sys.DeptXpackService;
 import io.swagger.annotations.Api;
@@ -73,9 +73,17 @@ public class XDeptServer {
     @RequiresPermissions("dept:add")
     @ApiOperation("创建")
     @PostMapping("/create")
-    public int create(@RequestBody XpackSysDept dept){
+    public int create(@RequestBody XpackSysDeptDTO dept){
 
         return deptService.add(dept);
+    }
+
+    @RequiresPermissions("dept:add")
+    @ApiOperation("获取组织负责人")
+    @GetMapping("/getDeptLeader/{deptId}")
+    public List<SysUser> getDeptLeader(@PathVariable Long deptId){
+
+        return deptService.getDeptLeader(deptId);
     }
 
     @RequiresPermissions("dept:del")
@@ -86,12 +94,13 @@ public class XDeptServer {
             extAuthService.clearDeptResource(request.getDeptId());
         });
         deptService.batchDelete(requests);
+
     }
 
     @RequiresPermissions("dept:edit")
     @ApiOperation("更新")
     @PostMapping("/update")
-    public int update(@RequestBody XpackSysDept dept){
+    public int update(@RequestBody XpackSysDeptDTO dept){
         return deptService.update(dept);
     }
 

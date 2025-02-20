@@ -96,26 +96,26 @@ public class SysUserController {
     @Transactional
     public void create(@RequestBody SysUserCreateRequest request) throws Exception {
         int save = sysUserService.save(request);
-        if (save>0){
-            Map<String, Object> token = getToken();
-            if (token.get("code").equals(500)){
-                token.get("errMsg");
-            }
-            Map<String,Object> map = new HashMap<>();
-            SysUserEntity user = authUserService.getUserByName(request.getUsername());
-           // map.put("accessToken",token.get("token"));
-            map.put("biz_id",user.getUserId());
-            map.put("loginName",user.getUsername());
-            map.put("card_no",user.getUsername());
-            map.put("phone",user.getPhone());
-            int a = user.getEnabled()==1?1:(user.getEnabled()==0?2:0);
-            map.put("operateType",a);
-
-            List<Map<String,Object>> list = new ArrayList<>();
-            list.add(map);
-            String s = HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/syncAccountInfo", JSON.toJSONString(list),token.get("token").toString());
-            System.err.println(s);
-        }
+//        if (save>0){
+//            Map<String, Object> token = getToken();
+//            if (token.get("code").equals(500)){
+//                token.get("errMsg");
+//            }
+//            Map<String,Object> map = new HashMap<>();
+//            SysUserEntity user = authUserService.getUserByName(request.getUsername());
+//           // map.put("accessToken",token.get("token"));
+//            map.put("biz_id",user.getUserId());
+//            map.put("loginName",user.getUsername());
+//            map.put("card_no",user.getUsername());
+//            map.put("phone",user.getPhone());
+//            int a = user.getEnabled()==1?1:(user.getEnabled()==0?2:0);
+//            map.put("operateType",a);
+//
+//            List<Map<String,Object>> list = new ArrayList<>();
+//            list.add(map);
+//            String s = HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/syncAccountInfo", JSON.toJSONString(list),token.get("token").toString());
+//            System.err.println(s);
+//        }
     }
 
     @ApiOperation("更新用户")

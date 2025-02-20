@@ -5,10 +5,11 @@ package io.datains.base.mapper;
  * @Date: 2022/05/10/ 15:08
  * @Description
  */
-import java.util.List;
 
 import io.datains.base.domain.XpackSysAuthDetail;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface XpackSysAuthDetailMapper {
     int deleteByPrimaryKey(String paramString);
@@ -16,6 +17,8 @@ public interface XpackSysAuthDetailMapper {
     int updateByPrimaryKey(XpackSysAuthDetail paramXpackSysAuthDetail);
 
     XpackSysAuthDetail selectByPrimaryKey(String paramString);
+
+    XpackSysAuthDetail selectByAuthIdAndPrivilegeType(@Param("authId") String authId, @Param("privilegeType") Integer privilegeType);
 
     int insertSelective(XpackSysAuthDetail paramXpackSysAuthDetail);
 

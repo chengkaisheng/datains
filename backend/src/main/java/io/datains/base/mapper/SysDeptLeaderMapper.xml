@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.datains.base.mapper.SysDeptLeaderMapper">
+    <insert id="insert" parameterType="io.datains.base.domain.SysDeptLeader" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_dept_leader (dept_id, user_id, create_by, update_by, create_time, update_time)
+        VALUES (#{deptId}, #{userId}, #{createBy}, #{updateBy}, #{createTime}, #{updateTime})
+    </insert>
+    <insert id="batchInsert">
+        INSERT INTO sys_dept_leader (
+        dept_id,
+        user_id,
+        create_by,
+        update_by,
+        create_time,
+        update_time
+        ) VALUES
+        <foreach collection="list" item="leader" separator=",">
+            (
+            #{leader.deptId},
+            #{leader.userId},
+            #{leader.createBy},
+            #{leader.updateBy},
+            #{leader.createTime},
+            #{leader.updateTime}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectUserIdsByDeptId" resultType="java.lang.Long">
+        SELECT user_id
+        FROM sys_dept_leader
+        WHERE dept_id = #{deptId}
+    </select>
+    <select id="selectUserIdsByDeptIds" resultType="java.lang.Long">
+        SELECT user_id
+        FROM sys_dept_leader
+        WHERE dept_id IN
+        <foreach collection="deptIds" item="deptId" open="(" separator="," close=")">
+            #{deptId}
+        </foreach>
+
+    </select>
+    <delete id="batchDelete">
+        DELETE FROM sys_dept_leader
+        WHERE dept_id = #{deptId}
+        AND user_id IN
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+    <delete id="batchDeleteByDeptIds">
+        DELETE FROM sys_dept_leader
+        WHERE dept_id IN
+        <foreach collection="deptIds" item="deptId" open="(" separator="," close=")">
+            #{deptId}
+        </foreach>
+    </delete>
+</mapper>

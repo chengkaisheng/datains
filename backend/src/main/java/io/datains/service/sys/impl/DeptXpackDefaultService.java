@@ -5,44 +5,47 @@ package io.datains.service.sys.impl;
  * @Date: 2022/05/06/ 15:41
  * @Description
  */
-import io.dataease.plugins.common.dto.PluginSimpleTreeNode;
-import io.dataease.plugins.common.dto.PluginSysMenu;
-import io.dataease.plugins.common.entity.XpackGridExample;
+
 import io.dataease.plugins.common.util.PluginCommonUtil;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.annotation.Resource;
-
+import io.datains.base.domain.SysUser;
 import io.datains.base.domain.XpackGridRequest;
 import io.datains.base.domain.XpackMoveDept;
 import io.datains.base.domain.XpackSysDept;
+import io.datains.base.mapper.SysUserMapper;
 import io.datains.base.mapper.XpackExtDeptMapper;
 import io.datains.base.mapper.XpackSysDeptMapper;
 import io.datains.controller.sys.response.XpackDeptTreeNode;
+import io.datains.dto.XpackSysDeptDTO;
 import io.datains.plugins.xpack.dept.dto.request.XpackCreateDept;
 import io.datains.service.sys.DeptXpackService;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import io.datains.service.sys.SysDeptLeaderAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DeptXpackDefaultService implements DeptXpackService {
-    public int add(XpackSysDept xpackSysDept) {
+    @Resource
+    private SysDeptLeaderAuthService sysDeptLeaderAuthService;
+    @Resource
+    private SysUserMapper sysUserMapper;
+
+    @Transactional(rollbackFor = Exception.class)
+    public int add(XpackSysDeptDTO xpackSysDept) {
         if (xpackSysDept.isTop())
             xpackSysDept.setPid(DEPT_ROOT_PID);
         List<XpackSysDept> list;
-        if (!CollectionUtils.isEmpty(list = nodesByPids(xpackSysDept.getPid(),xpackSysDept.getName()))) {
+        if (!CollectionUtils.isEmpty(list = nodesByPids(xpackSysDept.getPid(), xpackSysDept.getName()))) {
             return -2;
         }
         long l = System.currentTimeMillis();
@@ -56,8 +59,10 @@ public class DeptXpackDefaultService implements DeptXpackService {
             Long long_ = null;
             if ((long_ = xpackSysDept.getPid()) != DEPT_ROOT_PID)
                 this.h.incrementalSubcount(long_);
-            if (i == 1)
+            if (i == 1) {
+                this.sysDeptLeaderAuthService.batchInsert(Collections.singletonList(xpackSysDept.getLeaderId()), xpackSysDept.getDeptId());
                 return i;
+            }
         } catch (Exception exception) {
             throw new RuntimeException(exception);
         }
@@ -65,8 +70,10 @@ public class DeptXpackDefaultService implements DeptXpackService {
     }
 
     @Override
-    public int update(XpackSysDept paramXpackCreateDept) {
-        return this.i.updateByPrimaryKeySelective(paramXpackCreateDept);
+    @Transactional(rollbackFor = Exception.class)
+    public int update(XpackSysDeptDTO sysDeptDTO) {
+        this.sysDeptLeaderAuthService.syncDeptLeaders(Collections.singletonList(sysDeptDTO.getLeaderId()), sysDeptDTO.getDeptId());
+        return this.i.updateByPrimaryKeySelective(sysDeptDTO);
     }
 
     public List<XpackSysDept> nodesByPid(Long long_) {
@@ -75,7 +82,7 @@ public class DeptXpackDefaultService implements DeptXpackService {
         return this.i.selectByExample(xpackSysDept);
     }
 
-    public List<XpackSysDept> nodesByPids(Long long_,String name) {
+    public List<XpackSysDept> nodesByPids(Long long_, String name) {
         XpackSysDept xpackSysDept = new XpackSysDept();
         xpackSysDept.setPid(long_);
         xpackSysDept.setName(name);
@@ -86,8 +93,8 @@ public class DeptXpackDefaultService implements DeptXpackService {
     public List<XpackSysDept> nodesTreeByCondition(XpackGridRequest paramXpackGridRequest) {
         XpackSysDept xpackSysDept = new XpackSysDept();
         xpackSysDept.setName(paramXpackGridRequest.getConditions().get(0).getValue().toString());
-        if (paramXpackGridRequest.getConditions().get(0).getOperator().equals("eq")){
-            if (xpackSysDept.getName().equals("0")){
+        if (paramXpackGridRequest.getConditions().get(0).getOperator().equals("eq")) {
+            if (xpackSysDept.getName().equals("0")) {
                 xpackSysDept.setName(null);
                 xpackSysDept.setPid(Long.valueOf(0));
             }
@@ -157,7 +164,7 @@ public class DeptXpackDefaultService implements DeptXpackService {
 
     public int update(XpackCreateDept xpackCreateDept) {
         TransactionStatus transactionStatus = this.g.getTransaction(this.ALLATORIxDEMO);
-        XpackSysDept xpackSysDept2 = (XpackSysDept)PluginCommonUtil.copyBean(new XpackSysDept(), xpackCreateDept);
+        XpackSysDept xpackSysDept2 = PluginCommonUtil.copyBean(new XpackSysDept(), xpackCreateDept);
         if (xpackCreateDept.isTop())
             xpackSysDept2.setPid(DEPT_ROOT_PID);
         xpackSysDept2.setUpdateTime(Long.valueOf(System.currentTimeMillis()));
@@ -209,7 +216,17 @@ public class DeptXpackDefaultService implements DeptXpackService {
 
     }
 
-    public int batchDelete(List<XpackSysDept>  list) {
+    @Override
+    public List<SysUser> getDeptLeader(Long deptId) {
+        List<Long> userIds = this.sysDeptLeaderAuthService.selectUserIdsByDeptId(deptId);
+        if (userIds == null || userIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return this.sysUserMapper.selectByUserIds(userIds);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public int batchDelete(List<XpackSysDept> list) {
         int i = -1;
         try {
             list.stream().map(xpackDeleteDept -> {
@@ -225,6 +242,8 @@ public class DeptXpackDefaultService implements DeptXpackService {
             }
             i = this.h.batchDelete(ids);
             this.h.updateUserDeptId(ids);
+            //处理组织负责人
+            this.sysDeptLeaderAuthService.batchDelete(ids);
             return i;
         } catch (Exception exception) {
             throw new RuntimeException(exception);

@@ -106,6 +106,49 @@ public class AuthXpackDefaultService implements AuthXpackService {
         }
     }
 
+    @Override
+    public void authChangeForDeptLeader(String user, String authSource, String authSourceType, String authTarget, String authTargetType, Integer privilegeValue, Integer privilegeType) {
+        List<String> arrayList = new ArrayList<>();
+        List<XpackSysAuthDetailDTO> sysAuthByAuthSource = B.getSysAuthByAuthSource(authSource, authTarget, authSourceType, authTargetType);
+        //取消权限之前，先判断此权限是不是通过组织负责人授予的
+        if (privilegeValue == 0 && sysAuthByAuthSource != null) {
+            XpackSysAuthDetail authDetail = xpackSysAuthDetailMapper.selectByAuthIdAndPrivilegeType(sysAuthByAuthSource.get(0).getId(), privilegeType);
+            if (authDetail != null && !"dept".equals(authDetail.getCreateUser())) {
+                //如果不是则不取消此权限
+                return;
+            }
+        }
+        if (sysAuthByAuthSource == null || sysAuthByAuthSource.isEmpty()) {
+            XpackSysAuthDetailDTO sysAuthDetailDTO = new XpackSysAuthDetailDTO();
+            sysAuthDetailDTO.setAuthSource(authSource);
+            sysAuthDetailDTO.setAuthSourceType(authSourceType);
+            sysAuthDetailDTO.setAuthTarget(authTarget);
+            sysAuthDetailDTO.setAuthTargetType(authTargetType);
+            sysAuthDetailDTO.setAuthUser(user);
+            B.insertSysAuth(sysAuthDetailDTO);
+            sysAuthByAuthSource = B.getSysAuthByAuthSource(authSource, authTarget, authSourceType, authTargetType);
+            List<XpackSysAuthDetail> xpackSysAuthDetails = this.authDetailsModel(authSourceType);
+            for (XpackSysAuthDetail sysAuthDetail : xpackSysAuthDetails) {
+                XpackSysAuthDetail xpackSysAuthDetail1 = new XpackSysAuthDetail();
+                xpackSysAuthDetail1.setAuthId(sysAuthByAuthSource.get(0).getId());
+                xpackSysAuthDetail1.setPrivilegeName(sysAuthDetail.getPrivilegeName());
+                xpackSysAuthDetail1.setPrivilegeType(sysAuthDetail.getPrivilegeType());
+                xpackSysAuthDetail1.setPrivilegeValue(sysAuthDetail.getPrivilegeValue());
+                xpackSysAuthDetail1.setPrivilegeExtend(sysAuthDetail.getPrivilegeExtend());
+                xpackSysAuthDetail1.setRemark(sysAuthDetail.getRemark());
+                xpackSysAuthDetail1.setCreateUser(user);
+                xpackSysAuthDetail1.setCreateTime(System.currentTimeMillis());
+                xpackSysAuthDetailMapper.insertDetail(xpackSysAuthDetail1);
+            }
+        }
+        arrayList.add(sysAuthByAuthSource.get(0).getId());
+        if (authSourceType.equalsIgnoreCase("panel") && privilegeType == 3) {
+            this.i.authDetailsChange2(privilegeValue, privilegeType, arrayList);
+        } else {
+            this.i.authDetailsChange(privilegeValue, privilegeType, arrayList);
+        }
+    }
+
     public List<XpackSysAuthDetail> authDetailsModel(String authType) {
         List<XpackSysAuthDetail> authDetails = i.searchAuthTypeModel(authType);
         if (authType.equalsIgnoreCase("dataset")) {
