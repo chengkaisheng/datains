@@ -47,7 +47,7 @@
     </scroll-view>
 
     <!-- 分页 -->
-    <view class="pagination">
+    <!-- <view class="pagination">
       <view class="total">共 {{ total }} 条</view>
       <view class="page-box">
         <view 
@@ -73,7 +73,7 @@
       <view class="goto">
         前往 {{ currentPage }} 页
       </view>
-    </view>
+    </view> -->
 
     <!-- 添加表单对话框 -->
     <uni-popup ref="formDialog" type="center">
@@ -112,7 +112,7 @@ export default {
       searchKeyword: '',
       tableData: [],
       currentPage: 1,
-      pageSize: 10,
+      pageSize: 1000,
       total: 0,
       totalPages: 1,
       currentForm: {},
@@ -193,7 +193,7 @@ export default {
 
 <style scoped>
 .container {
-  padding: 20rpx;
+  /* padding: 20rpx; */
   background: #fff;
   min-height: calc(100vh - 50rpx);
   display: flex;
@@ -311,7 +311,8 @@ export default {
 .dialog-content {
   background: #fff;
   width: 80vw;
-  border-radius: 8rpx;
+  padding: 10vw 8vw 0 10vw;
+  border-radius: 0;
   max-height: 80vh;
   overflow: hidden;
 }
