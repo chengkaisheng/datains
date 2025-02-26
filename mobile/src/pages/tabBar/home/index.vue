@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import { getList, getForm } from '@/api/auth'
+import { getList, getForm, submitForm } from '@/api/auth'
 import DynamicForm from './components/DynamicForm.vue'
 // 手动引入需要的组件
 import { uniPopup, uniIcons } from '@dcloudio/uni-ui'
@@ -116,7 +116,8 @@ export default {
       total: 0,
       totalPages: 1,
       currentForm: {},
-      formItems: []
+      formItems: [],
+      id: '',
     }
   },
   
@@ -155,6 +156,7 @@ export default {
     
     // 操作按钮点击
     async handleOperation(item) {
+      this.id = item.id
       try {
         const res = await getForm(item.formId)
         if (res.success) {
@@ -177,7 +179,7 @@ export default {
     // 处理表单提交
     async handleFormSubmit(formData) {
       console.log('表单数据:', formData)
-      const res = await submitForm(this.currentForm.id, formData)
+      const res = await submitForm(this.id, [formData])
       
       this.closeDialog()
     }
@@ -193,14 +195,16 @@ export default {
 .container {
   padding: 20rpx;
   background: #fff;
-  min-height: 100vh;
+  min-height: calc(100vh - 50rpx);
+  display: flex;
+  flex-direction: column;
 }
 
 .table-container {
   width: 100%;
   white-space: nowrap;
   box-sizing: border-box;
-  height: 300px;
+  height: calc(100vh - 200rpx);  /* 减去其他元素的高度，包括padding和分页器的高度 */
   overflow-y: auto;
 }
 

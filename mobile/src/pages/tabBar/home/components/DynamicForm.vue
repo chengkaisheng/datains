@@ -61,8 +61,9 @@
       <!-- 单选框 -->
       <template v-else-if="item.type === 'radio'">
         <radio-group 
-          v-model="formData[item.settings.mapping.columnName]"
+          :value="formData[item.settings.mapping.columnName]"
           class="radio-group"
+          @change="(e) => handleRadioChange(e, item)"
         >
           <label 
             v-for="option in getOptions(item)" 
@@ -150,30 +151,39 @@ export default {
     initFormData() {
       this.formData = {}
       this.formItems.forEach(item => {
-        this.formData[item.settings.mapping.columnName] = ''
+        const columnName = item.settings.mapping.columnName
+        let initialValue = ''
+        
+        // 根据不同类型设置不同的初始值
+        switch(item.type) {
+          case 'checkbox':
+            initialValue = []
+            break
+          case 'radio':
+          case 'select':
+          case 'date':
+          case 'input':
+          case 'textarea':
+          default:
+            initialValue = ''
+            break
+        }
+        
+        this.$set(this.formData, columnName, initialValue)
       })
     },
     
     // 验证表单
     validateForm() {
+      console.log('this.formItems', this.formItems);
+      console.log('this.formData', this.formData);
       for (const item of this.formItems) {
         const value = this.formData[item.settings.mapping.columnName]
         const settings = item.settings
         
-        // 必填校验 - 增加更严格的空值判断
+        // 只有在值为空的情况下才进行必填校验
         if (settings.required) {
-          // 对于数组类型（checkbox）
-          if (Array.isArray(value)) {
-            if (value.length === 0) {
-              uni.showToast({
-                title: `请选择${settings.name}`,
-                icon: 'none'
-              })
-              return false
-            }
-          } 
-          // 对于其他类型
-          else if (value === '' || value === null || value === undefined) {
+          if (value === '' || value === null || value === undefined) {
             uni.showToast({
               title: `请${item.type === 'input' ? '输入' : '选择'}${settings.name}`,
               icon: 'none'
@@ -181,39 +191,6 @@ export default {
             return false
           }
         }
-        
-        // 输入框特殊校验
-        // if (item.type === 'input' && value) {
-        //   // 最小长度校验
-        //   if (settings.minLength && value.length < settings.minLength) {
-        //     uni.showToast({
-        //       title: `${settings.name}不能少于${settings.minLength}个字符`,
-        //       icon: 'none'
-        //     })
-        //     return false
-        //   }
-          
-        //   // 最大长度校验
-        //   if (settings.maxLength && value.length > settings.maxLength) {
-        //     uni.showToast({
-        //       title: `${settings.name}不能超过${settings.maxLength}个字符`,
-        //       icon: 'none'
-        //     })
-        //     return false
-        //   }
-          
-        //   // 正则表达式校验
-        //   if (settings.pattern) {
-        //     const regex = new RegExp(settings.pattern)
-        //     if (!regex.test(value)) {
-        //       uni.showToast({
-        //         title: settings.patternMessage || `${settings.name}格式不正确`,
-        //         icon: 'none'
-        //       })
-        //       return false
-        //     }
-        //   }
-        // }
       }
       return true
     },
@@ -258,17 +235,46 @@ export default {
       this.formData[item.settings.mapping.columnName] = e.detail.value
     },
 
-    // 处理日期选择
-    handleDateChange(e, item) {
-      this.formData[item.settings.mapping.columnName] = e.detail.value
+    // 添加日期转时间戳的工具方法
+    dateToTimestamp(dateStr) {
+      if (!dateStr) return '';
+      return new Date(dateStr).getTime();
     },
 
-    // 提交表单
+    // 修改提交表单方法，处理日期字段
     submitForm() {
       if (this.validateForm()) {
-        this.$emit('submit', this.formData)
+        // 创建新对象，避免直接修改 formData
+        const submitData = {};
+        
+        this.formItems.forEach(item => {
+          const columnName = item.settings.mapping.columnName;
+          const value = this.formData[columnName];
+          
+          // 如果是日期类型，转换为时间戳
+          if (item.type === 'date' && value) {
+            submitData[columnName] = this.dateToTimestamp(value);
+          } else {
+            submitData[columnName] = value;
+          }
+        });
+        
+        console.log('提交的数据:', submitData);
+        this.$emit('submit', submitData);
       }
-    }
+    },
+
+    // 处理日期选择 - 保持原格式存储，提交时再转换
+    handleDateChange(e, item) {
+      const columnName = item.settings.mapping.columnName;
+      this.$set(this.formData, columnName, e.detail.value);
+    },
+
+    // 添加单选框变化处理方法
+    handleRadioChange(e, item) {
+      const columnName = item.settings.mapping.columnName
+      this.$set(this.formData, columnName, e.detail.value)
+    },
   },
   
   created() {
@@ -288,6 +294,10 @@ export default {
 
 <style lang="scss" scoped>
 .dynamic-form {
+  width: 100%;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+  
   .form-item {
     margin-bottom: 30rpx;
     
