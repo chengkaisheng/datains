@@ -50,3 +50,26 @@ export function getUIinfo() {
     method: 'get'
   })
 }
+
+export function getList(data, params) {
+  return request({
+    url: `/dataFilling/myTask/todo/${data.page}/${data.pageSize}`,
+    method: 'post',
+    data: params
+  })
+}
+
+export function getForm(id) {
+  return request({
+    url: `dataFilling/form/get/${id}`,
+    method: 'post'
+  })
+}
+
+export function submitForm(id, data) {
+  return request({
+    url: `dataFilling/myTask/fill/${id}`,
+    method: 'post',
+    data
+  })
+}

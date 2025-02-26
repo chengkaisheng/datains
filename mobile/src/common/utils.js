@@ -40,7 +40,8 @@ export function encrypt(txt) {
 }
 
 export function getToken() {
-    return uni.getStorageSync(Config.TokenKey);
+    // return uni.getStorageSync(Config.TokenKey);
+    return 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDA1NjczNzYsInVzZXJJZCI6MzAsInVzZXJuYW1lIjoiMzcwMTE1MTk5NzEyMTI5NDczIn0.ZGioO2BJLK8b9zhVDs90opizkhKOMOEwzcreZah8u8Q'
 }
 
 export function setToken(token) {

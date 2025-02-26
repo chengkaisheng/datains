@@ -47,7 +47,9 @@
 			},
 			"sdkConfigs": { /* SDK配置 */
 
-			}
+			},
+			"nvueCompiler": "uni-app",
+			"nvueStyleCompiler": "uni-app"
 		}
 	},
 	"quickapp": { /* 快应用特有相关 */
@@ -79,7 +81,7 @@
         "devServer": {
             "proxy": {
                 "^(?!/login)": {
-                    "target": "http://localhost:8081/",
+                    "target": "http://192.168.3.16:17304/",
                     "ws": false
                 }
             }

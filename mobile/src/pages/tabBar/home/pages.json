@@ -22,7 +22,16 @@
 			}
 		},
         
-        
+        {
+            "path": "pages/tabBar/home/detail",
+            "style": {
+                "navigationBarTitleText": "",
+                "app-plus": {
+					"titleNView": false,
+					"bounce": "none"
+				}
+            }
+        },
         {
 			"path": "pages/tabBar/dir/index",
 			"style": {				
