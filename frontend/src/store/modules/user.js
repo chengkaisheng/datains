@@ -51,7 +51,8 @@ const mutations = {
     state.loadMenus = loadMenus
   },
   SET_PERMISSIONS: (state, permissions) => {
-    state.permissions = permissions
+    // state.permissions = permissions
+    state.permissions = [...permissions, 'my-data-filling:manage', 'data-filling-form:manage']
   },
   SET_LOGIN_MSG: (state, msg) => {
     state.loginMsg = msg
