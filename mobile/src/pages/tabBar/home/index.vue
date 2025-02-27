@@ -13,10 +13,10 @@
     <scroll-view class="table-container" scroll-x>
       <!-- 表格头部 -->
       <view class="table-header">
-        <view class="th" style="min-width: 200rpx;">任务名称</view>
+        <view class="th" style="min-width: 150rpx;">任务名称</view>
         <!-- <view class="th" style="min-width: 200rpx;">表单名称</view> -->
         <!-- <view class="th" style="min-width: 200rpx;">开始时间</view> -->
-        <view class="th" style="min-width: 200rpx;">结束时间</view>
+        <view class="th" style="min-width: 250rpx;">结束时间</view>
         <!-- <view class="th" style="min-width: 200rpx;">创建人</view> -->
         <view class="th" style="min-width: 150rpx;">操作</view>
       </view>
@@ -32,10 +32,10 @@
           :key="item.id"
           class="table-row"
         >
-          <view class="td" style="min-width: 200rpx;">{{ item.taskName }}</view>
+          <view class="td" style="min-width: 150rpx;">{{ item.taskName }}</view>
           <!-- <view class="td" style="min-width: 200rpx;">{{ item.formName }}</view>
           <view class="td" style="min-width: 200rpx;">{{ formatTime(item.startTime) }}</view> -->
-          <view class="td" style="min-width: 200rpx;">{{ formatTime(item.endTime) }}</view>
+          <view class="td" style="min-width: 250rpx;">{{ formatTime(item.endTime) }}</view>
           <!-- <view class="td" style="min-width: 200rpx;">{{ item.creatorName }}</view> -->
           <view class="td" style="min-width: 150rpx;">
             <view class="operation-btns">
@@ -197,19 +197,30 @@ export default {
       try {
         const res = await downloadTemplate(item.formId)
         if (res) {
-          // 创建 Blob 对象
-          const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
-          // 创建临时下载链接
-          const url = window.URL.createObjectURL(blob)
-          // 创建一个隐藏的 a 标签用于下载
-          const link = document.createElement('a')
-          link.href = url
-          link.download = `template_${item.taskName}.xlsx` // 设置下载文件名
-          document.body.appendChild(link)
-          link.click()
-          // 清理
-          document.body.removeChild(link)
-          window.URL.revokeObjectURL(url)
+          // 获取文件名
+          const fileName = `template_${item.taskName}.xlsx`
+          
+          // 创建 Blob 对象，使用正确的 MIME 类型
+          const blob = new Blob([res])
+          
+          if (window.navigator.msSaveOrOpenBlob) {
+            // IE 浏览器支持
+            window.navigator.msSaveOrOpenBlob(blob, fileName)
+          } else {
+            // 其他浏览器
+            const url = window.URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            link.download = fileName
+            
+            // 某些浏览器需要链接在页面中
+            document.body.appendChild(link)
+            link.click()
+            
+            // 清理
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(url)
+          }
         } else {
           uni.showToast({
             title: '下载失败',
@@ -254,7 +265,8 @@ export default {
                 method: 'POST',
                 body: formData,
                 headers: {
-                  'Accept': 'application/json'
+                  'Accept': 'application/json',
+                  'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDA1NjczNzYsInVzZXJJZCI6MzAsInVzZXJuYW1lIjoiMzcwMTE1MTk5NzEyMTI5NDczIn0.ZGioO2BJLK8b9zhVDs90opizkhKOMOEwzcreZah8u8Q'
                 }
               })
 
@@ -341,6 +353,12 @@ export default {
   color: #606266;
 }
 
+/* 结束时间列标题靠左 */
+.table-header .th:nth-child(2) {
+  text-align: left;
+  padding-left: 20rpx;
+}
+
 .table-body {
   width: 100%;
   min-width: 100%;
@@ -358,6 +376,12 @@ export default {
   color: #606266;
 }
 
+/* 结束时间列内容靠左 */
+.table-body .table-row .td:nth-child(2) {
+  text-align: left;
+  padding-left: 20rpx;
+}
+
 .table-body .empty-data {
   text-align: center;
   padding: 40rpx 0;
@@ -367,9 +391,10 @@ export default {
 
 .operation-btns {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10rpx;
   align-items: center;
+  justify-content: center;
 }
 
 .operation-btn {
@@ -379,7 +404,7 @@ export default {
   color: #fff;
   border-radius: 4rpx;
   font-size: 24rpx;
-  width: 120rpx; /* 统一按钮宽度 */
+  width: 80rpx;
 }
 
 .pagination {

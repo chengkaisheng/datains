@@ -78,6 +78,7 @@ export function downloadTemplate(id) {
   return request({
     url: `dataFilling/form/${id}/excel/template`,
     method: 'post',
+    responseType: 'blob'
   })
 }
 
