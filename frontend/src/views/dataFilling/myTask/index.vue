@@ -7,10 +7,11 @@ import { getForm, searchFormMyTasks, searchTable } from '@/views/dataFilling/for
 import EditFormData from '@/views/dataFilling/form/EditFormData.vue'
 import { forIn, includes, split, filter, forEach } from 'lodash-es'
 import { hasPermission } from '@/directive/Permission'
+import DataTable from '@/views/datafill/index.vue'
 
 export default {
   name: 'MyDataFillingJobs',
-  components: { EditFormData, GridTable, DeAsideContainer, DeMainContainer, DeContainer },
+  components: { EditFormData, GridTable, DeAsideContainer, DeMainContainer, DeContainer, DataTable },
   data() {
     return {
       activeName: 'my-tasks',
@@ -341,11 +342,19 @@ export default {
             {{ $t('data_fill.form_manage') }}
           </span>
         </el-tab-pane>
+
+        <el-tab-pane
+          name="dataTable"
+        >
+          <span slot="label">
+            数据表格
+          </span>
+        </el-tab-pane>
       </el-tabs>
 
     </de-aside-container>
     <de-main-container
-      v-if="currentKey === 'todo'"
+      v-if="activeName === 'my-tasks' && currentKey === 'todo'"
       style="display: flex; flex-direction: column"
     >
       <div class="view-table">
@@ -438,7 +447,7 @@ export default {
       </div>
     </de-main-container>
     <de-main-container
-      v-if="currentKey === 'finished'"
+      v-if="activeName === 'my-tasks' && currentKey === 'finished'"
       style="display: flex; flex-direction: column"
     >
       <div class="view-table">
@@ -528,7 +537,7 @@ export default {
       </div>
     </de-main-container>
     <de-main-container
-      v-if="currentKey === 'expired'"
+      v-if="activeName === 'my-tasks' && currentKey === 'expired'"
       style="display: flex; flex-direction: column"
     >
       <div class="view-table">
@@ -598,6 +607,11 @@ export default {
         </div>
       </div>
     </de-main-container>
+
+    <el-main v-if="activeName === 'dataTable'" style="padding: 0">
+      <!-- 数据表格 -->
+      <data-table  />
+    </el-main>
 
     <el-drawer
       :visible.sync="showDrawer"

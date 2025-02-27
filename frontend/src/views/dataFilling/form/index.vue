@@ -7,10 +7,11 @@ import { listForm, saveForm, updateFormName, deleteForm, getWithPrivileges } fro
 import { forEach, cloneDeep, find } from 'lodash-es'
 import { hasPermission } from '@/directive/Permission'
 import DataFillingFormMoveSelector from './MoveSelector.vue'
+import DataTable from '@/views/datafill/index.vue'
 
 export default {
   name: 'DataFillingForm',
-  components: { DataFillingFormMoveSelector, DeAsideContainer, DeContainer, NoSelect, ViewTable },
+  components: { DataFillingFormMoveSelector, DeAsideContainer, DeContainer, NoSelect, ViewTable, DataTable },
   data() {
     return {
       selectedItem: undefined,
@@ -463,17 +464,30 @@ export default {
           </div>
         </el-tab-pane>
 
+        <el-tab-pane
+          name="dataTable"
+        >
+          <span slot="label">
+            数据表格
+          </span>
+        </el-tab-pane>
+
       </el-tabs>
 
     </de-aside-container>
 
-    <el-main style="padding: 0">
+    <el-main v-if="activeName === 'forms'" style="padding: 0">
       <no-select v-if="!displayFormData" />
       <view-table
         v-else
         :param="displayFormData"
         @editForm="editForm"
       />
+    </el-main>
+
+    <el-main v-if="activeName === 'dataTable'" style="padding: 0">
+      <!-- 数据表格 -->
+      <data-table  />
     </el-main>
 
     <el-dialog
