@@ -73,7 +73,7 @@ export default {
       this.isMaskShow = true
       this.$nextTick(() => {
         this.isMaskShow = false
-        luckysheet.destroy()
+        // luckysheet.destroy()
         luckysheet.create({
           container: 'luckysheet', // 设定DOM容器的id
           title: this.msg.name, // 设定表格名称
@@ -89,6 +89,7 @@ export default {
       })
     },
     handleBack() {
+      luckysheet.destroy()
       this.$emit('update:drawer', false)
     },
     handleSave(type) {
@@ -214,5 +215,8 @@ a {
 <style>
 .luckysheet_info_detail {
   display: none !important;
+}
+.luckysheet-input-box {
+  z-index: 1000000 !important;
 }
 </style>
