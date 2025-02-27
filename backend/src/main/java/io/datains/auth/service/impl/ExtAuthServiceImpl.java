@@ -5,9 +5,11 @@ import io.datains.auth.service.ExtAuthService;
 import io.datains.base.domain.SysAuth;
 import io.datains.base.mapper.ext.ExtAuthMapper;
 import io.datains.commons.constants.AuthConstants;
+import io.datains.commons.constants.SysAuthConstants;
 import io.datains.commons.model.AuthURD;
 import io.datains.commons.utils.LogUtil;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -123,7 +125,8 @@ public class ExtAuthServiceImpl implements ExtAuthService {
     @Caching(evict = {
             @CacheEvict(value = AuthConstants.USER_LINK_NAME, key = "'user' + #userId"),
             @CacheEvict(value = AuthConstants.USER_DATASET_NAME, key = "'user' + #userId"),
-            @CacheEvict(value = AuthConstants.USER_PANEL_NAME, key = "'user' + #userId")
+            @CacheEvict(value = AuthConstants.USER_PANEL_NAME, key = "'user' + #userId"),
+            @CacheEvict(value = AuthConstants.USER_DATA_FILL_NAME, key = "'user' + #userId")
     })
     public void clearUserResource(Long userId) {
         LogUtil.info("all permission resource of user {} is cleanning...", userId);
@@ -132,7 +135,8 @@ public class ExtAuthServiceImpl implements ExtAuthService {
     @Caching(evict = {
             @CacheEvict(value = AuthConstants.DEPT_LINK_NAME, key = "'dept' + #deptId"),
             @CacheEvict(value = AuthConstants.DEPT_DATASET_NAME, key = "'dept' + #deptId"),
-            @CacheEvict(value = AuthConstants.DEPT_PANEL_NAME, key = "'dept' + #deptId")
+            @CacheEvict(value = AuthConstants.DEPT_PANEL_NAME, key = "'dept' + #deptId"),
+            @CacheEvict(value = AuthConstants.DEPT_DATA_FILL_NAME, key = "'dept' + #deptId")
     })
     public void clearDeptResource(Long deptId) {
         LogUtil.info("all permission resource of dept {} is cleanning...", deptId);
@@ -141,12 +145,55 @@ public class ExtAuthServiceImpl implements ExtAuthService {
     @Caching(evict = {
             @CacheEvict(value = AuthConstants.ROLE_LINK_NAME, key = "'role' + #roleId"),
             @CacheEvict(value = AuthConstants.ROLE_DATASET_NAME, key = "'role' + #roleId"),
-            @CacheEvict(value = AuthConstants.ROLE_PANEL_NAME, key = "'role' + #roleId")
+            @CacheEvict(value = AuthConstants.ROLE_PANEL_NAME, key = "'role' + #roleId"),
+            @CacheEvict(value = AuthConstants.ROLE_DATA_FILL_NAME, key = "'role' + #roleId")
     })
     public void clearRoleResource(Long roleId) {
         LogUtil.info("all permission resource of role {} is cleanning...", roleId);
     }
 
-
-
+    @Cacheable(value = AuthConstants.USER_DATA_FILL_NAME, key = "'user' + #userId")
+    @Override
+    public List<AuthItem> dataFillingIdByUser(Long userId) {
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_USER,
+                userId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING
+        );
+    }
+    @Override
+    public List<String> parentResource(String resourceId, String type) {
+        String s = extAuthMapper.parentResource(resourceId, type);
+        if (StringUtils.isNotBlank(s)) {
+            String[] split = s.split(",");
+            List<String> results = new ArrayList<>();
+            for (int i = 0; i < split.length; i++) {
+                String s1 = split[i];
+                if (StringUtils.isNotBlank(s1)) {
+                    results.add(s1);
+                }
+            }
+            return CollectionUtils.isEmpty(results) ? null : results;
+        }
+        return null;
+    }
+    @Cacheable(value = AuthConstants.ROLE_DATA_FILL_NAME, key = "'role' + #roleId")
+    @Override
+    public List<AuthItem> dataFillingIdByRole(Long roleId) {
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_ROLE,
+                roleId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING
+        );
+    }
+    @Cacheable(value = AuthConstants.DEPT_DATA_FILL_NAME, key = "'dept' + #deptId")
+    @Override
+    public List<AuthItem> dataFillingIdByDept(Long deptId) {
+        if (ObjectUtils.isEmpty(deptId)) return emptyResult;
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_DEPT,
+                deptId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING
+        );
+    }
 }

@@ -1,6 +1,6 @@
 package io.datains.commons.utils;
 
-import io.datains.plugins.common.entity.GlobalTaskEntity;
+import io.datains.base.domain.GlobalTaskEntity;
 import org.apache.commons.lang3.ObjectUtils;
 import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;
@@ -61,6 +61,13 @@ public class CronUtils {
 
         }
         return  date;
+    }
+    public static String cron() {
+        Calendar instance = Calendar.getInstance();
+        instance.add(Calendar.SECOND, 5);
+        return instance.get(Calendar.SECOND) + " " +
+                instance.get(Calendar.MINUTE) + " " +
+                instance.get(Calendar.HOUR_OF_DAY) + " * * ?";
     }
 
     public static String cron(GlobalTaskEntity taskEntity) {

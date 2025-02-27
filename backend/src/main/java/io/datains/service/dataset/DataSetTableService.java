@@ -27,11 +27,11 @@ import io.datains.i18n.Translator;
 import io.datains.listener.util.CacheUtils;
 import io.datains.plugins.common.constants.DatasourceTypes;
 import io.datains.plugins.loader.ClassloaderResponsity;
+import io.datains.provider.DDLProvider;
 import io.datains.provider.ProviderFactory;
+import io.datains.provider.QueryProvider;
 import io.datains.provider.datasource.DatasourceProvider;
 import io.datains.provider.datasource.JdbcProvider;
-import io.datains.provider.DDLProvider;
-import io.datains.provider.QueryProvider;
 import io.datains.service.engine.EngineService;
 import io.datains.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -438,7 +438,7 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         datasourceRequest.setTable(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable());
-        return datasourceProvider.getTableFileds(datasourceRequest);
+        return datasourceProvider.getTableFields(datasourceRequest);
     }
 
     public Map<String, List<DatasetTableField>> getFieldsFromDE(DataSetTableRequest dataSetTableRequest)

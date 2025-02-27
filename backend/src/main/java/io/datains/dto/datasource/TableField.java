@@ -15,5 +15,11 @@ public class TableField {
     private String fieldType;
     @ApiModelProperty("字段大小")
     private int fieldSize;
+    private int accuracy;
+    private boolean notNull;
+    private boolean primaryKey;
+    //java.sql.Types
+    private Integer type;
 
+    private int inCount;
 }

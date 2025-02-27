@@ -2,6 +2,7 @@ package io.datains.provider;
 
 import io.datains.commons.enums.DatasourceTypes;
 import io.datains.provider.datasource.DatasourceProvider;
+import io.datains.provider.datasource.ExtDDLProvider;
 import io.datains.provider.query.api.ApiProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -13,6 +14,17 @@ import org.springframework.stereotype.Component;
 public class ProviderFactory implements ApplicationContextAware {
 
     private static ApplicationContext context;
+
+    public static ExtDDLProvider gerExtDDLProvider(String type) {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
+        switch (datasourceType) {
+            case mariadb:
+            case mysql:
+                return context.getBean("extMysqlDDLProvider", ExtDDLProvider.class);
+            default:
+                return context.getBean("defaultExtDDLProvider", ExtDDLProvider.class);
+        }
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

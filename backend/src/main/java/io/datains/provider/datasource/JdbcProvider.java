@@ -1,20 +1,24 @@
 package io.datains.provider.datasource;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.druid.filter.Filter;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
 import com.alibaba.druid.wall.WallFilter;
 import com.google.gson.Gson;
+import io.datains.commons.enums.DatasourceTypes;
+import io.datains.commons.utils.LogUtil;
 import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.dto.datasource.*;
 import io.datains.exception.DataInsException;
+import io.datains.fill.constants.MySQLConstants;
 import io.datains.i18n.Translator;
 import io.datains.provider.ProviderFactory;
 import io.datains.provider.QueryProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import io.datains.commons.enums.DatasourceTypes;
+
 import javax.annotation.PostConstruct;
 import java.beans.PropertyVetoException;
 import java.io.File;
@@ -138,47 +142,128 @@ public class JdbcProvider extends DatasourceProvider {
         }
         return list;
     }
-
+    protected boolean isDefaultClassLoader(String customDriver) {
+        return StringUtils.isEmpty(customDriver) || customDriver.contains("default");
+    }
     @Override
-    public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
+    public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
+        String requestTableName = datasourceRequest.getTable();
+        if (datasourceRequest.isLowerCaseTaleNames()) {
+            requestTableName = requestTableName.toLowerCase();
+        }
         if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")) {
-            datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
+            datasourceRequest.setQuery("select * from " + requestTableName);
             return fetchResultField(datasourceRequest);
         }
         List<TableField> list = new LinkedList<>();
         try (Connection connection = getConnectionFromPool(datasourceRequest)) {
             if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
-                Method setRemarksReporting = extendedJdbcClassLoader.loadClass("oracle.jdbc.driver.OracleConnection").getMethod("setRemarksReporting", boolean.class);
-                setRemarksReporting.invoke(((DruidPooledConnection) connection).getConnection(), true);
+                OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
+                if (isDefaultClassLoader(oracleConfiguration.getCustomDriver())) {
+                    Method setRemarksReporting = extendedJdbcClassLoader.loadClass("oracle.jdbc.driver.OracleConnection").getMethod("setRemarksReporting", boolean.class);
+                    setRemarksReporting.invoke(((DruidPooledConnection) connection).getConnection(), true);
+                }
             }
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            ResultSet resultSet = databaseMetaData.getColumns(null, "%", datasourceRequest.getTable(), "%");
+            String tableNamePattern = requestTableName;
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.mysql.name())) {
+                if (databaseMetaData.getDriverMajorVersion() < 8) {
+                    tableNamePattern = String.format(MySQLConstants.KEYWORD_TABLE, tableNamePattern);
+                }
+            }
+            String schemaPattern = "%";
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.oracle.name())) {
+                OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
+                schemaPattern = oracleConfiguration.getSchema();
+            }
+
+            //获取主键
+            ResultSet primaryKeys = databaseMetaData.getPrimaryKeys(null, schemaPattern, tableNamePattern);
+            Set<String> primaryKeySet = new HashSet<>();
+            while (primaryKeys.next()) {
+                String tableName = primaryKeys.getString("TABLE_NAME");
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.mysql.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.mariadb.name())) {
+                    //这里因为旧版mysql驱动问题，需要特殊处理
+                    tableName = tableName.replaceAll("`", "");
+                }
+                String database;
+                String schema = primaryKeys.getString("TABLE_SCHEM");
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.pg.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.ck.name())
+                        || datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.impala.name())) {
+                    database = primaryKeys.getString("TABLE_SCHEM");
+                } else {
+                    database = primaryKeys.getString("TABLE_CAT");
+                }
+                if (datasourceRequest.isLowerCaseTaleNames()) {
+                    tableName = tableName.toLowerCase();
+                }
+                //获取主键的名称
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.pg.name())) {
+                    if (tableName.equals(requestTableName) && database.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                        primaryKeySet.add(primaryKeys.getString("COLUMN_NAME"));
+                    }
+                } else if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.sqlServer.name())) {
+                    if (tableName.equals(requestTableName) && database.equalsIgnoreCase(getDatabase(datasourceRequest)) && schema.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                        primaryKeySet.add(primaryKeys.getString("COLUMN_NAME"));
+                    }
+                } else {
+                    if (database != null) {
+                        if (tableName.equals(requestTableName) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
+                            primaryKeySet.add(primaryKeys.getString("COLUMN_NAME"));
+                        }
+                    } else {
+                        if (tableName.equals(requestTableName)) {
+                            primaryKeySet.add(primaryKeys.getString("COLUMN_NAME"));
+                        }
+                    }
+                }
+            }
+
+            ResultSet resultSet = databaseMetaData.getColumns(null, schemaPattern, tableNamePattern, "%");
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 String database;
-                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())) {
+                String schema = resultSet.getString("TABLE_SCHEM");
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.pg.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.ck.name())
+                        || datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.impala.name())) {
                     database = resultSet.getString("TABLE_SCHEM");
                 } else {
                     database = resultSet.getString("TABLE_CAT");
                 }
-                if (database != null) {
-                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
-                        TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                if (datasourceRequest.isLowerCaseTaleNames()) {
+                    tableName = tableName.toLowerCase();
+                }
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.pg.name())) {
+                    if (tableName.equals(requestTableName) && database.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                        TableField tableField = getTableFiled(resultSet, datasourceRequest, primaryKeySet);
+                        list.add(tableField);
+                    }
+                } else if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(io.dataease.plugins.common.constants.DatasourceTypes.sqlServer.name())) {
+                    if (tableName.equals(requestTableName) && database.equalsIgnoreCase(getDatabase(datasourceRequest)) && schema.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                        TableField tableField = getTableFiled(resultSet, datasourceRequest, primaryKeySet);
                         list.add(tableField);
                     }
                 } else {
-                    if (tableName.equals(datasourceRequest.getTable())) {
-                        TableField tableField = getTableFiled(resultSet, datasourceRequest);
-                        list.add(tableField);
+                    if (database != null) {
+                        if (tableName.equals(requestTableName) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
+                            TableField tableField = getTableFiled(resultSet, datasourceRequest, primaryKeySet);
+                            list.add(tableField);
+                        }
+                    } else {
+                        if (tableName.equals(requestTableName)) {
+                            TableField tableField = getTableFiled(resultSet, datasourceRequest, primaryKeySet);
+                            list.add(tableField);
+                        }
                     }
                 }
+
             }
             resultSet.close();
         } catch (SQLException e) {
             DataInsException.throwException(e);
         } catch (Exception e) {
-            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("ds_doris")) {
-                datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("ds_doris") || datasourceRequest.getDatasource().getType().equalsIgnoreCase("StarRocks")) {
+                datasourceRequest.setQuery("select * from " + requestTableName);
                 return fetchResultField(datasourceRequest);
             } else {
                 DataInsException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
@@ -187,8 +272,11 @@ public class JdbcProvider extends DatasourceProvider {
         }
         return list;
     }
-
-    private TableField getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest) throws SQLException {
+    private String getDsSchema(DatasourceRequest datasourceRequest) {
+        JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+        return jdbcConfiguration.getSchema();
+    }
+    private TableField getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest, Set<String> primaryKeySet) throws SQLException {
         TableField tableField = new TableField();
         String colName = resultSet.getString("COLUMN_NAME");
         tableField.setFieldName(colName);
@@ -198,6 +286,7 @@ public class JdbcProvider extends DatasourceProvider {
         }
         tableField.setRemarks(remarks);
         String dbType = resultSet.getString("TYPE_NAME").toUpperCase();
+        tableField.setType(resultSet.getInt("DATA_TYPE"));
         tableField.setFieldType(dbType);
         if (dbType.equalsIgnoreCase("LONG")) {
             tableField.setFieldSize(65533);
@@ -215,12 +304,28 @@ public class JdbcProvider extends DatasourceProvider {
             } else {
                 String size = resultSet.getString("COLUMN_SIZE");
                 if (size == null) {
-                    tableField.setFieldSize(1);
+                    if (dbType.equals("JSON") && datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mysql.name())) {
+                        tableField.setFieldSize(65535);
+                    } else {
+                        tableField.setFieldSize(1);
+                    }
+
                 } else {
                     tableField.setFieldSize(Integer.valueOf(size));
                 }
             }
         }
+        if (StringUtils.isNotEmpty(tableField.getFieldType()) && tableField.getFieldType().equalsIgnoreCase("DECIMAL")) {
+            tableField.setAccuracy(Integer.valueOf(resultSet.getString("DECIMAL_DIGITS")));
+        }
+
+        if (primaryKeySet.contains(colName)) {
+            tableField.setPrimaryKey(true);
+        }
+        if (StringUtils.equalsIgnoreCase(resultSet.getString("IS_NULLABLE"), "NO")) {
+            tableField.setNotNull(true);
+        }
+
         return tableField;
     }
 
@@ -778,5 +883,36 @@ public class JdbcProvider extends DatasourceProvider {
         }
         return sql;
     }
+    public int execWithPreparedStatement(DatasourceRequest datasourceRequest) throws Exception {
+        int queryTimeout = 30;
+        DatasourceRequest request = new DatasourceRequest();
+        BeanUtil.copyProperties(datasourceRequest,request);
+        try (Connection connection = getConnectionFromPool(request); PreparedStatement stat = getPreparedStatement(connection, queryTimeout, datasourceRequest.getQuery())) {
 
+            if (datasourceRequest.getTableFieldWithValues() != null && !datasourceRequest.getTableFieldWithValues().isEmpty()) {
+                LogUtil.info("execWithPreparedStatement sql: " + datasourceRequest.getQuery());
+                for (int i = 0; i < datasourceRequest.getTableFieldWithValues().size(); i++) {
+                    stat.setObject(i + 1, datasourceRequest.getTableFieldWithValues().get(i).getValue(), datasourceRequest.getTableFieldWithValues().get(i).getType());
+                    LogUtil.info("execWithPreparedStatement param[" + (i + 1) + "]: " + datasourceRequest.getTableFieldWithValues().get(i).getValue());
+                }
+            }
+            return stat.executeUpdate();
+        } catch (SQLException e) {
+            DataInsException.throwException(e);
+        } catch (Exception e) {
+            DataInsException.throwException(e);
+        }
+        return 0;
+    }
+    public PreparedStatement getPreparedStatement(Connection connection, int queryTimeout, String sql) throws Exception {
+        if (connection == null) {
+            throw new Exception("Failed to get connection!");
+        }
+        PreparedStatement stat = connection.prepareStatement(sql);
+        try {
+            stat.setQueryTimeout(queryTimeout);
+        } catch (Exception e) {
+        }
+        return stat;
+    }
 }

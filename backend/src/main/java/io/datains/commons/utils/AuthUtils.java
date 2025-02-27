@@ -1,5 +1,8 @@
 package io.datains.commons.utils;
 
+import io.dataease.plugins.xpack.auth.dto.request.XpackBaseTreeRequest;
+import io.dataease.plugins.xpack.auth.dto.response.XpackVAuthModelDTO;
+import io.dataease.plugins.xpack.auth.service.AuthXpackService;
 import io.datains.auth.api.dto.CurrentRoleDto;
 import io.datains.auth.api.dto.CurrentUserDto;
 import io.datains.auth.entity.AuthItem;
@@ -8,7 +11,7 @@ import io.datains.auth.service.ProxyAuthService;
 import io.datains.commons.constants.DePermissionType;
 import io.datains.commons.constants.ResourceAuthLevel;
 import io.datains.commons.model.AuthURD;
-
+import io.datains.plugins.config.SpringContextUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -25,6 +28,7 @@ public class AuthUtils {
     private static final String[] defaultPanelPermissions = { "panel_list" };
     private static final String[] defaultDataSetPermissions = { "0" };
     private static final String[] defaultLinkPermissions = { "0" };
+    private static final String[] defaultDataFillingPermissions = { "0" };
 
     private static final ThreadLocal<CurrentUserDto> USER_INFO = new ThreadLocal<CurrentUserDto>();
 
@@ -32,6 +36,15 @@ public class AuthUtils {
 
     private static ProxyAuthService proxyAuthService;
 
+    public static List<String> getAuthModels(String id, String type, Long userId, Boolean isAdmin) {
+        AuthXpackService sysAuthService = SpringContextUtil.getBean(AuthXpackService.class);
+        List<XpackVAuthModelDTO> vAuthModelDTOS = sysAuthService
+                .searchAuthModelTree(new XpackBaseTreeRequest(id, type, "children"), userId, isAdmin);
+        List<String> authSources = Optional.ofNullable(vAuthModelDTOS).orElse(new ArrayList<>()).stream()
+                .map(XpackVAuthModelDTO::getId)
+                .collect(Collectors.toList());
+        return authSources;
+    }
     @Autowired
     public void setExtAuthService(ExtAuthService extAuthService) {
         AuthUtils.extAuthService = extAuthService;
@@ -116,8 +129,23 @@ public class AuthUtils {
                 result.add(new AuthItem(item, ResourceAuthLevel.PANNEL_LEVEL_MANAGE.getLevel()));
             });
             return result;
+        }else if (StringUtils.equals(DePermissionType.DATA_FILL.name().toLowerCase(), type)) {
+            Set<AuthItem> userSet = extAuthService.dataFillingIdByUser(userId).stream().collect(Collectors.toSet());
+            Set<AuthItem> roleSet = roles.stream().map(role -> extAuthService.dataFillingIdByRole(role.getId()))
+                    .flatMap(Collection::stream).collect(Collectors.toSet());
+            Set<AuthItem> deptSet = extAuthService.dataFillingIdByDept(deptId).stream().collect(Collectors.toSet());
+            result.addAll(userSet);
+            result.addAll(roleSet);
+            result.addAll(deptSet);
+            Arrays.stream(defaultDataFillingPermissions).forEach(item -> {
+                result.add(new AuthItem(item, ResourceAuthLevel.DATA_FILLING_LEVEL_MANAGE.getLevel()));
+            });
+            return result;
         }
         return result;
 
+    }
+    public static List<String> parentResources(String resourceId, String type) {
+        return extAuthService.parentResource(resourceId, type);
     }
 }

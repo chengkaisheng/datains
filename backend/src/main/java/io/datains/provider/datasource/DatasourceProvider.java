@@ -1,8 +1,8 @@
 package io.datains.provider.datasource;
 
+import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.dto.datasource.TableDesc;
 import io.datains.dto.datasource.TableField;
-import io.datains.controller.request.datasource.DatasourceRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -30,5 +30,6 @@ public abstract class DatasourceProvider {
 
     abstract public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception;
 
-    public abstract List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception;
+
+    abstract public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception;
 }

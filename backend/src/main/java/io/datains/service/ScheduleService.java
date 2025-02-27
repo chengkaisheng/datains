@@ -1,14 +1,15 @@
 package io.datains.service;
 
 import io.datains.base.domain.DatasetTableTask;
+import io.datains.base.domain.GlobalTaskEntity;
 import io.datains.commons.constants.ScheduleType;
 import io.datains.job.sechedule.ExtractDataJob;
 import io.datains.job.sechedule.ScheduleManager;
 import io.datains.job.sechedule.strategy.TaskHandler;
 import io.datains.job.sechedule.strategy.TaskStrategyFactory;
-import io.datains.plugins.common.entity.GlobalTaskEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobKey;
+import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
 import org.springframework.stereotype.Service;
 
@@ -68,6 +69,11 @@ public class ScheduleService {
         taskHandler.addTask(scheduleManager, task);
     }
 
+    public void addTempSchedule(GlobalTaskEntity task) throws Exception {
+        TaskHandler taskHandler = TaskStrategyFactory.getInvokeStrategy(task.getTaskType());
+        taskHandler.addTempTask(scheduleManager, task);
+    }
+
     public void deleteSchedule(GlobalTaskEntity task) {
         TaskHandler taskHandler = TaskStrategyFactory.getInvokeStrategy(task.getTaskType());
         taskHandler.removeTask(scheduleManager, task);
@@ -78,5 +84,14 @@ public class ScheduleService {
         taskHandler.executeTask(scheduleManager, task);
     }
 
+    public void pauseTrigger(DatasetTableTask datasetTableTask) throws SchedulerException {
+        TriggerKey triggerKey = new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId());
+        scheduleManager.pauseTrigger(triggerKey);
+    }
+
+    public void resumeTrigger(DatasetTableTask datasetTableTask) throws SchedulerException {
+        TriggerKey triggerKey = new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId());
+        scheduleManager.resumeTrigger(triggerKey);
+    }
 
 }

@@ -152,6 +152,20 @@
         GROUP BY a.id
     </select>
 
-
-
+    <select id="parentResource" resultType="String" >
+        select GET_V_AUTH_MODEL_WITH_PARENT(#{resourceId}, #{type})
+    </select>
+    <select id="queryAuthItems" resultMap="AuthItemMap">
+        SELECT
+            auth_source, MAX(d.privilege_type) as level
+        FROM
+            sys_auth a
+                LEFT JOIN sys_auth_detail d on d.auth_id = a.id
+        WHERE
+            auth_source_type = #{sourceType}
+          AND auth_target_type = #{authTargetType}
+          AND auth_target = #{authTarget}
+          AND d.privilege_value = 1
+        GROUP BY a.id
+    </select>
 </mapper>

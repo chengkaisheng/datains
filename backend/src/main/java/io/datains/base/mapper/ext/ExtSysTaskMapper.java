@@ -1,6 +1,6 @@
 package io.datains.base.mapper.ext;
 
-public interface ExtTaskMapper {
+public interface ExtSysTaskMapper {
 
     int runningCount(Long taskId);
 

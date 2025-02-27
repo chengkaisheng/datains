@@ -1,5 +1,5 @@
 package io.datains.commons.constants;
 
 public enum DePermissionType {
-    DATASOURCE, DATASET, PANEL
+    DATASOURCE, DATASET, PANEL, DATA_FILL
 }

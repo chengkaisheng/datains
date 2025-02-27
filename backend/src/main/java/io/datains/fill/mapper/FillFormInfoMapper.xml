@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.datains.fill.mapper.FillFormInfoMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO fill_form_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            parent_id,
+            template_id,
+            name,
+            description,
+            creator,
+            version,
+            <if test="createTime != null">
+                create_time,
+            </if>
+            updater,
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{parentId},
+            #{templateId},
+            #{name},
+            #{description},
+            #{creator},
+            #{version},
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            #{updater},
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+        </trim>
+    </insert>
+    <update id="update">
+        UPDATE fill_form_info
+        <set>
+            <if test="parentId != null">
+                parent_id = #{parentId},
+            </if>
+            <if test="templateId != null">
+                template_id = #{templateId},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="updater != null">
+                updater = #{updater},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="logicalDelete">
+        UPDATE fill_form_info
+        SET is_delete   = 1,
+            updater     = #{updater},
+            update_time = NOW()
+        WHERE id = #{id}
+           OR parent_id = #{id}
+    </update>
+    <select id="select" resultType="io.datains.fill.controller.vo.FillFormInfoVo">
+        SELECT ffi.*, fft.name as templateName
+        FROM fill_form_info ffi
+        left join fill_form_template fft on ffi.template_id = fft.id
+        WHERE ffi.is_delete = 0
+        AND ffi.parent_id is null
+        <if test="name != null and name != ''">
+            AND ffi.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="userId != null">
+            AND ffi.creator = #{userId}
+        </if>
+        ORDER BY ffi.create_time DESC
+    </select>
+    <select id="selectMaxVersionByParentId" resultType="java.lang.Integer">
+        SELECT COALESCE(MAX(version), 0)
+        FROM fill_form_info
+        WHERE parent_id = #{parentId}
+    </select>
+    <select id="selectIdsById" resultType="java.lang.Long">
+        SELECT id
+        FROM fill_form_info
+        WHERE (parent_id = #{id} or id = #{id})
+          AND is_delete = 0
+    </select>
+    <select id="selectByParentIds" resultType="io.datains.fill.entry.FillFormInfo">
+        select * from fill_form_info where parent_id in
+        <foreach collection="parentIds" item="parentId" open="(" separator="," close=")">
+            #{parentId}
+        </foreach>
+        and is_delete = 0
+    </select>
+</mapper>
