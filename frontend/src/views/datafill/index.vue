@@ -441,17 +441,17 @@ export default {
             }
             _this.uploadDialogVisible = false
           } catch(err) {
-            console.error('处理Excel数据错误:', err)
-            _this.$message.error(`处理Excel数据失败: ${err.message || '请检查文件内容是否正确'}`)
+            // console.error('处理Excel数据错误:', err)
+            _this.$message.error('无法读取文件内容，请检查文件是否损坏')
           }
         }, 
         function(err) {
           console.error('Excel解析错误:', err) 
-          _this.$message.error(`Excel解析失败: ${err.message || '请检查文件格式是否正确'}`)
+          _this.$message.error('无法读取文件内容，请检查文件是否损坏')
         })
       } catch(err) {
-        console.error('Excel转换错误:', err)
-        _this.$message.error(`Excel转换失败: ${err.message || '请检查文件是否损坏'}`)
+        // console.error('Excel转换错误:', err)
+        _this.$message.error('无法读取文件内容，请检查文件是否损坏')
       }
     },
     addDataFill() {
