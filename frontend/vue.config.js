@@ -101,6 +101,19 @@ module.exports = {
         deleteOriginalAssets: true // 删除源文件
       })) */
     }
+    // 修改 worker 配置
+    config.module
+      .rule('worker')
+      .test(/\.worker\.js$/)
+      .use('worker-loader')
+      .loader('worker-loader')
+      .options({
+        inline: 'fallback'
+      })
+      .end();
+
+    // 添加这个配置来解决构建警告
+    config.output.globalObject('this');
   },
   css: {
     loaderOptions: {
@@ -108,6 +121,7 @@ module.exports = {
         prependData: `@import "@/style/index.scss"`
       }
     }
-  }
-
+  },
+  // 添加这个配置来允许 worker 文件的加载
+  parallel: false
 }

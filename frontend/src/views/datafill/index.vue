@@ -209,8 +209,6 @@
 <script>
 import EditExcel from './editExcel.vue'
 import datafill from '@/api/datafill/datafill'
-// import LuckyExcel from 'luckyexcel'
-import XLSX from 'xlsx'
 import {exportExcel} from './export'
 
 export default {
@@ -256,39 +254,44 @@ export default {
       fileList: [],
       selectedRow: null,
       excelRes: null,
-      // editExcel: '',
-      // flag: false
+      worker: null
     }
   },
   created() {
     this.getDataFill()
+    // 修改 Worker 的创建方式
+    // if (typeof Worker !== 'undefined') {
+    //   try {
+    //     // 使用 URL.createObjectURL 创建 worker
+    //     const workerPath = require('worker-loader!./excel-worker.js').default;
+    //     this.worker = new workerPath();
+    //   } catch (e) {
+    //     console.error('Worker creation failed:', e)
+    //     this.$message.error('Worker 创建失败')
+    //   }
+    // } else {
+    //   this.$message.error('浏览器不支持 Web Worker')
+    // }
+  },
+  beforeDestroy() {
+    // 组件销毁时终止 Worker
+    if (this.worker) {
+      this.worker.terminate()
+    }
   },
   watch: {
     drawer: {
       handler(newVal) {
-        // if(newVal && this.editExcel === 'create') {
-        //   this.uploadExcel(this.uploadForm.file, this.excelRes)
-        // }
         if(newVal === false) {
-          // this.editExcel = ''
-          // this.excelRes = null
-          // this.flag = false
           this.getDataFill()
         }
       }
     },
-    // flag: {
-    //   handler(newVal) {
-    //     if(newVal) {
-    //       this.uploadExcel(this.uploadForm.file, this.excelRes)
-    //     }
-    //   }
-    // }
   },
   methods: {
     downloadTemplate() {
       datafill.getFormTemplate('1').then(res => {
-        exportExcel(JSON.parse(res.data.data),"模板")
+        exportExcel(JSON.parse(res.data.data),res.data.name)
       })
     },
     getDataFill() {
@@ -350,7 +353,10 @@ export default {
       this.$refs.folderForm.validate((valid) => {
         if (valid) {
           if (this.dialogType === 'create') {
-            datafill.addDataFill(this.folderForm).then(res => {
+            datafill.addDataFill({
+              templateId: '1',
+              ...this.folderForm
+            }).then(res => {
               this.handleCurrentChange(1)
               this.$message({
                 type: 'success',
@@ -398,7 +404,6 @@ export default {
     handleExcelEdit(file) {
       console.log('编辑文件', file)
       this.drawer = true
-      // this.editExcel = 'edit'
       this.msg = {
         id: file.id,
         name: file.name,
@@ -471,22 +476,82 @@ export default {
     },
     handleFileChange(file, fileList) {
       if (fileList.length > 0) {
-        this.fileList = [fileList[fileList.length - 1]]
-        this.uploadForm.file = file.raw
-        
-        // 可以自动填充名称（不包含扩展名）
-        if (!this.uploadForm.name) {
-          const fileName = file.name
-          const dotIndex = fileName.lastIndexOf('.')
-          if (dotIndex > 0) {
-            this.uploadForm.name = fileName.substring(0, dotIndex)
-          } else {
-            this.uploadForm.name = fileName
+        const fileName = file.name;
+        const fileExt = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+        // 处理xlsx或其他文件
+          this.fileList = [fileList[fileList.length - 1]];
+          this.uploadForm.file = file.raw;
+          
+          if (!this.uploadForm.name) {
+            const dotIndex = fileName.lastIndexOf('.');
+            if (dotIndex > 0) {
+              this.uploadForm.name = fileName.substring(0, dotIndex);
+            } else {
+              this.uploadForm.name = fileName;
+            }
           }
-        }
+        // if (fileExt === 'xls') {
+        //   // 显示加载提示
+        //   const loading = this.$loading({
+        //     lock: true,
+        //     text: '正在转换文件格式...',
+        //     spinner: 'el-icon-loading',
+        //     background: 'rgba(0, 0, 0, 0.7)'
+        //   });
+
+        //   // 设置 Worker 的消息处理函数
+        //   this.worker.onmessage = (e) => {
+        //     loading.close();
+            
+        //     if (e.data.success) {
+        //       // 创建新的 Blob 和 File 对象
+        //       const blob = new Blob([e.data.data], {
+        //         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        //       });
+        //       const xlsxFile = new File([blob], fileName.replace('.xls', '.xlsx'), {
+        //         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        //       });
+              
+        //       this.fileList = [{
+        //         name: xlsxFile.name,
+        //         raw: xlsxFile
+        //       }];
+        //       this.uploadForm.file = xlsxFile;
+              
+        //       // 自动填充文件名（不包含扩展名）
+        //       if (!this.uploadForm.name) {
+        //         const dotIndex = xlsxFile.name.lastIndexOf('.');
+        //         if (dotIndex > 0) {
+        //           this.uploadForm.name = xlsxFile.name.substring(0, dotIndex);
+        //         }
+        //       }
+        //     } else {
+        //       this.$message.error('文件转换失败: ' + e.data.error);
+        //       this.fileList = [];
+        //       this.uploadForm.file = null;
+        //     }
+        //   };
+
+        //   // 发送文件到 Worker 进行处理
+        //   this.worker.postMessage({ file: file.raw });
+          
+        // } else {
+        //   // 处理xlsx或其他文件
+        //   this.fileList = [fileList[fileList.length - 1]];
+        //   this.uploadForm.file = file.raw;
+          
+        //   if (!this.uploadForm.name) {
+        //     const dotIndex = fileName.lastIndexOf('.');
+        //     if (dotIndex > 0) {
+        //       this.uploadForm.name = fileName.substring(0, dotIndex);
+        //     } else {
+        //       this.uploadForm.name = fileName;
+        //     }
+        //   }
+        // }
       } else {
-        this.fileList = []
-        this.uploadForm.file = null
+        this.fileList = [];
+        this.uploadForm.file = null;
       }
     },
     submitUpload() {
