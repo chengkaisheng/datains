@@ -347,7 +347,7 @@ export default {
           name="dataTable"
         >
           <span slot="label">
-            数据表格
+            文件管理
           </span>
         </el-tab-pane>
       </el-tabs>
@@ -609,7 +609,7 @@ export default {
     </de-main-container>
 
     <el-main v-if="activeName === 'dataTable'" style="padding: 0">
-      <!-- 数据表格 -->
+      <!-- 文件管理 -->
       <data-table  />
     </el-main>
 
