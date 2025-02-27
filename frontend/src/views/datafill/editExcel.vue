@@ -1,11 +1,11 @@
 <template>
   <div class="edit-excel-container">
     <div class="header">
-      <div class="left">
+      <div class="header-left">
         <el-button type="primary" icon="el-icon-back" @click="handleBack">返回</el-button>
       </div>
       <div class="title" v-if="msg.name">{{ msg.name }}</div>
-      <div class="right">
+      <div class="header-right">
         <el-button type="success" icon="el-icon-check" @click="handleSave">保存</el-button>
       </div>
     </div>
@@ -138,16 +138,16 @@ export default {
   max-width: 50%;
 }
 
-.header .left, .header .right {
+.header .header-left, .header .header-right {
   flex: 1;
 }
 
-.header .left {
+.header .header-left {
   display: flex;
   justify-content: flex-start;
 }
 
-.header .right {
+.header .header-right {
   display: flex;
   justify-content: flex-end;
 }
