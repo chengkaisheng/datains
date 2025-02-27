@@ -73,3 +73,17 @@ export function submitForm(id, data) {
     data
   })
 }
+
+export function downloadTemplate(id) {
+  return request({
+    url: `dataFilling/form/${id}/excel/template`,
+    method: 'post',
+  })
+}
+
+export function uploadData(id) {
+  return request({
+    url: `dataFilling/form/${id}/excel/upload`,
+    method: 'post',
+  })
+}

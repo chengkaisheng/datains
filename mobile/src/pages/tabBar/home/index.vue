@@ -38,8 +38,16 @@
           <view class="td" style="min-width: 200rpx;">{{ formatTime(item.endTime) }}</view>
           <!-- <view class="td" style="min-width: 200rpx;">{{ item.creatorName }}</view> -->
           <view class="td" style="min-width: 150rpx;">
-            <view class="operation-btn" @click="handleOperation(item)">
-              填报
+            <view class="operation-btns">
+              <view class="operation-btn" @click="handleOperation(item)">
+                填报
+              </view>
+              <view class="operation-btn" @click="handleDownloadTemplate(item)">
+                下载模板
+              </view>
+              <view class="operation-btn" @click="handleUploadData(item)">
+                上传数据
+              </view>
             </view>
           </view>
         </view>
@@ -95,7 +103,7 @@
 </template>
 
 <script>
-import { getList, getForm, submitForm } from '@/api/auth'
+import { getList, getForm, submitForm, downloadTemplate } from '@/api/auth'
 import DynamicForm from './components/DynamicForm.vue'
 // 手动引入需要的组件
 import { uniPopup, uniIcons } from '@dcloudio/uni-ui'
@@ -182,7 +190,113 @@ export default {
       const res = await submitForm(this.id, [formData])
       
       this.closeDialog()
-    }
+    },
+
+    // 处理下载模板
+    async handleDownloadTemplate(item) {
+      try {
+        const res = await downloadTemplate(item.formId)
+        if (res) {
+          // 创建 Blob 对象
+          const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+          // 创建临时下载链接
+          const url = window.URL.createObjectURL(blob)
+          // 创建一个隐藏的 a 标签用于下载
+          const link = document.createElement('a')
+          link.href = url
+          link.download = `template_${item.taskName}.xlsx` // 设置下载文件名
+          document.body.appendChild(link)
+          link.click()
+          // 清理
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(url)
+        } else {
+          uni.showToast({
+            title: '下载失败',
+            icon: 'none'
+          })
+        }
+      } catch (error) {
+        console.error('下载失败:', error)
+        uni.showToast({
+          title: '下载失败',
+          icon: 'none'
+        })
+      }
+    },
+    
+    // 处理上传数据
+    async handleUploadData(item) {
+      try {
+        // 创建隐藏的文件选择器
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.accept = '.xlsx,.xls'
+        input.style.display = 'none'
+        document.body.appendChild(input)
+
+        // 监听文件选择
+        input.onchange = async (e) => {
+          const file = e.target.files[0]
+          if (file) {
+            // 显示上传中提示
+            uni.showLoading({
+              title: '上传中...'
+            })
+
+            try {
+              // 创建 FormData
+              const formData = new FormData()
+              formData.append('file', file)
+
+              // 使用 fetch 上传
+              const response = await fetch(`${window.location.origin}/dataFilling/form/${item.formId}/excel/upload`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                  'Accept': 'application/json'
+                }
+              })
+
+              const result = await response.json()
+              
+              uni.hideLoading()
+              
+              if (result.success) {
+                uni.showToast({
+                  title: '上传成功',
+                  icon: 'success'
+                })
+              } else {
+                uni.showToast({
+                  title: result.message || '上传失败',
+                  icon: 'none'
+                })
+              }
+            } catch (err) {
+              uni.hideLoading()
+              console.error('上传失败:', err)
+              uni.showToast({
+                title: '上传失败',
+                icon: 'none'
+              })
+            }
+          }
+          // 清理
+          document.body.removeChild(input)
+        }
+
+        // 触发文件选择
+        input.click()
+      } catch (error) {
+        uni.hideLoading()
+        console.error('文件处理失败:', error)
+        uni.showToast({
+          title: '文件处理失败',
+          icon: 'none'
+        })
+      }
+    },
   },
   
   mounted() {
@@ -251,6 +365,13 @@ export default {
   font-size: 28rpx;
 }
 
+.operation-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+  align-items: center;
+}
+
 .operation-btn {
   display: inline-block;
   padding: 4rpx 20rpx;
@@ -258,6 +379,7 @@ export default {
   color: #fff;
   border-radius: 4rpx;
   font-size: 24rpx;
+  width: 120rpx; /* 统一按钮宽度 */
 }
 
 .pagination {

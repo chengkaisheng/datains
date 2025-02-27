@@ -81,7 +81,7 @@
         "devServer": {
             "proxy": {
                 "^(?!/login)": {
-                    "target": "http://192.168.3.16:17304/",
+                    "target": "http://183.194.64.166:17304/",
                     "ws": false
                 }
             }
