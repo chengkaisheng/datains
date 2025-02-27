@@ -133,7 +133,7 @@
       size="100%"
       :wrapperClosable="false"
       direction="rtl">
-      <EditExcel :drawer.sync="drawer" :editExcel="editExcel" :msg="msg" />
+      <EditExcel @addDataFill="addDataFill" :drawer.sync="drawer" :msg="msg" />
     </el-drawer>
 
     <!-- 添加新建文件夹弹窗 -->
@@ -194,7 +194,7 @@
             :limit="1"
             :file-list="fileList">
             <el-button slot="trigger" size="small" type="primary">选择文件</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传xlsx文件</div>
+            <div slot="tip" class="el-upload__tip">目前只支持xlsx文件</div>
           </el-upload>
         </el-form-item>
       </el-form>
@@ -209,7 +209,8 @@
 <script>
 import EditExcel from './editExcel.vue'
 import datafill from '@/api/datafill/datafill'
-import LuckyExcel from 'luckyexcel'
+// import LuckyExcel from 'luckyexcel'
+import XLSX from 'xlsx'
 import {exportExcel} from './export'
 
 export default {
@@ -255,8 +256,8 @@ export default {
       fileList: [],
       selectedRow: null,
       excelRes: null,
-      editExcel: '',
-      flag: false
+      // editExcel: '',
+      // flag: false
     }
   },
   created() {
@@ -269,20 +270,20 @@ export default {
         //   this.uploadExcel(this.uploadForm.file, this.excelRes)
         // }
         if(newVal === false) {
-          this.editExcel = ''
-          this.excelRes = null
-          this.flag = false
+          // this.editExcel = ''
+          // this.excelRes = null
+          // this.flag = false
           this.getDataFill()
         }
       }
     },
-    flag: {
-      handler(newVal) {
-        if(newVal) {
-          this.uploadExcel(this.uploadForm.file, this.excelRes)
-        }
-      }
-    }
+    // flag: {
+    //   handler(newVal) {
+    //     if(newVal) {
+    //       this.uploadExcel(this.uploadForm.file, this.excelRes)
+    //     }
+    //   }
+    // }
   },
   methods: {
     downloadTemplate() {
@@ -397,7 +398,7 @@ export default {
     handleExcelEdit(file) {
       console.log('编辑文件', file)
       this.drawer = true
-      this.editExcel = 'edit'
+      // this.editExcel = 'edit'
       this.msg = {
         id: file.id,
         name: file.name,
@@ -423,24 +424,49 @@ export default {
         return
       }
       let _this = this
-      LuckyExcel.transformExcelToLucky(file, function(
-        exportJson,
-        luckysheetfile
-      ) {
-        if (exportJson.sheets == null || exportJson.sheets.length == 0) {
-          this.$message.error(
-            '无法读取Excel文件的内容，目前不支持xls文件！'
-          )
-          return
-        }
-        // console.log('exportJson', exportJson);
-        _this.msg = {
-          id: res.data.id,
-          name: res.data.name,
-          data: exportJson.sheets
-        }
-        _this.drawer = true
-        _this.editExcel = 'create'
+      
+      try {
+        LuckyExcel.transformExcelToLucky(file, 
+        function(exportJson, luckysheetfile) {
+          try {
+            if (!exportJson || !exportJson.sheets || exportJson.sheets.length === 0) {
+              _this.$message.error('无法读取Excel文件的内容，目前不支持xls文件！')
+              return
+            }
+            _this.drawer = true
+            _this.msg = {
+              id: file.id,
+              name: file.name,
+              data: exportJson.sheets
+            }
+            _this.uploadDialogVisible = false
+          } catch(err) {
+            console.error('处理Excel数据错误:', err)
+            _this.$message.error(`处理Excel数据失败: ${err.message || '请检查文件内容是否正确'}`)
+          }
+        }, 
+        function(err) {
+          console.error('Excel解析错误:', err) 
+          _this.$message.error(`Excel解析失败: ${err.message || '请检查文件格式是否正确'}`)
+        })
+      } catch(err) {
+        console.error('Excel转换错误:', err)
+        _this.$message.error(`Excel转换失败: ${err.message || '请检查文件是否损坏'}`)
+      }
+    },
+    addDataFill() {
+      // 上传成功的处理逻辑
+      datafill.addDataFill({
+        name: this.uploadForm.name,
+        description: this.uploadForm.description,
+        parentId: this.selectedRow.id,
+        templateId: this.selectedRow.templateId,
+        formData: JSON.stringify(luckysheet.getAllSheets())
+      }).then(res => {
+        this.$message({
+          type: 'success',
+          message: '上传成功！'
+        })
       })
     },
     handleFileChange(file, fileList) {
@@ -470,22 +496,8 @@ export default {
             this.$message.error('请选择要上传的文件')
             return
           }
+          this.uploadExcel(this.uploadForm.file)
           
-          datafill.addDataFill({
-            name: this.uploadForm.name,
-            description: this.uploadForm.description,
-            parentId: this.selectedRow.id,
-            templateId: this.selectedRow.templateId,
-          }).then(res => {
-            // 创建成功之后进入excel编辑页面
-            this.$message({
-              type: 'success',
-              message: '创建成功！'
-            })
-            this.excelRes = res
-            this.uploadDialogVisible = false
-            this.flag = true
-          })
         } else {
           return false
         }

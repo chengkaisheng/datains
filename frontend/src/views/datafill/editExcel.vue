@@ -33,10 +33,6 @@ export default {
       type: Object,
       default: () => {}
     },
-    editExcel: {
-      type: String,
-      default: ''
-    },
     drawer: {
       type: Boolean,
       default: false
@@ -49,31 +45,33 @@ export default {
     }
   },
   watch: {
-    editExcel: {
+    msg: {
       handler: async (newVal) => {
-        if(newVal === 'create') {
-          await this.init(this.msg.data)
-          await this.handleSave('init')
-        } else if(newVal === 'edit') {
-          this.getFormData()
-        }
+        console.log(2);
+        // if(newVal.data) {
+        //   this.init(newVal.data, 'save')
+        // } else {
+        //   this.getFormData()
+        // }
       },
+      deep: true,
     }
   },
-  async mounted() {
-    if(this.editExcel === 'create') {
-      await this.init(this.msg.data)
-      await this.handleSave('init')
-    } else if(this.editExcel === 'edit') {
+  mounted() {
+    console.log(1);
+    
+    if(this.msg.data) {
+      this.init(this.msg.data, 'save')
+    } else {
       this.getFormData()
     }
   },
   methods: {
-    init(data) {
+    init(data, type) {
       this.isMaskShow = true
       this.$nextTick(() => {
         this.isMaskShow = false
-        // luckysheet.destroy()
+        luckysheet.destroy()
         luckysheet.create({
           container: 'luckysheet', // 设定DOM容器的id
           title: this.msg.name, // 设定表格名称
@@ -81,6 +79,9 @@ export default {
           plugins: ['chart'],
           data: data || []
         })
+        if(type === 'save') {
+          this.$emit('addDataFill')
+        }
       })
     },
     getFormData() {

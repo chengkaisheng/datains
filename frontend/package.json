@@ -51,7 +51,6 @@
     "lodash.isnumber": "^3.0.3",
     "lodash.isobject": "^3.0.2",
     "lodash.isstring": "^4.0.1",
-    "luckyexcel": "^1.0.1",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "screenfull": "4.2.0",
