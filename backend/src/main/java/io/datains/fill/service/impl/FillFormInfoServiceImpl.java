@@ -51,11 +51,13 @@ public class FillFormInfoServiceImpl implements FillFormInfoService {
         }
         //创建表单信息
         this.infoMapper.insert(fillFormInfo);
-        //创建表单数据
-        FillFormDataCreateReqVo saveFormData = new FillFormDataCreateReqVo();
-        saveFormData.setFormId(fillFormInfo.getId());
-        saveFormData.setFormData(fillFormInfo.getFormData());
-        this.saveFormData(saveFormData);
+        if (fillFormInfo.getParentId() != null) {
+            //创建表单数据
+            FillFormDataCreateReqVo saveFormData = new FillFormDataCreateReqVo();
+            saveFormData.setFormId(fillFormInfo.getId());
+            saveFormData.setFormData(fillFormInfo.getFormData());
+            this.saveFormData(saveFormData);
+        }
         return fillFormInfo;
     }
 
