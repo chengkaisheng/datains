@@ -1,6 +1,7 @@
 package io.datains.fill.service;
 
 import io.datains.fill.controller.vo.FillFormDataCreateReqVo;
+import io.datains.fill.controller.vo.FillFormInfoCreateReqVo;
 import io.datains.fill.controller.vo.FillFormInfoReqVo;
 import io.datains.fill.controller.vo.FillFormInfoVo;
 import io.datains.fill.entry.FillFormData;
@@ -16,7 +17,7 @@ import java.util.List;
  * @since 2025-02-24 16:57
  */
 public interface FillFormInfoService {
-    FillFormInfo insert(FillFormInfo fillFormInfo);
+    FillFormInfo insert(FillFormInfoCreateReqVo fillFormInfo);
 
     void update(FillFormInfo fillFormInfo);
 

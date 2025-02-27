@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import io.datains.commons.utils.PageUtils;
 import io.datains.commons.utils.Pager;
 import io.datains.fill.controller.vo.FillFormDataCreateReqVo;
+import io.datains.fill.controller.vo.FillFormInfoCreateReqVo;
 import io.datains.fill.controller.vo.FillFormInfoReqVo;
 import io.datains.fill.controller.vo.FillFormInfoVo;
 import io.datains.fill.entry.FillFormData;
@@ -43,7 +44,7 @@ public class FillFormInfoController {
     @ApiOperation("新增数据填报信息")
     @PostMapping("/insert")
     @Transactional
-    public FillFormInfo insert(@RequestBody FillFormInfo request) {
+    public FillFormInfo insert(@RequestBody FillFormInfoCreateReqVo request) {
         return this.fillFormInfoService.insert(request);
     }
 

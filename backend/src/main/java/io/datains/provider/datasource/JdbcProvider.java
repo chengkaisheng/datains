@@ -16,6 +16,7 @@ import io.datains.i18n.Translator;
 import io.datains.provider.ProviderFactory;
 import io.datains.provider.QueryProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
@@ -76,24 +78,82 @@ public class JdbcProvider extends DatasourceProvider {
     @Override
     public List<String[]> getData(DatasourceRequest dsr) throws Exception {
         List<String[]> list = new LinkedList<>();
-        log.info("执行sql:::{}", dsr.getQuery());
-        try (Connection connection = getConnectionFromPool(dsr); Statement stat = connection.createStatement(); ResultSet rs = stat.executeQuery(rebuildSqlWithFragment(dsr.getQuery()))) {
+        int queryTimeout =30;
+        try (Connection connection = getConnectionFromPool(dsr); PreparedStatement stat = getPreparedStatement(connection, queryTimeout, dsr.getQuery())) {
+            LogUtil.info("getData sql: " + dsr.getQuery());
+            if (CollectionUtils.isNotEmpty(dsr.getTableFieldWithValues())) {
+                for (int i = 0; i < dsr.getTableFieldWithValues().size(); i++) {
+                    stat.setObject(i + 1, dsr.getTableFieldWithValues().get(i).getValue(), dsr.getTableFieldWithValues().get(i).getType());
+                    LogUtil.info("getData param[" + (i + 1) + "]: " + dsr.getTableFieldWithValues().get(i).getValue());
+                }
+            }
 
-            list = fetchResult(rs);
+            ResultSet rs = stat.executeQuery();
 
+            list = getDataResult(rs, dsr);
             if (dsr.isPageable() && (dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name()) || dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.db2.name()))) {
                 Integer realSize = dsr.getPage() * dsr.getPageSize() < list.size() ? dsr.getPage() * dsr.getPageSize() : list.size();
                 list = list.subList((dsr.getPage() - 1) * dsr.getPageSize(), realSize);
             }
 
         } catch (SQLException e) {
-            DataInsException.throwException(Translator.get("i18n_sql_error") + e.getMessage());
+            DataInsException.throwException("SQL ERROR" + e.getMessage());
         } catch (Exception e) {
-            DataInsException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
+            DataInsException.throwException("Data source connection exception: " + e.getMessage());
         }
         return list;
     }
+    private List<String[]> getDataResult(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
+        String charset = null;
+        String targetCharset = "UTF-8";
+        if (datasourceRequest != null && datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
+            JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+            if (StringUtils.isNotEmpty(jdbcConfiguration.getCharset()) && !jdbcConfiguration.getCharset().equalsIgnoreCase("Default")) {
+                charset = jdbcConfiguration.getCharset();
+            }
+            if (StringUtils.isNotEmpty(jdbcConfiguration.getTargetCharset()) && !jdbcConfiguration.getTargetCharset().equalsIgnoreCase("Default")) {
+                targetCharset = jdbcConfiguration.getTargetCharset();
+            }
+        }
+        List<String[]> list = new LinkedList<>();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        while (rs.next()) {
+            String[] row = new String[columnCount];
+            for (int j = 0; j < columnCount; j++) {
+                int columnType = metaData.getColumnType(j + 1);
+                switch (columnType) {
+                    case Types.DATE:
+                        if (rs.getDate(j + 1) != null) {
+                            row[j] = rs.getDate(j + 1).toString();
+                        }
+                        break;
+                    case Types.BOOLEAN:
+                        row[j] = rs.getBoolean(j + 1) ? "1" : "0";
+                        break;
+                    case Types.NUMERIC:
+                        BigDecimal bigDecimal = rs.getBigDecimal(j + 1);
+                        row[j] = bigDecimal == null ? null : bigDecimal.toString();
+                        break;
+                    default:
+                        if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
+                            row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
+                        } else {
+                            if (charset != null && StringUtils.isNotEmpty(rs.getString(j + 1))) {
+                                String originStr = new String(rs.getString(j + 1).getBytes(charset), targetCharset);
+                                row[j] = new String(originStr.getBytes("UTF-8"), "UTF-8");
+                            } else {
+                                row[j] = rs.getString(j + 1);
+                            }
+                        }
 
+                        break;
+                }
+            }
+            list.add(row);
+        }
+        return list;
+    }
     public void exec(DatasourceRequest datasourceRequest) throws Exception {
         try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement()) {
             Boolean result = stat.execute(datasourceRequest.getQuery());

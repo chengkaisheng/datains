@@ -44,7 +44,9 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/board/**", ANON);
         // arcgis api, added by shengchengkai on 2022-06-04
         filterChainDefinitionMap.put("/arcgisapi/**", ANON);
-
+        filterChainDefinitionMap.put("/excel/**", ANON);
+        filterChainDefinitionMap.put("/excel/waffle_sprite.png", ANON);
+        filterChainDefinitionMap.put("/excel/loading.gif", ANON);
         // 获取主题信息
         filterChainDefinitionMap.put("/plugin/theme/themes", ANON);
         filterChainDefinitionMap.put("/plugin/theme/items/**", ANON);

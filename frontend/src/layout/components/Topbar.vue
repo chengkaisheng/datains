@@ -3,7 +3,7 @@
     <div v-loading="!axiosFinished" class="log">
       <div v-if="!logoUrl && axiosFinished" class="custom-logo">
         <img :src="require('@/assets/datains-logo.png')" alt="" srcset="">
-        <span class="custom-logo-title">BI数据分析平台</span>
+        <span class="custom-logo-title">数据填报平台</span>
       </div>
       <!-- <svg-icon v-if="!logoUrl && axiosFinished" icon-class="datains-logo2" custom-class="top-nav-logo-icon" /> -->
       <img v-if="logoUrl && axiosFinished" :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
@@ -71,26 +71,16 @@
 </template>
 
 <script>
-import {
-  mapGetters
-} from 'vuex'
+import { mapGetters } from 'vuex'
 import AppLink from './Sidebar/Link'
 import variables from '@/styles/variables.scss'
-import {
-  isExternal
-} from '@/utils/validate'
+import { isExternal } from '@/utils/validate'
 import Notification from '@/components/Notification'
 import bus from '@/utils/bus'
 import LangSelect from '@/components/LangSelect'
-import {
-  getSysUI
-} from '@/utils/auth'
-import {
-  pluginLoaded
-} from '@/api/user'
-import {
-  initTheme
-} from '@/utils/ThemeUtil'
+import { getSysUI } from '@/utils/auth'
+import { pluginLoaded } from '@/api/user'
+import { initTheme } from '@/utils/ThemeUtil'
 // import { delToken } from '@/api/user'
 export default {
   name: 'Topbar',

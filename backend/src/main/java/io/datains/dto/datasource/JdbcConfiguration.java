@@ -16,6 +16,8 @@ public class JdbcConfiguration {
     private String dataSourceType = "jdbc";
     private String customDriver = "default";
 
+    private String charset;
+    private String targetCharset;
     private int initialPoolSize = 5;
     private int minPoolSize = 5;
     private int maxPoolSize = 50;

@@ -3,6 +3,7 @@ package io.datains.fill.service.impl;
 import io.datains.auth.api.dto.CurrentUserDto;
 import io.datains.commons.utils.AuthUtils;
 import io.datains.fill.controller.vo.FillFormDataCreateReqVo;
+import io.datains.fill.controller.vo.FillFormInfoCreateReqVo;
 import io.datains.fill.controller.vo.FillFormInfoReqVo;
 import io.datains.fill.controller.vo.FillFormInfoVo;
 import io.datains.fill.entry.FillFormData;
@@ -13,6 +14,7 @@ import io.datains.fill.mapper.FillFormInfoMapper;
 import io.datains.fill.mapper.FillFormTemplateMapper;
 import io.datains.fill.service.FillFormInfoService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Collections;
@@ -37,7 +39,8 @@ public class FillFormInfoServiceImpl implements FillFormInfoService {
     private FillFormTemplateMapper templateMapper;
 
     @Override
-    public FillFormInfo insert(FillFormInfo fillFormInfo) {
+    @Transactional
+    public FillFormInfo insert(FillFormInfoCreateReqVo fillFormInfo) {
         Long userId = AuthUtils.getUser().getUserId();
         fillFormInfo.setCreator(userId);
         fillFormInfo.setUpdater(userId);
@@ -46,7 +49,13 @@ public class FillFormInfoServiceImpl implements FillFormInfoService {
             Integer maxVersion = this.infoMapper.selectMaxVersionByParentId(fillFormInfo.getParentId());
             fillFormInfo.setVersion(maxVersion + 1);
         }
+        //创建表单信息
         this.infoMapper.insert(fillFormInfo);
+        //创建表单数据
+        FillFormDataCreateReqVo saveFormData = new FillFormDataCreateReqVo();
+        saveFormData.setFormId(fillFormInfo.getId());
+        saveFormData.setFormData(fillFormInfo.getFormData());
+        this.saveFormData(saveFormData);
         return fillFormInfo;
     }
 
