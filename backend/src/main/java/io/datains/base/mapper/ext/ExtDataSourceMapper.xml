@@ -117,6 +117,11 @@
             order by ${sort}
         </if>
     </select>
-
+    <select id="queryDetails" resultMap="BaseResultMapDTO">
+        select datasource.*,
+               get_auths(id, 'link', #{userId}) as `privileges`
+        from datasource
+        where id = #{datasourceId}
+    </select>
 
 </mapper>

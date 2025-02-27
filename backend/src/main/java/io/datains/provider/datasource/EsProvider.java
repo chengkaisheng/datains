@@ -4,10 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.datains.commons.utils.HttpClientConfig;
 import io.datains.commons.utils.HttpClientUtil;
+import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.controller.request.datasource.es.EsReponse;
 import io.datains.controller.request.datasource.es.Request;
 import io.datains.controller.request.datasource.es.RequestWithCursor;
-import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.dto.datasource.EsConfiguration;
 import io.datains.dto.datasource.TableDesc;
 import io.datains.dto.datasource.TableField;
@@ -97,7 +97,7 @@ public class EsProvider extends DatasourceProvider {
     }
 
     @Override
-    public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
+    public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
         datasourceRequest.setQuery("desc " + String.format(EsSqlLConstants.KEYWORD_TABLE, datasourceRequest.getTable()));
         List<TableField> tableFields = new ArrayList<>();
         try {

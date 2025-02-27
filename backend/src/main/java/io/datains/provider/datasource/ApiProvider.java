@@ -11,12 +11,9 @@ import io.datains.controller.request.datasource.ApiDefinitionRequest;
 import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.dto.datasource.TableDesc;
 import io.datains.dto.datasource.TableField;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import org.springframework.stereotype.Service;
-
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -93,7 +90,7 @@ public class ApiProvider extends DatasourceProvider{
     }
 
     @Override
-    public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
+    public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
         List<ApiDefinition> lists = JSONObject.parseArray(datasourceRequest.getDatasource().getConfiguration(), ApiDefinition.class);
         List<TableField> tableFields = new ArrayList<>();
         for (ApiDefinition apiDefinition : lists) {

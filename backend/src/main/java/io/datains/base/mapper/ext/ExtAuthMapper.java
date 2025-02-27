@@ -27,4 +27,9 @@ public interface ExtAuthMapper {
     List<AuthItem> dataSourceIdByDept(String deptId);
     List<AuthItem> dataSetIdByDept(String deptId);
     List<AuthItem> panelIdByDept(String deptId);
+
+    String parentResource(@Param("resourceId") String resourceId, @Param("type") String type);
+    List<AuthItem> queryAuthItems(@Param("authTargetType") String authTargetType,
+                                  @Param("authTarget") String authTarget,
+                                  @Param("sourceType") String sourceType);
 }

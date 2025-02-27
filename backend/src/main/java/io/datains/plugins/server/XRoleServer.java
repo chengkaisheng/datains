@@ -40,7 +40,7 @@ public class XRoleServer {
     @ApiOperation("删除角色")
     @PostMapping("/delete/{roleId}")
     public void delete(@PathVariable("roleId") Long roleId){
-        extAuthService.clearDeptResource(roleId);
+        extAuthService.clearRoleResource(roleId);
         roleXpackService.delete(roleId);
     }
 

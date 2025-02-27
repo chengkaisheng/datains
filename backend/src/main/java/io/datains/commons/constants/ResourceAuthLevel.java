@@ -19,8 +19,11 @@ public enum ResourceAuthLevel {
 
     DATASOURCE_LEVEL_USE(1),
     DATASOURCE_LEVEL_MANAGE(3),
-    DATASOURCE_LEVEL_GRANT(15);
+    DATASOURCE_LEVEL_GRANT(15),
 
+    DATA_FILLING_LEVEL_USE(1),
+    DATA_FILLING_LEVEL_MANAGE(3),
+    DATA_FILLING_LEVEL_GRANT(15);
     private Integer level;
 
     public Integer getLevel() {

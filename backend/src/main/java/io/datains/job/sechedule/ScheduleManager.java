@@ -2,6 +2,7 @@ package io.datains.job.sechedule;
 
 import io.datains.commons.utils.LogUtil;
 import io.datains.exception.DataInsException;
+import io.datains.i18n.Translator;
 import org.quartz.*;
 import org.springframework.stereotype.Component;
 
@@ -399,7 +400,8 @@ public class ScheduleManager {
 
     public static CronTrigger getCronTrigger(String cron) {
         if (!CronExpression.isValidExpression(cron)) {
-            DataInsException.throwException("cron :" + cron + " error");
+            String msg = Translator.get("I18N_CRON_ERROR");
+            DataInsException.throwException(msg + " : " + cron);
         }
         return TriggerBuilder.newTrigger().withIdentity("Calculate Date")
                 .withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
@@ -421,6 +423,14 @@ public class ScheduleManager {
 
     public void fireNow(JobKey jobKey) throws SchedulerException {
         scheduler.triggerJob(jobKey);
+    }
+
+    public void pauseTrigger(TriggerKey triggerKey) throws SchedulerException {
+        scheduler.pauseTrigger(triggerKey);
+    }
+
+    public void resumeTrigger(TriggerKey triggerKey) throws SchedulerException {
+        scheduler.resumeTrigger(triggerKey);
     }
 
 }

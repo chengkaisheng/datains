@@ -5,14 +5,14 @@ import io.datains.auth.entity.TokenInfo;
 import io.datains.auth.service.AuthUserService;
 import io.datains.auth.service.impl.AuthUserServiceImpl;
 import io.datains.auth.util.JWTUtils;
-import io.datains.base.mapper.ext.ExtTaskMapper;
+import io.datains.base.domain.GlobalTaskEntity;
+import io.datains.base.mapper.ext.ExtSysTaskMapper;
 import io.datains.commons.utils.CommonBeanFactory;
 import io.datains.commons.utils.CronUtils;
 import io.datains.commons.utils.LogUtil;
 import io.datains.commons.utils.ServletUtils;
 import io.datains.job.sechedule.ScheduleManager;
 import io.datains.job.sechedule.strategy.TaskHandler;
-import io.datains.plugins.common.entity.GlobalTaskEntity;
 import io.datains.plugins.common.entity.GlobalTaskInstance;
 import io.datains.plugins.config.SpringContextUtil;
 import io.datains.plugins.xpack.email.dto.request.XpackEmailTaskRequest;
@@ -22,7 +22,10 @@ import io.datains.plugins.xpack.email.service.EmailXpackService;
 import io.datains.service.system.EmailService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.quartz.*;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -56,8 +59,8 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
     @Override
     protected Boolean taskIsRunning(Long taskId) {
-        ExtTaskMapper extTaskMapper = CommonBeanFactory.getBean(ExtTaskMapper.class);
-        return extTaskMapper.runningCount(taskId) > 0;
+        ExtSysTaskMapper extSysTaskMapper = CommonBeanFactory.getBean(ExtSysTaskMapper.class);
+        return extSysTaskMapper.runningCount(taskId) > 0;
     }
 
     @Override
@@ -92,8 +95,8 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
     @Override
     public void resetRunningInstance(Long taskId) {
-        ExtTaskMapper extTaskMapper = CommonBeanFactory.getBean(ExtTaskMapper.class);
-        extTaskMapper.resetRunnings(taskId);
+        ExtSysTaskMapper extSysTaskMapper = CommonBeanFactory.getBean(ExtSysTaskMapper.class);
+        extSysTaskMapper.resetRunnings(taskId);
     }
 
     public Long saveInstance(GlobalTaskInstance taskInstance) {

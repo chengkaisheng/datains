@@ -3,6 +3,9 @@ package io.datains.service.datasource;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import io.datains.auth.annotation.DeCleaner;
 import io.datains.base.domain.*;
 import io.datains.base.mapper.DatasetTableMapper;
@@ -418,5 +421,66 @@ public class DatasourceService {
             String content = "数据源【" + datasource.getName() + "】无效";
             DeMsgutil.sendMsg(userId, typeId,  content, gson.toJson(param));
         });
+    }
+    public DatasourceDTO getDataSourceDetails(String datasourceId) {
+        DatasourceDTO result = extDataSourceMapper.queryDetails(datasourceId, String.valueOf(AuthUtils.getUser().getUserId()));
+        if (result != null) {
+            this.datasourceTrans(result);
+        }
+        return result;
+    }
+    private void datasourceTrans(DatasourceDTO datasourceDTO) {
+        if (!datasourceDTO.getType().equalsIgnoreCase(DatasourceTypes.api.toString())) {
+            JdbcConfiguration configuration = new Gson().fromJson(datasourceDTO.getConfiguration(), JdbcConfiguration.class);
+            JSONObject jsonObject = JSONObject.parseObject(datasourceDTO.getConfiguration());
+            if (jsonObject.getString("queryTimeout") == null) {
+                jsonObject.put("queryTimeout", 30);
+                datasourceDTO.setConfiguration(jsonObject.toString());
+            }
+        }
+
+        if (datasourceDTO.getType().equalsIgnoreCase(DatasourceTypes.mysql.toString())) {
+            MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceDTO.getConfiguration(), MysqlConfiguration.class);
+            datasourceDTO.setConfiguration(new Gson().toJson(mysqlConfiguration));
+        }
+        if (datasourceDTO.getType().equalsIgnoreCase(DatasourceTypes.api.toString())) {
+            List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasourceDTO.getConfiguration(), new TypeToken<ArrayList<ApiDefinition>>() {
+            }.getType());
+            List<Object> apiDefinitionListWithStatus = new ArrayList<>();
+            int success = 0;
+            if (StringUtils.isNotEmpty(datasourceDTO.getStatus())) {
+                JsonObject apiItemStatuses = JsonParser.parseString(datasourceDTO.getStatus()).getAsJsonObject();
+
+                for (int i = 0; i < apiDefinitionList.size(); i++) {
+                    String status = null;
+                    if (apiItemStatuses.get(apiDefinitionList.get(i).getName()) != null) {
+                        status = apiItemStatuses.get(apiDefinitionList.get(i).getName()).getAsString();
+                    }
+                    apiDefinitionList.get(i).setStatus(status);
+                    apiDefinitionListWithStatus.add(apiDefinitionList.get(i));
+                    if (StringUtils.isNotEmpty(status) && status.equalsIgnoreCase("Success")) {
+                        success++;
+                    }
+                }
+            }
+
+            datasourceDTO.setApiConfiguration(new JSONArray(apiDefinitionListWithStatus));
+            if (success == apiDefinitionList.size()) {
+                datasourceDTO.setStatus("Success");
+            } else {
+                if (success > 0 && success < apiDefinitionList.size()) {
+                    datasourceDTO.setStatus("Warning");
+                } else {
+                    datasourceDTO.setStatus("Error");
+                }
+            }
+        }
+        if (StringUtils.isNotEmpty(datasourceDTO.getConfiguration())) {
+            datasourceDTO.setConfiguration(new String(java.util.Base64.getEncoder().encode(datasourceDTO.getConfiguration().getBytes())));
+        }
+        if (CollectionUtils.isNotEmpty(datasourceDTO.getApiConfiguration())) {
+            String config = new Gson().toJson(datasourceDTO.getApiConfiguration());
+            datasourceDTO.setApiConfiguration(null);
+        }
     }
 }

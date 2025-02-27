@@ -6,7 +6,6 @@ import io.datains.base.domain.*;
 import io.datains.commons.exception.DEException;
 import io.datains.commons.pool.PriorityThreadPoolExecutor;
 import io.datains.commons.utils.*;
-import io.datains.plugins.config.SpringContextUtil;
 import io.datains.plugins.xpack.email.dto.request.XpackEmailViewRequest;
 import io.datains.plugins.xpack.email.dto.request.XpackPixelEntity;
 import io.datains.service.ScheduleService;
@@ -18,13 +17,10 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-import io.datains.plugins.common.entity.GlobalTaskEntity;
-
-
-import java.util.List;
-import java.util.concurrent.Future;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.concurrent.Future;
 
 @ApiIgnore
 @RequestMapping("/plugin/task")

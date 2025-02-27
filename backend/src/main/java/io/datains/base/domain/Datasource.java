@@ -1,15 +1,15 @@
 package io.datains.base.domain;
 
-import java.io.Serializable;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 public class Datasource implements Serializable {
     @ApiModelProperty("ID")
     private String id;
-    @ApiModelProperty(value = "名称",required = true)
+    @ApiModelProperty(value = "名称", required = true)
     private String name;
     @ApiModelProperty("描述")
     private String desc;
@@ -26,5 +26,8 @@ public class Datasource implements Serializable {
     @ApiModelProperty(value = "配置详情", required = true)
     private String configuration;
 
+    private Boolean enableDataFill;
+
+    private Boolean enableDataFillCreateTable;
     private static final long serialVersionUID = 1L;
 }

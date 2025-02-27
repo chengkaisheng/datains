@@ -28,5 +28,8 @@ public interface ExtAuthService {
     void clearDeptResource(Long deptId);
     void clearRoleResource(Long roleId);
 
-
+    List<AuthItem> dataFillingIdByDept(Long deptId);
+    List<AuthItem> dataFillingIdByRole(Long roleId);
+    List<AuthItem> dataFillingIdByUser(Long userId);
+    List<String> parentResource(String resourceId, String type);
 }
