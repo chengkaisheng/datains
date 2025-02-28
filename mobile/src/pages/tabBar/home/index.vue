@@ -399,12 +399,12 @@ export default {
 
 .operation-btn {
   display: inline-block;
-  padding: 4rpx 20rpx;
+  padding: 4rpx 10rpx;
   background: #409eff;
   color: #fff;
   border-radius: 4rpx;
   font-size: 24rpx;
-  width: 80rpx;
+  /* width: 80rpx; */
 }
 
 .pagination {
