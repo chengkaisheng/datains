@@ -228,4 +228,9 @@ public class DataFillController {
         return dataFillDataService.listColumnData(optionDatasource, request.getOptionTable(), request.getOptionColumn(), request.getOptionOrder());
     }
 
+    @ApiIgnore
+    @PostMapping("/form/excel/excelUploadToFrom/{pid}")
+    public void excelUploadToFrom(@RequestParam("file") MultipartFile file, @PathVariable String pid) throws Exception{
+        dataFillService.excelUploadToFrom(file, pid);
+    }
 }
