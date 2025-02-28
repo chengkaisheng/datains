@@ -19,7 +19,7 @@
       <scroll-view class="table-container" scroll-x>
         <!-- 表格头部 -->
         <view class="table-header">
-          <view class="th" style="min-width: 150rpx;">任务名称</view>
+          <view class="th" style="min-width: 150rpx;">表单名称</view>
           <!-- <view class="th" style="min-width: 200rpx;">开始时间</view> -->
           <view class="th" style="min-width: 250rpx;">结束时间</view>
           <!-- <view class="th" style="min-width: 200rpx;">创建人</view> -->
@@ -37,7 +37,7 @@
             :key="item.id"
             class="table-row"
           >
-            <view class="td" style="min-width: 150rpx;">{{ item.taskName }}</view>
+            <view class="td" style="min-width: 150rpx;">{{ item.formName }}</view>
             <!-- <view class="td" style="min-width: 200rpx;">{{ formatTime(item.startTime) }}</view> -->
             <view class="td" style="min-width: 250rpx;">{{ formatTime(item.endTime) }}</view>
             <!-- <view class="td" style="min-width: 200rpx;">{{ item.creatorName }}</view> -->
@@ -80,7 +80,6 @@
           </view>
         </view>
 
-        <!-- 添加上传按钮 -->
         <view class="upload-section">
           <view style="margin-right: 100rpx;" class="operation-btn upload-btn" @click="handleDownloadTemplate(childForm.id, childForm.name)">
             <text>下载模板</text>
@@ -214,6 +213,15 @@ export default {
 
     // 处理下载模板
     async handleDownloadTemplate(id, name) {
+      // 在自由填报页面时进行校验
+      if (this.currentTab === 1 && !this.selectedFormText) {
+        uni.showToast({
+          title: '请先选择表单',
+          icon: 'none'
+        })
+        return
+      }
+
       try {
         const res = await downloadTemplate(id)
         if (res) {
@@ -258,6 +266,15 @@ export default {
     
     // 处理上传数据
     async handleUploadData(id) {
+      // 在自由填报页面时进行校验
+      if (this.currentTab === 1 && !this.selectedFormText) {
+        uni.showToast({
+          title: '请先选择表单',
+          icon: 'none'
+        })
+        return
+      }
+
       try {
         // 创建隐藏的文件选择器
         const input = document.createElement('input')
