@@ -69,6 +69,7 @@
               mode="multiSelector" 
               :range="pickerRange"
               :range-key="'name'"
+              :value="pickerIndexes"
               @columnchange="handleColumnChange"
               @change="handleFormSelect"
             >
@@ -354,9 +355,9 @@ export default {
         if (res.success) {
           this.formList = res.data
           // 初始化第一列数据
-          this.pickerRange[0] = this.formList
+          this.$set(this.pickerRange, 0, this.formList)
           // 初始化第二列数据
-          this.pickerRange[1] = this.formList[0]?.children || []
+          this.$set(this.pickerRange, 1, this.formList[0]?.children || [])
         }
       } catch (error) {
         console.error('获取表单列表失败:', error)
@@ -374,7 +375,7 @@ export default {
         // 重置第二列索引
         this.pickerIndexes[1] = 0
         // 手动更新 range
-        this.pickerRange = [...this.pickerRange]
+        this.$set(this.pickerRange, 1, this.formList[value]?.children || [])
       } else { // 第二列变化
         this.pickerIndexes[1] = value
       }
