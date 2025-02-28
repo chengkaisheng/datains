@@ -4,6 +4,7 @@ import io.datains.dto.datasource.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,4 +30,9 @@ public class ExcelSheetData {
     private String path;
     @ApiModelProperty("字段MD5")
     private String fieldsMd5;
+    @ApiModelProperty("字段变更")
+    private Boolean changeFiled = false;
+    private Boolean effectExtField = false;
+    private boolean setKey = false;
+    private List<String> keys = new ArrayList<>();
 }

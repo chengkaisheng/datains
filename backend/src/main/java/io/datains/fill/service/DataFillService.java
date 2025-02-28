@@ -1,5 +1,14 @@
 package io.datains.fill.service;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.event.AnalysisEventListener;
+import com.alibaba.excel.metadata.CellData;
+import com.alibaba.excel.read.metadata.ReadSheet;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.parser.Feature;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.datains.auth.annotation.DeCleaner;
@@ -9,12 +18,10 @@ import io.datains.base.domain.SysUserExample;
 import io.datains.base.mapper.SysUserMapper;
 import io.datains.commons.constants.DePermissionType;
 import io.datains.commons.constants.SysAuthConstants;
-import io.datains.commons.utils.AuthUtils;
-import io.datains.commons.utils.BeanUtils;
-import io.datains.commons.utils.CommonBeanFactory;
-import io.datains.commons.utils.TreeUtils;
+import io.datains.commons.utils.*;
 import io.datains.controller.ResultHolder;
 import io.datains.controller.request.datasource.DatasourceRequest;
+import io.datains.dto.dataset.ExcelSheetData;
 import io.datains.dto.datasource.TableField;
 import io.datains.exception.DataInsException;
 import io.datains.fill.constants.DataFillConstants;
@@ -37,6 +44,8 @@ import io.datains.provider.datasource.DatasourceProvider;
 import io.datains.provider.datasource.ExtDDLProvider;
 import io.datains.provider.datasource.JdbcProvider;
 import io.datains.service.sys.SysAuthService;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,9 +54,17 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -654,4 +671,256 @@ public class DataFillService {
 
     }
 
+    public void excelUploadToFrom(MultipartFile file, String pid) throws Exception {
+        DataFillFormWithBLOBs dataFillForm = this.excelToFrom(file, pid);
+        this.saveForm(dataFillForm);
+
+    }
+
+    public DataFillFormWithBLOBs excelToFrom(MultipartFile file, String pid) throws Exception {
+        DataFillFormWithBLOBs dataFillForm = new DataFillFormWithBLOBs();
+        String filename = file.getOriginalFilename();
+        // parse file
+        List<ExcelSheetData> excelSheetDataList = parseExcel(filename, file.getInputStream(), true);
+        if (excelSheetDataList.isEmpty()) {
+            DataInsException.throwException("未解析出表格，请检查表格");
+        }
+        List<TableField> fields = excelSheetDataList.get(0).getFields();
+        if (fields.isEmpty()) {
+            DataInsException.throwException("未解析出表格，请检查表格");
+        }
+        //根据表格构建表单结构
+        List<ExtTableField> extFields = new ArrayList<>();
+        for (TableField tableField : fields) {
+            ExtTableField extTableField = new ExtTableField();
+            extTableField.setType("input");
+            extTableField.setTypeName("单行输入");
+            extTableField.setIcon("icon_single-line_outlined");
+            extTableField.setId(UUIDUtil.getUUID().toString());
+            extTableField.setSettings(ExtTableField.ExtTableFieldSetting.builder()
+                    .name(tableField.getFieldName())
+                    .placeholder("")
+                    .required(false)
+                    .unique(false)
+                    .inputType("text")
+                    .mapping(ExtTableField.ExtTableFieldMapping.builder()
+                            .columnName(UUIDUtil.getUUID().toString())
+                            .type(ExtTableField.BaseType.nvarchar)
+                            .build())
+                    .build());
+            extFields.add(extTableField);
+        }
+        String name = filename.substring(0, filename.lastIndexOf("."));
+        dataFillForm.setName(name);
+        dataFillForm.setTableName("fill_" + UUIDUtil.getUUID());
+        dataFillForm.setDatasource("default-built-in");
+        dataFillForm.setPid(pid);
+        dataFillForm.setLevel(1);
+        dataFillForm.setForms(gson.toJson(extFields));
+        dataFillForm.setCreateIndex(false);
+        dataFillForm.setTableIndexes("[]");
+        dataFillForm.setCommitNewUpdate(false);
+        dataFillForm.setNodeType("form");
+        return dataFillForm;
+    }
+
+    public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws Exception {
+        List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
+        String suffix = filename.substring(filename.lastIndexOf(".") + 1);
+        if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
+            List<TableField> fields = new ArrayList<>();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            String s = reader.readLine();// first line
+            String[] split = s.split(",");
+            for (String s1 : split) {
+                TableField tableFiled = new TableField();
+                tableFiled.setFieldName(s1);
+                tableFiled.setRemarks(s1);
+                tableFiled.setFieldType("TEXT");
+                fields.add(tableFiled);
+            }
+            List<List<String>> data = new ArrayList<>();
+            int num = 1;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (num > 1000) {
+                    break;
+                }
+                String str;
+                line += ",";
+                Pattern pCells = Pattern.compile("(\"[^\"]*(\"{2})*[^\"]*\")*[^,]*,");
+                Matcher mCells = pCells.matcher(line);
+                List<String> cells = new ArrayList();//每行记录一个list
+                //读取每个单元格
+                while (mCells.find()) {
+                    str = mCells.group();
+                    str = str.replaceAll("(?sm)\"?([^\"]*(\"{2})*[^\"]*)\"?.*,", "$1");
+                    str = str.replaceAll("(?sm)(\"(\"))", "$2");
+                    cells.add(str);
+                }
+                data.add(cells);
+                num++;
+            }
+            ExcelSheetData excelSheetData = new ExcelSheetData();
+            String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
+            excelSheetData.setFields(fields);
+            excelSheetData.setData(data);
+            excelSheetData.setExcelLable(filename);
+            excelSheetData.setFieldsMd5(Md5Utils.md5(StringUtils.join(fieldArray, ",")));
+            excelSheetDataList.add(excelSheetData);
+        } else {
+            excelSheetDataList = excelSheetDataList(inputStream, isPreview);
+        }
+
+        inputStream.close();
+
+        excelSheetDataList.forEach(excelSheetData -> {
+            List<List<String>> data = excelSheetData.getData();
+            String[] fieldArray = excelSheetData.getFields().stream().map(TableField::getFieldName).toArray(String[]::new);
+            List<Map<String, Object>> jsonArray = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(data)) {
+                jsonArray = data.stream().map(ele -> {
+                    Map<String, Object> map = new HashMap<>();
+                    for (int i = 0; i < fieldArray.length; i++) {
+                        map.put(fieldArray[i], i < ele.size() ? ele.get(i) : "");
+                    }
+                    return map;
+                }).collect(Collectors.toList());
+            }
+            excelSheetData.setFieldsMd5(Md5Utils.md5(StringUtils.join(fieldArray, ",")));
+            excelSheetData.setJsonArray(jsonArray);
+        });
+
+        return excelSheetDataList;
+    }
+
+    public List<ExcelSheetData> excelSheetDataList(InputStream inputStream, boolean isPreview) {
+        List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
+        NoModelDataListener noModelDataListener = new NoModelDataListener();
+        ExcelReader excelReader = EasyExcel.read(inputStream, noModelDataListener).build();
+        List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
+        for (ReadSheet readSheet : sheets) {
+            noModelDataListener.clear();
+            List<TableField> fields = new ArrayList<>();
+            excelReader.read(readSheet);
+            for (String s : noModelDataListener.getHeader()) {
+                TableField tableFiled = new TableField();
+                tableFiled.setFieldType("TEXT");
+                tableFiled.setFieldName(s);
+                tableFiled.setRemarks(s);
+                fields.add(tableFiled);
+            }
+            String json = JSON.toJSONString(noModelDataListener.getData());
+            List<List<String>> data = JSON.parseObject(json, new TypeReference<List<List<String>>>() {
+            }, Feature.IgnoreNotMatch);
+            data = (isPreview && noModelDataListener.getData().size() > 1000 ? new ArrayList<>(data.subList(0, 1000)) : data);
+            if (isPreview) {
+                for (int i = 0; i < data.size(); i++) {
+                    List<String> datum = data.get(i);
+                    for (int j = 0; j < datum.size(); j++) {
+                        if (j < fields.size()) {
+                            cellType(datum.get(j), i, fields.get(j));
+                        }
+                    }
+                }
+            }
+            ExcelSheetData excelSheetData = new ExcelSheetData();
+            excelSheetData.setFields(fields);
+            excelSheetData.setData(data);
+            excelSheetData.setExcelLable(readSheet.getSheetName());
+            excelSheetDataList.add(excelSheetData);
+        }
+        return excelSheetDataList;
+    }
+
+    private String cellType(String value) {
+        if (value.length() > 19) {
+            return "TEXT";
+        }
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            sdf.parse(value);
+            return "DATETIME";
+        } catch (Exception e1) {
+            try {
+                Double d = Double.valueOf(value);
+                double eps = 1e-10;
+                if (d - Math.floor(d) < eps) {
+                    return "LONG";
+                } else {
+                    return "DOUBLE";
+                }
+            } catch (Exception e2) {
+                return "TEXT";
+            }
+        }
+    }
+
+    private void cellType(String value, int i, TableField tableFiled) {
+        if (StringUtils.isEmpty(value)) {
+            return;
+        }
+        if (i == 0) {
+            tableFiled.setFieldType(cellType(value));
+        } else {
+            String type = cellType(value);
+            if (type.equalsIgnoreCase("TEXT")) {
+                tableFiled.setFieldType(type);
+            }
+            if (type.equalsIgnoreCase("DOUBLE") && tableFiled.getFieldType().equalsIgnoreCase("LONG")) {
+                tableFiled.setFieldType(type);
+            }
+        }
+
+
+    }
+
+    @EqualsAndHashCode(callSuper = true)
+    @Data
+    public static class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {
+        private List<List<String>> data = new ArrayList<>();
+        private List<String> header = new ArrayList<>();
+
+        @Override
+        public void invokeHead(Map<Integer, CellData> headMap, AnalysisContext context) {
+            super.invokeHead(headMap, context);
+            for (Integer key : headMap.keySet()) {
+                CellData cellData = headMap.get(key);
+                String value = cellData.getStringValue();
+                if (StringUtils.isEmpty(value)) {
+                    value = "none_" + key;
+                }
+                header.add(value);
+            }
+        }
+
+        @Override
+        public void invoke(Map<Integer, String> dataMap, AnalysisContext context) {
+            List<String> line = new ArrayList<>();
+            for (Integer key : dataMap.keySet()) {
+                String value = dataMap.get(key);
+                if (StringUtils.isEmpty(value)) {
+                    value = "";
+                }
+                line.add(value);
+            }
+            ;
+            int size = line.size();
+            if (size < header.size()) {
+                for (int i = 0; i < header.size() - size; i++) {
+                    line.add("");
+                }
+            }
+            data.add(line);
+        }
+
+        @Override
+        public void doAfterAllAnalysed(AnalysisContext analysisContext) {
+        }
+
+        public void clear() {
+            data.clear();
+            header.clear();
+        }
+    }
 }
