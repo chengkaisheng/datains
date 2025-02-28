@@ -1,27 +1,22 @@
 package io.datains.fill.service.impl;
 
-import io.datains.auth.api.dto.CurrentUserDto;
 import io.datains.commons.utils.AuthUtils;
+import io.datains.commons.utils.TreeUtils;
 import io.datains.fill.controller.vo.FillFormDataCreateReqVo;
 import io.datains.fill.controller.vo.FillFormInfoCreateReqVo;
 import io.datains.fill.controller.vo.FillFormInfoReqVo;
 import io.datains.fill.controller.vo.FillFormInfoVo;
 import io.datains.fill.entry.FillFormData;
 import io.datains.fill.entry.FillFormInfo;
-import io.datains.fill.entry.FillFormTemplate;
 import io.datains.fill.mapper.FillFormDataMapper;
 import io.datains.fill.mapper.FillFormInfoMapper;
-import io.datains.fill.mapper.FillFormTemplateMapper;
 import io.datains.fill.service.FillFormInfoService;
+import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * FillFormInfoServiceImpl
@@ -35,23 +30,17 @@ public class FillFormInfoServiceImpl implements FillFormInfoService {
     private FillFormInfoMapper infoMapper;
     @Resource
     private FillFormDataMapper dataMapper;
-    @Resource
-    private FillFormTemplateMapper templateMapper;
 
     @Override
     @Transactional
     public FillFormInfo insert(FillFormInfoCreateReqVo fillFormInfo) {
         Long userId = AuthUtils.getUser().getUserId();
+        fillFormInfo.setId(UUIDUtil.getUUID().toString());
         fillFormInfo.setCreator(userId);
         fillFormInfo.setUpdater(userId);
-        //处理版本号
-        if (fillFormInfo.getParentId() != null) {
-            Integer maxVersion = this.infoMapper.selectMaxVersionByParentId(fillFormInfo.getParentId());
-            fillFormInfo.setVersion(maxVersion + 1);
-        }
         //创建表单信息
         this.infoMapper.insert(fillFormInfo);
-        if (fillFormInfo.getParentId() != null) {
+        if ("form".equals(fillFormInfo.getNodeType())) {
             //创建表单数据
             FillFormDataCreateReqVo saveFormData = new FillFormDataCreateReqVo();
             saveFormData.setFormId(fillFormInfo.getId());
@@ -72,40 +61,70 @@ public class FillFormInfoServiceImpl implements FillFormInfoService {
     }
 
     @Override
-    public void delete(Long id) {
-        Long userId = AuthUtils.getUser().getUserId();
+    public void delete(String id) {
         //查出所有的表单信息id，即包含父节点和子节点的id
-        List<Long> ids = infoMapper.selectIdsById(id);
+        List<String> ids = findAllChildIds(id);
         //删除表单对应的数据
-        this.dataMapper.logicalDeleteByFormIds(ids, userId);
+        this.dataMapper.deleteByFormIds(ids);
         //删除表单信息
-        this.infoMapper.logicalDelete(id, userId);
+        this.infoMapper.deleteByIds(ids);
+    }
+
+    private List<String> findAllChildIds(String pid) {
+        Set<String> allIds = new HashSet<>();
+        Queue<String> queue = new LinkedList<>();
+        queue.add(pid);
+        allIds.add(pid);
+
+        while (!queue.isEmpty()) {
+            List<String> parentIds = new ArrayList<>(queue);
+            queue.clear();
+            List<String> childrenIds = infoMapper.findChildrenIds(parentIds);
+            for (String childId : childrenIds) {
+                if (!allIds.contains(childId)) { // 防止重复处理q
+                    allIds.add(childId);
+                    queue.add(childId);
+                }
+            }
+        }
+        if (!allIds.isEmpty()) {
+            return new ArrayList<>(allIds);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override
-    public List<FillFormInfoVo> select(FillFormInfoReqVo request) {
-        CurrentUserDto user = AuthUtils.getUser();
-        if (!user.getIsAdmin()) {
-            request.setUserId(user.getUserId());
+    public List<FillFormInfoVo> tree(FillFormInfoReqVo request) {
+        if (request.getName() == null || request.getName().isEmpty()) {
+            return infoMapper.select(request);
         }
-        //分页查询父节点
-        List<FillFormInfoVo> allNodes = infoMapper.select(request);
-        if (allNodes.isEmpty()) {
-            return allNodes;
+        // 1.查询基础匹配节点
+        List<FillFormInfoVo> matchedNodes = infoMapper.searchByName(request.getName());
+        if (matchedNodes.isEmpty()) return Collections.emptyList();
+
+        // 2.收集所有相关节点ID
+        Set<String> allIds = new HashSet<>();
+        for (FillFormInfoVo node : matchedNodes) {
+            // 2.1 添加当前节点
+            allIds.add(node.getId());
+
+            // 2.2 查询父链节点
+            List<String> parentIds = infoMapper.getParentChain(node.getId());
+            allIds.addAll(parentIds);
+
+            // 2.3 查询所有子节点
+            List<String> childrenIds = infoMapper.findAllChildrenIds(node.getId());
+            allIds.addAll(childrenIds);
         }
-        //查询所有子节点
-        List<FillFormInfo> allChildren = infoMapper.selectByParentIds(allNodes.stream().map(FillFormInfo::getId).collect(Collectors.toList()));
-        Map<Long, List<FillFormInfo>> childrenMap = allChildren.stream().collect(Collectors.groupingBy(FillFormInfo::getParentId));
-        //构建父子关系
-        allNodes.forEach(parent -> parent.setChildren(
-                childrenMap.getOrDefault(parent.getId(), Collections.emptyList())
-                        .stream()
-                        //排序
-                        .sorted(Comparator.comparing(FillFormInfo::getCreateTime).reversed())
-                        .collect(Collectors.toList())));
-        return allNodes.stream()
-                .sorted(Comparator.comparing(FillFormInfo::getCreateTime).reversed())
-                .collect(Collectors.toList());
+
+        // 3.返回完整节点数据
+        return TreeUtils.mergeTree(infoMapper.getNodesByIds(new ArrayList<>(allIds)));
+    }
+
+    @Override
+    public List<FillFormInfoVo> selectForm(FillFormInfoReqVo request) {
+        return infoMapper.selectForm(request);
     }
 
     @Override
@@ -119,6 +138,7 @@ public class FillFormInfoServiceImpl implements FillFormInfoService {
             this.dataMapper.update(fillFormData);
         } else {
             fillFormData = new FillFormData();
+            fillFormData.setId(UUIDUtil.getUUID().toString());
             fillFormData.setFormData(vo.getFormData());
             fillFormData.setFormId(vo.getFormId());
             fillFormData.setCreator(userId);
@@ -128,12 +148,7 @@ public class FillFormInfoServiceImpl implements FillFormInfoService {
     }
 
     @Override
-    public FillFormData getFormData(Long formId) {
+    public FillFormData getFormData(String formId) {
         return this.dataMapper.getByFormId(formId);
-    }
-
-    @Override
-    public FillFormTemplate getFormTemplate(Long id) {
-        return templateMapper.getById(id);
     }
 }

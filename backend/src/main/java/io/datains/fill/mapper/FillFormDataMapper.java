@@ -16,7 +16,7 @@ public interface FillFormDataMapper {
 
     int update(FillFormData fillFormData);
 
-    FillFormData getByFormId(@Param("formId") Long formId);
+    FillFormData getByFormId(@Param("formId") String formId);
 
-    int logicalDeleteByFormIds(@Param("formIds") List<Long> formIds, @Param("updater") Long updater);
+    int deleteByFormIds(@Param("formIds") List<String> formIds);
 }

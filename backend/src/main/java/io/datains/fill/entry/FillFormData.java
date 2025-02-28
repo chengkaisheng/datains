@@ -13,13 +13,13 @@ import java.time.LocalDateTime;
 @Data
 public class FillFormData {
     /**
-     * 自增主键ID
+     * 主键ID
      */
-    private Long id;
+    private String id;
     /**
      * 关联的表单ID（对应 fill_form_info.id）
      */
-    private Long formId;
+    private String formId;
     /**
      * 表单数据（JSON数组格式，需自定义类型处理器或手动解析）
      */
@@ -40,9 +40,4 @@ public class FillFormData {
      * 更新时间
      */
     private LocalDateTime updateTime;
-
-    /**
-     * 是否删除 1-删除
-     */
-    private int isDelete;
 }

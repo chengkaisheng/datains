@@ -18,14 +18,19 @@ public interface FillFormInfoMapper {
 
     int update(FillFormInfo fillFormInfo);
 
-    int logicalDelete(@Param("id") Long id,
-                      @Param("updater") Long updater);
+    int deleteByIds(@Param("ids") List<String> ids);
 
     List<FillFormInfoVo> select(FillFormInfoReqVo request);
 
-    List<FillFormInfo> selectByParentIds(@Param("parentIds") List<Long> parentIds);
+    List<FillFormInfoVo> selectForm(FillFormInfoReqVo request);
 
-    Integer selectMaxVersionByParentId(@Param("parentId") Long parentId);
+    List<String> findChildrenIds(@Param("parentIds") List<String> parentIds);
 
-    List<Long> selectIdsById(@Param("id") Long id);
+    List<FillFormInfoVo> searchByName(@Param("keyword") String keyword);
+
+    List<String> getParentChain(@Param("id") String id);
+
+    List<String> findAllChildrenIds(@Param("id") String id);
+
+    List<FillFormInfoVo> getNodesByIds(@Param("ids") List<String> ids);
 }

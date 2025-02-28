@@ -13,7 +13,7 @@ public class FillFormDataCreateReqVo {
     /**
      * 关联的表单ID（对应 fill_form_info.id）
      */
-    private Long formId;
+    private String formId;
     /**
      * 表单数据（JSON数组格式，需自定义类型处理器或手动解析）
      */

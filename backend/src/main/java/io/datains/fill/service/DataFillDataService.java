@@ -326,7 +326,23 @@ public class DataFillDataService {
             }
         }
 
-
+        if (!resultList.isEmpty()) {
+            // 检查所有元素是否符合条件
+            boolean allValid = resultList.stream().allMatch(map ->
+                    map.containsKey("data") &&
+                            map.containsKey("logInfo") &&
+                            map.get("logInfo") instanceof DataFillCommitLogDTO
+            );
+            if (allValid) {
+                // 根据commitTime降序排序
+                resultList.sort((o1, o2) -> {
+                    DataFillCommitLogDTO dto1 = (DataFillCommitLogDTO) o1.get("logInfo");
+                    DataFillCommitLogDTO dto2 = (DataFillCommitLogDTO) o2.get("logInfo");
+                    // 降序排序，因此用dto2的时间与dto1比较
+                    return dto2.getCommitTime().compareTo(dto1.getCommitTime());
+                });
+            }
+        }
         return new DataFillFormTableDataResponse()
                 .setKey(key)
                 .setData(withLogs ? resultList : result)

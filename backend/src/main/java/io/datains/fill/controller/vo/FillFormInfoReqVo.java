@@ -11,6 +11,7 @@ import lombok.Data;
 @Data
 public class FillFormInfoReqVo {
     private String formId;
+    private String pid;
     private String name;
     private Long userId;
     boolean isAdmin;

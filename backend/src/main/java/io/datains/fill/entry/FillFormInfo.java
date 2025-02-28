@@ -15,19 +15,18 @@ import java.time.LocalDateTime;
 @Data
 public class FillFormInfo {
     /**
-     * 自增主键ID
+     * 主键ID
      */
-    private Long id;
+    private String id;
 
     /**
      * 父级表单ID
      */
-    private Long parentId;
-
+    private String pid;
     /**
-     * 关联模板ID
+     * 文件夹或者表单 folder文件夹 form表单
      */
-    private Long templateId;
+    private String nodeType;
 
     /**
      * 表单名称
@@ -38,11 +37,6 @@ public class FillFormInfo {
      * 表单描述
      */
     private String description;
-    /**
-     * 版本号
-     */
-    private Integer version;
-
     /**
      * 创建人ID
      */
@@ -64,8 +58,4 @@ public class FillFormInfo {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
-    /**
-     * 是否删除 1-删除
-     */
-    private int isDelete;
 }

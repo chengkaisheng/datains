@@ -3,49 +3,28 @@
 <mapper namespace="io.datains.fill.mapper.FillFormDataMapper">
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO fill_form_data
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            form_id,
-            form_data,
-            creator,
-            <if test="createTime != null">
-                create_time,
-            </if>
-            updater,
-            <if test="updateTime != null">
-                update_time,
-            </if>
-        </trim>
-        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
-            #{formId},
-            #{formData},
-            #{creator},
-            <if test="createTime != null">
-                #{createTime},
-            </if>
-            #{updater},
-            <if test="updateTime != null">
-                #{updateTime},
-            </if>
-        </trim>
-    </insert>
-    <insert id="insertOrUpdate">
-
+        (id,
+         form_id,
+         form_data,
+         creator,
+         updater)
+        values (#{id},
+                #{formId},
+                #{formData},
+                #{creator},
+                #{updater})
     </insert>
     <select id="getByFormId" resultType="io.datains.fill.entry.FillFormData">
         SELECT *
         FROM fill_form_data
         WHERE form_id = #{formId}
-          and is_delete = 0
     </select>
-    <update id="logicalDeleteByFormIds">
-        UPDATE fill_form_data
-        SET is_delete = 1,
-        updater = #{updater}
+    <update id="deleteByFormIds">
+        delete from fill_form_data
         WHERE form_id IN
         <foreach collection="formIds" item="formId" open="(" separator="," close=")">
             #{formId}
         </foreach>
-        AND is_delete = 0
     </update>
     <update id="update">
         UPDATE fill_form_data

@@ -10,5 +10,5 @@ import org.apache.ibatis.annotations.Param;
  * @since 2025-02-25 16:37
  */
 public interface FillFormTemplateMapper {
-    FillFormTemplate getById(@Param("id") Long id);
+    FillFormTemplate getById(@Param("id") String id);
 }

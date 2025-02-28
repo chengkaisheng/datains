@@ -6,7 +6,6 @@ import io.datains.fill.controller.vo.FillFormInfoReqVo;
 import io.datains.fill.controller.vo.FillFormInfoVo;
 import io.datains.fill.entry.FillFormData;
 import io.datains.fill.entry.FillFormInfo;
-import io.datains.fill.entry.FillFormTemplate;
 
 import java.util.List;
 
@@ -21,13 +20,14 @@ public interface FillFormInfoService {
 
     void update(FillFormInfo fillFormInfo);
 
-    void delete(Long id);
-
-    List<FillFormInfoVo> select(FillFormInfoReqVo request);
+    void delete(String id);
 
     void saveFormData(FillFormDataCreateReqVo vo);
 
-    FillFormData getFormData(Long formId);
+    FillFormData getFormData(String formId);
 
-    FillFormTemplate getFormTemplate(Long id);
+
+    List<FillFormInfoVo> tree(FillFormInfoReqVo request);
+
+    List<FillFormInfoVo> selectForm(FillFormInfoReqVo request);
 }

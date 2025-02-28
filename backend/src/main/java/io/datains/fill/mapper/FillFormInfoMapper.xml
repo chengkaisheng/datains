@@ -3,45 +3,14 @@
 <mapper namespace="io.datains.fill.mapper.FillFormInfoMapper">
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO fill_form_info
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            parent_id,
-            template_id,
-            name,
-            description,
-            creator,
-            version,
-            <if test="createTime != null">
-                create_time,
-            </if>
-            updater,
-            <if test="updateTime != null">
-                update_time,
-            </if>
-        </trim>
-        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
-            #{parentId},
-            #{templateId},
-            #{name},
-            #{description},
-            #{creator},
-            #{version},
-            <if test="createTime != null">
-                #{createTime},
-            </if>
-            #{updater},
-            <if test="updateTime != null">
-                #{updateTime},
-            </if>
-        </trim>
+            (id, pid, node_type, name, description, creator, updater)
+        values (#{id}, #{pid}, #{nodeType}, #{name}, #{description}, #{creator}, #{updater})
     </insert>
     <update id="update">
         UPDATE fill_form_info
         <set>
-            <if test="parentId != null">
-                parent_id = #{parentId},
-            </if>
-            <if test="templateId != null">
-                template_id = #{templateId},
+            <if test="pid != null and pid != ''">
+                pid = #{pid},
             </if>
             <if test="name != null and name != ''">
                 name = #{name},
@@ -56,44 +25,77 @@
         WHERE id = #{id}
     </update>
 
-    <update id="logicalDelete">
-        UPDATE fill_form_info
-        SET is_delete   = 1,
-            updater     = #{updater},
-            update_time = NOW()
-        WHERE id = #{id}
-           OR parent_id = #{id}
-    </update>
+    <delete id="deleteByIds">
+        DELETE
+        FROM fill_form_info
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
     <select id="select" resultType="io.datains.fill.controller.vo.FillFormInfoVo">
-        SELECT ffi.*, fft.name as templateName
+        SELECT *
         FROM fill_form_info ffi
-        left join fill_form_template fft on ffi.template_id = fft.id
-        WHERE ffi.is_delete = 0
-        AND ffi.parent_id is null
+        WHERE ffi.node_type = 'folder'
+    </select>
+    <select id="selectForm" resultType="io.datains.fill.controller.vo.FillFormInfoVo">
+        SELECT ffi.*,su.nick_name as createdByName
+        FROM fill_form_info ffi
+        left join sys_user su on su.user_id = ffi.creator
+        WHERE ffi.pid = #{pid} and ffi.node_type = 'form'
         <if test="name != null and name != ''">
             AND ffi.name LIKE CONCAT('%', #{name}, '%')
         </if>
-        <if test="userId != null">
-            AND ffi.creator = #{userId}
-        </if>
-        ORDER BY ffi.create_time DESC
     </select>
-    <select id="selectMaxVersionByParentId" resultType="java.lang.Integer">
-        SELECT COALESCE(MAX(version), 0)
-        FROM fill_form_info
-        WHERE parent_id = #{parentId}
-    </select>
-    <select id="selectIdsById" resultType="java.lang.Long">
-        SELECT id
-        FROM fill_form_info
-        WHERE (parent_id = #{id} or id = #{id})
-          AND is_delete = 0
-    </select>
-    <select id="selectByParentIds" resultType="io.datains.fill.entry.FillFormInfo">
-        select * from fill_form_info where parent_id in
-        <foreach collection="parentIds" item="parentId" open="(" separator="," close=")">
-            #{parentId}
+    <select id="findChildrenIds" resultType="java.lang.String">
+        SELECT id FROM fill_form_info
+        WHERE pid IN
+        <foreach item="pid" collection="parentIds" open="(" separator="," close=")">
+            #{pid}
         </foreach>
-        and is_delete = 0
+    </select>
+
+    <select id="searchByName" resultType="io.datains.fill.controller.vo.FillFormInfoVo">
+        SELECT id, pid, name
+        FROM fill_form_info
+        WHERE name LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+    <select id="getParentChain" resultType="java.lang.String">
+        SELECT _id
+        FROM (SELECT @current_id                                                                AS _id,
+                     (SELECT @current_id := CONVERT(pid USING utf8mb4) COLLATE utf8mb4_general_ci
+                      FROM fill_form_info
+                      WHERE id = CONVERT(@current_id USING utf8mb4) COLLATE utf8mb4_general_ci) AS pid
+              FROM fill_form_info,
+                   (SELECT @current_id := CONVERT(#{id} USING utf8mb4) COLLATE utf8mb4_general_ci) vars
+              WHERE @current_id > 0) t
+        WHERE _id != CONVERT(#{id} USING utf8mb4) COLLATE utf8mb4_general_ci
+    </select>
+
+    <select id="findAllChildrenIds" resultType="java.lang.String">
+        SELECT CONVERT(id USING utf8mb4) COLLATE utf8mb4_general_ci AS id
+        FROM (SELECT @ids      AS _id,
+                     (SELECT @ids := GROUP_CONCAT(CONVERT(id USING utf8mb4) COLLATE utf8mb4_general_ci)
+                      FROM fill_form_info
+                      WHERE FIND_IN_SET(
+                                    CONVERT(pid USING utf8mb4) COLLATE utf8mb4_general_ci,
+                                    CONVERT(@ids USING utf8mb4) COLLATE utf8mb4_general_ci
+                            )) AS children
+              FROM fill_form_info,
+                   (SELECT @ids := CONVERT(#{id} USING utf8mb4) COLLATE utf8mb4_general_ci) vars
+              WHERE @ids IS NOT NULL) t1
+                 JOIN fill_form_info
+                      ON _id = CONVERT(fill_form_info.id USING utf8mb4) COLLATE utf8mb4_general_ci
+        UNION
+        SELECT CONVERT(#{id} USING utf8mb4) COLLATE utf8mb4_general_ci
+    </select>
+
+    <select id="getNodesByIds" resultType="io.datains.fill.controller.vo.FillFormInfoVo">
+        SELECT * FROM fill_form_info
+        WHERE id IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </select>
 </mapper>
