@@ -181,3 +181,14 @@ export function getTableColumnData(optionDatasource, optionTable, optionColumn, 
     }
   })
 }
+
+export function uploadExcelForm(id, data) {
+  return request({
+    url: `dataFilling/form/excel/excelUploadToFrom/${id}`,
+    method: 'post',
+    data: data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}

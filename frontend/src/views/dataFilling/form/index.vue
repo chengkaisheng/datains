@@ -3,7 +3,7 @@ import DeContainer from '@/components/datains/DeContainer.vue'
 import DeAsideContainer from '@/components/datains/DeAsideContainer.vue'
 import NoSelect from './NoSelect.vue'
 import ViewTable from './ViewTable.vue'
-import { listForm, saveForm, updateFormName, deleteForm, getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
+import { listForm, saveForm, updateFormName, deleteForm, getWithPrivileges, uploadExcelForm } from '@/views/dataFilling/form/dataFilling'
 import { forEach, cloneDeep, find } from 'lodash-es'
 import { hasPermission } from '@/directive/Permission'
 import DataFillingFormMoveSelector from './MoveSelector.vue'
@@ -204,8 +204,10 @@ export default {
     clickTreeAddBtn(data) {
       if (data.createType === 'folder') {
         this.createFolder(data)
-      } else {
+      } else if (data.createType === 'form') {
         this.createForm(data)
+      } else if (data.createType === 'excel') {
+        this.createExcel(data)
       }
     },
     createForm(data) {
@@ -214,6 +216,51 @@ export default {
         level: data.level + 1
       }
       this.$router.push({ name: 'data-filling-form-create', query: _param })
+    },
+    createExcel(data) {
+      console.log(data);
+      // 创建一个隐藏的文件上传input
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = '.xlsx,.xls'
+      input.style.display = 'none'
+      
+      input.onchange = (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+        
+        // 验证文件类型
+        const isExcel = /\.(xlsx|xls)$/.test(file.name.toLowerCase())
+        if (!isExcel) {
+          this.$message.error('请上传Excel文件(.xlsx或.xls格式)')
+          return
+        }
+        
+        // 创建FormData对象上传文件
+        const formData = new FormData()
+        formData.append('file', file)
+        
+        // 调用上传API
+        // this.$message.loading('正在导入Excel...')
+        this.$message({
+          message: '正在导入Excel...',
+          type: 'info',
+          showClose: true
+        })
+        // TODO: 替换为实际的上传API
+        uploadExcelForm(data.id, formData).then(res => {
+          this.$message.success('Excel导入成功')
+          // 刷新表单列表
+          listForm({}).then(res => {
+            this.formList = res.data || []
+          })
+        })
+      }
+      
+      // 触发文件选择
+      document.body.appendChild(input)
+      input.click()
+      document.body.removeChild(input)
     },
     filterNode(value, data) {
       if (!value) return true
@@ -386,6 +433,15 @@ export default {
                               class="ds-icon-scene"
                             />
                             <span>{{ $t('data_fill.form.create_form') }}</span>
+                          </el-dropdown-item>
+                          <el-dropdown-item
+                            :command="beforeData('excel',data)"
+                          >
+                            <svg-icon
+                              icon-class="form"
+                              class="ds-icon-scene"
+                            />
+                            <span>导入表单</span>
                           </el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>

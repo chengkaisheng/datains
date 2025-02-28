@@ -88,3 +88,11 @@ export function uploadData(id) {
     method: 'post',
   })
 }
+
+export function getFormTree() {
+  return request({
+    url: 'dataFilling/form/tree',
+    method: 'post',
+    data: {}
+  })
+}

@@ -1,87 +1,96 @@
 <template>
   <view class="container">
-    <!-- 搜索框 -->
-    <!-- <view class="search-box">
-      <uni-search-bar 
-        v-model="searchKeyword"
-        placeholder="任务名称"
-        @confirm="handleSearch"
-      />
-    </view> -->
-
-    <!-- 表格容器 -->
-    <scroll-view class="table-container" scroll-x>
-      <!-- 表格头部 -->
-      <view class="table-header">
-        <view class="th" style="min-width: 150rpx;">任务名称</view>
-        <!-- <view class="th" style="min-width: 200rpx;">表单名称</view> -->
-        <!-- <view class="th" style="min-width: 200rpx;">开始时间</view> -->
-        <view class="th" style="min-width: 250rpx;">结束时间</view>
-        <!-- <view class="th" style="min-width: 200rpx;">创建人</view> -->
-        <view class="th" style="min-width: 150rpx;">操作</view>
+    <!-- Tab 切换 -->
+    <view class="tab-container">
+      <view 
+        v-for="(tab, index) in tabs" 
+        :key="index"
+        class="tab-item"
+        :class="{ active: currentTab === index }"
+        @click="handleTabChange(index)"
+      >
+        {{ tab.name }}
       </view>
+    </view>
 
-      <!-- 表格内容 -->
-      <view class="table-body">
-        <view v-if="tableData.length === 0" class="empty-data">
-          暂无数据
+    <!-- 任务列表 -->
+    <view v-show="currentTab === 0">
+      <!-- 表格容器 -->
+      <scroll-view class="table-container" scroll-x>
+        <!-- 表格头部 -->
+        <view class="table-header">
+          <view class="th" style="min-width: 150rpx;">任务名称</view>
+          <!-- <view class="th" style="min-width: 200rpx;">开始时间</view> -->
+          <view class="th" style="min-width: 250rpx;">结束时间</view>
+          <!-- <view class="th" style="min-width: 200rpx;">创建人</view> -->
+          <view class="th" style="min-width: 150rpx;">操作</view>
         </view>
-        <view 
-          v-else
-          v-for="(item) in tableData" 
-          :key="item.id"
-          class="table-row"
-        >
-          <view class="td" style="min-width: 150rpx;">{{ item.taskName }}</view>
-          <!-- <view class="td" style="min-width: 200rpx;">{{ item.formName }}</view>
-          <view class="td" style="min-width: 200rpx;">{{ formatTime(item.startTime) }}</view> -->
-          <view class="td" style="min-width: 250rpx;">{{ formatTime(item.endTime) }}</view>
-          <!-- <view class="td" style="min-width: 200rpx;">{{ item.creatorName }}</view> -->
-          <view class="td" style="min-width: 150rpx;">
-            <view class="operation-btns">
-              <view class="operation-btn" @click="handleOperation(item)">
-                填报
-              </view>
-              <view class="operation-btn" @click="handleDownloadTemplate(item)">
-                下载模板
-              </view>
-              <view class="operation-btn" @click="handleUploadData(item)">
-                上传数据
+
+        <!-- 表格内容 -->
+        <view class="table-body">
+          <view v-if="tableData.length === 0" class="empty-data">
+            暂无数据
+          </view>
+          <view 
+            v-else
+            v-for="(item) in tableData" 
+            :key="item.id"
+            class="table-row"
+          >
+            <view class="td" style="min-width: 150rpx;">{{ item.taskName }}</view>
+            <!-- <view class="td" style="min-width: 200rpx;">{{ formatTime(item.startTime) }}</view> -->
+            <view class="td" style="min-width: 250rpx;">{{ formatTime(item.endTime) }}</view>
+            <!-- <view class="td" style="min-width: 200rpx;">{{ item.creatorName }}</view> -->
+            <view class="td" style="min-width: 150rpx;">
+              <view class="operation-btns">
+                <view class="operation-btn" @click="handleOperation(item)">
+                  填报
+                </view>
+                <view class="operation-btn" @click="handleDownloadTemplate(item.formId, item.taskName)">
+                  下载模板
+                </view>
+                <view class="operation-btn" @click="handleUploadData(item.formId)">
+                  上传数据
+                </view>
               </view>
             </view>
           </view>
         </view>
-      </view>
-    </scroll-view>
+      </scroll-view>
+    </view>
 
-    <!-- 分页 -->
-    <!-- <view class="pagination">
-      <view class="total">共 {{ total }} 条</view>
-      <view class="page-box">
-        <view 
-          class="page-btn" 
-          :class="{ disabled: currentPage <= 1 }"
-          @click="handlePageChange(currentPage - 1)"
-        >
-          <uni-icons type="left" size="14"></uni-icons>
+    <!-- 自由填报 -->
+    <view v-show="currentTab === 1" class="free-report">
+      <view class="form-container">
+        <view class="form-item">
+          <view class="form-label">选择表单</view>
+          <view class="form-content">
+            <picker 
+              mode="multiSelector" 
+              :range="pickerRange"
+              :range-key="'name'"
+              @columnchange="handleColumnChange"
+              @change="handleFormSelect"
+            >
+              <view class="picker-box">
+                <text class="picker-text">{{ selectedFormText || '请选择表单' }}</text>
+                <uni-icons type="bottom" size="14" color="#999"></uni-icons>
+              </view>
+            </picker>
+          </view>
         </view>
-        <view class="page-number">{{ currentPage }}</view>
-        <view 
-          class="page-btn"
-          :class="{ disabled: currentPage >= totalPages }"
-          @click="handlePageChange(currentPage + 1)"
-        >
-          <uni-icons type="right" size="14"></uni-icons>
+
+        <!-- 添加上传按钮 -->
+        <view class="upload-section">
+          <view style="margin-right: 100rpx;" class="operation-btn upload-btn" @click="handleDownloadTemplate(childForm.id, childForm.name)">
+            <text>下载模板</text>
+          </view>
+          <view class="operation-btn upload-btn" @click="handleUploadData(childForm.id)">
+            <text>上传数据</text>
+          </view>
         </view>
       </view>
-      <view class="page-size">
-        <text>{{ pageSize }}条/页</text>
-        <uni-icons type="down" size="14"></uni-icons>
-      </view>
-      <view class="goto">
-        前往 {{ currentPage }} 页
-      </view>
-    </view> -->
+    </view>
 
     <!-- 添加表单对话框 -->
     <uni-popup ref="formDialog" type="center">
@@ -103,7 +112,7 @@
 </template>
 
 <script>
-import { getList, getForm, submitForm, downloadTemplate } from '@/api/auth'
+import { getList, getForm, submitForm, downloadTemplate, getFormTree } from '@/api/auth'
 import DynamicForm from './components/DynamicForm.vue'
 // 手动引入需要的组件
 import { uniPopup, uniIcons } from '@dcloudio/uni-ui'
@@ -126,6 +135,17 @@ export default {
       currentForm: {},
       formItems: [],
       id: '',
+      currentTab: 0,
+      tabs: [
+        { name: '任务列表' },
+        { name: '自由填报' }
+      ],
+      formList: [],
+      pickerRange: [[], []],
+      pickerIndexes: [0, 0],
+      selectedFormText: '',
+      parentForm: {},
+      childForm: {}
     }
   },
   
@@ -193,12 +213,12 @@ export default {
     },
 
     // 处理下载模板
-    async handleDownloadTemplate(item) {
+    async handleDownloadTemplate(id, name) {
       try {
-        const res = await downloadTemplate(item.formId)
+        const res = await downloadTemplate(id)
         if (res) {
           // 获取文件名
-          const fileName = `template_${item.taskName}.xlsx`
+          const fileName = `template_${name}.xlsx`
           
           // 创建 Blob 对象，使用正确的 MIME 类型
           const blob = new Blob([res])
@@ -237,7 +257,7 @@ export default {
     },
     
     // 处理上传数据
-    async handleUploadData(item) {
+    async handleUploadData(id) {
       try {
         // 创建隐藏的文件选择器
         const input = document.createElement('input')
@@ -261,7 +281,7 @@ export default {
               formData.append('file', file)
 
               // 使用 fetch 上传
-              const response = await fetch(`${window.location.origin}/dataFilling/form/${item.formId}/excel/upload`, {
+              const response = await fetch(`${window.location.origin}/dataFilling/form/${id}/excel/upload`, {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -307,6 +327,80 @@ export default {
           title: '文件处理失败',
           icon: 'none'
         })
+      }
+    },
+
+    // 获取表单列表
+    async getFormList() {
+      try {
+        const res = await getFormTree()
+        if (res.success) {
+          this.formList = res.data
+          // 初始化第一列数据
+          this.pickerRange[0] = this.formList
+          // 初始化第二列数据
+          this.pickerRange[1] = this.formList[0]?.children || []
+        }
+      } catch (error) {
+        console.error('获取表单列表失败:', error)
+      }
+    },
+
+    // 处理列变化
+    handleColumnChange(e) {
+      const { column, value } = e.detail
+      
+      if (column === 0) { // 第一列变化
+        this.pickerIndexes[0] = value
+        // 更新第二列数据
+        this.pickerRange[1] = this.formList[value]?.children || []
+        // 重置第二列索引
+        this.pickerIndexes[1] = 0
+        // 手动更新 range
+        this.pickerRange = [...this.pickerRange]
+      } else { // 第二列变化
+        this.pickerIndexes[1] = value
+      }
+    },
+
+    // 处理表单选择
+    async handleFormSelect(e) {
+      const indexes = e.detail.value
+      this.parentForm = this.formList[indexes[0]]
+      this.childForm = this.parentForm?.children?.[indexes[1]]
+      console.log(this.parentForm,this.childForm)
+      
+      if (!this.childForm) return
+      
+      this.selectedFormText = `${this.parentForm.name} / ${this.childForm.name}`
+    },
+
+    // 处理自由填报表单提交
+    async handleFreeFormSubmit(formData) {
+      try {
+        const res = await submitForm(null, [formData], this.selectedForm.id)
+        if (res.success) {
+          uni.showToast({
+            title: '提交成功',
+            icon: 'success'
+          })
+          this.selectedForm = {}
+          this.formItems = []
+        }
+      } catch (error) {
+        console.error('提交失败:', error)
+        uni.showToast({
+          title: '提交失败',
+          icon: 'none'
+        })
+      }
+    },
+
+    // 处理 tab 切换
+    handleTabChange(index) {
+      this.currentTab = index
+      if (index === 1 && !this.formList.length) {
+        this.getFormList()
       }
     },
   },
@@ -487,5 +581,97 @@ export default {
   padding: 20rpx;
   max-height: calc(80vh - 100rpx);
   overflow-y: auto;
+}
+
+.tab-container {
+  display: flex;
+  background: #fff;
+  border-bottom: 1px solid #ebeef5;
+  padding: 0 20rpx;
+}
+
+.tab-item {
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
+  color: #606266;
+  cursor: pointer;
+  position: relative;
+}
+
+.tab-item.active {
+  color: #409eff;
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #409eff;
+}
+
+.free-report {
+  padding: 20rpx;
+}
+
+.form-container {
+  background: #fff;
+  border-radius: 8rpx;
+  padding: 20rpx;
+}
+
+.form-item {
+  margin-bottom: 20rpx;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #606266;
+  margin-bottom: 10rpx;
+}
+
+.form-content {
+  width: 100%;
+}
+
+.picker-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  border: 1px solid #dcdfe6;
+  border-radius: 4rpx;
+}
+
+.picker-text {
+  font-size: 28rpx;
+  color: #606266;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.picker-text.placeholder {
+  color: #999;
+}
+
+.upload-section {
+  margin-top: 20rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 16rpx 30rpx;
+  background: #409eff;
+}
+
+.upload-btn:active {
+  opacity: 0.8;
 }
 </style>

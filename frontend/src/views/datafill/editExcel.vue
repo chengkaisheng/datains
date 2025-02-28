@@ -220,4 +220,10 @@ a {
 .luckysheet-input-box {
   z-index: 1000000 !important;
 }
+.luckysheet-cols-menu {
+  z-index: 1000000 !important;
+}
+.luckysheet-rows-menu {
+  z-index: 1000000 !important;
+}
 </style>
