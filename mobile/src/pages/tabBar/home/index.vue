@@ -65,20 +65,24 @@
         <view class="form-item">
           <view class="form-label">选择表单</view>
           <view class="form-content">
-            <!-- <custom-tree-select :listData="formList" v-model="selectedFormText" /> -->
-            <picker 
-              mode="multiSelector" 
-              :range="pickerRange"
-              :range-key="'name'"
-              :value="pickerIndexes"
-              @columnchange="handleColumnChange"
-              @change="handleFormSelect"
-            >
-              <view class="picker-box">
-                <text class="picker-text">{{ selectedFormText || '请选择表单' }}</text>
-                <uni-icons type="bottom" size="14" color="#999"></uni-icons>
+            <view class="select-tree" @click="toggleTreeSelect">
+              <view class="selected-text">{{ selectedFormText || '请选择表单' }}</view>
+              <uni-icons :type="showTreeSelect ? 'top' : 'bottom'" size="14" color="#999"></uni-icons>
+            </view>
+            
+            <!-- 树形选择弹出层 -->
+            <view class="tree-popup" v-if="showTreeSelect">
+              <view class="tree-container">
+                <tree-node 
+                  v-for="item in formList" 
+                  :key="item.id"
+                  :node="item"
+                  :selected-node="selectedChild"
+                  @node-click="handleNodeClick"
+                  @node-select="handleNodeSelect"
+                ></tree-node>
               </view>
-            </picker>
+            </view>
           </view>
         </view>
 
@@ -86,7 +90,7 @@
           <view style="margin-right: 100rpx;" class="operations-btn upload-btn" @click="handleDownloadTemplate(childForm.id, childForm.name)">
             <text>下载模板</text>
           </view>
-          <view class="operations-btn upload-btn" @click="handleUploadData(childForm.id)">
+          <view class="operations-btn upload-btn" @click="handleUploadFileData(childForm.id)">
             <text>上传数据</text>
           </view>
         </view>
@@ -281,8 +285,8 @@ import { getList, getForm, submitForm, downloadTemplate, getFormTree, getDataFil
 import DynamicForm from './components/DynamicForm.vue'
 import EditExcel from './components/editExcel.vue'
 // 手动引入需要的组件
-import { uniPopup, uniIcons, uniEasyinput, uniTransition } from '@dcloudio/uni-ui'
-// import CustomTreeSelect from '@/components/custom-tree-select/components/custom-tree-select/custom-tree-select.vue'
+import { uniPopup, uniIcons, uniTransition } from '@dcloudio/uni-ui'
+import TreeNode from './components/TreeNode.vue'
 
 export default {
   components: {
@@ -291,7 +295,7 @@ export default {
     uniPopup,
     uniIcons,
     uniTransition,
-    // CustomTreeSelect
+    TreeNode,
   },
 
   data() {
@@ -333,6 +337,9 @@ export default {
       fileDrawerVisible: false,
       fileTableData: [],
       currentFolder: null,
+      showTreeSelect: false,
+      selectedParent: null,
+      selectedChild: null,
     }
   },
   mounted() {
@@ -461,19 +468,107 @@ export default {
       this.$refs.uploadDialog.open()
     },
 
+    // 处理上传数据
+    async handleUploadFileData(id) {
+      // 在自由填报页面时进行校验
+      if (this.currentTab === 1 && !this.selectedFormText) {
+        uni.showToast({
+          title: '请先选择表单',
+          icon: 'none'
+        })
+        return
+      }
+
+      try {
+        // 创建隐藏的文件选择器
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.accept = '.xlsx,.xls'
+        input.style.display = 'none'
+        document.body.appendChild(input)
+
+        // 监听文件选择
+        input.onchange = async (e) => {
+          const file = e.target.files[0]
+          if (file) {
+            // 显示上传中提示
+            uni.showLoading({
+              title: '上传中...'
+            })
+
+            try {
+              // 创建 FormData
+              const formData = new FormData()
+              formData.append('file', file)
+
+              // 使用 fetch 上传
+              // const response = await fetch(`${window.location.origin}/dataFilling/form/${id}/excel/upload`, {
+              const response = await fetch(`http://183.194.64.166:17304/dataFilling/form/${id}/excel/upload`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                  'Accept': 'application/json',
+                  'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDA1NjczNzYsInVzZXJJZCI6MzAsInVzZXJuYW1lIjoiMzcwMTE1MTk5NzEyMTI5NDczIn0.ZGioO2BJLK8b9zhVDs90opizkhKOMOEwzcreZah8u8Q'
+                }
+              })
+
+              const result = await response.json()
+              
+              uni.hideLoading()
+              
+              if (result.success) {
+                uni.showToast({
+                  title: '上传成功',
+                  icon: 'success'
+                })
+              } else {
+                uni.showToast({
+                  title: result.message || '上传失败',
+                  icon: 'none'
+                })
+              }
+            } catch (err) {
+              uni.hideLoading()
+              console.error('上传失败:', err)
+              uni.showToast({
+                title: '上传失败',
+                icon: 'none'
+              })
+            }
+          }
+          // 清理
+          document.body.removeChild(input)
+        }
+
+        // 触发文件选择
+        input.click()
+      } catch (error) {
+        uni.hideLoading()
+        console.error('文件处理失败:', error)
+        uni.showToast({
+          title: '文件处理失败',
+          icon: 'none'
+        })
+      }
+    },
+
     // 获取表单列表
     async getFormList() {
       try {
-        const res = await getFormTree()
+        const res = await getFormTree();
         if (res.success) {
-          this.formList = res.data
-          // 初始化第一列数据
-          this.$set(this.pickerRange, 0, this.formList)
-          // 初始化第二列数据
-          this.$set(this.pickerRange, 1, this.formList[0]?.children || [])
+          // 递归为所有层级添加 expanded 属性
+          const addExpanded = (items) => {
+            return items.map(item => ({
+              ...item,
+              expanded: false,
+              children: item.children ? addExpanded(item.children) : []
+            }));
+          };
+          this.formList = addExpanded(res.data);
         }
       } catch (error) {
-        console.error('获取表单列表失败:', error)
+        console.error('获取表单列表失败:', error);
       }
     },
 
@@ -484,11 +579,12 @@ export default {
       if (column === 0) { // 第一列变化
         this.pickerIndexes[0] = value
         // 更新第二列数据
-        this.pickerRange[1] = this.formList[value]?.children || []
+        const children = this.formList[value] && this.formList[value].children || []
+        this.pickerRange[1] = children
         // 重置第二列索引
         this.pickerIndexes[1] = 0
         // 手动更新 range
-        this.$set(this.pickerRange, 1, this.formList[value]?.children || [])
+        this.$set(this.pickerRange, 1, children)
       } else { // 第二列变化
         this.pickerIndexes[1] = value
       }
@@ -750,6 +846,66 @@ export default {
         }
       })
     },
+
+    toggleTreeSelect() {
+      this.showTreeSelect = !this.showTreeSelect;
+      // 点击外部关闭
+      if(this.showTreeSelect) {
+        this.$nextTick(() => {
+          document.addEventListener('click', this.handleClickOutside);
+        });
+      }
+    },
+
+    handleClickOutside(e) {
+      const selectTree = document.querySelector('.select-tree');
+      const treePopup = document.querySelector('.tree-popup');
+      if ((!selectTree || !selectTree.contains(e.target)) && 
+          (!treePopup || !treePopup.contains(e.target))) {
+        this.showTreeSelect = false;
+        document.removeEventListener('click', this.handleClickOutside);
+      }
+    },
+
+    handleNodeClick(node) {
+      this.$set(node, 'expanded', !node.expanded);
+    },
+    
+    handleNodeSelect(node) {
+      // 获取节点的完整路径
+      const path = this.getNodePath(node);
+      this.selectedChild = node;
+      this.childForm = node;
+      this.selectedFormText = path.map(n => n.name).join(' / ');
+      this.showTreeSelect = false;
+      document.removeEventListener('click', this.handleClickOutside);
+    },
+    
+    // 获取节点路径
+    getNodePath(targetNode) {
+      const path = [];
+      
+      const findPath = (nodes, target, currentPath) => {
+        for (const node of nodes) {
+          const newPath = [...currentPath, node];
+          
+          if (node.id === target.id) {
+            path.push(...newPath);
+            return true;
+          }
+          
+          if (node.children && node.children.length) {
+            if (findPath(node.children, target, newPath)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      };
+      
+      findPath(this.formList, targetNode, []);
+      return path;
+    },
   },
   
   
@@ -975,6 +1131,10 @@ export default {
   font-size: 28rpx;
   color: #606266;
   margin-bottom: 10rpx;
+}
+
+.form-content {
+  position: relative;
 }
 
 .required {
@@ -1337,4 +1497,88 @@ export default {
 .upload-btn:active {
   opacity: 0.8;
 }
+
+.select-tree {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx;
+  border: 1px solid #dcdfe6;
+  border-radius: 4rpx;
+  cursor: pointer;
+  position: relative;
+  background: #fff;
+}
+
+.selected-text {
+  font-size: 28rpx;
+  color: #606266;
+}
+
+.tree-popup {
+  position: absolute;
+  top: 70rpx;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  border-radius: 4rpx;
+  margin-top: 4rpx;
+  max-height: 400rpx;
+  overflow-y: auto;
+  z-index: 999;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+}
+
+.tree-container {
+  padding: 10rpx 0;
+}
+
+.tree-item {
+  font-size: 28rpx;
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 20rpx;
+  cursor: pointer;
+}
+
+.tree-node:hover {
+  background-color: #f5f7fa;
+}
+
+.tree-node.active {
+  color: #409eff;
+}
+
+.tree-node.is-folder {
+  font-weight: 500;
+}
+
+.node-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.node-children {
+  padding-left: 20rpx;
+}
+
+.node-children.level-1 {
+  background: #f8f9fb;
+}
+
+.node-children.level-2 {
+  background: #f0f2f5;
+}
+
+.node-children.level-3 {
+  background: #e8eaed;
+}
+
+/* 更深层级可以继续添加不同的背景色 */
 </style>
