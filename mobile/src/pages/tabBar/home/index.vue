@@ -502,8 +502,8 @@ export default {
               formData.append('file', file)
 
               // 使用 fetch 上传
-              // const response = await fetch(`${window.location.origin}/dataFilling/form/${id}/excel/upload`, {
-              const response = await fetch(`http://183.194.64.166:17304/dataFilling/form/${id}/excel/upload`, {
+              const response = await fetch(`${window.location.origin}/dataFilling/form/${id}/excel/upload`, {
+              // const response = await fetch(`http://183.194.64.166:17304/dataFilling/form/${id}/excel/upload`, {
                 method: 'POST',
                 body: formData,
                 headers: {
