@@ -65,6 +65,7 @@
         <view class="form-item">
           <view class="form-label">选择表单</view>
           <view class="form-content">
+            <!-- <custom-tree-select :listData="formList" v-model="selectedFormText" /> -->
             <picker 
               mode="multiSelector" 
               :range="pickerRange"
@@ -82,11 +83,73 @@
         </view>
 
         <view class="upload-section">
-          <view style="margin-right: 100rpx;" class="operation-btn upload-btn" @click="handleDownloadTemplate(childForm.id, childForm.name)">
+          <view style="margin-right: 100rpx;" class="operations-btn upload-btn" @click="handleDownloadTemplate(childForm.id, childForm.name)">
             <text>下载模板</text>
           </view>
-          <view class="operation-btn upload-btn" @click="handleUploadData(childForm.id)">
+          <view class="operations-btn upload-btn" @click="handleUploadData(childForm.id)">
             <text>上传数据</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view v-show="currentTab === 2">
+      <view class="file-container">
+        <!-- 表格头部 -->
+        <view class="file-header">
+          <view class="file-th" style="flex: 2">文件夹</view>
+          <view class="file-th" style="flex: 1">操作</view>
+        </view>
+        
+        <!-- 表格内容 -->
+        <view class="file-body">
+          <view v-for="(item, index) in fileList" :key="index">
+            <view class="file-row">
+              <view class="file-td" style="flex: 2">
+                <view class="file-name" @click="toggleExpand(item, index)">
+                  <uni-icons 
+                    :type="item.expanded ? 'bottom' : 'right'" 
+                    size="14"
+                    color="#606266"
+                  ></uni-icons>
+                  <text>{{ item.name }}</text>
+                </view>
+              </view>
+              <view class="file-td" style="flex: 1">
+                <view class="file-actions">
+                  <view class="operation-btn" @click="handleUploadData(item.id)">
+                    上传
+                  </view>
+                  <view class="operation-btn view-btn" @click="handleViewFiles(item)">
+                    查看
+                  </view>
+                </view>
+              </view>
+            </view>
+            
+            <view v-if="item.expanded && item.children" class="file-children">
+              <view 
+                v-for="(child, childIndex) in item.children" 
+                :key="childIndex"
+                class="file-row child-row"
+              >
+                <view class="file-td" style="flex: 2">
+                  <view class="file-name">
+                    <text class="indent">{{ child.name }}</text>
+                  </view>
+                </view>
+                <view class="file-td" style="flex: 1">
+                  <view class="file-actions">
+                    <view class="operation-btn" @click="handleUploadData(child.id)">
+                      上传
+                    </view>
+                    <view class="operation-btn view-btn" @click="handleViewFiles(child)">
+                      查看
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
           </view>
         </view>
       </view>
@@ -108,20 +171,127 @@
         </view>
       </view>
     </uni-popup>
+
+    <!-- 上传文件对话框 -->
+    <uni-popup ref="uploadDialog" type="center">
+      <view class="dialog-content">
+        <view class="dialog-header">
+          <text class="title">上传文件</text>
+          <text class="close" @click="closeUploadDialog">×</text>
+        </view>
+        <view class="dialog-body">
+          <view class="upload-form">
+            <view class="form-item">
+              <view class="form-label">
+                文件名称
+                <text class="required">*</text>
+              </view>
+              <input 
+                class="form-input" 
+                v-model="uploadForm.fileName" 
+                placeholder="请输入文件名称"
+              />
+            </view>
+            
+            <view class="form-item">
+              <view class="form-label">描述信息</view>
+              <textarea 
+                class="form-textarea" 
+                v-model="uploadForm.description" 
+                placeholder="请输入描述信息"
+              />
+            </view>
+            
+            <view class="form-item">
+              <view class="form-label">
+                选择文件
+                <text class="required">*</text>
+              </view>
+              <view class="file-select">
+                <view class="select-btn" @click="selectFile">选择文件</view>
+                <view class="file-name">{{ uploadForm.file ? uploadForm.file.name : '目前仅支持xlsx文件' }}</view>
+              </view>
+            </view>
+
+            <view class="dialog-footer">
+              <view class="btn cancel" @click="closeUploadDialog">取消</view>
+              <view class="btn confirm" @click="confirmUpload">确定</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </uni-popup>
+
+    <!-- 添加全屏抽屉组件 -->
+    <view class="drawer" v-if="drawerVisible" @click.self="closeDrawer">
+      <view class="drawer-content">
+        <view class="drawer-header">
+          <text class="drawer-title">{{ msg.name }}</text>
+          <text class="drawer-close" @click="closeDrawer">×</text>
+        </view>
+        <view class="drawer-body">
+          <edit-excel :drawerVisible.sync="drawerVisible" @addDataFill="addDataFill" :msg="msg"></edit-excel>
+        </view>
+      </view>
+    </view>
+
+    <!-- 添加查看文件抽屉组件 -->
+    <view class="drawer" v-if="fileDrawerVisible" @click.self="closeFileDrawer">
+      <view class="drawer-content">
+        <view class="drawer-header">
+          <text class="drawer-title">文件列表</text>
+          <text class="drawer-close" @click="closeFileDrawer">×</text>
+        </view>
+        <view class="drawer-body">
+          <scroll-view class="file-table" scroll-x>
+            <view class="file-table-inner">
+              <view class="file-table-header">
+                <view class="file-th" style="width: 200rpx;">名称</view>
+                <view class="file-th" style="width: 200rpx;">描述</view>
+                <view class="file-th" style="width: 220rpx;">创建时间</view>
+                <view class="file-th" style="width: 300rpx;">操作</view>
+              </view>
+              <view class="file-table-body">
+                <view v-if="fileTableData.length === 0" class="empty-data">
+                  暂无数据
+                </view>
+                <view v-else v-for="(item, index) in fileTableData" :key="index" class="file-table-row">
+                  <view class="file-td ellipsis" style="width: 200rpx;" :title="item.name">{{ item.name }}</view>
+                  <view class="file-td ellipsis" style="width: 200rpx;" :title="item.description">{{ item.description }}</view>
+                  <view class="file-td" style="width: 220rpx;">{{ formatTime(item.createTime) }}</view>
+                  <view class="file-td" style="width: 300rpx;">
+                    <view class="file-actions">
+                      <view class="action-btn primary" @click="handleDownload(item)">下载</view>
+                      <!-- <view class="action-btn success" @click="handleEdit(item)">编辑</view> -->
+                      <view class="action-btn danger" @click="handleDeleteFile(item)">删除</view>
+                    </view>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
 <script>
-import { getList, getForm, submitForm, downloadTemplate, getFormTree } from '@/api/auth'
+import { getList, getForm, submitForm, downloadTemplate, getFormTree, getDataFillTree, addFile, getDataFill, deleteDataFill } from '@/api/auth'
 import DynamicForm from './components/DynamicForm.vue'
+import EditExcel from './components/editExcel.vue'
 // 手动引入需要的组件
-import { uniPopup, uniIcons } from '@dcloudio/uni-ui'
+import { uniPopup, uniIcons, uniEasyinput, uniTransition } from '@dcloudio/uni-ui'
+// import CustomTreeSelect from '@/components/custom-tree-select/components/custom-tree-select/custom-tree-select.vue'
 
 export default {
   components: {
     DynamicForm,
+    EditExcel,
     uniPopup,
-    uniIcons
+    uniIcons,
+    uniTransition,
+    // CustomTreeSelect
   },
 
   data() {
@@ -138,15 +308,35 @@ export default {
       currentTab: 0,
       tabs: [
         { name: '任务列表' },
-        { name: '自由填报' }
+        { name: '自由填报' },
+        { name: '文件管理' },
       ],
       formList: [],
       pickerRange: [[], []],
       pickerIndexes: [0, 0],
       selectedFormText: '',
       parentForm: {},
-      childForm: {}
+      childForm: {},
+      fileList: [],
+      uploadForm: {
+        fileName: '',
+        description: '',
+        file: null,
+        folderId: null
+      },
+      drawerVisible: false,
+      msg: {
+        id: '',
+        name: '',
+        data: []
+      },
+      fileDrawerVisible: false,
+      fileTableData: [],
+      currentFolder: null,
     }
+  },
+  mounted() {
+    this.getTableData()
   },
   
   methods: {
@@ -266,86 +456,9 @@ export default {
     },
     
     // 处理上传数据
-    async handleUploadData(id) {
-      // 在自由填报页面时进行校验
-      if (this.currentTab === 1 && !this.selectedFormText) {
-        uni.showToast({
-          title: '请先选择表单',
-          icon: 'none'
-        })
-        return
-      }
-
-      try {
-        // 创建隐藏的文件选择器
-        const input = document.createElement('input')
-        input.type = 'file'
-        input.accept = '.xlsx,.xls'
-        input.style.display = 'none'
-        document.body.appendChild(input)
-
-        // 监听文件选择
-        input.onchange = async (e) => {
-          const file = e.target.files[0]
-          if (file) {
-            // 显示上传中提示
-            uni.showLoading({
-              title: '上传中...'
-            })
-
-            try {
-              // 创建 FormData
-              const formData = new FormData()
-              formData.append('file', file)
-
-              // 使用 fetch 上传
-              const response = await fetch(`${window.location.origin}/dataFilling/form/${id}/excel/upload`, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                  'Accept': 'application/json',
-                  'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDA1NjczNzYsInVzZXJJZCI6MzAsInVzZXJuYW1lIjoiMzcwMTE1MTk5NzEyMTI5NDczIn0.ZGioO2BJLK8b9zhVDs90opizkhKOMOEwzcreZah8u8Q'
-                }
-              })
-
-              const result = await response.json()
-              
-              uni.hideLoading()
-              
-              if (result.success) {
-                uni.showToast({
-                  title: '上传成功',
-                  icon: 'success'
-                })
-              } else {
-                uni.showToast({
-                  title: result.message || '上传失败',
-                  icon: 'none'
-                })
-              }
-            } catch (err) {
-              uni.hideLoading()
-              console.error('上传失败:', err)
-              uni.showToast({
-                title: '上传失败',
-                icon: 'none'
-              })
-            }
-          }
-          // 清理
-          document.body.removeChild(input)
-        }
-
-        // 触发文件选择
-        input.click()
-      } catch (error) {
-        uni.hideLoading()
-        console.error('文件处理失败:', error)
-        uni.showToast({
-          title: '文件处理失败',
-          icon: 'none'
-        })
-      }
+    handleUploadData(id) {
+      this.uploadForm.folderId = id
+      this.$refs.uploadDialog.open()
     },
 
     // 获取表单列表
@@ -417,15 +530,229 @@ export default {
     // 处理 tab 切换
     handleTabChange(index) {
       this.currentTab = index
-      if (index === 1 && !this.formList.length) {
+      if (index === 1) {
         this.getFormList()
+      } else if (index === 2) {
+        this.getFileList()
       }
+    },
+
+    getFileList() {
+      getDataFillTree().then(res => {
+        this.fileList = res.data || []
+      })
+    },
+
+    // 切换展开状态
+    toggleExpand(item, index) {
+      this.$set(this.fileList[index], 'expanded', !this.fileList[index].expanded)
+    },
+
+    // 处理删除
+    handleDelete(file) {
+      uni.showModal({
+        title: '确认删除',
+        content: `确定要删除 ${file.name} 吗？`,
+        success: (res) => {
+          if (res.confirm) {
+            console.log('删除文件:', file.name)
+            // 实现删除逻辑
+          }
+        }
+      })
+    },
+
+    // 处理查看文件
+    handleViewFiles(file) {
+      this.currentFolder = file;
+      getDataFill({
+        data: {
+          pid: typeof file === 'string' ? file : file.id,
+          name: ''
+        }
+      }).then(res => {
+        this.fileTableData = res.data.listObject || [];
+        this.fileDrawerVisible = true;
+      })
+    },
+
+    // 关闭上传弹窗
+    closeUploadDialog() {
+      this.$refs.uploadDialog.close()
+      this.uploadForm = {
+        fileName: '',
+        description: '',
+        file: null,
+        folderId: null
+      }
+    },
+
+    // 选择文件
+    selectFile() {
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = '.xlsx'
+      input.style.display = 'none'
+      document.body.appendChild(input)
+
+      input.onchange = (e) => {
+        const file = e.target.files[0]
+        if (file) {
+          this.uploadForm.file = file
+          if (!this.uploadForm.fileName) {
+            this.uploadForm.fileName = file.name.split('.')[0]
+          }
+        }
+        document.body.removeChild(input)
+      }
+
+      input.click()
+    },
+
+    // 确认上传
+    async confirmUpload() {
+      if (!this.uploadForm.fileName || !this.uploadForm.file) {
+        uni.showToast({
+          title: '请填写必填项',
+          icon: 'none'
+        })
+        return
+      }
+
+      try {
+        this.uploadExcel(this.uploadForm.file);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    uploadExcel(file) {
+      let name = file.name;
+      let suffixArr = name.split("."),
+        suffix = suffixArr[suffixArr.length - 1];
+      if (suffix != "xlsx") {
+        uni.showToast({
+          title: '目前只支持xlsx文件',
+          icon: 'none'
+        })
+        return;
+      }
+      let _this = this;
+
+      try {
+        LuckyExcel.transformExcelToLucky(
+          file,
+          function (exportJson, luckysheetfile) {
+            try {
+              if (
+                !exportJson ||
+                !exportJson.sheets ||
+                exportJson.sheets.length === 0
+              ) {
+                uni.showToast({
+                  title: '无法读取Excel文件的内容，目前不支持xls文件！',
+                  icon: 'none'
+                })
+                return;
+              }
+              _this.drawerVisible = true;
+              _this.msg = {
+                id: _this.uploadForm.folderId,
+                name: file.name,
+                data: exportJson.sheets,
+              };
+            } catch (err) {
+              // console.error('处理Excel数据错误:', err)
+              uni.showToast({
+                title: '无法读取文件内容，请检查文件是否损坏',
+                icon: 'none'
+              })
+            }
+          },
+          function (err) {
+            console.error("Excel解析错误:", err);
+            uni.showToast({
+              title: '无法读取文件内容，请检查文件是否损坏',
+              icon: 'none'
+            })
+          }
+        );
+      } catch (err) {
+        console.error('Excel转换错误:', err)
+        uni.showToast({
+          title: '无法读取文件内容，请检查文件是否损坏',
+          icon: 'none'
+        })
+      }
+    },
+
+    addDataFill() {
+      let params = {
+        name: this.uploadForm.fileName,
+        description: this.uploadForm.description,
+        pid: this.uploadForm.folderId,
+        nodeType: 'form',
+        formData: JSON.stringify(luckysheet.getAllSheets()),
+      }
+      addFile(params)
+      .then((res) => {
+        uni.showToast({
+          title: "上传成功！",
+          icon: "success",
+        });
+        this.closeUploadDialog()
+      });
+    },
+
+    // 关闭抽屉
+    closeDrawer() {
+      this.drawerVisible = false
+      this.msg = {
+        id: '',
+        name: '',
+        data: []
+      }
+    },
+
+    // 关闭文件抽屉
+    closeFileDrawer() {
+      this.fileDrawerVisible = false;
+      this.fileTableData = [];
+      this.currentFolder = null;
+    },
+
+    // 处理下载
+    handleDownload(file) {
+      // 实现下载逻辑
+      console.log('下载文件:', file);
+    },
+
+    // 处理编辑
+    handleEdit(file) {
+      // 实现编辑逻辑
+      console.log('编辑文件:', file);
+    },
+
+    // 处理删除
+    handleDeleteFile(file) {
+      uni.showModal({
+        title: '确认删除',
+        content: `确定要删除 ${file.name} 吗？`,
+        success: (res) => {
+          if (res.confirm) {
+            deleteDataFill(file.id).then(res => {
+              this.handleViewFiles(file.pid)
+              uni.showToast({
+                title: '删除成功!',
+                icon: 'success'
+              })
+            })
+          }
+        }
+      })
     },
   },
   
-  mounted() {
-    this.getTableData()
-  }
+  
 }
 </script>
 
@@ -641,7 +968,7 @@ export default {
 }
 
 .form-item {
-  margin-bottom: 20rpx;
+  margin-bottom: 30rpx;
 }
 
 .form-label {
@@ -650,11 +977,322 @@ export default {
   margin-bottom: 10rpx;
 }
 
-.form-content {
+.required {
+  color: #f56c6c;
+  margin-left: 4rpx;
+}
+
+.form-input {
+  width: 100%;
+  height: 70rpx;
+  border: 1px solid #dcdfe6;
+  border-radius: 4rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+}
+
+.form-textarea {
+  width: 100%;
+  height: 120rpx;
+  border: 1px solid #dcdfe6;
+  border-radius: 4rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+}
+
+.file-select {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.select-btn {
+  padding: 10rpx 30rpx;
+  background: #409eff;
+  color: #fff;
+  border-radius: 4rpx;
+  font-size: 28rpx;
+  cursor: pointer;
+}
+
+.file-name {
+  font-size: 28rpx;
+  color: #909399;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20rpx;
+  margin-top: 40rpx;
+  padding-top: 20rpx;
+  border-top: 1px solid #ebeef5;
+}
+
+.dialog-footer .btn {
+  padding: 16rpx 40rpx;
+  border-radius: 4rpx;
+  font-size: 28rpx;
+  cursor: pointer;
+}
+
+.dialog-footer .cancel {
+  border: 1px solid #dcdfe6;
+  color: #606266;
+}
+
+.dialog-footer .confirm {
+  background: #409eff;
+  color: #fff;
+}
+
+.dialog-footer .btn:active {
+  opacity: 0.8;
+}
+
+.file-container {
+  padding: 20rpx;
+}
+
+.file-header {
+  display: flex;
+  background: #f5f7fa;
+  padding: 20rpx;
+  font-weight: bold;
+  font-size: 28rpx;
+  color: #606266;
+}
+
+.file-body {
+  font-size: 28rpx;
+  color: #606266;
+}
+
+.file-row {
+  display: flex;
+  padding: 20rpx;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.file-name {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  cursor: pointer;
+}
+
+.indent {
+  padding-left: 34rpx;
+}
+
+.file-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10rpx;
+}
+
+.action-btn {
+  padding: 4rpx 20rpx;
+  border-radius: 4rpx;
+  font-size: 24rpx;
+  cursor: pointer;
+  color: #fff;
+}
+
+/* 不同按钮类型的颜色 */
+.action-btn.primary {
+  background: #409eff; /* 蓝色 - 下载 */
+}
+
+.action-btn.success {
+  background: #67c23a; /* 绿色 - 编辑 */
+}
+
+.action-btn.danger {
+  background: #f56c6c; /* 红色 - 删除 */
+}
+
+/* 按钮悬浮效果 */
+.action-btn:hover {
+  opacity: 0.8;
+}
+
+/* 按钮点击效果 */
+.action-btn:active {
+  opacity: 0.6;
+}
+
+.child-row {
+  background: #f8f9fb;
+}
+
+.file-children {
+  background: #f8f9fb;
+}
+
+/* 添加抽屉相关样式 */
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.drawer-content {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-header {
+  padding: 20rpx 40rpx;
+  border-bottom: 1px solid #ebeef5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.drawer-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #303133;
+}
+
+.drawer-close {
+  font-size: 40rpx;
+  color: #909399;
+  cursor: pointer;
+  padding: 10rpx;
+}
+
+.drawer-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.file-table {
+  width: 100%;
+  height: 100%;
+  white-space: nowrap;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+.file-table-inner {
+  min-width: 1000rpx; /* 设置最小宽度，确保内容不会被压缩 */
+  padding: 20rpx;
+}
+
+.file-table-header {
+  display: flex;
+  background: #f5f7fa;
+  padding: 20rpx;
+  font-weight: bold;
   width: 100%;
 }
 
-.picker-box {
+.file-table-row {
+  display: flex;
+  padding: 20rpx;
+  border-bottom: 1px solid #ebeef5;
+  width: 100%;
+}
+
+.file-th {
+  text-align: center;
+  font-size: 28rpx;
+  color: #606266;
+  flex-shrink: 0; /* 防止被压缩 */
+}
+
+.file-td {
+  text-align: center;
+  font-size: 28rpx;
+  color: #606266;
+  flex-shrink: 0; /* 防止被压缩 */
+  padding: 0 10rpx; /* 添加左右内边距 */
+}
+
+.file-td.ellipsis {
+  white-space: nowrap; /* 不换行 */
+  overflow: hidden; /* 超出隐藏 */
+  text-overflow: ellipsis; /* 显示省略号 */
+}
+
+/* 添加悬浮提示样式 */
+.file-td.ellipsis:hover {
+  position: relative;
+}
+
+.file-td.ellipsis:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 8rpx 16rpx;
+  border-radius: 4rpx;
+  font-size: 24rpx;
+  white-space: normal;
+  word-break: break-all;
+  max-width: 300rpx;
+  z-index: 999;
+}
+
+.empty-data {
+  text-align: center;
+  padding: 40rpx;
+  color: #909399;
+  font-size: 28rpx;
+}
+
+/* .picker-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #dcdfe6;
+  border-radius: 2px;
+}
+.picker-text {
+  font-size: 14px;
+  color: #606266;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.upload-section {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+.upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 15px;
+  background: #409eff;
+}
+.operations-btn {
+  display: inline-block;
+  padding: 2px 5px;
+  background: #409eff;
+  color: #fff;
+  border-radius: 2px;
+  font-size: 12px;
+} */
+ .picker-box {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -680,7 +1318,14 @@ export default {
   display: flex;
   justify-content: center;
 }
-
+.operations-btn {
+  display: inline-block;
+  padding: 2px 5px;
+  background: #409eff;
+  color: #fff;
+  border-radius: 2px;
+  font-size: 12px;
+}
 .upload-btn {
   display: flex;
   align-items: center;

@@ -96,3 +96,52 @@ export function getFormTree() {
     data: {}
   })
 }
+
+export function getDataFillTree() {
+  return request({
+    url: '/fill/tree',
+    method: 'post',
+    data: {}
+  })
+}
+
+// 保存表单数据 
+export function saveFormData(data) {
+  return request({
+    url: '/fill/saveFormData',
+    method: 'post',
+    data
+  })
+}
+
+// 获取表单数据
+export function getFormData(id) {
+  return request({
+    url: `/fill/getFormData/${id}`,
+    method: 'post'
+  })
+}
+
+// 新增数据填报信息
+export function addFile(data) {
+  return request({
+    url: '/fill/insert',
+    method: 'post',
+    data
+  })
+}
+
+export function getDataFill(data) {
+  return request({
+    url: `/fill/selectForm/1/1000`,
+    method: 'post',
+    data: data.data
+  })
+}
+
+export function deleteDataFill(id) {
+  return request({
+    url: `/fill/delete/${id}`,
+    method: 'post'
+  })
+}

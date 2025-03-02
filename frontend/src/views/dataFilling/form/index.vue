@@ -7,11 +7,13 @@ import { listForm, saveForm, updateFormName, deleteForm, getWithPrivileges, uplo
 import { forEach, cloneDeep, find } from 'lodash-es'
 import { hasPermission } from '@/directive/Permission'
 import DataFillingFormMoveSelector from './MoveSelector.vue'
-import DataTable from '@/views/datafill/index.vue'
+// import DataTable from '@/views/datafill/index.vue'
+import FileTree from './components/FileTree.vue'
+import FileList from '@/views/datafill/FileList.vue'
 
 export default {
   name: 'DataFillingForm',
-  components: { DataFillingFormMoveSelector, DeAsideContainer, DeContainer, NoSelect, ViewTable, DataTable },
+  components: { DataFillingFormMoveSelector, DeAsideContainer, DeContainer, NoSelect, ViewTable, FileList, FileTree },
   data() {
     return {
       selectedItem: undefined,
@@ -31,7 +33,8 @@ export default {
       expandedArray: [],
       updateFormData: {},
       showUpdateName: false,
-      displayFormData: undefined
+      displayFormData: undefined,
+      nodeData: {}
     }
   },
   computed: {
@@ -311,6 +314,10 @@ export default {
         }
       })
       return result
+    },
+    getFileList(data) {
+      console.log(data);
+      this.nodeData = data
     }
   }
 }
@@ -526,10 +533,12 @@ export default {
           <span slot="label">
             文件管理
           </span>
+          <file-tree @getFileList="getFileList" class="file-tree" />
         </el-tab-pane>
-
+        
       </el-tabs>
 
+      
     </de-aside-container>
 
     <el-main v-if="activeName === 'forms'" style="padding: 0">
@@ -543,7 +552,10 @@ export default {
 
     <el-main v-if="activeName === 'dataTable'" style="padding: 0">
       <!-- 文件管理 -->
-      <data-table  />
+      <div class="file-container">
+        <!-- <data-table class="file-content" /> -->
+        <FileList :nodeData="nodeData" class="file-content" />
+      </div>
     </el-main>
 
     <el-dialog
@@ -795,6 +807,20 @@ export default {
       height: 32px;
       line-height: 32px;
     }
+  }
+}
+
+.file-container {
+  display: flex;
+  height: 100%;
+  
+  .file-tree {
+    width: 280px;
+    border-right: 1px solid #dcdfe6;
+  }
+  
+  .file-content {
+    flex: 1;
   }
 }
 </style>

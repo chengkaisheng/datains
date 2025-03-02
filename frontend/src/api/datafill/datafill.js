@@ -9,7 +9,7 @@ const datafill = {
 
   // 查询数据填报信息
   getDataFill(data) {
-    return request.post(`/fill/select/${data.goPage}/${data.pageSize}`, {})
+    return request.post(`/fill/selectForm/${data.goPage}/${data.pageSize}`, data.data)
   },
 
   // 更新数据填报信息
@@ -35,6 +35,11 @@ const datafill = {
   // 下载模板
   getFormTemplate(id) {
     return request.post(`/fill/getFormTemplate/${id}`)
+  },
+
+  // 获取文件树
+  getDataFillTree() {
+    return request.post('/fill/tree', {})
   },
 
 }

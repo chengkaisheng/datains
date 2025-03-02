@@ -7,11 +7,13 @@ import { getForm, searchFormMyTasks, searchTable } from '@/views/dataFilling/for
 import EditFormData from '@/views/dataFilling/form/EditFormData.vue'
 import { forIn, includes, split, filter, forEach } from 'lodash-es'
 import { hasPermission } from '@/directive/Permission'
-import DataTable from '@/views/datafill/index.vue'
+// import DataTable from '@/views/datafill/index.vue'
+import FileTree from '../form/components/FileTree.vue'
+import FileList from '@/views/datafill/FileList.vue'
 
 export default {
   name: 'MyDataFillingJobs',
-  components: { EditFormData, GridTable, DeAsideContainer, DeMainContainer, DeContainer, DataTable },
+  components: { EditFormData, GridTable, DeAsideContainer, DeMainContainer, DeContainer, FileTree, FileList },
   data() {
     return {
       activeName: 'my-tasks',
@@ -51,7 +53,9 @@ export default {
         currentPage: 1,
         pageSize: 10,
         total: 0
-      }
+      },
+      displayFormData: undefined,
+      nodeData: {}
     }
   },
   watch: {
@@ -296,8 +300,11 @@ export default {
       if (this.activeName === 'forms') {
         this.$router.push('/data-filling/forms')
       }
+    },
+    getFileList(data) {
+      console.log(data);
+      this.nodeData = data
     }
-
   }
 }
 </script>
@@ -349,6 +356,7 @@ export default {
           <span slot="label">
             文件管理
           </span>
+          <file-tree @getFileList="getFileList" class="file-tree" />
         </el-tab-pane>
       </el-tabs>
 
@@ -610,7 +618,8 @@ export default {
 
     <el-main v-if="activeName === 'dataTable'" style="padding: 0">
       <!-- 文件管理 -->
-      <data-table  />
+      <!-- <data-table  /> -->
+      <FileList :nodeData="nodeData" class="file-content" />
     </el-main>
 
     <el-drawer
@@ -707,4 +716,17 @@ export default {
   background: rgba(31, 35, 41, 0.1);
 }
 
+.file-container {
+  display: flex;
+  height: 100%;
+  
+  .file-tree {
+    width: 280px;
+    border-right: 1px solid #dcdfe6;
+  }
+  
+  .file-content {
+    flex: 1;
+  }
+}
 </style>

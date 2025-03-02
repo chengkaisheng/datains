@@ -1529,6 +1529,7 @@ export default {
     drag_block_label: '标签'
   },
   dataset: {
+    copy: '复制',
     sheet_warn: '有多个 Sheet 页，默认抽取第一个',
     datalist: '数据集',
     name: '数据集名称',

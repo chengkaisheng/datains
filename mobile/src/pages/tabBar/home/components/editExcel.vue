@@ -1,39 +1,39 @@
 <template>
-  <div class="edit-excel-container">
-    <div class="header">
-      <div class="header-left">
-        <el-button type="primary" icon="el-icon-back" @click="handleBack">返回</el-button>
-      </div>
-      <div class="title" v-if="msg.name">{{ msg.name }}</div>
-      <div class="header-right">
-        <el-button type="success" icon="el-icon-check" @click="handleSave">保存</el-button>
-      </div>
-    </div>
-    <div
+  <view class="edit-excel-container">
+    <view class="header">
+      <view class="header-left">
+        <button class="uni-btn" type="primary" @click="handleBack">返回</button>
+      </view>
+      <view class="title" v-if="msg.name">{{ msg.name }}</view>
+      <view class="header-right">
+        <button class="uni-btn" type="primary" @click="handleSave">保存</button>
+      </view>
+    </view>
+    <view
       id="luckysheet"
       class="luckysheet-container"
-    ></div>
+    ></view>
 
-    <div v-show="isMaskShow" class="download-mask">
-      <div class="download-content">
-        <i class="el-icon-loading"></i>
-        <div class="download-text">正在加载数据...</div>
-      </div>
-    </div>
-  </div>
+    <view v-show="isMaskShow" class="download-mask">
+      <view class="download-content">
+        <text class="loading-icon"></text>
+        <text class="download-text">正在加载数据...</text>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script>
-import datafill from '@/api/datafill/datafill'
+import { saveFormData, getFormData } from '@/api/auth'
 
 export default {
   name: 'EditExcel',
   props: {
     msg: {
       type: Object,
-      default: () => {}
+      default: () => ({})
     },
-    drawer: {
+    drawerVisible: {
       type: Boolean,
       default: false
     }
@@ -46,20 +46,17 @@ export default {
   },
   // watch: {
   //   msg: {
-  //     handler: async (newVal) => {
-  //       console.log(2);
-  //       // if(newVal.data) {
-  //       //   this.init(newVal.data, 'save')
-  //       // } else {
-  //       //   this.getFormData()
-  //       // }
+  //     handler: async function(newVal) {
+  //       if(newVal.data) {
+  //         this.init(newVal.data, 'save')
+  //       } else {
+  //         this.getFormData()
+  //       }
   //     },
   //     deep: true,
   //   }
   // },
   mounted() {
-    console.log(1);
-    
     if(this.msg.data) {
       this.init(this.msg.data, 'save')
     } else {
@@ -80,30 +77,31 @@ export default {
           data: data || []
         })
         if(type === 'save') {
-          // this.handleSave('init')
+          // console.log('123')
           this.$emit('addDataFill')
         }
       })
     },
     getFormData() {
-      datafill.getFormData(this.msg.id).then(res => {
+      getFormData(this.msg.id).then(res => {
         this.init(JSON.parse(res.data.formData))
       })
     },
     handleBack() {
       luckysheet.destroy()
-      this.$emit('update:drawer', false)
+      this.$emit('update:drawerVisible', false)
     },
     handleSave(type) {
-      datafill.saveFormData({
+      saveFormData({
         formId: this.msg.id,
         nodeType: 'form',
         formData: JSON.stringify(luckysheet.getAllSheets())
       }).then(res => {
         if(type !== 'init') {
-          this.$message({
-            type: 'success',
-            message: '保存成功'
+          uni.showToast({
+            title: '保存成功',
+            icon: 'success',
+            duration: 2000
           })
         }
       })
@@ -112,7 +110,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss">
 .edit-excel-container {
   display: flex;
   flex-direction: column;
@@ -125,15 +123,22 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 16px;
+  padding: 16rpx 32rpx;
   background-color: #f5f7fa;
   border-bottom: 1px solid #e6e6e6;
-  height: 50px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  height: 100rpx;
+  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.08);
+}
+
+.uni-btn {
+  margin: 0;
+  padding: 0 20rpx;
+  height: 64rpx;
+  line-height: 64rpx;
 }
 
 .header .title {
-  font-size: 18px;
+  font-size: 36rpx;
   font-weight: 500;
   color: #303133;
   overflow: hidden;
@@ -167,8 +172,8 @@ export default {
 }
 
 .download-mask {
-  position: absolute;
-  z-index: 1000000;
+  position: fixed;
+  z-index: 1000;
   left: 0;
   top: 0;
   bottom: 0;
@@ -179,20 +184,20 @@ export default {
   justify-content: center;
 }
 
-.download-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.download-content i {
-  font-size: 42px;
-  color: #409EFF;
-  margin-bottom: 20px;
+.loading-icon {
+  width: 84rpx;
+  height: 84rpx;
+  margin-bottom: 40rpx;
+  // 添加loading动画
+  @keyframes loading {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  animation: loading 1s linear infinite;
 }
 
 .download-text {
-  font-size: 20px;
+  font-size: 40rpx;
   color: #303133;
 }
 
