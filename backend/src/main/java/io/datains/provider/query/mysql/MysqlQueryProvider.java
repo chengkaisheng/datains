@@ -26,11 +26,7 @@ import org.stringtemplate.v4.STGroupFile;
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -263,12 +259,18 @@ public class MysqlQueryProvider extends QueryProvider {
         List<String> aggWheres = new ArrayList<>();
         aggWheres.addAll(yWheres.stream().filter(ObjectUtils::isNotEmpty).collect(Collectors.toList()));
 
-        STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
+        STGroup stg = new STGroupFile("pluginSqltemplate_2.stg");
         ST st_sql = stg.getInstanceOf("querySql");
         if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
         if (CollectionUtils.isNotEmpty(yFields)) st_sql.add("aggregators", yFields);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
+        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+            st_sql.add("enableGroupLimit",true);
+            st_sql.add("groupLimitValue",view.getResultCount());
+        }else {
+            st_sql.add("enableGroupLimit",false);
+        }
         String sql = st_sql.render();
 
         ST st = stg.getInstanceOf("querySql");

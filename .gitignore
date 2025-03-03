@@ -57,3 +57,4 @@ pnpm-debug.log*
 
 package-lock.json
 /backend/src/main/resources/dist/
+!/backend/lib/
