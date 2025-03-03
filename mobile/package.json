@@ -63,6 +63,8 @@
     "@vue/shared": "^3.0.0",
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
     "flyio": "^0.6.2",
     "jsencrypt": "^3.2.1",
     "lodash-es": "^4.17.21",

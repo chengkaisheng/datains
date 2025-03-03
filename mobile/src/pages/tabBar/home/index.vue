@@ -49,7 +49,7 @@
                 <view class="operation-btn" @click="handleDownloadTemplate(item.formId, item.taskName)">
                   下载模板
                 </view>
-                <view class="operation-btn" @click="handleUploadData(item.formId)">
+                <view class="operation-btn" @click="handleUploadFileData(item.formId)">
                   上传数据
                 </view>
               </view>
@@ -99,63 +99,11 @@
 
     <view v-show="currentTab === 2">
       <view class="file-container">
-        <!-- 表格头部 -->
-        <view class="file-header">
-          <view class="file-th" style="flex: 2">文件夹</view>
-          <view class="file-th" style="flex: 1">操作</view>
-        </view>
-        
-        <!-- 表格内容 -->
-        <view class="file-body">
-          <view v-for="(item, index) in fileList" :key="index">
-            <view class="file-row">
-              <view class="file-td" style="flex: 2">
-                <view class="file-name" @click="toggleExpand(item, index)">
-                  <uni-icons 
-                    :type="item.expanded ? 'bottom' : 'right'" 
-                    size="14"
-                    color="#606266"
-                  ></uni-icons>
-                  <text>{{ item.name }}</text>
-                </view>
-              </view>
-              <view class="file-td" style="flex: 1">
-                <view class="file-actions">
-                  <view class="operation-btn" @click="handleUploadData(item.id)">
-                    上传
-                  </view>
-                  <view class="operation-btn view-btn" @click="handleViewFiles(item)">
-                    查看
-                  </view>
-                </view>
-              </view>
-            </view>
-            
-            <view v-if="item.expanded && item.children" class="file-children">
-              <view 
-                v-for="(child, childIndex) in item.children" 
-                :key="childIndex"
-                class="file-row child-row"
-              >
-                <view class="file-td" style="flex: 2">
-                  <view class="file-name">
-                    <text class="indent">{{ child.name }}</text>
-                  </view>
-                </view>
-                <view class="file-td" style="flex: 1">
-                  <view class="file-actions">
-                    <view class="operation-btn" @click="handleUploadData(child.id)">
-                      上传
-                    </view>
-                    <view class="operation-btn view-btn" @click="handleViewFiles(child)">
-                      查看
-                    </view>
-                  </view>
-                </view>
-              </view>
-            </view>
-          </view>
-        </view>
+        <tree-table 
+          :data="fileList"
+          @upload="handleUploadData"
+          @view="handleViewFiles"
+        />
       </view>
     </view>
 
@@ -281,12 +229,14 @@
 </template>
 
 <script>
-import { getList, getForm, submitForm, downloadTemplate, getFormTree, getDataFillTree, addFile, getDataFill, deleteDataFill } from '@/api/auth'
+import { getList, getForm, submitForm, downloadTemplate, getFormTree, getDataFillTree, addFile, getDataFill, deleteDataFill, getFormData } from '@/api/auth'
 import DynamicForm from './components/DynamicForm.vue'
 import EditExcel from './components/editExcel.vue'
+import { exportExcel } from "./components/export";
 // 手动引入需要的组件
 import { uniPopup, uniIcons, uniTransition } from '@dcloudio/uni-ui'
 import TreeNode from './components/TreeNode.vue'
+import TreeTable from './components/TreeTable.vue'
 
 export default {
   components: {
@@ -296,6 +246,7 @@ export default {
     uniIcons,
     uniTransition,
     TreeNode,
+    TreeTable,
   },
 
   data() {
@@ -502,8 +453,8 @@ export default {
               formData.append('file', file)
 
               // 使用 fetch 上传
-              const response = await fetch(`${window.location.origin}/dataFilling/form/${id}/excel/upload`, {
-              // const response = await fetch(`http://183.194.64.166:17304/dataFilling/form/${id}/excel/upload`, {
+              // const response = await fetch(`${window.location.origin}/dataFilling/form/${id}/excel/upload`, {
+              const response = await fetch(`http://183.194.64.166:17304/dataFilling/form/${id}/excel/upload`, {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -572,61 +523,12 @@ export default {
       }
     },
 
-    // 处理列变化
-    handleColumnChange(e) {
-      const { column, value } = e.detail
-      
-      if (column === 0) { // 第一列变化
-        this.pickerIndexes[0] = value
-        // 更新第二列数据
-        const children = this.formList[value] && this.formList[value].children || []
-        this.pickerRange[1] = children
-        // 重置第二列索引
-        this.pickerIndexes[1] = 0
-        // 手动更新 range
-        this.$set(this.pickerRange, 1, children)
-      } else { // 第二列变化
-        this.pickerIndexes[1] = value
-      }
-    },
-
-    // 处理表单选择
-    async handleFormSelect(e) {
-      const indexes = e.detail.value
-      this.parentForm = this.formList[indexes[0]]
-      this.childForm = this.parentForm?.children?.[indexes[1]]
-      console.log(this.parentForm,this.childForm)
-      
-      if (!this.childForm) return
-      
-      this.selectedFormText = `${this.parentForm.name} / ${this.childForm.name}`
-    },
-
-    // 处理自由填报表单提交
-    async handleFreeFormSubmit(formData) {
-      try {
-        const res = await submitForm(null, [formData], this.selectedForm.id)
-        if (res.success) {
-          uni.showToast({
-            title: '提交成功',
-            icon: 'success'
-          })
-          this.selectedForm = {}
-          this.formItems = []
-        }
-      } catch (error) {
-        console.error('提交失败:', error)
-        uni.showToast({
-          title: '提交失败',
-          icon: 'none'
-        })
-      }
-    },
-
     // 处理 tab 切换
     handleTabChange(index) {
       this.currentTab = index
-      if (index === 1) {
+      if (index === 0) {
+        this.getTableData()
+      } else if (index === 1) {
         this.getFormList()
       } else if (index === 2) {
         this.getFileList()
@@ -705,7 +607,7 @@ export default {
       input.click()
     },
 
-    // 确认上传
+    // 文件管理 确认上传
     async confirmUpload() {
       if (!this.uploadForm.fileName || !this.uploadForm.file) {
         uni.showToast({
@@ -820,6 +722,12 @@ export default {
     handleDownload(file) {
       // 实现下载逻辑
       console.log('下载文件:', file);
+      getFormData(file.id).then((res) => {
+        exportExcel(
+          JSON.parse(res.data.formData),
+          `${file.name}`
+        );
+      });
     },
 
     // 处理编辑

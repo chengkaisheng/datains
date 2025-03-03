@@ -7,11 +7,13 @@
       <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="name" label="名称" width="200">
         </el-table-column>
-        <el-table-column prop="description" label="描述" width="300">
+        <el-table-column prop="description" label="描述" width="200">
+        </el-table-column>
+        <el-table-column prop="createdByName" label="创建人" width="200" >
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" >
         </el-table-column>
-        <el-table-column label="操作" width="400">
+        <el-table-column label="操作" width="300">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -214,7 +216,7 @@ export default {
       datafill.getFormData(file.id).then((res) => {
         exportExcel(
           JSON.parse(res.data.formData),
-          `${file.name}-${file.version}`
+          `${file.name}`
         );
       });
     },

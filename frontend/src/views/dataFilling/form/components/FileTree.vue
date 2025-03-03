@@ -13,7 +13,7 @@
       v-if="!treeData.length && !loading"
       class="no-tdata"
     >
-      {{ $t('data_fill.file.no_file') }}
+      暂无数据
       <span
         class="no-tdata-new"
         @click="() => handleCreateFolder()"
