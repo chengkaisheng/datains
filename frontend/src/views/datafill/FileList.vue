@@ -1,13 +1,18 @@
 <template>
   <div class="fill_box">
-    <div class="header">
-      <el-button type="primary" @click="handleFill">填报</el-button>
-      <el-input v-model="searchName" placeholder="请输入内容" clearable style="width: 200px;margin-left: 10px;" @keyup.enter.native="getDataFill()">
-        <el-button slot="append" icon="el-icon-search" @click="getDataFill()"></el-button>
-      </el-input>
+    <div class="header" style="display: flex; justify-content: space-between;">
+      <div>
+        <el-button type="primary" @click="handleFill">填报</el-button>
+        <el-input v-model="searchName" placeholder="请输入内容" clearable style="width: 200px;margin-left: 10px;" @keyup.enter.native="getDataFill()">
+          <el-button slot="append" icon="el-icon-search" @click="getDataFill()"></el-button>
+        </el-input>
+      </div>
+      <div>
+        <el-button type="primary" @click="refresh">刷新</el-button>
+      </div>
     </div>
-    <div class="list">
-      <el-table :data="tableData" style="width: 100%">
+    <div class="list" v-loading="tableLoading">
+      <el-table :data="tableData" style="width: 100%" >
         <el-table-column prop="name" label="名称" width="200">
         </el-table-column>
         <el-table-column prop="nodeType" label="类型" width="200">
@@ -265,7 +270,8 @@ export default {
       detailDrawer: false,
       displayFormData: undefined,
       loading: false,
-      currentFormId: ''
+      currentFormId: '',
+      tableLoading: false
     };
   },
   watch: {
@@ -312,7 +318,13 @@ export default {
         }
       });
     },
+    refresh() {
+      this.goPage = 1
+      this.searchName = ''
+      this.getDataFill()
+    },
     getDataFill(nodeType) {
+      this.tableLoading = true
       let params = {
         goPage: this.goPage,
         pageSize: nodeType === 'form' ? 100000 : this.pageSize,
@@ -329,6 +341,9 @@ export default {
           this.tableData = res.data.listObject || [];
           this.total = res.data.itemCount || 0;
         }
+        this.tableLoading = false
+      }).catch(() => {
+        this.tableLoading = false
       });
     },
     handleSizeChange(val) {
