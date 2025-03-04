@@ -1,9 +1,10 @@
 package io.datains.job.sechedule;
 
 import com.fit2cloud.quartz.anno.QuartzScheduled;
-import io.datains.service.datasource.DatasourceService;
 import io.datains.service.dataset.DataSetTableService;
+import io.datains.service.datasource.DatasourceService;
 import io.datains.service.kettle.KettleService;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -22,7 +23,7 @@ public class Schedular {
         dataSetTableService.updateDatasetTableStatus();
     }
 
-    @QuartzScheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(fixedRate = 10 * 60 * 1000)
     public void updateDatasourceStatus() {
         datasourceService.updateDatasourceStatus();
     }
