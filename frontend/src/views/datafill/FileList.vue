@@ -1,17 +1,24 @@
 <template>
   <div class="fill_box">
     <div class="header">
-      <el-button type="primary" @click="handleUpload">上传文件</el-button>
+      <el-button type="primary" @click="handleFill">填报</el-button>
+      <el-input v-model="searchName" placeholder="请输入内容" clearable style="width: 200px;margin-left: 10px;" @keyup.enter.native="getDataFill()">
+        <el-button slot="append" icon="el-icon-search" @click="getDataFill()"></el-button>
+      </el-input>
     </div>
     <div class="list">
       <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="name" label="名称" width="200">
         </el-table-column>
-        <el-table-column prop="description" label="描述" width="200">
+        <el-table-column prop="nodeType" label="类型" width="200">
+          <template slot-scope="scope">
+            <span v-if="scope.row.nodeType === 'form'">模板填报</span>
+            <span v-else-if="scope.row.nodeType === 'selfReport'">自主填报</span>
+          </template>
         </el-table-column>
-        <el-table-column prop="createdByName" label="创建人" width="200" >
+        <el-table-column prop="creatorName" label="创建人" width="200" >
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" >
+        <el-table-column prop="createTime" label="创建时间" :formatter="formatDate">
         </el-table-column>
         <el-table-column label="操作" width="300">
           <template slot-scope="scope">
@@ -22,10 +29,18 @@
               >下载</el-button
             >
             <el-button
+              v-if="scope.row.nodeType === 'selfReport'"
               size="mini"
               type="warning"
               @click="handleExcelEdit(scope.row)"
               >在线编辑</el-button
+            >
+            <el-button
+              v-if="scope.row.nodeType === 'form'"
+              size="mini"
+              type="primary"
+              @click="handleDetail(scope.row)"
+              >详情</el-button
             >
             <el-button
               size="mini"
@@ -78,14 +93,6 @@
         <el-form-item label="文件名称" prop="name">
           <el-input v-model="uploadForm.name" placeholder="请输入文件名称"></el-input>
         </el-form-item>
-        <el-form-item label="描述">
-          <el-input
-            type="textarea"
-            v-model="uploadForm.description"
-            :rows="3"
-            placeholder="请输入描述信息">
-          </el-input>
-        </el-form-item>
         <el-form-item label="选择文件" prop="file">
           <el-upload
             class="upload-demo"
@@ -104,18 +111,109 @@
         <el-button type="primary" @click="submitUpload">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 添加填报对话框 -->
+    <el-dialog
+      title="填报"
+      :visible.sync="fillDialogVisible"
+      width="500px">
+      <el-form
+        :model="fillForm"
+        :rules="fillRules"
+        ref="fillForm"
+        label-width="100px">
+        <el-form-item label="填报类型" prop="type">
+          <el-select v-model="fillForm.type" placeholder="请选择填报类型">
+            <el-option label="模板填报" value="form"></el-option>
+            <el-option label="自主填报" value="selfReport"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="选择模板" prop="templateId" v-show="fillForm.type === 'form'">
+          <el-select 
+            v-model="fillForm.templateId" 
+            placeholder="请选择模板"
+            filterable
+            remote
+            :remote-method="remoteSearch"
+            :loading="loading"
+            @focus="handleFocus">
+            <el-option
+              v-for="item in templateList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <div v-show="fillForm.type === 'form' && fillForm.templateId" style="display: flex; justify-content: center;">
+          <el-button style="margin-right: 10px;" type="primary" @click="downloadTemplate(fillForm.templateId)">下载模板</el-button>
+          <el-upload
+          :action="`${baseUrl}dataFilling/form/${fillForm.templateId}/excel/upload`"
+          :multiple="false"
+          :show-file-list="false"
+          :file-list="templateFileList"
+          :data="{}"
+          accept=".xlsx"
+          name="file"
+          :before-upload="beforeUpload"
+          :on-success="uploadSuccess"
+          :on-error="uploadFail"
+          :headers="headers"
+        >
+          <el-button
+            style="margin-left: 10px"
+            icon="el-icon-upload2"
+          >上传
+          </el-button>
+        </el-upload>
+        </div>
+        <div v-show="fillForm.type === 'selfReport'" style="display: flex; justify-content: center;">
+          <el-button style="margin-right: 10px;" icon="el-icon-upload2" @click="handleUpload">上传</el-button>
+        </div>
+      </el-form>
+    </el-dialog>
+
+    <!-- 添加详情抽屉 -->
+    <el-drawer
+      v-if="detailDrawer"
+      title="详情"
+      :visible.sync="detailDrawer"
+      :before-close="handleDetailClose"
+      size="100%"
+      :wrapperClosable="false"
+      direction="rtl">
+      <no-select v-if="!displayFormData" />
+      <view-table
+        v-else
+        :param="displayFormData"
+        @editForm="editForm"
+      />
+    </el-drawer>
   </div>
 </template>
 
 <script>
 import EditExcel from "./editExcel.vue";
+import ViewTable from '@/views/dataFilling/form/ViewTable.vue'
+import NoSelect from '@/views/dataFilling/form/NoSelect.vue'
 import datafill from "@/api/datafill/datafill";
 import { exportExcel } from "./export";
+import {
+  downloadTemplate,
+  saveForm,
+  deleteForm,
+  getWithPrivileges
+} from '@/views/dataFilling/form/dataFilling'
+import { getToken, setToken } from '@/utils/auth'
+const token = getToken()
+import i18n from '@/lang'
 
 export default {
   name: "FileList",
   components: {
     EditExcel,
+    ViewTable,
+    NoSelect,
   },
   props: {
     nodeData: {
@@ -125,6 +223,12 @@ export default {
   },
   data() {
     return {
+      baseUrl: process.env.VUE_APP_BASE_API,
+      headers: {
+        Authorization: token,
+        'Accept-Language': i18n.locale.replace('_', '-')
+      },
+      templateFileList: [],
       tableData: [],
       goPage: 1,
       pageSize: 10,
@@ -133,7 +237,6 @@ export default {
       uploadDialogVisible: false,
       uploadForm: {
         name: "",
-        description: "",
         file: null,
       },
       uploadRules: {
@@ -144,29 +247,25 @@ export default {
       },
       msg: {},
       fileList: [],
-      worker: null,
+      fillDialogVisible: false,
+      fillForm: {
+        type: '',
+        templateId: ''
+      },
+      fillRules: {
+        type: [
+          { required: true, message: '请选择填报类型', trigger: 'change' }
+        ],
+        templateId: [
+          { required: true, message: '请选择模板', trigger: 'change' }
+        ]
+      },
+      templateList: [],
+      searchName: '',
+      detailDrawer: false,
+      displayFormData: undefined,
+      loading: false,
     };
-  },
-  created() {
-    // 修改 Worker 的创建方式
-    // if (typeof Worker !== 'undefined') {
-    //   try {
-    //     // 使用 URL.createObjectURL 创建 worker
-    //     const workerPath = require('worker-loader!./excel-worker.js').default;
-    //     this.worker = new workerPath();
-    //   } catch (e) {
-    //     console.error('Worker creation failed:', e)
-    //     this.$message.error('Worker 创建失败')
-    //   }
-    // } else {
-    //   this.$message.error('浏览器不支持 Web Worker')
-    // }
-  },
-  beforeDestroy() {
-    // 组件销毁时终止 Worker
-    if (this.worker) {
-      this.worker.terminate();
-    }
   },
   watch: {
     nodeData: {
@@ -186,18 +285,49 @@ export default {
     },
   },
   methods: {
-    getDataFill() {
+    handleFill() {
+      this.fillDialogVisible = true;
+      this.fillForm = {
+        type: '',
+        templateId: ''
+      };
+      // 如果需要获取模板列表，可以在这里调用接口
+      this.getTemplateList();
+    },
+    getTemplateList() {
+      // TODO: 调用获取模板列表接口
+      this.getDataFill('form')
+    },
+    submitFill() {
+      this.$refs.fillForm.validate((valid) => {
+        if (valid) {
+          if (this.fillForm.type === 'form' && !this.fillForm.templateId) {
+            this.$message.error('请选择模板');
+            return;
+          }
+          // TODO: 调用填报提交接口
+          console.log('提交填报', this.fillForm);
+          this.fillDialogVisible = false;
+        }
+      });
+    },
+    getDataFill(nodeType) {
       let params = {
         goPage: this.goPage,
-        pageSize: this.pageSize,
+        pageSize: nodeType === 'form' ? 100000 : this.pageSize,
         data: {
           pid: this.nodeData.id,
-          name: '',
+          name: this.searchName,
+          nodeType: nodeType ? nodeType : ''
         }
       };
-      datafill.getDataFill(params).then((res) => {
-        this.tableData = res.data.listObject || [];
-        this.total = res.data.itemCount || 0;
+      datafill.getAllFill(params).then((res) => {
+        if(nodeType === 'form') {
+          this.templateList = res.data.listObject || [];
+        } else {
+          this.tableData = res.data.listObject || [];
+          this.total = res.data.itemCount || 0;
+        }
       });
     },
     handleSizeChange(val) {
@@ -212,11 +342,14 @@ export default {
     handleFileEdit(file) {
       console.log("编辑文件", file);
     },
-    handleFileDownload(file) {
-      datafill.getFormData(file.id).then((res) => {
+    handleFileDownload(row) {
+      if(row.nodeType === 'form') {
+        this.downloadTemplate(row.id, row.name)
+      }
+      datafill.getFormData(row.id).then((res) => {
         exportExcel(
           JSON.parse(res.data.formData),
-          `${file.name}`
+          `${row.name}`
         );
       });
     },
@@ -232,18 +365,20 @@ export default {
         data: null,
       };
     },
+    handleDetail(row) {
+      this.detailDrawer = true;
+      getWithPrivileges(row.id).then((res) => {
+        this.displayFormData = res.data
+      });
+    },
     handleDelete(row) {
       this.$confirm('确认删除该条数据?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        datafill.deleteDataFill(row.id).then(res => {
+        deleteForm(row.id).then((response) => {
           this.getDataFill()
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
         })
       }).catch(() => {
         this.$message({
@@ -308,20 +443,35 @@ export default {
     },
     addDataFill() {
       // 上传成功的处理逻辑
-      datafill
-        .addDataFill({
-          name: this.uploadForm.name,
-          description: this.uploadForm.description,
-          pid: this.nodeData.id,
-          nodeType: 'form',
-          formData: JSON.stringify(luckysheet.getAllSheets()),
-        })
-        .then((res) => {
+      const data = {
+        name: this.uploadForm.name,
+        pid: this.nodeData.id,
+        level: this.nodeData.level,
+        nodeType: 'selfReport',
+        formData: JSON.stringify(luckysheet.getAllSheets()),
+      }
+      saveForm(data).then(res => {
+        if(res.success) {
           this.$message({
             type: "success",
             message: "上传成功！",
           });
-        });
+          this.getDataFill()
+        }
+      })
+      // datafill
+      //   .addDataFill({
+      //     name: this.uploadForm.name,
+      //     pid: this.nodeData.id,
+      //     nodeType: 'selfReport',
+      //     formData: JSON.stringify(luckysheet.getAllSheets()),
+      //   })
+      //   .then((res) => {
+      //     this.$message({
+      //       type: "success",
+      //       message: "上传成功！",
+      //     });
+      //   });
     },
     handleFileChange(file, fileList) {
       if (fileList.length > 0) {
@@ -422,11 +572,90 @@ export default {
       this.uploadDialogVisible = true
       this.uploadForm = {
         name: '',
-        description: '',
         file: null
       }
       this.fileList = []
     },
+    downloadTemplate(id, name) {
+      downloadTemplate(id).then(res => {
+        const blob = new Blob([res])
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = name ? name + '.xlsx' : this.templateList.find(item => item.id === id).name + '.xlsx' // 下载的文件名
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
+    },
+    beforeUpload() {
+      if(!this.fillForm.templateId) {
+        this.$message.error('请选择模板');
+        return;
+      }
+    },
+    uploadFail(response, file, fileList) {
+      this.$message({
+        type: 'error',
+        message: errorMessage,
+        showClose: true
+      })
+    },
+    uploadSuccess(response, file, fileList) {
+      this.$message({
+        type: 'success',
+        message: '上传成功！',
+      });
+    },
+    formatDate(row, column, cellValue) {
+      if (cellValue) {
+        const date = new Date(cellValue);
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const seconds = date.getSeconds().toString().padStart(2, '0');
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      }
+      return '';
+    },
+    handleDetailClose(done) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          this.displayFormData = null;
+          done();
+        })
+        .catch((_) => {});
+    },
+    editForm(data) {
+      console.log('编辑表单', data);
+    },
+    remoteSearch(query) {
+      if (query !== '') {
+        this.loading = true;
+        let params = {
+          goPage: 1,
+          pageSize: 100000,
+          data: {
+            pid: this.nodeData.id,
+            name: query,
+            nodeType: 'form'
+          }
+        };
+        datafill.getAllFill(params).then((res) => {
+          this.templateList = res.data.listObject || [];
+          this.loading = false;
+        }).catch(() => {
+          this.loading = false;
+        });
+      } else {
+        this.templateList = [];
+      }
+    },
+    handleFocus() {
+      this.getTemplateList();
+    }
   },
 };
 </script>

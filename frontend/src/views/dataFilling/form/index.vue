@@ -46,7 +46,10 @@ export default {
   },
   mounted() {
     this.treeLoading = true
-    listForm({}).then(res => {
+    listForm({
+      name: '',
+      nodeType: 'folder'
+    }).then(res => {
       this.formList = res.data || []
 
       if (this.$route.query && this.$route.query.id) {
@@ -98,7 +101,10 @@ export default {
           }
           saveForm(data).then(res => {
             this.closeSaveFolder()
-            listForm({}).then(res => {
+            listForm({
+              name: '',
+              nodeType: 'folder'
+            }).then(res => {
               this.formList = res.data || []
             })
           })
@@ -151,7 +157,10 @@ export default {
           }
           updateFormName(data).then(res => {
             this.closeUpdateForm()
-            listForm({}).then(res => {
+            listForm({
+              name: '',
+              nodeType: 'folder'
+            }).then(res => {
               this.formList = res.data || []
             })
             if (this.updateFormData.nodeType !== 'folder' && this.updateFormData.id === this.displayFormData.id) {
@@ -177,7 +186,10 @@ export default {
           if (this.displayFormData && this.displayFormData.id === data.id) {
             this.displayFormData = undefined
           }
-          listForm({}).then(res => {
+          listForm({
+            name: '',
+            nodeType: 'folder'
+          }).then(res => {
             this.formList = res.data || []
           })
         })
@@ -192,7 +204,10 @@ export default {
     },
     onMoveSuccess() {
       this.moveGroup = false
-      listForm({}).then(res => {
+      listForm({
+        name: '',
+        nodeType: 'folder'
+      }).then(res => {
         this.formList = res.data || []
       })
     },
@@ -254,7 +269,10 @@ export default {
         uploadExcelForm(data.id, formData).then(res => {
           this.$message.success('Excel导入成功')
           // 刷新表单列表
-          listForm({}).then(res => {
+          listForm({
+            name: '',
+            nodeType: 'folder'
+          }).then(res => {
             this.formList = res.data || []
           })
         })
@@ -294,17 +312,16 @@ export default {
       }
     },
     nodeClick(data, node) {
+      // 点击节点 调用接口 获取填报列表
+      this.nodeData = data
       // 展示对应的表数据
-      if (data.nodeType !== 'folder') {
-        getWithPrivileges(data.id).then(res => {
-          this.displayFormData = res.data
-        })
-      }
+      // if (data.nodeType !== 'folder') {
+      //   getWithPrivileges(data.id).then(res => {
+      //     this.displayFormData = res.data
+      //   })
+      // }
     },
     tabClick() {
-      if (this.activeName === 'my-tasks') {
-        this.$router.push('/data-filling/my-jobs')
-      }
     },
     flattenFolder(list, result = []) {
       forEach(list, item => {
@@ -315,10 +332,6 @@ export default {
       })
       return result
     },
-    getFileList(data) {
-      console.log(data);
-      this.nodeData = data
-    }
   }
 }
 </script>
@@ -334,20 +347,12 @@ export default {
         class="tab-panel"
         @tab-click="tabClick"
       >
-        <el-tab-pane
-          
-          name="my-tasks"
-        >
-          <span slot="label">
-            {{ $t('data_fill.my_job') }}
-          </span>
-        </el-tab-pane>
 
         <el-tab-pane
           name="forms"
         >
           <span slot="label">
-            {{ $t('data_fill.form_manage') }}
+            填报管理
           </span>
 
           <div
@@ -356,7 +361,8 @@ export default {
           >
 
             <div style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
-              {{ $t('data_fill.form.form_list_name') }}
+              <!-- {{ $t('data_fill.form.form_list_name') }} -->
+              文件夹
               <el-button
                 icon="el-icon-plus"
                 type="text"
@@ -367,8 +373,9 @@ export default {
             <div
               v-if="!formList.length && !treeLoading"
               class="no-tdata"
-            >
-              {{ $t('data_fill.form.no_form') }}
+            >·
+              <!-- {{ $t('data_fill.form.no_form') }} -->
+              暂无数据
               <span
                 class="no-tdata-new"
                 @click="() => createFolder({id: '0', level: 0, firstFolder: true})"
@@ -439,7 +446,7 @@ export default {
                               icon-class="form"
                               class="ds-icon-scene"
                             />
-                            <span>{{ $t('data_fill.form.create_form') }}</span>
+                            <span>新建模板</span>
                           </el-dropdown-item>
                           <el-dropdown-item
                             :command="beforeData('excel',data)"
@@ -448,7 +455,7 @@ export default {
                               icon-class="form"
                               class="ds-icon-scene"
                             />
-                            <span>导入表单</span>
+                            <span>导入模板</span>
                           </el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
@@ -526,15 +533,6 @@ export default {
 
           </div>
         </el-tab-pane>
-
-        <el-tab-pane
-          name="dataTable"
-        >
-          <span slot="label">
-            文件管理
-          </span>
-          <file-tree @getFileList="getFileList" class="file-tree" />
-        </el-tab-pane>
         
       </el-tabs>
 
@@ -542,21 +540,17 @@ export default {
     </de-aside-container>
 
     <el-main v-if="activeName === 'forms'" style="padding: 0">
-      <no-select v-if="!displayFormData" />
+      <!-- <no-select v-if="!displayFormData" />
       <view-table
         v-else
         :param="displayFormData"
         @editForm="editForm"
-      />
-    </el-main>
-
-    <el-main v-if="activeName === 'dataTable'" style="padding: 0">
-      <!-- 文件管理 -->
+      /> -->
       <div class="file-container">
-        <!-- <data-table class="file-content" /> -->
         <FileList :nodeData="nodeData" class="file-content" />
       </div>
     </el-main>
+
 
     <el-dialog
       v-dialogDrag

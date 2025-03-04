@@ -8,6 +8,21 @@ export function saveForm(data) {
     data
   })
 }
+export function saveFormData(data) {
+  return request({
+    url: 'dataFilling/form/saveFormData',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+export function getFormData(id) {
+  return request({
+    url: 'dataFilling/form/getFormData/' + id,
+    method: 'post',
+    loading: true,
+  })
+}
 export function updateForm(data) {
   return request({
     url: 'dataFilling/form/update',

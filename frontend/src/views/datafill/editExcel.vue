@@ -24,7 +24,14 @@
 </template>
 
 <script>
-import datafill from '@/api/datafill/datafill'
+// import datafill from '@/api/datafill/datafill'
+import {
+  // downloadTemplate,
+  // saveForm,
+  // deleteForm,
+  saveFormData,
+  getFormData
+} from '@/views/dataFilling/form/dataFilling'
 
 export default {
   name: 'EditExcel',
@@ -44,22 +51,8 @@ export default {
       isMaskShow: false,
     }
   },
-  // watch: {
-  //   msg: {
-  //     handler: async (newVal) => {
-  //       console.log(2);
-  //       // if(newVal.data) {
-  //       //   this.init(newVal.data, 'save')
-  //       // } else {
-  //       //   this.getFormData()
-  //       // }
-  //     },
-  //     deep: true,
-  //   }
-  // },
   mounted() {
-    console.log(1);
-    
+
     if(this.msg.data) {
       this.init(this.msg.data, 'save')
     } else {
@@ -80,13 +73,12 @@ export default {
           data: data || []
         })
         if(type === 'save') {
-          // this.handleSave('init')
           this.$emit('addDataFill')
         }
       })
     },
     getFormData() {
-      datafill.getFormData(this.msg.id).then(res => {
+      getFormData(this.msg.id).then(res => {
         this.init(JSON.parse(res.data.formData))
       })
     },
@@ -95,12 +87,11 @@ export default {
       this.$emit('update:drawer', false)
     },
     handleSave(type) {
-      datafill.saveFormData({
-        formId: this.msg.id,
-        nodeType: 'form',
+      saveFormData({
+        id: this.msg.id,
         formData: JSON.stringify(luckysheet.getAllSheets())
       }).then(res => {
-        if(type !== 'init') {
+        if(res.success) {
           this.$message({
             type: 'success',
             message: '保存成功'

@@ -12,6 +12,11 @@ const datafill = {
     return request.post(`/fill/selectForm/${data.goPage}/${data.pageSize}`, data.data)
   },
 
+  // 查询数据填报信息  模板  自主
+  getAllFill(data) {
+    return request.post(`/dataFilling/form/selectForm/${data.goPage}/${data.pageSize}`, data.data)
+  },
+
   // 更新数据填报信息
   updateDataFill(data) {
     return request.post('/fill/update', data)
