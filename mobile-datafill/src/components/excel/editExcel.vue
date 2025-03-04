@@ -78,7 +78,7 @@ const handleSave = (type) => {
     formData: JSON.stringify(luckysheet.getAllSheets())
   }).then(res => {
     if(type !== 'init') {
-      uni.showToast({
+      showToast({
         title: '保存成功',
         icon: 'success',
         duration: 2000
