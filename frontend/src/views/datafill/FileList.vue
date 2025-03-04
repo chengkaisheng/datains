@@ -77,7 +77,7 @@
       size="100%"
       :wrapperClosable="false"
       direction="rtl">
-      <EditExcel @addDataFill="addDataFill" :drawer.sync="drawer" :msg="msg" />
+      <EditExcel @addDataFill="addDataFill" :currentFormId="currentFormId" :drawer.sync="drawer" :msg="msg" />
     </el-drawer>
 
     <!-- 添加上传文件对话框 -->
@@ -265,6 +265,7 @@ export default {
       detailDrawer: false,
       displayFormData: undefined,
       loading: false,
+      currentFormId: ''
     };
   },
   watch: {
@@ -452,6 +453,7 @@ export default {
       }
       saveForm(data).then(res => {
         if(res.success) {
+          this.currentFormId = res.data
           this.$message({
             type: "success",
             message: "上传成功！",

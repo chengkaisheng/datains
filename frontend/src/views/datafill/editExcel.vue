@@ -43,12 +43,22 @@ export default {
     drawer: {
       type: Boolean,
       default: false
+    },
+    currentFormId: {
+      type: String,
+      default: ''
+    }
+  },
+  watch: {
+    currentFormId(newVal) {
+      this.currentFormDataId = newVal
     }
   },
   data() {
     return {
       selected: '',
       isMaskShow: false,
+      currentFormDataId: ''
     }
   },
   mounted() {
@@ -88,7 +98,7 @@ export default {
     },
     handleSave(type) {
       saveFormData({
-        id: this.msg.id,
+        id: this.currentFormDataId || this.msg.id,
         formData: JSON.stringify(luckysheet.getAllSheets())
       }).then(res => {
         if(res.success) {

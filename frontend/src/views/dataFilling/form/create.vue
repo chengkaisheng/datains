@@ -422,11 +422,13 @@ export default {
     closeCreate: function() {
       // back to forms list
       if (this.$route.query.copy) {
-        this.$router.replace({ name: 'data-filling-form', query: { id: this.$route.query.copy }})
+        this.$router.replace('/data-filling/my-jobs')
+        // this.$router.replace({ name: 'data-filling-form', query: { id: this.$route.query.copy }})
       } else if (this.$route.query.id) {
-        this.$router.replace({ name: 'data-filling-form', query: { id: this.$route.query.id }})
+        this.$router.replace('/data-filling/my-jobs')
+        // this.$router.replace({ name: 'data-filling-form', query: { id: this.$route.query.id }})
       } else {
-        this.$router.replace('/data-filling/forms')
+        this.$router.replace('/data-filling/my-jobs')
       }
     },
     onMoveInComponentList(e, originalEvent) {
