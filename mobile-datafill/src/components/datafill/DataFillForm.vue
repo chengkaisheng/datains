@@ -456,14 +456,47 @@ const triggerFileSelect = () => {
   fileInput.value.click()
 }
 
-// 文件选择改变
-const handleFileChange = (event) => {
+// 处理文件选择
+const handleFileChange = async (event) => {
   const file = event.target.files[0]
   if (!file) return
-  
-  uploadForm.value.file = file
-  if (!uploadForm.value.fileName) {
-    uploadForm.value.fileName = file.name.replace(/\.[^/.]+$/, "") // 去除文件扩展名
+
+  // 检查文件类型
+  if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+    showToast('请上传 Excel 文件（.xlsx 或 .xls 格式）')
+    return
+  }
+
+  try {
+    showLoadingToast({
+      message: '正在上传...',
+      forbidClick: true,
+    })
+
+    const formData = new FormData()
+    formData.append('file', file)
+    const res = await uploadData(selectedTemplateId.value, formData)
+    
+    closeToast()
+    if (res.success) {
+      showToast({
+        type: 'success',
+        message: '上传成功'
+      })
+      // 清空文件选择
+      event.target.value = ''
+    } else {
+      showToast({
+        type: 'fail',
+        message: res.message || '上传失败'
+      })
+    }
+  } catch (error) {
+    closeToast()
+    showToast({
+      type: 'fail',
+      message: '上传失败：' + (error.message || '未知错误')
+    })
   }
 }
 
