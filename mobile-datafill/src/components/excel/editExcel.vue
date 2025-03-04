@@ -36,6 +36,10 @@ const props = defineProps({
   drawerVisible: {
     type: Boolean,
     default: false
+  },
+  formDataId: {
+    type: String,
+    default: ''
   }
 })
 
@@ -74,8 +78,11 @@ const handleBack = () => {
 }
 
 const handleSave = (type) => {
+  if(!props.formDataId) {
+    return
+  }
   saveFormData({
-    id: props.msg.id,
+    id: props.formDataId,
     formData: JSON.stringify(luckysheet.getAllSheets())
   }).then(res => {
     if(type !== 'init') {
@@ -99,15 +106,20 @@ onMounted(() => {
 
 <style>
 .edit-excel-container {
+  /* position: relative; */
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 80vh;
   width: 100%;
   position: relative;
   background: #fff;
 }
 
 .header {
+  /* position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0; */
   display: flex;
   justify-content: space-between;
   align-items: center;

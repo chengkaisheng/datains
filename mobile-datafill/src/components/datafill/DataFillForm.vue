@@ -177,11 +177,13 @@
     <van-popup
       v-model:show="drawerVisible"
       position="right"
-      :style="{ width: '100%', height: '100%' }"
+      :overlay="false"
+      :style="{ width: '100%', height: '100%', opacity: 0 }"
     >
       <editExcel 
         v-if="drawerVisible" 
-        :msg="msg" 
+        :msg="msg"
+        :formDataId="formDataId"
         :drawer-visible="drawerVisible"
         @update:drawerVisible="drawerVisible = $event"
         @saveSelfReport="saveSelfReportFn"
@@ -602,7 +604,7 @@ const handleUploadClick = () => {
     showUploadPopup.value = true
   }
 }
-
+const formDataId = ref('')
 // 保存自报数据
 const saveSelfReportFn = async () => {
   let data = {
@@ -612,9 +614,12 @@ const saveSelfReportFn = async () => {
     nodeType: 'selfReport',
     pid: selectedTask.value.id
   }
+  drawerVisible.value = false
   let res = await saveSelfReport(data)
   if(res.success) {
+    formDataId.value = res.data
     showToast('保存成功')
+    drawerVisible.value = false
   } else {
     showToast(res.message || '保存失败')
   }
