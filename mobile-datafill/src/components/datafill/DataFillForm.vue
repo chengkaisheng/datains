@@ -555,7 +555,7 @@ const uploadExcel = (file) => {
           drawerVisible.value = true;
           msg.value = {
             id: formData.value.taskId,
-            name: file.name,
+            name: uploadForm.value.fileName,
             data: exportJson.sheets,
           };
           closeUploadPopup()
