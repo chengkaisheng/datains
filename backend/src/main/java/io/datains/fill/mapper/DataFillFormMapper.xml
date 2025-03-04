@@ -250,7 +250,19 @@
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+    <select id="selectForm" resultType="io.datains.fill.dto.DataFillFormDTO">
+        SELECT dff.*,su.nick_name as creatorName
+        FROM data_fill_form dff
+        left join sys_user su on su.username = dff.create_by
+        WHERE dff.pid = #{pid} and dff.node_type != 'folder'
+        <if test="name != null and name != ''">
+            AND dff.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="nodeType != null and nodeType != ''">
+            AND dff.node_type = #{nodeType}
+        </if>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
     update data_fill_form
     <set>
       <if test="record.id != null">

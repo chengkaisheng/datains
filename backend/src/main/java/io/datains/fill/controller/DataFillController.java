@@ -10,6 +10,7 @@ import io.datains.commons.utils.Pager;
 import io.datains.controller.ResultHolder;
 import io.datains.fill.dto.*;
 import io.datains.fill.entry.DataFillFormWithBLOBs;
+import io.datains.fill.entry.FillFormData;
 import io.datains.fill.request.*;
 import io.datains.fill.response.DataFillFormTableDataResponse;
 import io.datains.fill.service.*;
@@ -36,7 +37,13 @@ public class DataFillController {
     private DataFillTaskService dataFillTaskService;
     @Resource
     private DataFillDataService dataFillDataService;
-
+    @ApiIgnore
+    @PostMapping("/form/selectForm/{goPage}/{pageSize}")
+    public Pager<List<DataFillFormDTO>> selectForm(@PathVariable int goPage, @PathVariable int pageSize,
+                                                  @RequestBody DataFillFormRequest request) {
+        Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
+        return PageUtils.setPageInfo(page, dataFillService.selectForm(request));
+    }
 
     @ApiIgnore
     @PostMapping("/form/save")
@@ -232,5 +239,17 @@ public class DataFillController {
     @PostMapping("/form/excel/excelUploadToFrom/{pid}")
     public void excelUploadToFrom(@RequestParam("file") MultipartFile file, @PathVariable String pid) throws Exception{
         dataFillService.excelUploadToFrom(file, pid);
+    }
+
+    @ApiIgnore
+    @PostMapping("/form/saveFormData")
+    public void saveFormDate(@RequestBody DataFillFormWithBLOBs dataFillForm) {
+        dataFillService.saveFormData(dataFillForm);
+    }
+
+    @ApiIgnore
+    @PostMapping("/form/getFormData/{id}")
+    public FillFormData getFormData(@PathVariable String id) {
+        return dataFillService.getFormData(id);
     }
 }

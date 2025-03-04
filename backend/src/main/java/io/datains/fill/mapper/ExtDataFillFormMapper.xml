@@ -52,9 +52,6 @@
             <if test="id != null">
                 and data_fill_form.id = #{id,jdbcType=VARCHAR}
             </if>
-            <if test="name != null and name != ''">
-                and data_fill_form.`name` like CONCAT('%', #{name},'%')
-            </if>
             <if test="pid != null">
                 and data_fill_form.pid = #{pid,jdbcType=VARCHAR}
             </if>

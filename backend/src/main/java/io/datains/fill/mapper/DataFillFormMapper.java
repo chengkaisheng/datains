@@ -1,8 +1,10 @@
 package io.datains.fill.mapper;
 
+import io.datains.fill.dto.DataFillFormDTO;
 import io.datains.fill.entry.DataFillForm;
 import io.datains.fill.entry.DataFillFormExample;
 import io.datains.fill.entry.DataFillFormWithBLOBs;
+import io.datains.fill.request.DataFillFormRequest;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -35,4 +37,6 @@ public interface DataFillFormMapper {
     int updateByPrimaryKeyWithBLOBs(DataFillFormWithBLOBs record);
 
     int updateByPrimaryKey(DataFillForm record);
+
+    List<DataFillFormDTO> selectForm(DataFillFormRequest request);
 }

@@ -14,5 +14,7 @@ public class DataFillFormWithBLOBs extends DataFillForm implements Serializable 
 
     private String tableIndexes;
 
+    private String formData;
+
     private static final long serialVersionUID = 1L;
 }

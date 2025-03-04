@@ -34,6 +34,9 @@ public class FillFormInfoServiceImpl implements FillFormInfoService {
     @Override
     @Transactional
     public FillFormInfo insert(FillFormInfoCreateReqVo fillFormInfo) {
+        if (fillFormInfo.getPid() == null || fillFormInfo.getPid().isEmpty()) {
+            throw new RuntimeException("父节点不能为空");
+        }
         Long userId = AuthUtils.getUser().getUserId();
         fillFormInfo.setId(UUIDUtil.getUUID().toString());
         fillFormInfo.setCreator(userId);
@@ -97,7 +100,7 @@ public class FillFormInfoServiceImpl implements FillFormInfoService {
     @Override
     public List<FillFormInfoVo> tree(FillFormInfoReqVo request) {
         if (request.getName() == null || request.getName().isEmpty()) {
-            return infoMapper.select(request);
+            return TreeUtils.mergeTree(infoMapper.select(request));
         }
         // 1.查询基础匹配节点
         List<FillFormInfoVo> matchedNodes = infoMapper.searchByName(request.getName());

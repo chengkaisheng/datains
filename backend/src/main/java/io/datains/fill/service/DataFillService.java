@@ -28,13 +28,11 @@ import io.datains.fill.constants.DataFillConstants;
 import io.datains.fill.dto.DataFillFormDTO;
 import io.datains.fill.dto.ExtIndexField;
 import io.datains.fill.dto.ExtTableField;
-import io.datains.fill.entry.DataFillForm;
-import io.datains.fill.entry.DataFillFormExample;
-import io.datains.fill.entry.DataFillFormWithBLOBs;
-import io.datains.fill.entry.DataFillUserTask;
+import io.datains.fill.entry.*;
 import io.datains.fill.mapper.DataFillFormMapper;
 import io.datains.fill.mapper.DataFillUserTaskMapper;
 import io.datains.fill.mapper.ExtDataFillFormMapper;
+import io.datains.fill.mapper.FillFormDataMapper;
 import io.datains.fill.request.DataFillFormRequest;
 import io.datains.fill.request.DataFillFormTableDataRequest;
 import io.datains.fill.response.DataFillFormTableDataResponse;
@@ -88,10 +86,15 @@ public class DataFillService {
     private DataFillDataService dataFillDataService;
     @Resource
     private DataFillUserTaskMapper dataFillUserTaskMapper;
+    @Resource
+    private FillFormDataMapper fillFormDataMapper;
 
 
     private final static Gson gson = new Gson();
 
+    public List<DataFillFormDTO> selectForm(DataFillFormRequest request) {
+        return dataFillFormMapper.selectForm(request);
+    }
 
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
     public ResultHolder saveForm(DataFillFormWithBLOBs dataFillForm) throws Exception {
@@ -103,7 +106,8 @@ public class DataFillService {
 
         checkName(uuid, dataFillForm.getName(), dataFillForm.getPid(), dataFillForm.getNodeType(), DataFillConstants.OPT_TYPE_INSERT);
 
-        if (!StringUtils.equals(dataFillForm.getNodeType(), "folder")) {
+        if (StringUtils.equals(dataFillForm.getNodeType(), "form")) {
+            dataFillForm.setTableName("fill_" + dataFillForm.getTableName());
             List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
             }.getType());
 
@@ -166,6 +170,8 @@ public class DataFillService {
                 }
 
             }
+        } else if (StringUtils.equals(dataFillForm.getNodeType(), "selfReport")) {
+            this.saveFormData(dataFillForm);
         }
 
         dataFillForm.setCreateBy(AuthUtils.getUser().getUsername());
@@ -375,8 +381,55 @@ public class DataFillService {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         request.setUserId(userId);
         List<DataFillFormDTO> list = extDataFillFormMapper.search(request);
+        if (request.getName() != null && !request.getName().isEmpty()) {
+            list = selectByName(list, request.getName());
+        }
         return TreeUtils.mergeTree(list);
+    }
 
+    private List<DataFillFormDTO> selectByName(List<DataFillFormDTO> list, String name) {
+        // 构建辅助映射
+        Map<String, DataFillFormDTO> idMap = new HashMap<>();
+        Map<String, List<DataFillFormDTO>> parentToChildrenMap = new HashMap<>();
+
+        for (DataFillFormDTO dto : list) {
+            idMap.put(dto.getId(), dto);
+            parentToChildrenMap.computeIfAbsent(dto.getPid(), k -> new ArrayList<>()).add(dto);
+        }
+
+        // 筛选出名称匹配的节点
+        List<DataFillFormDTO> matchedNodes = list.stream()
+                .filter(dto -> dto.getName().contains(name))
+                .collect(Collectors.toList());
+
+        Set<DataFillFormDTO> resultSet = new HashSet<>();
+
+        for (DataFillFormDTO node : matchedNodes) {
+            // 收集所有父节点
+            DataFillFormDTO current = node;
+            while (current != null) {
+                if (resultSet.add(current)) {
+                    // 获取父节点
+                    String pid = current.getPid();
+                    current = idMap.get(pid);
+                } else {
+                    // 如果节点已存在，说明其父节点已处理，跳出循环
+                    current = null;
+                }
+            }
+            // 收集所有子节点
+            Queue<DataFillFormDTO> queue = new LinkedList<>();
+            queue.offer(node);
+            while (!queue.isEmpty()) {
+                DataFillFormDTO currentChild = queue.poll();
+                resultSet.add(currentChild);
+                // 获取子节点并加入队列
+                List<DataFillFormDTO> children = parentToChildrenMap.getOrDefault(currentChild.getId(), Collections.emptyList());
+                children.forEach(queue::offer);
+
+            }
+        }
+        return new ArrayList<>(resultSet);
     }
 
     public DataFillFormWithBLOBs get(String id) {
@@ -441,6 +494,7 @@ public class DataFillService {
             DataFillFormExample example = new DataFillFormExample();
             example.createCriteria().andIdIn(ids);
             dataFillFormMapper.deleteByExample(example);
+            fillFormDataMapper.deleteByFormIds(ids);
         }
 
         if (dataFillForm != null) {
@@ -712,7 +766,7 @@ public class DataFillService {
         }
         String name = filename.substring(0, filename.lastIndexOf("."));
         dataFillForm.setName(name);
-        dataFillForm.setTableName("fill_" + UUIDUtil.getUUID());
+        dataFillForm.setTableName(UUIDUtil.getUUID().toString());
         dataFillForm.setDatasource("default-built-in");
         dataFillForm.setPid(pid);
         dataFillForm.setLevel(1);
@@ -873,6 +927,29 @@ public class DataFillService {
         }
 
 
+    }
+
+    public void saveFormData(DataFillFormWithBLOBs dataFillForm) {
+        //先判断是否已经存在数据
+        FillFormData fillFormData = this.fillFormDataMapper.getByFormId(dataFillForm.getId());
+        Long userId = AuthUtils.getUser().getUserId();
+        if (fillFormData != null) {
+            fillFormData.setFormData(dataFillForm.getFormData());
+            fillFormData.setUpdater(userId);
+            this.fillFormDataMapper.update(fillFormData);
+        } else {
+            fillFormData = new FillFormData();
+            fillFormData.setId(UUIDUtil.getUUID().toString());
+            fillFormData.setFormData(dataFillForm.getFormData());
+            fillFormData.setFormId(dataFillForm.getId());
+            fillFormData.setCreator(userId);
+            fillFormData.setUpdater(userId);
+            this.fillFormDataMapper.insert(fillFormData);
+        }
+    }
+
+    public FillFormData getFormData(String formId) {
+        return this.fillFormDataMapper.getByFormId(formId);
     }
 
     @EqualsAndHashCode(callSuper = true)
