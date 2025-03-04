@@ -1,20 +1,24 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import DataFillHome from '../components/datafill/DataFillHome.vue'
 import DataFillForm from '../components/datafill/DataFillForm.vue'
 
 const routes = [
   {
-    path: '/',
+    path: '/pages/tabBar/home/index',
     component: DataFillHome
   },
   {
     path: '/fill-form',
     component: DataFillForm
+  },
+  {
+    path: '/',
+    redirect: '/pages/tabBar/home/index'
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory('/de-app/'),
+  history: createWebHashHistory('/de-app/'),
   routes
 })
 
