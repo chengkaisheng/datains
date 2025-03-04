@@ -40,7 +40,8 @@ service.interceptors.response.use(
   },
   error => {
     console.error('请求错误:', error)
-    showToast(error.message || '请求失败')
+    // showToast(error.message || '请求失败')
+    showToast(error.response.data.message || '请求失败')
     return Promise.reject(error)
   }
 )

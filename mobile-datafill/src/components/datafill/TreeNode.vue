@@ -11,6 +11,7 @@
       v-for="child in node.children"
       :key="child.id"
       :node="child"
+      :expand="expand"
       :selected-id="selectedId"
       @select="$emit('select', $event)"
     />
@@ -18,13 +19,17 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Cell as VanCell } from 'vant'
 
 const props = defineProps({
   node: {
     type: Object,
     required: true
+  },
+  expand: {
+    type: Boolean,
+    default: false
   },
   selectedId: {
     type: String,
@@ -34,9 +39,14 @@ const props = defineProps({
 
 const emit = defineEmits(['select'])
 
-const expanded = ref(false)
+const expanded = ref(props.expand)
 const hasChildren = computed(() => props.node.children && props.node.children.length > 0)
 const isSelected = computed(() => props.node.id === props.selectedId)
+
+// 监听 expand prop 的变化
+watch(() => props.expand, (newValue) => {
+  expanded.value = newValue
+})
 
 const handleClick = () => {
   if (hasChildren.value) {

@@ -96,7 +96,8 @@
         <div class="task-tree-container">
           <template v-for="node in taskTree" :key="node.id">
             <TreeNode 
-              :node="node" 
+              :node="node"
+              :expand="!!taskSearchValue"
               :selected-id="selectedTaskId"
               @select="onClickItem"
             />
@@ -247,7 +248,7 @@ const msg = ref({
   data: []
 })
 
-// 处理树形数据 - 简化处理，保持原有结构
+// 处理树形数据 - 添加展开状态
 const processTreeData = (items) => {
   return items.map(item => ({
     ...item,
@@ -267,9 +268,7 @@ const loadTaskTree = async () => {
       nodeType: 'folder'
     }
     const { data } = await getTaskTree(params)
-    console.log('原始数据:', data)
     const processedData = processTreeData(data || [])
-    console.log('处理后数据:', processedData)
     taskTree.value = processedData
   } catch (error) {
     console.error('获取任务树失败：', error)
@@ -467,12 +466,18 @@ const handleFileChange = async (event) => {
     return
   }
 
+  if(formData.value.type === '自主填报') {
+    uploadForm.value.file = file
+    uploadForm.value.fileName = file.name.replace(/\.[^/.]+$/, "") // 去除文件扩展名
+    return
+  }
+
   try {
     showLoadingToast({
       message: '正在上传...',
       forbidClick: true,
     })
-
+    closeUploadPopup()
     const formData = new FormData()
     formData.append('file', file)
     const res = await uploadData(selectedTemplateId.value, formData)
@@ -491,12 +496,9 @@ const handleFileChange = async (event) => {
         message: res.message || '上传失败'
       })
     }
+    closeUploadPopup()
   } catch (error) {
-    closeToast()
-    showToast({
-      type: 'fail',
-      message: '上传失败：' + (error.message || '未知错误')
-    })
+    
   }
 }
 
@@ -556,6 +558,7 @@ const uploadExcel = (file) => {
             name: file.name,
             data: exportJson.sheets,
           };
+          closeUploadPopup()
         } catch (err) {
           // console.error('处理Excel数据错误:', err)
           showToast({
@@ -610,7 +613,11 @@ const saveSelfReportFn = async () => {
     pid: selectedTask.value.id
   }
   let res = await saveSelfReport(data)
-  console.log('保存自报数据', res)
+  if(res.success) {
+    showToast('保存成功')
+  } else {
+    showToast(res.message || '保存失败')
+  }
 }
 </script>
 
