@@ -424,6 +424,7 @@ export default {
         suffix = suffixArr[suffixArr.length - 1];
       if (suffix != "xlsx") {
         this.$message.error("目前只支持xlsx文件");
+        this.selfUploadLoading = false
         return;
       }
       let _this = this;
@@ -713,7 +714,7 @@ export default {
       formData.append('file', file);
 
       return excelUploadAiHandle(formData).then(res => {
-        const file = new File([res], '模板.xlsx', {
+        const file = new File([res], `${this.uploadForm.file}.xlsx`, {
           type: res.type,
           lastModified: Date.now()
         });

@@ -3,7 +3,7 @@ import DeContainer from '@/components/datains/DeContainer.vue'
 import DeAsideContainer from '@/components/datains/DeAsideContainer.vue'
 import NoSelect from './NoSelect.vue'
 import ViewTable from './ViewTable.vue'
-import { listForm, saveForm, updateFormName, deleteForm, getWithPrivileges, uploadExcelForm } from '@/views/dataFilling/form/dataFilling'
+import { listForm, saveForm, updateFormName, deleteForm, getWithPrivileges, uploadExcelForm, excelUploadAiHandle } from '@/views/dataFilling/form/dataFilling'
 import { forEach, cloneDeep, find } from 'lodash-es'
 import { hasPermission } from '@/directive/Permission'
 import DataFillingFormMoveSelector from './MoveSelector.vue'
@@ -226,6 +226,8 @@ export default {
         this.createForm(data)
       } else if (data.createType === 'excel') {
         this.createExcel(data)
+      } else if (data.createType === 'excelAI') {
+        this.createExcelAI(data)
       }
     },
     createForm(data) {
@@ -234,6 +236,45 @@ export default {
         level: data.level + 1
       }
       this.$router.push({ name: 'data-filling-form-create', query: _param })
+    },
+    createExcelAI(data) {
+      // 创建一个隐藏的文件上传input
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = '.xlsx,.xls'
+      input.style.display = 'none'
+      
+      input.onchange = (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+        
+        const formData = new FormData()
+        formData.append('file', file)
+        
+        excelUploadAiHandle(formData).then(res => {
+          let file1 = new File([res], `${file.name}`, {
+            type: res.type,
+            lastModified: Date.now()
+          });
+          const formData1 = new FormData()
+          formData1.append('file', file1)
+          uploadExcelForm(data.id, formData1).then(res => {
+            this.$message.success('Excel导入成功')
+            // 刷新表单列表
+            listForm({
+              name: '',
+              nodeType: 'folder'
+            }).then(res => {
+              this.formList = res.data || []
+            })
+          })
+        })
+      }
+      
+      // 触发文件选择
+      document.body.appendChild(input)
+      input.click()
+      document.body.removeChild(input)
     },
     createExcel(data) {
       console.log(data);
@@ -456,6 +497,15 @@ export default {
                               class="ds-icon-scene"
                             />
                             <span>导入模板</span>
+                          </el-dropdown-item>
+                          <el-dropdown-item
+                            :command="beforeData('excelAI',data)"
+                          >
+                            <svg-icon
+                              icon-class="form"
+                              class="ds-icon-scene"
+                            />
+                            <span>导入模板 AI</span>
                           </el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
