@@ -2586,8 +2586,8 @@ module.exports = Array.isArray || function (arr) {
 
 },{}],12:[function(require,module,exports){
 'use strict';
-var utils = require('./utils');
-var support = require('./support');
+var utils = require('./utils.js');
+var support = require('./support.js');
 // private property
 var _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
@@ -2695,11 +2695,11 @@ exports.decode = function(input) {
 },{"./support":41,"./utils":43}],13:[function(require,module,exports){
 'use strict';
 
-var external = require("./external");
-var DataWorker = require('./stream/DataWorker');
-var DataLengthProbe = require('./stream/DataLengthProbe');
-var Crc32Probe = require('./stream/Crc32Probe');
-var DataLengthProbe = require('./stream/DataLengthProbe');
+var external = require("./external.js");
+var DataWorker = require('./stream/DataWorker.js');
+var DataLengthProbe = require('./stream/DataLengthProbe.js');
+var Crc32Probe = require('./stream/Crc32Probe.js');
+var DataLengthProbe = require('./stream/DataLengthProbe.js');
 
 /**
  * Represent a compressed object, with everything needed to decompress it.
@@ -2772,7 +2772,7 @@ module.exports = CompressedObject;
 },{"./external":17,"./stream/Crc32Probe":36,"./stream/DataLengthProbe":37,"./stream/DataWorker":38}],14:[function(require,module,exports){
 'use strict';
 
-var GenericWorker = require("./stream/GenericWorker");
+var GenericWorker = require("./stream/GenericWorker.js");
 
 exports.STORE = {
     magic: "\x00\x00",
@@ -2783,12 +2783,12 @@ exports.STORE = {
         return new GenericWorker("STORE decompression");
     }
 };
-exports.DEFLATE = require('./flate');
+exports.DEFLATE = require('./flate.js');
 
 },{"./flate":18,"./stream/GenericWorker":39}],15:[function(require,module,exports){
 'use strict';
 
-var utils = require('./utils');
+var utils = require('./utils.js');
 
 /**
  * The following functions come from pako, from pako/lib/zlib/crc32.js
@@ -2903,8 +2903,8 @@ module.exports = {
 var USE_TYPEDARRAY = (typeof Uint8Array !== 'undefined') && (typeof Uint16Array !== 'undefined') && (typeof Uint32Array !== 'undefined');
 
 var pako = require("pako");
-var utils = require("./utils");
-var GenericWorker = require("./stream/GenericWorker");
+var utils = require("./utils.js");
+var GenericWorker = require("./stream/GenericWorker.js");
 
 var ARRAY_TYPE = USE_TYPEDARRAY ? "uint8array" : "array";
 
@@ -2988,11 +2988,11 @@ exports.uncompressWorker = function () {
 },{"./stream/GenericWorker":39,"./utils":43,"pako":48}],19:[function(require,module,exports){
 'use strict';
 
-var utils = require('../utils');
-var GenericWorker = require('../stream/GenericWorker');
-var utf8 = require('../utf8');
-var crc32 = require('../crc32');
-var signature = require('../signature');
+var utils = require('../utils.js');
+var GenericWorker = require('../stream/GenericWorker.js');
+var utf8 = require('../utf8.js');
+var crc32 = require('../crc32.js');
+var signature = require('../signature.js');
 
 /**
  * Transform an integer into a string in hexadecimal.
@@ -3530,8 +3530,8 @@ module.exports = ZipFileWorker;
 },{"../crc32":15,"../signature":34,"../stream/GenericWorker":39,"../utf8":42,"../utils":43}],20:[function(require,module,exports){
 'use strict';
 
-var compressions = require('../compressions');
-var ZipFileWorker = require('./ZipFileWorker');
+var compressions = require('../compressions.js');
+var ZipFileWorker = require('./ZipFileWorker.js');
 
 /**
  * Find the compression to use.
@@ -3624,10 +3624,10 @@ function JSZip() {
         return newObj;
     };
 }
-JSZip.prototype = require('./object');
-JSZip.prototype.loadAsync = require('./load');
-JSZip.support = require('./support');
-JSZip.defaults = require('./defaults');
+JSZip.prototype = require('./object.js');
+JSZip.prototype.loadAsync = require('./load.js');
+JSZip.support = require('./support.js');
+JSZip.defaults = require('./defaults.js');
 
 // TODO find a better way to handle this version,
 // a require('package.json').version doesn't work with webpack, see #327
@@ -3637,18 +3637,18 @@ JSZip.loadAsync = function (content, options) {
     return new JSZip().loadAsync(content, options);
 };
 
-JSZip.external = require("./external");
+JSZip.external = require("./external.js");
 module.exports = JSZip;
 
 },{"./defaults":16,"./external":17,"./load":22,"./object":26,"./support":41}],22:[function(require,module,exports){
 'use strict';
-var utils = require('./utils');
-var external = require("./external");
-var utf8 = require('./utf8');
-var utils = require('./utils');
-var ZipEntries = require('./zipEntries');
-var Crc32Probe = require('./stream/Crc32Probe');
-var nodejsUtils = require("./nodejsUtils");
+var utils = require('./utils.js');
+var external = require("./external.js");
+var utf8 = require('./utf8.js');
+var utils = require('./utils.js');
+var ZipEntries = require('./zipEntries.js');
+var Crc32Probe = require('./stream/Crc32Probe.js');
+var nodejsUtils = require("./nodejsUtils.js");
 
 /**
  * Check the CRC32 of an entry.
@@ -3789,8 +3789,8 @@ module.exports = {
 },{"buffer":3}],24:[function(require,module,exports){
 "use strict";
 
-var utils = require('../utils');
-var GenericWorker = require('../stream/GenericWorker');
+var utils = require('../utils.js');
+var GenericWorker = require('../stream/GenericWorker.js');
 
 /**
  * A worker that use a nodejs stream as source.
@@ -3867,7 +3867,7 @@ module.exports = NodejsStreamInputAdapter;
 
 var Readable = require('readable-stream').Readable;
 
-var utils = require('../utils');
+var utils = require('../utils.js');
 utils.inherits(NodejsStreamOutputAdapter, Readable);
 
 /**
@@ -3908,16 +3908,16 @@ module.exports = NodejsStreamOutputAdapter;
 
 },{"../utils":43,"readable-stream":27}],26:[function(require,module,exports){
 'use strict';
-var utf8 = require('./utf8');
-var utils = require('./utils');
-var GenericWorker = require('./stream/GenericWorker');
-var StreamHelper = require('./stream/StreamHelper');
-var defaults = require('./defaults');
-var CompressedObject = require('./compressedObject');
-var ZipObject = require('./zipObject');
-var generate = require("./generate");
-var nodejsUtils = require("./nodejsUtils");
-var NodejsStreamInputAdapter = require("./nodejs/NodejsStreamInputAdapter");
+var utf8 = require('./utf8.js');
+var utils = require('./utils.js');
+var GenericWorker = require('./stream/GenericWorker.js');
+var StreamHelper = require('./stream/StreamHelper.js');
+var defaults = require('./defaults.js');
+var CompressedObject = require('./compressedObject.js');
+var ZipObject = require('./zipObject.js');
+var generate = require("./generate.js");
+var nodejsUtils = require("./nodejsUtils.js");
+var NodejsStreamInputAdapter = require("./nodejs/NodejsStreamInputAdapter.js");
 
 
 /**
@@ -4310,8 +4310,8 @@ module.exports = require("stream");
 
 },{"stream":81}],28:[function(require,module,exports){
 'use strict';
-var DataReader = require('./DataReader');
-var utils = require('../utils');
+var DataReader = require('./DataReader.js');
+var utils = require('../utils.js');
 
 function ArrayReader(data) {
     DataReader.call(this, data);
@@ -4369,7 +4369,7 @@ module.exports = ArrayReader;
 
 },{"../utils":43,"./DataReader":29}],29:[function(require,module,exports){
 'use strict';
-var utils = require('../utils');
+var utils = require('../utils.js');
 
 function DataReader(data) {
     this.data = data; // type : see implementation
@@ -4487,8 +4487,8 @@ module.exports = DataReader;
 
 },{"../utils":43}],30:[function(require,module,exports){
 'use strict';
-var Uint8ArrayReader = require('./Uint8ArrayReader');
-var utils = require('../utils');
+var Uint8ArrayReader = require('./Uint8ArrayReader.js');
+var utils = require('../utils.js');
 
 function NodeBufferReader(data) {
     Uint8ArrayReader.call(this, data);
@@ -4508,8 +4508,8 @@ module.exports = NodeBufferReader;
 
 },{"../utils":43,"./Uint8ArrayReader":32}],31:[function(require,module,exports){
 'use strict';
-var DataReader = require('./DataReader');
-var utils = require('../utils');
+var DataReader = require('./DataReader.js');
+var utils = require('../utils.js');
 
 function StringReader(data) {
     DataReader.call(this, data);
@@ -4548,8 +4548,8 @@ module.exports = StringReader;
 
 },{"../utils":43,"./DataReader":29}],32:[function(require,module,exports){
 'use strict';
-var ArrayReader = require('./ArrayReader');
-var utils = require('../utils');
+var ArrayReader = require('./ArrayReader.js');
+var utils = require('../utils.js');
 
 function Uint8ArrayReader(data) {
     ArrayReader.call(this, data);
@@ -4573,12 +4573,12 @@ module.exports = Uint8ArrayReader;
 },{"../utils":43,"./ArrayReader":28}],33:[function(require,module,exports){
 'use strict';
 
-var utils = require('../utils');
-var support = require('../support');
-var ArrayReader = require('./ArrayReader');
-var StringReader = require('./StringReader');
-var NodeBufferReader = require('./NodeBufferReader');
-var Uint8ArrayReader = require('./Uint8ArrayReader');
+var utils = require('../utils.js');
+var support = require('../support.js');
+var ArrayReader = require('./ArrayReader.js');
+var StringReader = require('./StringReader.js');
+var NodeBufferReader = require('./NodeBufferReader.js');
+var Uint8ArrayReader = require('./Uint8ArrayReader.js');
 
 /**
  * Create a reader adapted to the data.
@@ -4612,8 +4612,8 @@ exports.DATA_DESCRIPTOR = "PK\x07\x08";
 },{}],35:[function(require,module,exports){
 'use strict';
 
-var GenericWorker = require('./GenericWorker');
-var utils = require('../utils');
+var GenericWorker = require('./GenericWorker.js');
+var utils = require('../utils.js');
 
 /**
  * A worker which convert chunks to a specified type.
@@ -4640,9 +4640,9 @@ module.exports = ConvertWorker;
 },{"../utils":43,"./GenericWorker":39}],36:[function(require,module,exports){
 'use strict';
 
-var GenericWorker = require('./GenericWorker');
-var crc32 = require('../crc32');
-var utils = require('../utils');
+var GenericWorker = require('./GenericWorker.js');
+var crc32 = require('../crc32.js');
+var utils = require('../utils.js');
 
 /**
  * A worker which calculate the crc32 of the data flowing through.
@@ -4666,8 +4666,8 @@ module.exports = Crc32Probe;
 },{"../crc32":15,"../utils":43,"./GenericWorker":39}],37:[function(require,module,exports){
 'use strict';
 
-var utils = require('../utils');
-var GenericWorker = require('./GenericWorker');
+var utils = require('../utils.js');
+var GenericWorker = require('./GenericWorker.js');
 
 /**
  * A worker which calculate the total length of the data flowing through.
@@ -4697,8 +4697,8 @@ module.exports = DataLengthProbe;
 },{"../utils":43,"./GenericWorker":39}],38:[function(require,module,exports){
 'use strict';
 
-var utils = require('../utils');
-var GenericWorker = require('./GenericWorker');
+var utils = require('../utils.js');
+var GenericWorker = require('./GenericWorker.js');
 
 // the size of the generated chunks
 // TODO expose this as a public variable
@@ -5081,17 +5081,17 @@ module.exports = GenericWorker;
 (function (Buffer){
 'use strict';
 
-var utils = require('../utils');
-var ConvertWorker = require('./ConvertWorker');
-var GenericWorker = require('./GenericWorker');
-var base64 = require('../base64');
-var support = require("../support");
-var external = require("../external");
+var utils = require('../utils.js');
+var ConvertWorker = require('./ConvertWorker.js');
+var GenericWorker = require('./GenericWorker.js');
+var base64 = require('../base64.js');
+var support = require("../support.js");
+var external = require("../external.js");
 
 var NodejsStreamOutputAdapter = null;
 if (support.nodestream) {
     try {
-        NodejsStreamOutputAdapter = require('../nodejs/NodejsStreamOutputAdapter');
+        NodejsStreamOutputAdapter = require('../nodejs/NodejsStreamOutputAdapter.js');
     } catch(e) {}
 }
 
@@ -5340,10 +5340,10 @@ try {
 },{"buffer":3,"readable-stream":27}],42:[function(require,module,exports){
 'use strict';
 
-var utils = require('./utils');
-var support = require('./support');
-var nodejsUtils = require('./nodejsUtils');
-var GenericWorker = require('./stream/GenericWorker');
+var utils = require('./utils.js');
+var support = require('./support.js');
+var nodejsUtils = require('./nodejsUtils.js');
+var GenericWorker = require('./stream/GenericWorker.js');
 
 /**
  * The following functions come from pako, from pako/lib/utils/strings
@@ -5617,11 +5617,11 @@ exports.Utf8EncodeWorker = Utf8EncodeWorker;
 },{"./nodejsUtils":23,"./stream/GenericWorker":39,"./support":41,"./utils":43}],43:[function(require,module,exports){
 'use strict';
 
-var support = require('./support');
-var base64 = require('./base64');
-var nodejsUtils = require('./nodejsUtils');
+var support = require('./support.js');
+var base64 = require('./base64.js');
+var nodejsUtils = require('./nodejsUtils.js');
 var setImmediate = require('set-immediate-shim');
-var external = require("./external");
+var external = require("./external.js");
 
 
 /**
@@ -6094,12 +6094,12 @@ exports.prepareContent = function(name, inputData, isBinary, isOptimizedBinarySt
 
 },{"./base64":12,"./external":17,"./nodejsUtils":23,"./support":41,"set-immediate-shim":80}],44:[function(require,module,exports){
 'use strict';
-var readerFor = require('./reader/readerFor');
-var utils = require('./utils');
-var sig = require('./signature');
-var ZipEntry = require('./zipEntry');
-var utf8 = require('./utf8');
-var support = require('./support');
+var readerFor = require('./reader/readerFor.js');
+var utils = require('./utils.js');
+var sig = require('./signature.js');
+var ZipEntry = require('./zipEntry.js');
+var utf8 = require('./utf8.js');
+var support = require('./support.js');
 //  class ZipEntries {{{
 /**
  * All the entries in the zip file.
@@ -6358,13 +6358,13 @@ module.exports = ZipEntries;
 
 },{"./reader/readerFor":33,"./signature":34,"./support":41,"./utf8":42,"./utils":43,"./zipEntry":45}],45:[function(require,module,exports){
 'use strict';
-var readerFor = require('./reader/readerFor');
-var utils = require('./utils');
-var CompressedObject = require('./compressedObject');
-var crc32fn = require('./crc32');
-var utf8 = require('./utf8');
-var compressions = require('./compressions');
-var support = require('./support');
+var readerFor = require('./reader/readerFor.js');
+var utils = require('./utils.js');
+var CompressedObject = require('./compressedObject.js');
+var crc32fn = require('./crc32.js');
+var utf8 = require('./utf8.js');
+var compressions = require('./compressions.js');
+var support = require('./support.js');
 
 var MADE_BY_DOS = 0x00;
 var MADE_BY_UNIX = 0x03;
@@ -6655,11 +6655,11 @@ module.exports = ZipEntry;
 },{"./compressedObject":13,"./compressions":14,"./crc32":15,"./reader/readerFor":33,"./support":41,"./utf8":42,"./utils":43}],46:[function(require,module,exports){
 'use strict';
 
-var StreamHelper = require('./stream/StreamHelper');
-var DataWorker = require('./stream/DataWorker');
-var utf8 = require('./utf8');
-var CompressedObject = require('./compressedObject');
-var GenericWorker = require('./stream/GenericWorker');
+var StreamHelper = require('./stream/StreamHelper.js');
+var DataWorker = require('./stream/DataWorker.js');
+var utf8 = require('./utf8.js');
+var CompressedObject = require('./compressedObject.js');
+var GenericWorker = require('./stream/GenericWorker.js');
 
 /**
  * A simple object representing a file in the zip file.
@@ -7066,11 +7066,11 @@ function race(iterable) {
 // Top level file is just a mixin of submodules & constants
 'use strict';
 
-var assign    = require('./lib/utils/common').assign;
+var assign    = require('./lib/utils/common.js').assign;
 
-var deflate   = require('./lib/deflate');
-var inflate   = require('./lib/inflate');
-var constants = require('./lib/zlib/constants');
+var deflate   = require('./lib/deflate.js');
+var inflate   = require('./lib/inflate.js');
+var constants = require('./lib/zlib/constants.js');
 
 var pako = {};
 
@@ -7082,11 +7082,11 @@ module.exports = pako;
 'use strict';
 
 
-var zlib_deflate = require('./zlib/deflate');
-var utils        = require('./utils/common');
-var strings      = require('./utils/strings');
-var msg          = require('./zlib/messages');
-var ZStream      = require('./zlib/zstream');
+var zlib_deflate = require('./zlib/deflate.js');
+var utils        = require('./utils/common.js');
+var strings      = require('./utils/strings.js');
+var msg          = require('./zlib/messages.js');
+var ZStream      = require('./zlib/zstream.js');
 
 var toString = Object.prototype.toString;
 
@@ -7484,13 +7484,13 @@ exports.gzip = gzip;
 'use strict';
 
 
-var zlib_inflate = require('./zlib/inflate');
-var utils        = require('./utils/common');
-var strings      = require('./utils/strings');
-var c            = require('./zlib/constants');
-var msg          = require('./zlib/messages');
-var ZStream      = require('./zlib/zstream');
-var GZheader     = require('./zlib/gzheader');
+var zlib_inflate = require('./zlib/inflate.js');
+var utils        = require('./utils/common.js');
+var strings      = require('./utils/strings.js');
+var c            = require('./zlib/constants.js');
+var msg          = require('./zlib/messages.js');
+var ZStream      = require('./zlib/zstream.js');
+var GZheader     = require('./zlib/gzheader.js');
 
 var toString = Object.prototype.toString;
 
@@ -8017,7 +8017,7 @@ exports.setTyped(TYPED_OK);
 'use strict';
 
 
-var utils = require('./common');
+var utils = require('./common.js');
 
 
 // Quick check if we can use fast array to bin string conversion
@@ -8407,11 +8407,11 @@ module.exports = crc32;
 //   misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-var utils   = require('../utils/common');
-var trees   = require('./trees');
-var adler32 = require('./adler32');
-var crc32   = require('./crc32');
-var msg     = require('./messages');
+var utils   = require('../utils/common.js');
+var trees   = require('./trees.js');
+var adler32 = require('./adler32.js');
+var crc32   = require('./crc32.js');
+var msg     = require('./messages.js');
 
 /* Public constants ==========================================================*/
 /* ===========================================================================*/
@@ -10690,11 +10690,11 @@ module.exports = function inflate_fast(strm, start) {
 //   misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-var utils         = require('../utils/common');
-var adler32       = require('./adler32');
-var crc32         = require('./crc32');
-var inflate_fast  = require('./inffast');
-var inflate_table = require('./inftrees');
+var utils         = require('../utils/common.js');
+var adler32       = require('./adler32.js');
+var crc32         = require('./crc32.js');
+var inflate_fast  = require('./inffast.js');
+var inflate_table = require('./inftrees.js');
 
 var CODES = 0;
 var LENS = 1;
@@ -12248,7 +12248,7 @@ exports.inflateUndermine = inflateUndermine;
 //   misrepresented as being the original software.
 // 3. This notice may not be removed or altered from any source distribution.
 
-var utils = require('../utils/common');
+var utils = require('../utils/common.js');
 
 var MAXBITS = 15;
 var ENOUGH_LENS = 852;
@@ -12629,7 +12629,7 @@ module.exports = {
 
 /* eslint-disable space-unary-ops */
 
-var utils = require('../utils/common');
+var utils = require('../utils/common.js');
 
 /* Public constants ==========================================================*/
 /* ===========================================================================*/
@@ -14167,8 +14167,8 @@ var util = Object.create(require('core-util-is'));
 util.inherits = require('inherits');
 /*</replacement>*/
 
-var Readable = require('./_stream_readable');
-var Writable = require('./_stream_writable');
+var Readable = require('./_stream_readable.js');
+var Writable = require('./_stream_writable.js');
 
 util.inherits(Duplex, Readable);
 
@@ -14279,7 +14279,7 @@ Duplex.prototype._destroy = function (err, cb) {
 
 module.exports = PassThrough;
 
-var Transform = require('./_stream_transform');
+var Transform = require('./_stream_transform.js');
 
 /*<replacement>*/
 var util = Object.create(require('core-util-is'));
@@ -14348,7 +14348,7 @@ var EElistenerCount = function (emitter, type) {
 /*</replacement>*/
 
 /*<replacement>*/
-var Stream = require('./internal/streams/stream');
+var Stream = require('./internal/streams/stream.js');
 /*</replacement>*/
 
 /*<replacement>*/
@@ -14379,8 +14379,8 @@ if (debugUtil && debugUtil.debuglog) {
 }
 /*</replacement>*/
 
-var BufferList = require('./internal/streams/BufferList');
-var destroyImpl = require('./internal/streams/destroy');
+var BufferList = require('./internal/streams/BufferList.js');
+var destroyImpl = require('./internal/streams/destroy.js');
 var StringDecoder;
 
 util.inherits(Readable, Stream);
@@ -14400,7 +14400,7 @@ function prependListener(emitter, event, fn) {
 }
 
 function ReadableState(options, stream) {
-  Duplex = Duplex || require('./_stream_duplex');
+  Duplex = Duplex || require('./_stream_duplex.js');
 
   options = options || {};
 
@@ -14477,7 +14477,7 @@ function ReadableState(options, stream) {
 }
 
 function Readable(options) {
-  Duplex = Duplex || require('./_stream_duplex');
+  Duplex = Duplex || require('./_stream_duplex.js');
 
   if (!(this instanceof Readable)) return new Readable(options);
 
@@ -15388,7 +15388,7 @@ function indexOf(xs, x) {
 
 module.exports = Transform;
 
-var Duplex = require('./_stream_duplex');
+var Duplex = require('./_stream_duplex.js');
 
 /*<replacement>*/
 var util = Object.create(require('core-util-is'));
@@ -15614,7 +15614,7 @@ var internalUtil = {
 /*</replacement>*/
 
 /*<replacement>*/
-var Stream = require('./internal/streams/stream');
+var Stream = require('./internal/streams/stream.js');
 /*</replacement>*/
 
 /*<replacement>*/
@@ -15630,14 +15630,14 @@ function _isUint8Array(obj) {
 
 /*</replacement>*/
 
-var destroyImpl = require('./internal/streams/destroy');
+var destroyImpl = require('./internal/streams/destroy.js');
 
 util.inherits(Writable, Stream);
 
 function nop() {}
 
 function WritableState(options, stream) {
-  Duplex = Duplex || require('./_stream_duplex');
+  Duplex = Duplex || require('./_stream_duplex.js');
 
   options = options || {};
 
@@ -15787,7 +15787,7 @@ if (typeof Symbol === 'function' && Symbol.hasInstance && typeof Function.protot
 }
 
 function Writable(options) {
-  Duplex = Duplex || require('./_stream_duplex');
+  Duplex = Duplex || require('./_stream_duplex.js');
 
   // Writable ctor is applied to Duplexes, too.
   // `realHasInstance` is necessary because using plain `instanceof`
@@ -16385,7 +16385,7 @@ module.exports = {
 module.exports = require('events').EventEmitter;
 
 },{"events":6}],75:[function(require,module,exports){
-module.exports = require('./readable').PassThrough
+module.exports = require('./readable.js').PassThrough
 
 },{"./readable":76}],76:[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
@@ -16397,7 +16397,7 @@ exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
 },{"./lib/_stream_duplex.js":67,"./lib/_stream_passthrough.js":68,"./lib/_stream_readable.js":69,"./lib/_stream_transform.js":70,"./lib/_stream_writable.js":71}],77:[function(require,module,exports){
-module.exports = require('./readable').Transform
+module.exports = require('./readable.js').Transform
 
 },{"./readable":76}],78:[function(require,module,exports){
 module.exports = require('./lib/_stream_writable.js');
@@ -17072,7 +17072,7 @@ exports.HandleZip = void 0;
 
 var jszip_1 = __importDefault(require("jszip"));
 
-var method_1 = require("./common/method");
+var method_1 = require("./common/method.js");
 
 var HandleZip =
 /** @class */
@@ -17382,13 +17382,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.LuckySheetCelldata = void 0;
 
-var ReadXml_1 = require("./ReadXml");
+var ReadXml_1 = require("./ReadXml.js");
 
-var method_1 = require("../common/method");
+var method_1 = require("../common/method.js");
 
-var constant_1 = require("../common/constant");
+var constant_1 = require("../common/constant.js");
 
-var LuckyBase_1 = require("./LuckyBase");
+var LuckyBase_1 = require("./LuckyBase.js");
 
 var LuckySheetCelldata =
 /** @class */
@@ -18347,17 +18347,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.LuckyFile = void 0;
 
-var LuckySheet_1 = require("./LuckySheet");
+var LuckySheet_1 = require("./LuckySheet.js");
 
-var constant_1 = require("../common/constant");
+var constant_1 = require("../common/constant.js");
 
-var ReadXml_1 = require("./ReadXml");
+var ReadXml_1 = require("./ReadXml.js");
 
-var method_1 = require("../common/method");
+var method_1 = require("../common/method.js");
 
-var LuckyBase_1 = require("./LuckyBase");
+var LuckyBase_1 = require("./LuckyBase.js");
 
-var LuckyImage_1 = require("./LuckyImage");
+var LuckyImage_1 = require("./LuckyImage.js");
 
 var LuckyFile =
 /** @class */
@@ -18924,9 +18924,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ImageList = void 0;
 
-var LuckyBase_1 = require("./LuckyBase");
+var LuckyBase_1 = require("./LuckyBase.js");
 
-var emf_1 = require("../common/emf");
+var emf_1 = require("../common/emf.js");
 
 var ImageList =
 /** @class */
@@ -19051,15 +19051,15 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.LuckySheet = void 0;
 
-var LuckyCell_1 = require("./LuckyCell");
+var LuckyCell_1 = require("./LuckyCell.js");
 
-var method_1 = require("../common/method");
+var method_1 = require("../common/method.js");
 
-var constant_1 = require("../common/constant");
+var constant_1 = require("../common/constant.js");
 
-var ReadXml_1 = require("./ReadXml");
+var ReadXml_1 = require("./ReadXml.js");
 
-var LuckyBase_1 = require("./LuckyBase");
+var LuckyBase_1 = require("./LuckyBase.js");
 
 var dayjs_1 = __importDefault(require("dayjs"));
 
@@ -19825,9 +19825,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getlineStringAttr = exports.getColor = exports.Element = exports.ReadXml = void 0;
 
-var constant_1 = require("../common/constant");
+var constant_1 = require("../common/constant.js");
 
-var method_1 = require("../common/method");
+var method_1 = require("../common/method.js");
 
 var xmloperation =
 /** @class */
@@ -21808,7 +21808,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.getMultiFormulaValue = exports.getPeelOffX14 = exports.getTransR1C1ToSequence = exports.getSingleSequenceToNum = exports.getSqrefRawArrFormat = exports.getRegionSequence = exports.getMultiSequenceToNum = exports.getBinaryContent = exports.isContainMultiType = exports.isKoera = exports.isJapanese = exports.isChinese = exports.fromulaRef = exports.escapeCharacter = exports.generateRandomIndex = exports.LightenDarkenColor = exports.getRowHeightPixel = exports.getColumnWidthPixel = exports.getXmlAttibute = exports.getPxByEMUs = exports.getptToPxRatioByDPI = exports.getcellrange = exports.getRangetxt = void 0;
 
-var constant_1 = require("./constant");
+var constant_1 = require("./constant.js");
 
 function getRangetxt(range, sheettxt) {
   var row0 = range["row"][0],
@@ -23021,10 +23021,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.LuckyExcel = void 0;
 
-var LuckyFile_1 = require("./ToLuckySheet/LuckyFile"); // import {SecurityDoor,Car} from './content';
+var LuckyFile_1 = require("./ToLuckySheet/LuckyFile.js"); // import {SecurityDoor,Car} from './content';
 
 
-var HandleZip_1 = require("./HandleZip"); // //demo
+var HandleZip_1 = require("./HandleZip.js"); // //demo
 // function demoHandler(){
 //     let upload = document.getElementById("Luckyexcel-demo-file");
 //     let selectADemo = document.getElementById("Luckyexcel-select-demo");
@@ -23164,7 +23164,7 @@ exports.LuckyExcel = LuckyExcel;
 },{"./HandleZip":85,"./ToLuckySheet/LuckyFile":88}],96:[function(require,module,exports){
 "use strict";
 
-var main_1 = require("./main");
+var main_1 = require("./main.js");
 
 module.exports = main_1.LuckyExcel;
 
