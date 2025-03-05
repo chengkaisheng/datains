@@ -5,11 +5,9 @@ import io.datains.commons.model.ITreeBase;
 import io.datains.fill.entry.DataFillFormWithBLOBs;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 public class DataFillFormDTO extends DataFillFormWithBLOBs implements ITreeBase<DataFillFormDTO> {
 

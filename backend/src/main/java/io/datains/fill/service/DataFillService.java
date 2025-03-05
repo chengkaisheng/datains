@@ -402,13 +402,13 @@ public class DataFillService {
                 .filter(dto -> dto.getName().contains(name))
                 .collect(Collectors.toList());
 
-        Set<DataFillFormDTO> resultSet = new HashSet<>();
+        Set<String> resultSetId = new HashSet<>();
 
         for (DataFillFormDTO node : matchedNodes) {
             // 收集所有父节点
             DataFillFormDTO current = node;
             while (current != null) {
-                if (resultSet.add(current)) {
+                if (resultSetId.add(current.getId())) {
                     // 获取父节点
                     String pid = current.getPid();
                     current = idMap.get(pid);
@@ -422,14 +422,15 @@ public class DataFillService {
             queue.offer(node);
             while (!queue.isEmpty()) {
                 DataFillFormDTO currentChild = queue.poll();
-                resultSet.add(currentChild);
+                resultSetId.add(currentChild.getId());
                 // 获取子节点并加入队列
                 List<DataFillFormDTO> children = parentToChildrenMap.getOrDefault(currentChild.getId(), Collections.emptyList());
                 children.forEach(queue::offer);
 
             }
         }
-        return new ArrayList<>(resultSet);
+        return resultSetId.stream()
+                .map(idMap::get).collect(Collectors.toList());
     }
 
     public DataFillFormWithBLOBs get(String id) {
