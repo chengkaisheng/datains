@@ -207,3 +207,15 @@ export function uploadExcelForm(id, data) {
     }
   })
 }
+
+export function excelUploadAiHandle(data) {
+  return request({
+    url: 'dataFillingAi/form/excel/excelUploadAiHandle',
+    method: 'post',
+    data: data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    responseType: 'blob'
+  })
+}

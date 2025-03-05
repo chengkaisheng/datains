@@ -13,7 +13,7 @@ const LinkTokenKey = Config.LinkTokenKey
 import Cookies from 'js-cookie'
 
 const getTimeOut = () => {
-  let time = 10
+  let time = 180
   const url = process.env.VUE_APP_BASE_API + 'system/requestTimeOut'
   const xhr = new XMLHttpRequest()
   xhr.onreadystatechange = () => {
@@ -38,7 +38,7 @@ const getTimeOut = () => {
 
   xhr.open('get', url, false)
   xhr.send()
-  return time
+  return 180
 }
 const time = getTimeOut()
 let service = axios.create({
@@ -93,6 +93,8 @@ service.interceptors.response.use(response => {
   checkAuth(response)
   return response.data
 }, error => {
+  console.log('error', error);
+  
   const config = error.response && error.response.config || error.config
   const headers = error.response && error.response.headers || error.response || config.headers
   config.loading && tryHideLoading(store.getters.currentPath)

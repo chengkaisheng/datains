@@ -113,7 +113,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="uploadDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitUpload">确 定</el-button>
+        <el-button type="primary" @click="submitUpload" :loading="selfUploadLoading">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -150,6 +150,9 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="是否开启AI" prop="isAI">
+          <el-switch v-model="fillForm.isAI" />
+        </el-form-item>
         <div v-show="fillForm.type === 'form' && fillForm.templateId" style="display: flex; justify-content: center;">
           <el-button style="margin-right: 10px;" type="primary" @click="downloadTemplate(fillForm.templateId)">下载模板</el-button>
           <el-upload
@@ -168,6 +171,7 @@
           <el-button
             style="margin-left: 10px"
             icon="el-icon-upload2"
+            :loading="templateUploadLoading"
           >上传
           </el-button>
         </el-upload>
@@ -207,7 +211,8 @@ import {
   downloadTemplate,
   saveForm,
   deleteForm,
-  getWithPrivileges
+  getWithPrivileges,
+  excelUploadAiHandle
 } from '@/views/dataFilling/form/dataFilling'
 import { getToken, setToken } from '@/utils/auth'
 const token = getToken()
@@ -255,7 +260,8 @@ export default {
       fillDialogVisible: false,
       fillForm: {
         type: '',
-        templateId: ''
+        templateId: '',
+        isAI: true
       },
       fillRules: {
         type: [
@@ -271,7 +277,8 @@ export default {
       displayFormData: undefined,
       loading: false,
       currentFormId: '',
-      tableLoading: false
+      templateUploadLoading: false,
+      selfUploadLoading: false,
     };
   },
   watch: {
@@ -296,7 +303,8 @@ export default {
       this.fillDialogVisible = true;
       this.fillForm = {
         type: '',
-        templateId: ''
+        templateId: '',
+        isAI: true
       };
       // 如果需要获取模板列表，可以在这里调用接口
       this.getTemplateList();
@@ -441,20 +449,24 @@ export default {
                 name: file.name,
                 data: exportJson.sheets,
               };
+              _this.selfUploadLoading = false
               _this.uploadDialogVisible = false;
             } catch (err) {
               // console.error('处理Excel数据错误:', err)
               _this.$message.error("无法读取文件内容，请检查文件是否损坏");
+              _this.selfUploadLoading = false
             }
           },
           function (err) {
             console.error("Excel解析错误:", err);
             _this.$message.error("无法读取文件内容，请检查文件是否损坏");
+            _this.selfUploadLoading = false
           }
         );
       } catch (err) {
         // console.error('Excel转换错误:', err)
         _this.$message.error("无法读取文件内容，请检查文件是否损坏");
+        _this.selfUploadLoading = false
       }
     },
     addDataFill() {
@@ -575,11 +587,18 @@ export default {
     submitUpload() {
       this.$refs.uploadForm.validate((valid) => {
         if (valid) {
+          this.selfUploadLoading = true
           if (!this.uploadForm.file) {
             this.$message.error("请选择要上传的文件");
             return;
           }
-          this.uploadExcel(this.uploadForm.file);
+          if(this.fillForm.isAI) {
+            this.excelUploadAiHandle(this.uploadForm.file).then(file => {
+              this.uploadExcel(file)
+            })
+          } else {
+            this.uploadExcel(this.uploadForm.file)
+          }
         } else {
           return false;
         }
@@ -605,20 +624,36 @@ export default {
         document.body.removeChild(link)
       })
     },
-    beforeUpload() {
+    beforeUpload(file) {
       if(!this.fillForm.templateId) {
         this.$message.error('请选择模板');
         return;
       }
+      this.templateUploadLoading = true
+      if(this.fillForm.isAI) {
+        return new Promise((resolve, reject) => {
+          this.excelUploadAiHandle(file).then(file => {
+            if(file) {
+              resolve(file)
+            } else {
+              reject(false)
+            }
+          }).catch(() => {
+            reject(false)
+          })
+        })
+      }
     },
     uploadFail(response, file, fileList) {
+      this.templateUploadLoading = false
       this.$message({
         type: 'error',
-        message: errorMessage,
+        message: JSON.parse(response.message).message,
         showClose: true
       })
     },
     uploadSuccess(response, file, fileList) {
+      this.templateUploadLoading = false
       this.$message({
         type: 'success',
         message: '上传成功！',
@@ -672,6 +707,23 @@ export default {
     },
     handleFocus() {
       this.getTemplateList();
+    },
+    excelUploadAiHandle(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      return excelUploadAiHandle(formData).then(res => {
+        const file = new File([res], '模板.xlsx', {
+          type: res.type,
+          lastModified: Date.now()
+        });
+        return file
+      }).catch(() => {
+        this.$message.error('上传失败')
+        this.templateUploadLoading = false
+        this.selfUploadLoading = false
+        return false
+      })
     }
   },
 };
