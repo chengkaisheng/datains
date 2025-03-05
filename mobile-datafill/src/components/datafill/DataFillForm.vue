@@ -43,6 +43,16 @@
             placeholder="请选择模板"
             @click="showTemplatePopup = true"
           />
+          
+          <!-- AI开关选项 -->
+          <van-field
+            name="enableAI"
+            label="开启AI"
+          >
+            <template #input>
+              <van-switch v-model="formData.enableAI" size="20" />
+            </template>
+          </van-field>
         </van-cell-group>
 
         <!-- 按钮区域 -->
@@ -197,7 +207,7 @@ import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast, showLoadingToast, closeToast } from 'vant'
 import TreeNode from './TreeNode.vue'
-import { getTaskTree, getTemplates, downloadTemplate, uploadData, saveSelfReport } from '@/api/datafill'
+import { getTaskTree, getTemplates, downloadTemplate, uploadData, saveSelfReport, getAIData } from '@/api/datafill'
 import axios from 'axios'
 import editExcel from '@/components/excel/editExcel.vue'
 // import LuckyExcel from 'luckyexcel'
@@ -209,7 +219,8 @@ const formData = ref({
   type: '',
   taskId: '',
   taskName: '',
-  template: ''
+  template: '',
+  enableAI: true
 })
 
 // 弹窗控制
@@ -476,29 +487,51 @@ const handleFileChange = async (event) => {
   }
 
   try {
-    showLoadingToast({
+    const loading = showLoadingToast({
       message: '正在上传...',
       forbidClick: true,
+      duration: 0
     })
     closeUploadPopup()
-    const formData = new FormData()
-    formData.append('file', file)
-    const res = await uploadData(selectedTemplateId.value, formData)
-    
-    closeToast()
-    if (res.success) {
-      showToast({
-        type: 'success',
-        message: '上传成功'
-      })
-      // 清空文件选择
-      event.target.value = ''
+    const formData1 = new FormData()
+    formData1.append('file', file)
+    if(formData.value.enableAI) {
+      const res = await getAIData(formData1)
+      const formData2 = new FormData()
+      formData2.append('file', res)
+      const res2 = await uploadData(selectedTemplateId.value, formData2)
+      loading.close()
+      if (res2.success) {
+        showToast({
+          type: 'success',
+          message: '上传成功'
+        })
+        // 清空文件选择
+        event.target.value = ''
+      } else {
+        showToast({
+          type: 'fail',
+          message: res2.message || '上传失败'
+        })
+      }
     } else {
-      showToast({
-        type: 'fail',
-        message: res.message || '上传失败'
-      })
+      const res = await uploadData(selectedTemplateId.value, formData1)
+      loading.close()
+      if (res.success) {
+        showToast({
+          type: 'success',
+          message: '上传成功'
+        })
+        // 清空文件选择
+        event.target.value = ''
+      } else {
+        showToast({
+          type: 'fail',
+          message: res.message || '上传失败'
+        })
+      }
     }
+    
     closeUploadPopup()
   } catch (error) {
     
@@ -515,10 +548,23 @@ const handleUploadSubmit = async () => {
   const loading = showLoadingToast({
     message: '上传中...',
     forbidClick: true,
+    duration: 0
   })
 
   try {
-    uploadExcel(uploadForm.value.file);
+    if(formData.value.enableAI) {
+      const formData1 = new FormData()
+      formData1.append('file', uploadForm.value.file)
+      const res = await getAIData(formData1)
+      console.log('AI填报数据:', res)
+      let file = new File([res], '模板.xlsx', {
+        type: res.type,
+        lastModified: Date.now()
+      });
+      uploadExcel(file);
+    } else {
+      uploadExcel(uploadForm.value.file);
+    }
   } catch (error) {
     console.error('上传失败：', error)
     showToast('上传失败')

@@ -39,6 +39,19 @@ export function uploadData(templateId, data) {
   })
 } 
 
+// 获取AI填报数据
+export function getAIData(data) {
+  return request({
+    url: '/dataFillingAi/form/excel/excelUploadAiHandle',
+    method: 'post',
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    responseType: 'blob'
+  })
+}
+
 // 保存表单数据
 export function saveSelfReport(data) {
   return request({

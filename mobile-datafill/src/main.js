@@ -15,6 +15,7 @@ import {
   Icon,
   Toast,
   TreeSelect,
+  Switch
 } from 'vant'
 import 'vant/lib/index.css'
 
@@ -35,5 +36,5 @@ app.use(DropdownItem)
 app.use(Icon)
 app.use(Toast)
 app.use(TreeSelect)
-
+app.use(Switch)
 app.mount('#app') 

@@ -3,7 +3,7 @@ import { showToast } from 'vant'
 
 const service = axios.create({
   baseURL: '/api',
-  timeout: 10000
+  timeout: 180000
 })
 
 // 请求拦截器
