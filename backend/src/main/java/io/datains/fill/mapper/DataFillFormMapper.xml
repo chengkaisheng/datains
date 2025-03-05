@@ -261,6 +261,7 @@
         <if test="nodeType != null and nodeType != ''">
             AND dff.node_type = #{nodeType}
         </if>
+        order by dff.create_time desc
     </select>
     <update id="updateByExampleSelective" parameterType="map">
     update data_fill_form
