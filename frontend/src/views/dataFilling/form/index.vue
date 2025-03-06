@@ -250,6 +250,11 @@ export default {
         
         const formData = new FormData()
         formData.append('file', file)
+        this.$message({
+          message: '正在导入Excel...',
+          type: 'info',
+          showClose: true
+        })
         
         excelUploadAiHandle(formData).then(res => {
           let file1 = new File([res], `${file.name}`, {
