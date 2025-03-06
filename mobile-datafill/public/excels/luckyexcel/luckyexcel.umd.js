@@ -22855,7 +22855,7 @@
   function () {
     function LuckyExcel() {}
   
-    LuckyExcel.transformExcelToLucky = function (excelFile, callBack) {
+    LuckyExcel.transformExcelToLucky = function (excelFile, callBack, errCallBack) {
       var handleZip = new HandleZip_1.HandleZip(excelFile);
       handleZip.unzipFile(function (files) {
         var luckyFile = new LuckyFile_1.LuckyFile(files, excelFile.name);
@@ -22866,7 +22866,9 @@
           callBack(exportJson, luckysheetfile);
         }
       }, function (err) {
-        console.error(err);
+        if (errCallBack != undefined) {
+          errCallBack(err);
+        }
       });
     };
   
