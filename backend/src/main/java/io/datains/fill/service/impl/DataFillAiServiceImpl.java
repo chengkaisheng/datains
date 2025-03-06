@@ -6,6 +6,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
+import io.datains.commons.utils.LogUtil;
 import io.datains.fill.service.DataFillAiService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -93,9 +94,11 @@ public class DataFillAiServiceImpl implements DataFillAiService {
                 // 解析data字段中的JSON数组字符串
                 return json.getStr("data");
             } else {
+                LogUtil.error(response.body());
                 throw new RuntimeException("远程服务请求失败");
             }
         } else {
+            LogUtil.error(response.body());
             throw new RuntimeException("远程服务请求失败");
         }
     }

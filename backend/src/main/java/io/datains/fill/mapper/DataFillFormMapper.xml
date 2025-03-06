@@ -251,17 +251,47 @@
     </if>
   </select>
     <select id="selectForm" resultType="io.datains.fill.dto.DataFillFormDTO">
-        SELECT dff.*,su.nick_name as creatorName
-        FROM data_fill_form dff
-        left join sys_user su on su.username = dff.create_by
-        WHERE dff.pid = #{pid} and dff.node_type != 'folder'
-        <if test="name != null and name != ''">
-            AND dff.name LIKE CONCAT('%', #{name}, '%')
-        </if>
-        <if test="nodeType != null and nodeType != ''">
-            AND dff.node_type = #{nodeType}
-        </if>
-        order by dff.create_time desc
+        select data_fill_form.*,
+        authInfo.privileges as `privileges`
+        from (select GET_V_AUTH_MODEL_ID_P_USE(#{userId}, 'data_fill') cids) t,
+        data_fill_form
+        left join (SELECT auth_source,
+        group_concat(DISTINCT sys_auth_detail.privilege_extend) as `privileges`
+        FROM (
+        `sys_auth`
+        LEFT JOIN `sys_auth_detail` ON ((
+        `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+        )))
+        WHERE sys_auth_detail.privilege_value = 1
+        AND sys_auth.auth_source_type = 'data_fill'
+        AND (
+        (
+        sys_auth.auth_target_type = 'dept'
+        AND
+        sys_auth.auth_target IN (SELECT dept_id FROM sys_user WHERE user_id = #{userId})
+        )
+        OR (
+        sys_auth.auth_target_type = 'user'
+        AND sys_auth.auth_target = #{userId}
+        )
+        OR (
+        sys_auth.auth_target_type = 'role'
+        AND
+        sys_auth.auth_target IN
+        (SELECT role_id FROM sys_users_roles WHERE user_id = #{userId})
+        )
+        )
+        GROUP BY `sys_auth`.`auth_source`) authInfo
+        on data_fill_form.id = authInfo.auth_source
+        <where>
+            <if test="name != null and name != ''">
+                AND dff.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="nodeType != null and nodeType != ''">
+                AND dff.node_type = #{nodeType}
+            </if>
+        </where>
+        order by data_fill_form.create_time desc
     </select>
     <update id="updateByExampleSelective" parameterType="map">
     update data_fill_form
