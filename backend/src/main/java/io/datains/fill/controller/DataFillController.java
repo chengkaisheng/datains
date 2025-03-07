@@ -207,7 +207,7 @@ public class DataFillController {
                     .registerWriteHandler(dataFillService.getCommentWriteHandler(formId))
                     .autoCloseStream(Boolean.FALSE)
                     .sheet("模板")
-                    .doWrite(new ArrayList());
+                    .doWrite(new ArrayList<>());
         } catch (Exception e) {
             e.printStackTrace();
             // 重置response

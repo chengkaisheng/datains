@@ -70,9 +70,9 @@ public class DeCleanerAnnotationHandler {
             CacheUtils.remove(AuthConstants.ROLE_PANEL_NAME, "role" + role.getId());
         });
 
-        Optional.ofNullable(pid).ifPresent(resourceId -> {
-            cleanCacheParent(resourceId.toString(), "panel");
-        });
+//        Optional.ofNullable(pid).ifPresent(resourceId -> {
+//            cleanCacheParent(resourceId.toString(), "panel");
+//        });
     }
 
     public void cleanDataSet(Object pid) {
@@ -83,9 +83,9 @@ public class DeCleanerAnnotationHandler {
             CacheUtils.remove(AuthConstants.ROLE_DATASET_NAME, "role" + role.getId());
         });
 
-        Optional.ofNullable(pid).ifPresent(resourceId -> {
-            cleanCacheParent(resourceId.toString(), "dataset");
-        });
+//        Optional.ofNullable(pid).ifPresent(resourceId -> {
+//            cleanCacheParent(resourceId.toString(), "dataset");
+//        });
     }
 
     public void cleanDataSource(Object pid) {
@@ -96,9 +96,9 @@ public class DeCleanerAnnotationHandler {
             CacheUtils.remove(AuthConstants.ROLE_LINK_NAME, "role" + role.getId());
         });
 
-        Optional.ofNullable(pid).ifPresent(resourceId -> {
-            cleanCacheParent(resourceId.toString(), "link");
-        });
+//        Optional.ofNullable(pid).ifPresent(resourceId -> {
+//            cleanCacheParent(resourceId.toString(), "link");
+//        });
     }
     public void cleanDataFiling(Object pid) {
         CurrentUserDto user = AuthUtils.getUser();
@@ -108,9 +108,9 @@ public class DeCleanerAnnotationHandler {
             CacheUtils.remove(AuthConstants.ROLE_DATA_FILL_NAME, "role" + role.getId());
         });
 
-        Optional.ofNullable(pid).ifPresent(resourceId -> {
-            cleanCacheParent(resourceId.toString(), "data_fill");
-        });
+//        Optional.ofNullable(pid).ifPresent(resourceId -> {
+//            cleanCacheParent(resourceId.toString(), "data_fill");
+//        });
     }
     private void cleanCacheParent(String pid, String type) {
         if (StringUtils.isBlank(pid) || StringUtils.isBlank(type)) {

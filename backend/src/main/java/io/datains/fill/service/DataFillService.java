@@ -93,6 +93,8 @@ public class DataFillService {
     private final static Gson gson = new Gson();
 
     public List<DataFillFormDTO> selectForm(DataFillFormRequest request) {
+        String userId = String.valueOf(AuthUtils.getUser().getUserId());
+        request.setUserId(userId);
         return dataFillFormMapper.selectForm(request);
     }
 
@@ -195,6 +197,9 @@ public class DataFillService {
 
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
     public ResultHolder updateForm(DataFillFormWithBLOBs dataFillForm, String type) {
+        if (!checkPrivileges(dataFillForm.getId(), "manage")) {
+            throw new RuntimeException("没有权限");
+        }
 
 
         Assert.notNull(dataFillForm.getId(), "id cannot be null");
@@ -220,7 +225,9 @@ public class DataFillService {
 
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
     public ResultHolder updateForm(DataFillFormWithBLOBs dataFillForm) throws Exception {
-
+        if (!checkPrivileges(dataFillForm.getId(), "manage")) {
+            throw new RuntimeException("没有权限");
+        }
 
         Assert.notNull(dataFillForm.getId(), "id cannot be null");
 
@@ -295,7 +302,6 @@ public class DataFillService {
             datasourceRequest.setQuery("SELECT VERSION()");
 
             JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-            String version = jdbcProvider.getData(datasourceRequest).get(0)[0];
 
             //拼sql
             ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
@@ -476,6 +482,9 @@ public class DataFillService {
 
     public void deleteForm(String id) throws Exception {
 
+        if (!checkPrivileges(id, "manage")) {
+            throw new RuntimeException("没有权限");
+        }
 
         Assert.notNull(id, "id cannot be null");
         sysAuthService.checkTreeNoManageCount(SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING, id);
@@ -805,7 +814,7 @@ public class DataFillService {
                 line += ",";
                 Pattern pCells = Pattern.compile("(\"[^\"]*(\"{2})*[^\"]*\")*[^,]*,");
                 Matcher mCells = pCells.matcher(line);
-                List<String> cells = new ArrayList();//每行记录一个list
+                List<String> cells = new ArrayList<>();//每行记录一个list
                 //读取每个单元格
                 while (mCells.find()) {
                     str = mCells.group();
@@ -931,7 +940,11 @@ public class DataFillService {
     }
 
     public void saveFormData(DataFillFormWithBLOBs dataFillForm) {
-        //先判断是否已经存在数据
+        //判断是否存在表单
+        if (dataFillForm.getId() == null || this.dataFillFormMapper.selectByPrimaryKey(dataFillForm.getId()) == null) {
+            throw new RuntimeException("保存失败");
+        }
+        //判断是否已经存在数据
         FillFormData fillFormData = this.fillFormDataMapper.getByFormId(dataFillForm.getId());
         Long userId = AuthUtils.getUser().getUserId();
         if (fillFormData != null) {
@@ -1000,5 +1013,18 @@ public class DataFillService {
             data.clear();
             header.clear();
         }
+    }
+
+    private boolean checkPrivileges(String id, String needPrivileges) {
+        //先查出权限信息
+        DataFillFormRequest request = new DataFillFormRequest();
+        String userId = String.valueOf(AuthUtils.getUser().getUserId());
+        request.setUserId(userId);
+        request.setId(id);
+        List<DataFillFormDTO> dataFillForm = this.extDataFillFormMapper.search(request);
+        if (dataFillForm.isEmpty()) {
+            return false;
+        }
+        return dataFillForm.get(0).getPrivileges().contains(needPrivileges);
     }
 }

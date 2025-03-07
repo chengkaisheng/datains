@@ -283,14 +283,14 @@
         )
         GROUP BY `sys_auth`.`auth_source`) authInfo
         on data_fill_form.id = authInfo.auth_source
-        <where>
-            <if test="name != null and name != ''">
-                AND dff.name LIKE CONCAT('%', #{name}, '%')
-            </if>
-            <if test="nodeType != null and nodeType != ''">
-                AND dff.node_type = #{nodeType}
-            </if>
-        </where>
+        left join sys_user su on su.username = data_fill_form.create_by
+        WHERE data_fill_form.pid = #{pid} and data_fill_form.node_type != 'folder'
+        <if test="name != null and name != ''">
+            AND data_fill_form.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="nodeType != null and nodeType != ''">
+            AND data_fill_form.node_type = #{nodeType}
+        </if>
         order by data_fill_form.create_time desc
     </select>
     <update id="updateByExampleSelective" parameterType="map">
