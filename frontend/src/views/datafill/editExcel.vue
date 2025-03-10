@@ -64,6 +64,7 @@ export default {
       this.init(this.msg.data, 'save')
     } else {
       this.getFormData()
+      this.currentFormDataId = this.msg.id
     }
   },
   methods: {
@@ -103,7 +104,7 @@ export default {
     handleSave(type) {
       saveFormData({
         id: this.currentFormDataId,
-        // id: this.currentFormDataId || this.msg.id,
+        // id: this.msg.id || this.currentFormDataId,
         formData: JSON.stringify(luckysheet.getAllSheets())
       }).then(res => {
         if (res.success) {

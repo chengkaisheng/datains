@@ -31,11 +31,17 @@
               @click="handleFileDownload(scope.row)"
             >下载</el-button>
             <el-button
-              v-if="scope.row.nodeType === 'selfReport'"
+              v-if="scope.row.nodeType === 'selfReport' && hasDataPermission('use', scope.row.privileges) && !hasDataPermission('write', scope.row.privileges)"
+              size="mini"
+              type="warning"
+              @click="handleFilePreview(scope.row)"
+            >在线查看</el-button>
+            <el-button
+              v-if="scope.row.nodeType === 'selfReport' && hasDataPermission('write', scope.row.privileges)"
               size="mini"
               type="warning"
               @click="handleExcelEdit(scope.row)"
-            >{{ scope.row.privileges.includes('use') ? '在线查看' : '在线编辑' }}</el-button>
+            >在线编辑</el-button>
             <el-button
               v-if="scope.row.nodeType === 'form'"
               size="mini"
@@ -386,7 +392,14 @@ export default {
       })
     },
     handleFilePreview(file) {
-      console.log('预览文件', file)
+      console.log('查看文件', file)
+      this.drawer = true
+      this.msg = {
+        id: file.id,
+        name: file.name,
+        data: null
+      }
+      this.isReadOnly = file.privileges.includes('use')
     },
     handleExcelEdit(file) {
       console.log('编辑文件', file)
@@ -396,7 +409,7 @@ export default {
         name: file.name,
         data: null
       }
-      this.isReadOnly = file.privileges.includes('use')
+      this.isReadOnly = false
     },
     handleDetail(row) {
       this.detailDrawer = true
@@ -609,16 +622,16 @@ export default {
           }
           if (this.fillForm.isAI) {
             this.excelUploadAiHandle(this.uploadForm.file).then(file => {
-              console.log('file', file)
-              const blob = new Blob([file])
-              const link = document.createElement('a')
-              link.style.display = 'none'
-              link.href = URL.createObjectURL(blob)
-              link.download = '测试.xlsx' // 下载的文件名
-              document.body.appendChild(link)
-              link.click()
-              document.body.removeChild(link)
-              // this.uploadExcel(file)
+              // console.log('file', file)
+              // const blob = new Blob([file])
+              // const link = document.createElement('a')
+              // link.style.display = 'none'
+              // link.href = URL.createObjectURL(blob)
+              // link.download = '测试.xlsx' // 下载的文件名
+              // document.body.appendChild(link)
+              // link.click()
+              // document.body.removeChild(link)
+              this.uploadExcel(file)
             })
           } else {
             this.uploadExcel(this.uploadForm.file)

@@ -565,10 +565,7 @@ const uploadExcel = (file) => {
   let suffixArr = name.split("."),
     suffix = suffixArr[suffixArr.length - 1];
   if (suffix != "xlsx") {
-    showToast({
-      title: '目前只支持xlsx文件',
-      icon: 'none'
-    })
+    showToast('目前只支持xlsx文件')
     return;
   }
 
@@ -582,10 +579,7 @@ const uploadExcel = (file) => {
             !exportJson.sheets ||
             exportJson.sheets.length === 0
           ) {
-            showToast({
-              title: '无法读取Excel文件的内容，目前不支持xls文件！',
-              icon: 'none'
-            })
+            showToast('无法读取文件内容，请检查文件是否损坏')
             return;
           }
           drawerVisible.value = true;
@@ -597,28 +591,19 @@ const uploadExcel = (file) => {
           closeUploadPopup()
         } catch (err) {
           // console.error('处理Excel数据错误:', err)
-          showToast({
-            title: '无法读取文件内容，请检查文件是否损坏',
-            icon: 'none'
-          })
+          showToast('无法读取文件内容，请检查文件是否损坏')
           closeUploadPopup()
         }
       },
       function (err) {
         console.error("Excel解析错误:", err);
-        showToast({
-          title: '无法读取文件内容，请检查文件是否损坏',
-          icon: 'none'
-        })
+        showToast('无法读取文件内容，请检查文件是否损坏')
         closeUploadPopup()
       }
     );
   } catch (err) {
     console.error('Excel转换错误:', err)
-    showToast({
-      title: '无法读取文件内容，请检查文件是否损坏',
-      icon: 'none'
-    })
+    showToast('无法读取文件内容，请检查文件是否损坏')
     closeUploadPopup()
   }
 }
