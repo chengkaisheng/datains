@@ -97,7 +97,7 @@ export const loadMenus = (next, to) => {
   buildMenus().then(res => {
     // const datas = res.data
     let list = res.data.filter(item => item.path !== "/data-filling")
-    const datas = [...list, {
+    const datas = [ {
       "path": "/data-filling",
       "component": "Layout",
       "redirect": "/data-filling/my-jobs",
@@ -173,7 +173,7 @@ export const loadMenus = (next, to) => {
           "children": null
         },
       ]
-    }]
+    }, ...list,]
     // console.log('datas', JSON.parse(JSON.stringify(datas)))
     const filterDatas = filterRouter(datas)
     const asyncRouter = filterAsyncRouter(filterDatas)
@@ -236,7 +236,8 @@ export const loadMenus = (next, to) => {
       permission: null,
       redirect: '/portal/list'
     }
-    asyncRouter.splice(4, 0, portalRouter)
+    // 隐藏数据门户菜单
+    // asyncRouter.splice(4, 0, portalRouter)
     console.log('asyncRouter', asyncRouter)
     // Add Router end
 

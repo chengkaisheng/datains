@@ -601,6 +601,7 @@ const uploadExcel = (file) => {
             title: '无法读取文件内容，请检查文件是否损坏',
             icon: 'none'
           })
+          closeUploadPopup()
         }
       },
       function (err) {
@@ -609,6 +610,7 @@ const uploadExcel = (file) => {
           title: '无法读取文件内容，请检查文件是否损坏',
           icon: 'none'
         })
+        closeUploadPopup()
       }
     );
   } catch (err) {
@@ -617,6 +619,7 @@ const uploadExcel = (file) => {
       title: '无法读取文件内容，请检查文件是否损坏',
       icon: 'none'
     })
+    closeUploadPopup()
   }
 }
 

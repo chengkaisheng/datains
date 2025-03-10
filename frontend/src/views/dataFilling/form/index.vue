@@ -272,6 +272,9 @@ export default {
             }).then(res => {
               this.formList = res.data || []
             })
+            // 刷新填报列表
+            this.nodeData = data
+            this.$refs.fileListRef.getDataFill()
           })
         })
       }
@@ -321,6 +324,9 @@ export default {
           }).then(res => {
             this.formList = res.data || []
           })
+          // 刷新填报列表
+          this.nodeData = data
+          this.$refs.fileListRef.getDataFill()
         })
       }
       
@@ -360,6 +366,7 @@ export default {
     nodeClick(data, node) {
       // 点击节点 调用接口 获取填报列表
       this.nodeData = data
+      this.$refs.fileListRef.getDataFill()
       // 展示对应的表数据
       // if (data.nodeType !== 'folder') {
       //   getWithPrivileges(data.id).then(res => {
@@ -602,7 +609,7 @@ export default {
         @editForm="editForm"
       /> -->
       <div class="file-container">
-        <FileList :nodeData="nodeData" class="file-content" />
+        <FileList ref="fileListRef" :nodeData="nodeData" class="file-content" />
       </div>
     </el-main>
 

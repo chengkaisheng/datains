@@ -105,7 +105,9 @@
             :file-list="fileList"
           >
             <el-button slot="trigger" size="small" type="primary">选择文件</el-button>
-            <div slot="tip" class="el-upload__tip">目前只支持xlsx文件</div>
+            <div slot="tip" class="el-upload__tip">
+              {{ fillForm.isAI ? '支持 Excel、PDF、Word、图片(jpg/png) 格式' : '目前只支持xlsx文件' }}
+            </div>
           </el-upload>
         </el-form-item>
       </el-form>
@@ -162,7 +164,7 @@
             :show-file-list="false"
             :file-list="templateFileList"
             :data="{}"
-            accept=".xlsx"
+            accept="*"
             name="file"
             :before-upload="beforeUpload"
             :on-success="uploadSuccess"
@@ -430,7 +432,7 @@ export default {
       const name = file.name
       const suffixArr = name.split('.')
       const suffix = suffixArr[suffixArr.length - 1]
-      if (suffix != 'xlsx') {
+      if (suffix != 'xlsx' && !this.fillForm.isAI) {
         this.$message.error('目前只支持xlsx文件')
         this.selfUploadLoading = false
         return
@@ -460,22 +462,26 @@ export default {
               }
               _this.selfUploadLoading = false
               _this.uploadDialogVisible = false
+              _this.fillDialogVisible = false
             } catch (err) {
               // console.error('处理Excel数据错误:', err)
               _this.$message.error('无法读取文件内容，请检查文件是否损坏')
               _this.selfUploadLoading = false
+              _this.fillDialogVisible = false
             }
           },
           function(err) {
             console.error('Excel解析错误:', err)
             _this.$message.error('无法读取文件内容，请检查文件是否损坏')
             _this.selfUploadLoading = false
+            _this.fillDialogVisible = false
           }
         )
       } catch (err) {
         // console.error('Excel转换错误:', err)
         _this.$message.error('无法读取文件内容，请检查文件是否损坏')
         _this.selfUploadLoading = false
+        _this.fillDialogVisible = false
       }
     },
     addDataFill() {
@@ -603,7 +609,16 @@ export default {
           }
           if (this.fillForm.isAI) {
             this.excelUploadAiHandle(this.uploadForm.file).then(file => {
-              this.uploadExcel(file)
+              console.log('file', file)
+              const blob = new Blob([file])
+              const link = document.createElement('a')
+              link.style.display = 'none'
+              link.href = URL.createObjectURL(blob)
+              link.download = '测试.xlsx' // 下载的文件名
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+              // this.uploadExcel(file)
             })
           } else {
             this.uploadExcel(this.uploadForm.file)

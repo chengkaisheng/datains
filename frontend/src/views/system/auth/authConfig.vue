@@ -86,34 +86,34 @@ export default {
           }],
       sourceInfoArray:
         [
-          {
-            tabName: this.$t('auth.linkAuth'),
-            head: this.$t('auth.linkAuthHead'),
-            direction: 'source',
-            authType: 'link',
-            authTargets: 'dept,role,user'
-          },
-          {
-            tabName: this.$t('auth.datasetAuth'),
-            head: this.$t('auth.datasetAuthHead'),
-            direction: 'source',
-            authType: 'dataset',
-            authTargets: 'dept,role,user'
-          },
-          {
-            tabName: this.$t('auth.chartAuth'),
-            head: this.$t('auth.chartAuthHead'),
-            direction: 'source',
-            authType: 'chart',
-            authTargets: 'dept,role,user'
-          },
-          {
-            tabName: this.$t('auth.panelAuth'),
-            head: this.$t('auth.panelAuthHead'),
-            direction: 'source',
-            authType: 'panel',
-            authTargets: 'dept,role,user'
-          },
+          // {
+          //   tabName: this.$t('auth.linkAuth'),
+          //   head: this.$t('auth.linkAuthHead'),
+          //   direction: 'source',
+          //   authType: 'link',
+          //   authTargets: 'dept,role,user'
+          // },
+          // {
+          //   tabName: this.$t('auth.datasetAuth'),
+          //   head: this.$t('auth.datasetAuthHead'),
+          //   direction: 'source',
+          //   authType: 'dataset',
+          //   authTargets: 'dept,role,user'
+          // },
+          // {
+          //   tabName: this.$t('auth.chartAuth'),
+          //   head: this.$t('auth.chartAuthHead'),
+          //   direction: 'source',
+          //   authType: 'chart',
+          //   authTargets: 'dept,role,user'
+          // },
+          // {
+          //   tabName: this.$t('auth.panelAuth'),
+          //   head: this.$t('auth.panelAuthHead'),
+          //   direction: 'source',
+          //   authType: 'panel',
+          //   authTargets: 'dept,role,user'
+          // },
           {
             tabName: this.$t('auth.formAuth'),
             head: this.$t('auth.formAuthHead'),
@@ -121,13 +121,13 @@ export default {
             authType: 'data_fill',
             authTargets: 'dept,role,user'
           },
-          {
-            tabName: this.$t('auth.menuAuth'),
-            head: this.$t('auth.menuAuthHead'),
-            direction: 'source',
-            authType: 'menu',
-            authTargets: 'dept,role,user'
-          }
+          // {
+          //   tabName: this.$t('auth.menuAuth'),
+          //   head: this.$t('auth.menuAuthHead'),
+          //   direction: 'source',
+          //   authType: 'menu',
+          //   authTargets: 'dept,role,user'
+          // }
         ],
       targetActiveName: null,
       sourceActiveName: null,
