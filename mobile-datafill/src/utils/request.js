@@ -1,6 +1,7 @@
 import axios from 'axios'
 import router from '@/router'
 import Cookies from 'js-cookie'
+import { showToast } from 'vant'
 
 const service = axios.create({
   baseURL: '/api',
@@ -28,7 +29,6 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     const res = response.data
-
     // 如果是文件流直接返回
     if (response.config.responseType === 'blob') {
       return response.data
@@ -46,6 +46,10 @@ service.interceptors.response.use(
     return res
   },
   error => {
+    console.log('error', error)
+    if(error.status=== 500) {
+      showToast(error.response.data.message)
+    }
     if (error.response && error.response.status === 401) {
       // 清除所有相关数据
       Cookies.remove('token')

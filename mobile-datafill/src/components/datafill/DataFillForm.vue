@@ -207,7 +207,7 @@ import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { showLoadingToast, showToast } from 'vant'
 import TreeNode from './TreeNode.vue'
-import { downloadTemplate, getAIData, getTaskTree, getTemplates, saveSelfReport } from '@/api/datafill'
+import { downloadTemplate, getAIData, getTaskTree, getTemplates, saveSelfReport, uploadData } from '@/api/datafill'
 import editExcel from '@/components/excel/editExcel.vue'
 // import LuckyExcel from 'luckyexcel'
 
@@ -497,34 +497,91 @@ const handleFileChange = async (event) => {
   uploadForm.value.file = file
   uploadForm.value.fileName = file.name
 
-  // 如果是 Excel 文件且未开启 AI，直接处理
-  if (!formData.value.enableAI && file.name.toLowerCase().endsWith('.xlsx')) {
-    uploadExcel(file)
-    return
+  if(formData.value.type === '自主填报') {
+     uploadForm.value.file = file
+     uploadForm.value.fileName = file.name.replace(/\.[^/.]+$/, "") // 去除文件扩展名
+     return
   }
+
+  try {
+     const loading = showLoadingToast({
+       message: '正在上传...',
+       forbidClick: true,
+       duration: 0
+     })
+     closeUploadPopup()
+     const formData1 = new FormData()
+     formData1.append('file', file)
+     if(formData.value.enableAI) {
+       const res = await getAIData(formData1)
+       const formData2 = new FormData()
+       formData2.append('file', res)
+       const res2 = await uploadData(selectedTemplateId.value, formData2)
+       loading.close()
+       if (res2.success) {
+         showToast({
+           type: 'success',
+           message: '上传成功'
+         })
+         // 清空文件选择
+         event.target.value = ''
+       } else {
+         showToast({
+           type: 'fail',
+           message: res2.message || '上传失败'
+         })
+       }
+     } else {
+       const res = await uploadData(selectedTemplateId.value, formData1)
+       loading.close()
+       if (res.success) {
+         showToast({
+           type: 'success',
+           message: '上传成功'
+         })
+         // 清空文件选择
+         event.target.value = ''
+       } else {
+         showToast({
+           type: 'fail',
+           message: res.message || '上传失败'
+         })
+       }
+       closeUploadPopup()
+   } 
+  } catch (error) {
+    console.error('上传失败：', error)
+    
+  }
+
+  // 如果是 Excel 文件且未开启 AI，直接处理
+  // if (!formData.value.enableAI && file.name.toLowerCase().endsWith('.xlsx')) {
+  //   uploadExcel(file)
+  //   return
+  // }
 
   // 如果开启了 AI，检查文件类型
-  if (formData.value.enableAI) {
-    const validTypes = [
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
-      'application/vnd.ms-excel', // xls
-      'application/pdf', // pdf
-      'application/msword', // doc
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
-      'image/jpeg',
-      'image/png'
-    ]
+  // if (formData.value.enableAI) {
+  //   const validTypes = [
+  //     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
+  //     'application/vnd.ms-excel', // xls
+  //     'application/pdf', // pdf
+  //     'application/msword', // doc
+  //     'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
+  //     'image/jpeg',
+  //     'image/png'
+  //   ]
 
-    if (!validTypes.includes(file.type)) {
-      showToast('不支持的文件格式')
-      return
-    }
+  //   if (!validTypes.includes(file.type)) {
+  //     showToast('不支持的文件格式')
+  //     return
+  //   }
 
-    // 显示上传弹窗
-    showUploadPopup.value = true
-  } else {
-    showToast('请选择 Excel 文件')
-  }
+  //   // 显示上传弹窗
+  //   showUploadPopup.value = true
+  // } else {
+  //   showToast('请选择 Excel 文件')
+  // }
 }
 
 // 处理上传提交
