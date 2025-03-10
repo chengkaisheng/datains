@@ -6,7 +6,7 @@
       left-arrow
       @click-left="onClickLeft"
     />
-    
+
     <div class="form-content">
       <van-form @submit="onSubmit">
         <van-cell-group inset>
@@ -20,7 +20,7 @@
             placeholder="请选择填报类型"
             @click="showTypePopup = true"
           />
-          
+
           <!-- 任务选择 -->
           <van-field
             v-model="formData.taskName"
@@ -31,7 +31,7 @@
             placeholder="请选择任务"
             @click="handleShowTaskPopup"
           />
-          
+
           <!-- 模板选择 - 仅在模板填报时显示 -->
           <van-field
             v-show="formData.type === '模板填报'"
@@ -43,7 +43,7 @@
             placeholder="请选择模板"
             @click="showTemplatePopup = true"
           />
-          
+
           <!-- AI开关选项 -->
           <van-field
             name="enableAI"
@@ -66,7 +66,7 @@
           <input
             ref="fileInput"
             type="file"
-            accept=".xlsx,.xls"
+            :accept="acceptFileTypes"
             style="display: none"
             @change="handleFileChange"
           />
@@ -105,7 +105,7 @@
         </div>
         <div class="task-tree-container">
           <template v-for="node in taskTree" :key="node.id">
-            <TreeNode 
+            <TreeNode
               :node="node"
               :expand="!!taskSearchValue"
               :selected-id="selectedTaskId"
@@ -163,12 +163,12 @@
             :rules="[{ required: true, message: '请输入文件名称' }]"
           />
           <div class="upload-field">
-            <van-button 
-              size="small" 
-              type="primary" 
+            <van-button
+              size="small"
+              type="primary"
               @click="triggerFileSelect"
             >选择文件</van-button>
-            <div class="upload-tip">目前只支持xlsx文件</div>
+            <div class="upload-tip">{{ uploadTipText }}</div>
             <div v-if="uploadForm.file" class="upload-tip">{{ uploadForm.file.name }}</div>
           </div>
           <div class="upload-actions">
@@ -190,8 +190,8 @@
       :overlay="false"
       :style="{ width: '100%', height: '100%', opacity: 0 }"
     >
-      <editExcel 
-        v-if="drawerVisible" 
+      <editExcel
+        v-if="drawerVisible"
         :msg="msg"
         :formDataId="formDataId"
         :drawer-visible="drawerVisible"
@@ -203,12 +203,11 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { showToast, showLoadingToast, closeToast } from 'vant'
+import { showLoadingToast, showToast } from 'vant'
 import TreeNode from './TreeNode.vue'
-import { getTaskTree, getTemplates, downloadTemplate, uploadData, saveSelfReport, getAIData } from '@/api/datafill'
-import axios from 'axios'
+import { downloadTemplate, getAIData, getTaskTree, getTemplates, saveSelfReport } from '@/api/datafill'
 import editExcel from '@/components/excel/editExcel.vue'
 // import LuckyExcel from 'luckyexcel'
 
@@ -260,6 +259,22 @@ const msg = ref({
   id: '',
   name: '',
   data: []
+})
+
+// 计算允许的文件类型
+const acceptFileTypes = computed(() => {
+  if (formData.value.enableAI) {
+    return '.xlsx,.xls,.pdf,.doc,.docx,.jpg,.jpeg,.png'
+  }
+  return '.xlsx,.xls'
+})
+
+// 计算上传提示文字
+const uploadTipText = computed(() => {
+  if (formData.value.enableAI) {
+    return '支持 Excel、PDF、Word、图片(jpg/png) 格式'
+  }
+  return '目前只支持 xlsx 文件'
 })
 
 // 处理树形数据 - 添加展开状态
@@ -331,11 +346,11 @@ const getSelectedTaskFullName = () => {
   const findTask = (items, id, parentPath = '') => {
     for (const item of items) {
       const currentPath = parentPath ? `${parentPath} / ${item.name}` : item.name
-      
+
       if (item.id === id) {
         return currentPath
       }
-      
+
       if (item.children) {
         const found = findTask(item.children, id, currentPath)
         if (found) return found
@@ -343,7 +358,7 @@ const getSelectedTaskFullName = () => {
     }
     return ''
   }
-  
+
   return findTask(taskTree.value, selectedTaskId.value)
 }
 
@@ -401,6 +416,9 @@ const confirmTemplateSelection = () => {
 // 选择模板
 const selectTemplate = (template) => {
   selectedTemplateId.value = template.id
+  formData.value.template = template.name
+  // 保存模板的权限信息
+  selectedTemplate.value = template
 }
 
 // 下载模板
@@ -474,96 +492,65 @@ const handleFileChange = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
-  // 检查文件类型
-  if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
-    showToast('请上传 Excel 文件（.xlsx 或 .xls 格式）')
+  uploadForm.value.file = file
+
+  // 如果是 Excel 文件且未开启 AI，直接处理
+  if (!formData.value.enableAI && file.name.toLowerCase().endsWith('.xlsx')) {
+    uploadExcel(file)
     return
   }
 
-  if(formData.value.type === '自主填报') {
-    uploadForm.value.file = file
-    uploadForm.value.fileName = file.name.replace(/\.[^/.]+$/, "") // 去除文件扩展名
-    return
-  }
+  // 如果开启了 AI，检查文件类型
+  if (formData.value.enableAI) {
+    const validTypes = [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
+      'application/vnd.ms-excel', // xls
+      'application/pdf', // pdf
+      'application/msword', // doc
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
+      'image/jpeg',
+      'image/png'
+    ]
 
-  try {
-    const loading = showLoadingToast({
-      message: '正在上传...',
-      forbidClick: true,
-      duration: 0
-    })
-    closeUploadPopup()
-    const formData1 = new FormData()
-    formData1.append('file', file)
-    if(formData.value.enableAI) {
-      const res = await getAIData(formData1)
-      const formData2 = new FormData()
-      formData2.append('file', res)
-      const res2 = await uploadData(selectedTemplateId.value, formData2)
-      loading.close()
-      if (res2.success) {
-        showToast({
-          type: 'success',
-          message: '上传成功'
-        })
-        // 清空文件选择
-        event.target.value = ''
-      } else {
-        showToast({
-          type: 'fail',
-          message: res2.message || '上传失败'
-        })
-      }
-    } else {
-      const res = await uploadData(selectedTemplateId.value, formData1)
-      loading.close()
-      if (res.success) {
-        showToast({
-          type: 'success',
-          message: '上传成功'
-        })
-        // 清空文件选择
-        event.target.value = ''
-      } else {
-        showToast({
-          type: 'fail',
-          message: res.message || '上传失败'
-        })
-      }
+    if (!validTypes.includes(file.type)) {
+      showToast('不支持的文件格式')
+      return
     }
-    
-    closeUploadPopup()
-  } catch (error) {
-    
+
+    // 显示上传弹窗
+    showUploadPopup.value = true
+  } else {
+    showToast('请选择 Excel 文件')
   }
 }
 
 // 处理上传提交
 const handleUploadSubmit = async () => {
-  if (!uploadForm.value.file) {
-    showToast('请选择文件')
+  if (!uploadForm.value.fileName || !uploadForm.value.file) {
+    showToast('请填写完整信息')
     return
   }
 
   const loading = showLoadingToast({
-    message: '上传中...',
+    message: '正在上传...',
     forbidClick: true,
     duration: 0
   })
 
   try {
-    if(formData.value.enableAI) {
+    if (formData.value.enableAI) {
       const formData1 = new FormData()
       formData1.append('file', uploadForm.value.file)
       const res = await getAIData(formData1)
-      console.log('AI填报数据:', res)
+
+      // 将 AI 处理后的数据转换为 Excel 文件
       let file = new File([res], '模板.xlsx', {
-        type: res.type,
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         lastModified: Date.now()
-      });
-      uploadExcel(file);
+      })
+      uploadExcel(file)
     } else {
-      uploadExcel(uploadForm.value.file);
+      uploadExcel(uploadForm.value.file)
     }
   } catch (error) {
     console.error('上传失败：', error)
@@ -639,18 +626,35 @@ const handleUploadClick = () => {
     showToast('请选择任务')
     return
   }
-  
+
   if (formData.value.type === '模板填报') {
     if (!formData.value.template || !selectedTemplateId.value) {
       showToast('请先选择模板')
       return
     }
+
+    // 检查模板权限
+    if (!selectedTemplate.value || !selectedTemplate.value.privileges.includes('write')) {
+      showToast('您没有该模板的使用权限')
+      return
+    }
+
     fileInput.value.click()
   } else {
+    // 自主填报时检查任务权限
+    if (!selectedTask.value || !selectedTask.value.privileges?.includes('write')) {
+      showToast('您没有该任务的填报权限')
+      return
+    }
+
     // 自主填报，显示上传弹窗
     showUploadPopup.value = true
   }
 }
+
+// 添加 selectedTemplate ref
+const selectedTemplate = ref(null)
+
 const formDataId = ref('')
 // 保存自报数据
 const saveSelfReportFn = async () => {
@@ -778,4 +782,4 @@ const saveSelfReportFn = async () => {
 .upload-actions {
   margin-top: 20px;
 }
-</style> 
+</style>

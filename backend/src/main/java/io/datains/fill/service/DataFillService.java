@@ -172,8 +172,6 @@ public class DataFillService {
                 }
 
             }
-        } else if (StringUtils.equals(dataFillForm.getNodeType(), "selfReport")) {
-            this.saveFormData(dataFillForm);
         }
 
         dataFillForm.setCreateBy(AuthUtils.getUser().getUsername());
@@ -183,7 +181,9 @@ public class DataFillService {
         dataFillForm.setUpdateTime(current);
 
         dataFillFormMapper.insertSelective(dataFillForm);
-
+        if (StringUtils.equals(dataFillForm.getNodeType(), "selfReport")) {
+            this.saveFormData(dataFillForm);
+        }
         // 清理权限缓存，应该不需要
         //clearPermissionCache();
 

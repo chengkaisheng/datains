@@ -252,6 +252,7 @@
   </select>
     <select id="selectForm" resultType="io.datains.fill.dto.DataFillFormDTO">
         select data_fill_form.*,
+        su.nick_name as creatorName,
         authInfo.privileges as `privileges`
         from (select GET_V_AUTH_MODEL_ID_P_USE(#{userId}, 'data_fill') cids) t,
         data_fill_form

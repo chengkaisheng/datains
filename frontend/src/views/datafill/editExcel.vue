@@ -4,7 +4,7 @@
       <div class="header-left">
         <el-button type="primary" icon="el-icon-back" @click="handleBack">返回</el-button>
       </div>
-      <div class="title" v-if="msg.name">{{ msg.name }}</div>
+      <div v-if="msg.name" class="title">{{ msg.name }}</div>
       <div class="header-right">
         <el-button type="success" icon="el-icon-check" @click="handleSave">保存</el-button>
       </div>
@@ -12,11 +12,11 @@
     <div
       id="luckysheet"
       class="luckysheet-container"
-    ></div>
+    />
 
     <div v-show="isMaskShow" class="download-mask">
       <div class="download-content">
-        <i class="el-icon-loading"></i>
+        <i class="el-icon-loading" />
         <div class="download-text">正在加载数据...</div>
       </div>
     </div>
@@ -25,13 +25,7 @@
 
 <script>
 // import datafill from '@/api/datafill/datafill'
-import {
-  // downloadTemplate,
-  // saveForm,
-  // deleteForm,
-  saveFormData,
-  getFormData
-} from '@/views/dataFilling/form/dataFilling'
+import { getFormData, saveFormData } from '@/views/dataFilling/form/dataFilling'
 
 export default {
   name: 'EditExcel',
@@ -47,11 +41,10 @@ export default {
     currentFormId: {
       type: String,
       default: ''
-    }
-  },
-  watch: {
-    currentFormId(newVal) {
-      this.currentFormDataId = newVal
+    },
+    isReadOnly: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -61,9 +54,13 @@ export default {
       currentFormDataId: ''
     }
   },
+  watch: {
+    currentFormId(newVal) {
+      this.currentFormDataId = newVal
+    }
+  },
   mounted() {
-
-    if(this.msg.data) {
+    if (this.msg.data) {
       this.init(this.msg.data, 'save')
     } else {
       this.getFormData()
@@ -80,15 +77,22 @@ export default {
           title: this.msg.name, // 设定表格名称
           lang: 'zh', // 设定表格语言
           plugins: ['chart'],
-          data: data || []
+          data: data || [],
+          // 添加只读模式配置
+          showtoolbar: !this.isReadOnly, // 是否显示工具栏
+          showinfobar: !this.isReadOnly, // 是否显示信息栏
+          allowEdit: !this.isReadOnly, // 是否允许编辑
+          enableAddRow: !this.isReadOnly, // 是否允许添加行
+          enableAddCol: !this.isReadOnly // 是否允许添加列
         })
-        if(type === 'save') {
+        if (type === 'save') {
           this.$emit('addDataFill')
         }
       })
     },
     getFormData() {
       getFormData(this.msg.id).then(res => {
+        console.log('res', res)
         this.init(JSON.parse(res.data.formData))
       })
     },
@@ -98,10 +102,11 @@ export default {
     },
     handleSave(type) {
       saveFormData({
-        id: this.currentFormDataId || this.msg.id,
+        id: this.currentFormDataId,
+        // id: this.currentFormDataId || this.msg.id,
         formData: JSON.stringify(luckysheet.getAllSheets())
       }).then(res => {
-        if(res.success) {
+        if (res.success) {
           this.$message({
             type: 'success',
             message: '保存成功'
@@ -109,7 +114,7 @@ export default {
         }
       })
     }
-  },
+  }
 }
 </script>
 

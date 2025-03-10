@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { showToast } from 'vant'
+import router from '@/router'
+import Cookies from 'js-cookie'
 
 const service = axios.create({
   baseURL: '/api',
@@ -9,15 +10,16 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   config => {
-    // 在这里可以添加token等认证信息
-    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3NDA1NjczNzYsInVzZXJJZCI6MzAsInVzZXJuYW1lIjoiMzcwMTE1MTk5NzEyMTI5NDczIn0.ZGioO2BJLK8b9zhVDs90opizkhKOMOEwzcreZah8u8Q'
-    if (token) {
-      config.headers.Authorization = `${token}`
+    // 如果请求头中已经有 Authorization，就不再添加
+    if (!config.headers['Authorization']) {
+      const token = Cookies.get('token')
+      if (token) {
+        config.headers['Authorization'] = token
+      }
     }
     return config
   },
   error => {
-    console.error('请求错误：', error)
     return Promise.reject(error)
   }
 )
@@ -25,25 +27,34 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   response => {
-    // 如果是文件流，直接返回
+    const res = response.data
+
+    // 如果是文件流直接返回
     if (response.config.responseType === 'blob') {
       return response.data
     }
 
-    const res = response.data
-    if (res.success) {
-      return res
-    } else {
-      showToast(res.message || '请求失败')
-      return Promise.reject(new Error(res.message || '请求失败'))
+    if (!res.success && res.code === 401) {
+      // token 过期或无效时清除所有相关数据
+      Cookies.remove('token')
+      sessionStorage.removeItem('username') // 清除用户名
+      localStorage.clear()
+      router.push('/login')
+      return Promise.reject(new Error(res.message || '认证失败'))
     }
+
+    return res
   },
   error => {
-    console.error('请求错误:', error)
-    // showToast(error.message || '请求失败')
-    showToast(error.response.data.message || '请求失败')
+    if (error.response && error.response.status === 401) {
+      // 清除所有相关数据
+      Cookies.remove('token')
+      sessionStorage.removeItem('username') // 清除用户名
+      localStorage.clear()
+      router.push('/login')
+    }
     return Promise.reject(error)
   }
 )
 
-export default service 
+export default service

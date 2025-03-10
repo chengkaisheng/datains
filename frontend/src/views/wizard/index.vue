@@ -1,7 +1,7 @@
 <template>
   <el-row class="main_container">
     <el-row class="head">
-      <span class="hint_head">{{ $t('wizard.welcome_title') }}</span> <br>
+      <!-- <span class="hint_head">{{ $t('wizard.welcome_title') }}</span> <br> -->
       <span class="hint_content">{{ $t('wizard.welcome_hint') }}</span>
     </el-row>
     <el-row :gutter="20" style="margin-top:100px">

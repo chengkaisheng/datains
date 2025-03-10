@@ -27,12 +27,12 @@
           </span> -->
           <!-- 文件夹图标 -->
           <span v-if="data.nodeType === 'spine'">
-            <i class="el-icon-folder"></i>
+            <i class="el-icon-folder" />
           </span>
 
           <!-- 节点名称 -->
           <span class="auth-span-father">
-            <span class="auth-span-inner" v-html="data.name"></span>
+            <span class="auth-span-inner" v-html="data.name" />
           </span>
 
           <span v-if="showExtent" @click.stop>
@@ -75,8 +75,8 @@
                 <el-button
                   v-show="
                     auth.privilegeType === 20 &&
-                    data.modelInnerType !== 'group' &&
-                    auth.privilegeValue === 1
+                      data.modelInnerType !== 'group' &&
+                      auth.privilegeValue === 1
                   "
                   size="mini"
                   circle
@@ -89,8 +89,8 @@
                 <div
                   v-show="
                     auth.privilegeType === 20 &&
-                    data.modelInnerType !== 'group' &&
-                    auth.privilegeValue !== 1
+                      data.modelInnerType !== 'group' &&
+                      auth.privilegeValue !== 1
                   "
                 >
                   &nbsp;&nbsp;
@@ -382,9 +382,9 @@
                 v-if="
                   ((item.deType === 0 || item.deType === 5) &&
                     rowPermissionForm.filterType === 'logic') ||
-                  item.deType === 1 ||
-                  item.deType === 2 ||
-                  item.deType === 3
+                    item.deType === 1 ||
+                    item.deType === 2 ||
+                    item.deType === 3
                 "
               >
                 <div style="display: inline-block">
@@ -401,7 +401,7 @@
                   <el-radio-group
                     v-show="
                       rowPermissionForm.filter &&
-                      rowPermissionForm.filter.length > 1
+                        rowPermissionForm.filter.length > 1
                     "
                     v-model="rowPermissionForm.logic"
                     size="mini"
@@ -473,7 +473,7 @@
               <div
                 v-if="
                   (item.deType === 0 || item.deType === 5) &&
-                  rowPermissionForm.filterType === 'enum'
+                    rowPermissionForm.filterType === 'enum'
                 "
               >
                 <span style="margin-right: 10px">{{
@@ -514,47 +514,45 @@
 </template>
 
 <script>
-import log from "video.js/es5/utils/log";
 // import { authChange, authDetails, authDetailsModel, authModel } from '@/api/system/sysAuth'
 // import { execute } from '@/de-base/api/de-api'
-import { execute } from "@/api/system/dynamic";
 export default {
-  name: "LazyTree",
+  name: 'LazyTree',
   components: {},
   props: {
     filterText: {
       type: String,
       required: false,
-      default: "",
+      default: ''
     },
     authCondition: {
       type: Object,
-      required: false,
+      required: false
     },
     dataInfo: {
       type: Object,
-      required: true,
+      required: true
     },
     activeName: {
       type: String,
-      required: true,
+      required: true
     },
     attachActiveName: String,
     defaultProps: {
       type: Object,
       required: false,
-      default: function () {
+      default: function() {
         return {
-          children: "children",
-          label: "name",
-          id: "id",
-          parentId: "pid",
-          isLeaf: "leaf",
-        };
-      },
+          children: 'children',
+          label: 'name',
+          id: 'id',
+          parentId: 'pid',
+          isLeaf: 'leaf'
+        }
+      }
     },
     showExtent: Boolean,
-    highlightCurrent: Boolean,
+    highlightCurrent: Boolean
   },
   data() {
     return {
@@ -565,7 +563,7 @@ export default {
       expandedKey: [], // 展开节点 搜索时默认展开父级节点
       defaultCondition: {
         // pid 是0的时候 查询的是顶级的节点
-        pid: "0",
+        pid: '0'
       },
       authDetails: {},
       defaultAuthDetails: [],
@@ -575,18 +573,18 @@ export default {
       show_row_column_permission: false,
       rowPermissionData: [],
       loadingRowPermission: false,
-      update_row_permission_dialog_title: "",
+      update_row_permission_dialog_title: '',
       update_row_permission: false,
       filedList: [],
       defaultForm: {
         authTargetId: null,
         authTargetType: null,
         datasetFieldId: null,
-        filterType: "logic",
+        filterType: 'logic',
         enumCheckField: [],
-        datasetId: "",
-        logic: "and",
-        filter: [{ term: "eq", value: "" }],
+        datasetId: '',
+        logic: 'and',
+        filter: [{ term: 'eq', value: '' }]
       },
       rowPermissionForm: {},
       fieldOptions: [],
@@ -594,233 +592,233 @@ export default {
       authDetail: {},
       textOptions: [
         {
-          label: "",
+          label: '',
           options: [
             {
-              value: "eq",
-              label: this.$t("chart.filter_eq"),
+              value: 'eq',
+              label: this.$t('chart.filter_eq')
             },
             {
-              value: "not_eq",
-              label: this.$t("chart.filter_not_eq"),
-            },
-          ],
+              value: 'not_eq',
+              label: this.$t('chart.filter_not_eq')
+            }
+          ]
         },
         {
-          label: "",
+          label: '',
           options: [
             {
-              value: "like",
-              label: this.$t("chart.filter_like"),
+              value: 'like',
+              label: this.$t('chart.filter_like')
             },
             {
-              value: "not like",
-              label: this.$t("chart.filter_not_like"),
-            },
-          ],
+              value: 'not like',
+              label: this.$t('chart.filter_not_like')
+            }
+          ]
         },
         {
-          label: "",
+          label: '',
           options: [
             {
-              value: "null",
-              label: this.$t("chart.filter_null"),
+              value: 'null',
+              label: this.$t('chart.filter_null')
             },
             {
-              value: "not_null",
-              label: this.$t("chart.filter_not_null"),
-            },
-          ],
+              value: 'not_null',
+              label: this.$t('chart.filter_not_null')
+            }
+          ]
         },
         {
-          label: "",
+          label: '',
           options: [
             {
-              value: "empty",
-              label: this.$t("chart.filter_empty"),
+              value: 'empty',
+              label: this.$t('chart.filter_empty')
             },
             {
-              value: "not_empty",
-              label: this.$t("chart.filter_not_empty"),
-            },
-          ],
-        },
+              value: 'not_empty',
+              label: this.$t('chart.filter_not_empty')
+            }
+          ]
+        }
       ],
       dateOptions: [
         {
-          label: "",
+          label: '',
           options: [
             {
-              value: "eq",
-              label: this.$t("chart.filter_eq"),
+              value: 'eq',
+              label: this.$t('chart.filter_eq')
             },
             {
-              value: "not_eq",
-              label: this.$t("chart.filter_not_eq"),
-            },
-          ],
+              value: 'not_eq',
+              label: this.$t('chart.filter_not_eq')
+            }
+          ]
         },
         {
-          label: "",
+          label: '',
           options: [
             {
-              value: "lt",
-              label: this.$t("chart.filter_lt"),
+              value: 'lt',
+              label: this.$t('chart.filter_lt')
             },
             {
-              value: "gt",
-              label: this.$t("chart.filter_gt"),
-            },
-          ],
+              value: 'gt',
+              label: this.$t('chart.filter_gt')
+            }
+          ]
         },
         {
-          label: "",
+          label: '',
           options: [
             {
-              value: "le",
-              label: this.$t("chart.filter_le"),
+              value: 'le',
+              label: this.$t('chart.filter_le')
             },
             {
-              value: "ge",
-              label: this.$t("chart.filter_ge"),
-            },
-          ],
-        },
+              value: 'ge',
+              label: this.$t('chart.filter_ge')
+            }
+          ]
+        }
       ],
       valueOptions: [
         {
-          label: "",
+          label: '',
           options: [
             {
-              value: "eq",
-              label: this.$t("chart.filter_eq"),
+              value: 'eq',
+              label: this.$t('chart.filter_eq')
             },
             {
-              value: "not_eq",
-              label: this.$t("chart.filter_not_eq"),
-            },
-          ],
+              value: 'not_eq',
+              label: this.$t('chart.filter_not_eq')
+            }
+          ]
         },
         {
-          label: "",
+          label: '',
           options: [
             {
-              value: "lt",
-              label: this.$t("chart.filter_lt"),
+              value: 'lt',
+              label: this.$t('chart.filter_lt')
             },
             {
-              value: "gt",
-              label: this.$t("chart.filter_gt"),
-            },
-          ],
+              value: 'gt',
+              label: this.$t('chart.filter_gt')
+            }
+          ]
         },
         {
-          label: "",
+          label: '',
           options: [
             {
-              value: "le",
-              label: this.$t("chart.filter_le"),
+              value: 'le',
+              label: this.$t('chart.filter_le')
             },
             {
-              value: "ge",
-              label: this.$t("chart.filter_ge"),
-            },
-          ],
-        },
+              value: 'ge',
+              label: this.$t('chart.filter_ge')
+            }
+          ]
+        }
       ],
       options: [
         {
-          label: "",
+          label: '',
           options: [
             {
-              value: "eq",
-              label: this.$t("chart.filter_eq"),
+              value: 'eq',
+              label: this.$t('chart.filter_eq')
             },
             {
-              value: "not_eq",
-              label: this.$t("chart.filter_not_eq"),
-            },
-          ],
-        },
+              value: 'not_eq',
+              label: this.$t('chart.filter_not_eq')
+            }
+          ]
+        }
       ],
       rule: {
         datasetFieldId: [
           {
             required: true,
-            message: this.$t("dataset.row_permission.please_select_field"),
-            trigger: "blur",
-          },
-        ],
+            message: this.$t('dataset.row_permission.please_select_field'),
+            trigger: 'blur'
+          }
+        ]
       },
-      datasetPermissionsTabActive: "RowPermissions",
+      datasetPermissionsTabActive: 'RowPermissions',
       defaultColumnPermissionForm: {
         authTargetId: null,
         authTargetType: null,
-        datasetId: "",
+        datasetId: '',
         permissions: {
           enable: true,
-          columns: [],
-        },
+          columns: []
+        }
       },
       columnPermissionForm: {
         authTargetId: null,
         authTargetType: null,
-        datasetId: "",
+        datasetId: '',
         permissions: {
           enable: true,
-          columns: [],
-        },
-      },
-    };
+          columns: []
+        }
+      }
+    }
   },
   computed: {},
   watch: {
     filterText(val) {
-      this.expandedKey = [];
+      this.expandedKey = []
       if (val && val.length > 0) {
-        this.searchStatus = true;
+        this.searchStatus = true
       }
       // 当组件名和 activeName 相等时 才进行查询
       if (this.dataInfo.authType === this.activeName) {
-        this.destroyTimeMachine();
-        this.changeIndex++;
-        this.filterNode(this.changeIndex);
+        this.destroyTimeMachine()
+        this.changeIndex++
+        this.filterNode(this.changeIndex)
       }
     },
     authCondition: {
       handler(newVal, oldVla) {
-        this.loadAuth();
+        this.loadAuth()
       },
-      deep: true,
+      deep: true
     },
     activeName: {
       handler(newVal, oldVla) {
-        this.loadAuth();
+        this.loadAuth()
       },
-      deep: true,
+      deep: true
     },
     attachActiveName: {
       handler(newVal, oldVla) {
-        this.authDetails = {};
+        this.authDetails = {}
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   created() {
     // 初始化授权模板
     if (this.showExtent) {
       this.executeAxios(
-        "/plugin/auth/authDetailsModel/" + this.dataInfo.authType,
-        "get",
+        '/plugin/auth/authDetailsModel/' + this.dataInfo.authType,
+        'get',
         {},
         (res) => {
-          this.defaultAuthDetails = res.data;
+          this.defaultAuthDetails = res.data
         }
-      );
+      )
       //   authDetailsModel(this.dataInfo.authType).then(res => {
       //     this.defaultAuthDetails = res.data
       //   })
-      this.loadAuth();
+      this.loadAuth()
     }
   },
   methods: {
@@ -829,9 +827,9 @@ export default {
         url: url,
         type: type,
         data: data,
-        callBack: callBack,
-      };
-      this.$emit("execute-axios", param);
+        callBack: callBack
+      }
+      this.$emit('execute-axios', param)
       // if (process.env.NODE_ENV === 'development') {
       //   execute(param).then(res => {
       //     if (param.callBack) {
@@ -846,28 +844,28 @@ export default {
     },
     loadAuth() {
       if (this.authCondition && this.showExtent) {
-        let authQueryCondition = {};
-        if (this.dataInfo.direction === "source") {
+        let authQueryCondition = {}
+        if (this.dataInfo.direction === 'source') {
           // 当前为授权数据 获取当前authTarget 的授权信息 authSource
           authQueryCondition = {
             authTarget: this.authCondition.id,
             authTargetType: this.authCondition.type,
-            authSourceType: this.dataInfo.authType,
-          };
+            authSourceType: this.dataInfo.authType
+          }
         } else {
           authQueryCondition = {
             authSource: this.authCondition.id,
-            authSourceType: this.authCondition.type,
-          };
+            authSourceType: this.authCondition.type
+          }
         }
         this.executeAxios(
-          "/plugin/auth/authDetails",
-          "post",
+          '/plugin/auth/authDetails',
+          'post',
           authQueryCondition,
           (res) => {
-            this.authDetails = res.data;
+            this.authDetails = res.data
           }
-        );
+        )
         // authDetails(authQueryCondition).then(res => {
         //   this.authDetails = res.data
         // })
@@ -878,65 +876,65 @@ export default {
         if (node.level === 0) {
           const queryCondition = {
             modelType: this.dataInfo.authType,
-            ...this.defaultCondition,
-          };
+            ...this.defaultCondition
+          }
           this.executeAxios(
-            "/plugin/auth/authModels",
-            "post",
+            '/plugin/auth/authModels',
+            'post',
             queryCondition,
             (res) => {
-              const data = res.data;
-              resolve(data);
+              const data = res.data
+              resolve(data)
             }
-          );
+          )
           //   authModel(queryCondition).then(res => {
           //     const data = res.data
           //     resolve(data)
           //   })
         } else {
           const queryCondition = {
-            modelType: this.dataInfo.authType,
-          };
+            modelType: this.dataInfo.authType
+          }
           queryCondition[this.defaultProps.parentId] =
-            node.data[this.defaultProps.id];
+            node.data[this.defaultProps.id]
           this.executeAxios(
-            "/plugin/auth/authModels",
-            "post",
+            '/plugin/auth/authModels',
+            'post',
             queryCondition,
             (res) => {
-              const data = res.data;
-              resolve(data);
+              const data = res.data
+              resolve(data)
             }
-          );
+          )
           //   authModel(queryCondition).then(res => {
           //     const data = res.data
           //     resolve(data)
           //   })
         }
       } else {
-        resolve(node.data.children);
+        resolve(node.data.children)
       }
     },
     filterNode(index) {
       this.timeMachine = setTimeout(() => {
         if (index === this.changeIndex) {
           const queryCondition = {
-            withExtend: "parent",
-            modelType: this.dataInfo.authType,
-          };
-          queryCondition[this.defaultProps.label] = this.filterText;
+            withExtend: 'parent',
+            modelType: this.dataInfo.authType
+          }
+          queryCondition[this.defaultProps.label] = this.filterText
           this.executeAxios(
-            "/plugin/auth/authModels",
-            "post",
+            '/plugin/auth/authModels',
+            'post',
             queryCondition,
             (res) => {
               // 高亮显示
-              this.highlights(res.data);
-              this.treeData = this.buildTree(res.data);
+              this.highlights(res.data)
+              this.treeData = this.buildTree(res.data)
               // 恢复searchStatus 状态 可以允许继续展开父级
-              this.$nextTick(() => (this.searchStatus = false));
+              this.$nextTick(() => (this.searchStatus = false))
             }
-          );
+          )
           //   authModel(queryCondition).then(res => {
           //     // 高亮显示
           //     this.highlights(res.data)
@@ -945,534 +943,534 @@ export default {
           //     this.$nextTick(() => (this.searchStatus = false))
           //   })
         }
-        this.destroyTimeMachine();
-      }, 1500);
+        this.destroyTimeMachine()
+      }, 1500)
     },
     nodeClick(data, node) {
-      this.$emit("nodeClick", { id: data.id, type: this.dataInfo.authType });
+      this.$emit('nodeClick', { id: data.id, type: this.dataInfo.authType })
     },
     destroyTimeMachine() {
-      this.timeMachine && clearTimeout(this.timeMachine);
-      this.timeMachine = null;
+      this.timeMachine && clearTimeout(this.timeMachine)
+      this.timeMachine = null
     },
     buildTree(arrs) {
       const idMapping = arrs.reduce((acc, el, i) => {
-        acc[el[this.defaultProps.id]] = i;
-        return acc;
-      }, {});
-      const roots = [];
+        acc[el[this.defaultProps.id]] = i
+        return acc
+      }, {})
+      const roots = []
       arrs.forEach((el) => {
         // 判断根节点 ###
         if (
           el[this.defaultProps.parentId] === null ||
           el[this.defaultProps.parentId] === 0 ||
-          el[this.defaultProps.parentId] === "0"
+          el[this.defaultProps.parentId] === '0'
         ) {
-          roots.push(el);
-          return;
+          roots.push(el)
+          return
         }
         // 用映射表找到父元素
-        const parentEl = arrs[idMapping[el[this.defaultProps.parentId]]];
+        const parentEl = arrs[idMapping[el[this.defaultProps.parentId]]]
         // 把当前元素添加到父元素的`children`数组中
-        parentEl.children = [...(parentEl.children || []), el];
+        parentEl.children = [...(parentEl.children || []), el]
 
         // 设置展开节点 如果没有子节点则不进行展开
         if (parentEl.children.length > 0) {
-          this.expandedKey.push(parentEl[this.defaultProps.id]);
+          this.expandedKey.push(parentEl[this.defaultProps.id])
         }
-      });
-      return roots;
+      })
+      return roots
     },
     // 权限修改
     async clickAuth(node, data, auth) {
-      let authChangeCondition = this.getAuthChangeCondition(data, auth);
+      const authChangeCondition = this.getAuthChangeCondition(data, auth)
 
       if (!node.isLeaf) {
-        this.loading = true;
+        this.loading = true
         try {
           // 获取所有子节点
-          const allChildren = await this.getChildrenNodes(node);
+          const allChildren = await this.getChildrenNodes(node)
 
-          const list = [authChangeCondition];
+          const list = [authChangeCondition]
           allChildren.forEach((item) => {
-            let auth1 = null;
+            let auth1 = null
             if (this.authDetails[item.id]) {
               auth1 = this.authDetails[item.id].find((authDetail) => {
                 if (authDetail.privilegeExtend && auth.privilegeExtend) {
-                  return authDetail.privilegeExtend === auth.privilegeExtend;
+                  return authDetail.privilegeExtend === auth.privilegeExtend
                 } else {
-                  return authDetail.privilegeName === auth.privilegeName;
+                  return authDetail.privilegeName === auth.privilegeName
                 }
-              });
+              })
             } else {
               auth1 = this.defaultAuthDetails.find((authDetail) => {
                 if (authDetail.privilegeExtend && auth.privilegeExtend) {
-                  return authDetail.privilegeExtend === auth.privilegeExtend;
+                  return authDetail.privilegeExtend === auth.privilegeExtend
                 } else {
                   return auth.privilegeName.includes(
                     authDetail.privilegeExtend
-                  );
+                  )
                 }
-              });
+              })
             }
-            auth1.privilegeValue = auth.privilegeValue;
-            list.push(this.getAuthChangeCondition(item, auth1));
-          });
+            auth1.privilegeValue = auth.privilegeValue
+            list.push(this.getAuthChangeCondition(item, auth1))
+          })
 
           // 批量更新权限
           this.executeAxios(
-            "/plugin/auth/authChangeBatch",
-            "post",
+            '/plugin/auth/authChangeBatch',
+            'post',
             { auths: list },
             (res) => {
-              this.loadAuth();
-              this.loading = false;
+              this.loadAuth()
+              this.loading = false
             }
-          );
+          )
         } catch (error) {
-          console.error("获取子节点失败:", error);
-          this.loading = false;
+          console.error('获取子节点失败:', error)
+          this.loading = false
         }
       } else {
-        this.loading = true;
+        this.loading = true
         this.executeAxios(
-          "/plugin/auth/authChange",
-          "post",
+          '/plugin/auth/authChange',
+          'post',
           authChangeCondition,
           (res) => {
             // 重新加载权限
-            this.loadAuth();
-            this.loading = false;
+            this.loadAuth()
+            this.loading = false
           }
-        );
+        )
       }
     },
     // 需要层层获取子节点
     async getChildrenNodes(node) {
-      if (node.isLeaf) return [];
+      if (node.isLeaf) return []
 
       const queryCondition = {
-        modelType: this.dataInfo.authType,
-      };
+        modelType: this.dataInfo.authType
+      }
       queryCondition[this.defaultProps.parentId] =
-        node.data[this.defaultProps.id];
+        node.data[this.defaultProps.id]
 
       // 使用Promise包装axios调用
       const getNodes = () => {
         return new Promise((resolve) => {
           this.executeAxios(
-            "/plugin/auth/authModels",
-            "post",
+            '/plugin/auth/authModels',
+            'post',
             queryCondition,
             (res) => {
-              resolve(res.data || []);
+              resolve(res.data || [])
             }
-          );
-        });
-      };
+          )
+        })
+      }
 
       // 获取当前节点的直接子节点
-      const children = await getNodes();
+      const children = await getNodes()
 
       // 递归获取每个子节点的子节点
-      const childrenPromises = children.map(async (child) => {
+      const childrenPromises = children.map(async(child) => {
         if (!child[this.defaultProps.isLeaf]) {
           // 为每个非叶子节点递归调用
           const grandChildren = await this.getChildrenNodes({
             isLeaf: child[this.defaultProps.isLeaf],
-            data: child,
-          });
-          return [...grandChildren];
+            data: child
+          })
+          return [...grandChildren]
         }
-        return [];
-      });
+        return []
+      })
 
       // 等待所有子节点的递归调用完成
-      const allChildren = await Promise.all(childrenPromises);
+      const allChildren = await Promise.all(childrenPromises)
 
       // 合并所有结果
-      return [...children, ...allChildren.flat()];
+      return [...children, ...allChildren.flat()]
     },
     getAuthChangeCondition(data, auth) {
-      let authChangeCondition = {};
-      if (this.dataInfo.direction === "source") {
+      let authChangeCondition = {}
+      if (this.dataInfo.direction === 'source') {
         // 当前为授权数据
         authChangeCondition = {
           authSource: data.id,
           authSourceType: this.dataInfo.authType,
           authTarget: this.authCondition.id,
           authTargetType: this.authCondition.type,
-          authDetail: auth,
-        };
+          authDetail: auth
+        }
       } else {
         authChangeCondition = {
           authTarget: data.id,
           authTargetType: this.dataInfo.authType,
           authSource: this.authCondition.id,
           authSourceType: this.authCondition.type,
-          authDetail: auth,
-        };
+          authDetail: auth
+        }
       }
-      return authChangeCondition;
+      return authChangeCondition
     },
     // 高亮显示搜索内容
     highlights(data) {
       if (data && this.filterText && this.filterText.length > 0) {
-        const replaceReg = new RegExp(this.filterText, "g"); // 匹配关键字正则
+        const replaceReg = new RegExp(this.filterText, 'g') // 匹配关键字正则
         const replaceString =
-          '<span style="color: #faaa39">' + this.filterText + "</span>"; // 高亮替换v-html值
+          '<span style="color: #faaa39">' + this.filterText + '</span>' // 高亮替换v-html值
         data.forEach((item) => {
-          item.name = item.name.replace(replaceReg, replaceString); // 开始替换
-        });
+          item.name = item.name.replace(replaceReg, replaceString) // 开始替换
+        })
       }
     },
     showRowPermission(auth) {
-      this.rowPermissionData = [];
-      this.authDetail = auth;
-      this.show_row_column_permission = true;
-      this.fetchFiledList(auth);
+      this.rowPermissionData = []
+      this.authDetail = auth
+      this.show_row_column_permission = true
+      this.fetchFiledList(auth)
     },
     listRowPermissions(auth) {
-      var _this6 = this;
+      var _this6 = this
 
-      auth.datasetId = auth.authSource;
-      auth.authTargetId = auth.authTarget;
-      this.loadingRowPermission = true;
+      auth.datasetId = auth.authSource
+      auth.authTargetId = auth.authTarget
+      this.loadingRowPermission = true
       this.executeAxios(
-        "/plugin/dataset/rowPermissions/list",
-        "post",
+        '/plugin/dataset/rowPermissions/list',
+        'post',
         auth,
-        function (res) {
-          _this6.rowPermissionData = res.data;
-          _this6.rowPermissionData.forEach(function (item) {
-            item.filter = JSON.parse(item.filter);
-            if (item.filterType === "enum") {
-              item.filterDTO = [];
-              item.filterDTO.push({ term: "enum", value: item.enumCheckField });
+        function(res) {
+          _this6.rowPermissionData = res.data
+          _this6.rowPermissionData.forEach(function(item) {
+            item.filter = JSON.parse(item.filter)
+            if (item.filterType === 'enum') {
+              item.filterDTO = []
+              item.filterDTO.push({ term: 'enum', value: item.enumCheckField })
             } else {
-              item.filterDTO = item.filter;
+              item.filterDTO = item.filter
             }
             if (item.enumCheckField.length > 0) {
-              item.enumCheckField = item.enumCheckField.split(",");
+              item.enumCheckField = item.enumCheckField.split(',')
             } else {
-              item.enumCheckField = [];
+              item.enumCheckField = []
             }
-          });
-          _this6.loadingRowPermission = false;
+          })
+          _this6.loadingRowPermission = false
         }
-      );
+      )
     },
     listColumnPermissions(auth) {
-      var _this7 = this;
+      var _this7 = this
 
-      auth.datasetId = auth.authSource;
-      auth.authTargetId = auth.authTarget;
-      this.loadingRowPermission = true;
+      auth.datasetId = auth.authSource
+      auth.authTargetId = auth.authTarget
+      this.loadingRowPermission = true
       this.executeAxios(
-        "/plugin/dataset/columnPermissions/list",
-        "post",
+        '/plugin/dataset/columnPermissions/list',
+        'post',
         auth,
-        function (res) {
-          var columnPermission = res.data;
+        function(res) {
+          var columnPermission = res.data
           if (columnPermission.length > 0) {
             _this7.columnPermissionForm = Object.assign(
               {},
               JSON.parse(JSON.stringify(columnPermission[0]))
-            );
+            )
             _this7.columnPermissionForm.permissions = JSON.parse(
               _this7.columnPermissionForm.permissions
-            );
+            )
             var columnsPermissions =
-              _this7.columnPermissionForm.permissions.columns;
-            _this7.columnPermissionForm.permissions.columns = [];
-            var rows = [];
+              _this7.columnPermissionForm.permissions.columns
+            _this7.columnPermissionForm.permissions.columns = []
+            var rows = []
             for (var i = 0; i < _this7.filedList.length; i++) {
               var item = {
                 id: _this7.filedList[i].id,
                 name: _this7.filedList[i].name,
-                opt: "Prohibit",
-              };
+                opt: 'Prohibit'
+              }
               for (var j = 0; j < columnsPermissions.length; j++) {
                 if (item.id === columnsPermissions[j].id) {
-                  item.selected = columnsPermissions[j].selected;
-                  item.opt = columnsPermissions[j].opt;
+                  item.selected = columnsPermissions[j].selected
+                  item.opt = columnsPermissions[j].opt
                   if (item.selected) {
-                    rows.push(item);
+                    rows.push(item)
                   }
                 }
               }
-              _this7.columnPermissionForm.permissions.columns.push(item);
+              _this7.columnPermissionForm.permissions.columns.push(item)
             }
-            _this7.toggleSelection(rows);
+            _this7.toggleSelection(rows)
           } else {
             _this7.columnPermissionForm = JSON.parse(
               JSON.stringify(_this7.defaultColumnPermissionForm)
-            );
+            )
             _this7.columnPermissionForm.authTargetId =
-              _this7.authDetail.authTarget;
+              _this7.authDetail.authTarget
             _this7.columnPermissionForm.authTargetType =
-              _this7.authDetail.authTargetType;
+              _this7.authDetail.authTargetType
             _this7.columnPermissionForm.datasetId =
-              _this7.authDetail.authSource;
-            _this7.filedList.forEach(function (filed) {
+              _this7.authDetail.authSource
+            _this7.filedList.forEach(function(filed) {
               _this7.columnPermissionForm.permissions.columns.push({
                 id: filed.id,
                 name: filed.name,
-                opt: "Prohibit",
-              });
-            });
+                opt: 'Prohibit'
+              })
+            })
           }
         }
-      );
+      )
     },
     toggleSelection(rows) {
-      var _this8 = this;
+      var _this8 = this
 
       if (rows) {
-        rows.forEach(function (row) {
-          _this8.$nextTick(function () {
-            _this8.$refs.multipleTable.toggleRowSelection(row);
-          });
-        });
+        rows.forEach(function(row) {
+          _this8.$nextTick(function() {
+            _this8.$refs.multipleTable.toggleRowSelection(row)
+          })
+        })
       }
     },
     addRowPermission(rowPermissionObj) {
-      var _this9 = this;
+      var _this9 = this
 
       if (!rowPermissionObj) {
         // add
-        this.rowPermissionForm = JSON.parse(JSON.stringify(this.defaultForm));
-        this.rowPermissionForm.authTargetId = this.authDetail.authTarget;
-        this.rowPermissionForm.authTargetType = this.authDetail.authTargetType;
-        this.rowPermissionForm.datasetId = this.authDetail.authSource;
+        this.rowPermissionForm = JSON.parse(JSON.stringify(this.defaultForm))
+        this.rowPermissionForm.authTargetId = this.authDetail.authTarget
+        this.rowPermissionForm.authTargetType = this.authDetail.authTargetType
+        this.rowPermissionForm.datasetId = this.authDetail.authSource
         this.update_row_permission_dialog_title = this.$t(
-          "dataset.row_permission.add"
-        );
+          'dataset.row_permission.add'
+        )
       } else {
         // update
         this.rowPermissionForm = Object.assign(
           {},
           JSON.parse(JSON.stringify(rowPermissionObj))
-        );
-        this.filedList.forEach(function (filed) {
+        )
+        this.filedList.forEach(function(filed) {
           if (filed.id === _this9.rowPermissionForm.datasetFieldId) {
-            _this9.initOptions(filed);
-            _this9.item = filed;
-            if (_this9.rowPermissionForm.filterType === "enum") {
-              _this9.initEnumOptions();
+            _this9.initOptions(filed)
+            _this9.item = filed
+            if (_this9.rowPermissionForm.filterType === 'enum') {
+              _this9.initEnumOptions()
             }
           }
-        });
+        })
         this.update_row_permission_dialog_title = this.$t(
-          "dataset.row_permission.edit"
-        );
+          'dataset.row_permission.edit'
+        )
       }
-      this.update_row_permission = true;
+      this.update_row_permission = true
     },
     fetchFiledList(auth) {
-      var _this10 = this;
+      var _this10 = this
 
-      this.filedList = [];
+      this.filedList = []
       this.executeAxios(
-        "dataset/field/listForPermissionSeting/" + auth.authSource,
-        "post",
+        'dataset/field/listForPermissionSeting/' + auth.authSource,
+        'post',
         {},
-        function (res) {
-          _this10.filedList = res.data;
-          _this10.listRowPermissions(auth);
-          _this10.listColumnPermissions(auth);
-        }
-      );
-    },
-    deleteRowPermission(item) {
-      var _this11 = this;
-
-      this.$confirm(
-        this.$t("dataset.confirm_delete"),
-        this.$t("dataset.tips"),
-        {
-          confirmButtonText: this.$t("dataset.confirm"),
-          cancelButtonText: this.$t("dataset.cancel"),
-          type: "warning",
+        function(res) {
+          _this10.filedList = res.data
+          _this10.listRowPermissions(auth)
+          _this10.listColumnPermissions(auth)
         }
       )
-        .then(function () {
+    },
+    deleteRowPermission(item) {
+      var _this11 = this
+
+      this.$confirm(
+        this.$t('dataset.confirm_delete'),
+        this.$t('dataset.tips'),
+        {
+          confirmButtonText: this.$t('dataset.confirm'),
+          cancelButtonText: this.$t('dataset.cancel'),
+          type: 'warning'
+        }
+      )
+        .then(function() {
           _this11.executeAxios(
-            "plugin/dataset/rowPermissions/delete/" + item.id,
-            "post",
+            'plugin/dataset/rowPermissions/delete/' + item.id,
+            'post',
             {},
-            function (res) {
+            function(res) {
               _this11.$message({
-                message: _this11.$t("dataset.delete_success"),
-                type: "success",
-                showClose: true,
-              });
-              _this11.listRowPermissions(_this11.authDetail);
+                message: _this11.$t('dataset.delete_success'),
+                type: 'success',
+                showClose: true
+              })
+              _this11.listRowPermissions(_this11.authDetail)
             }
-          );
+          )
         })
-        .catch(function () {});
+        .catch(function() {})
     },
     save() {
-      var _this12 = this;
+      var _this12 = this
 
-      this.$refs.rowPermissionForm.validate(function (valid) {
+      this.$refs.rowPermissionForm.validate(function(valid) {
         if (valid) {
-          if (_this12.rowPermissionForm.filterType === "logic") {
+          if (_this12.rowPermissionForm.filterType === 'logic') {
             for (var i = 0; i < _this12.rowPermissionForm.filter.length; i++) {
-              var f = _this12.rowPermissionForm.filter[i];
+              var f = _this12.rowPermissionForm.filter[i]
               if (
-                !f.term.includes("null") &&
-                !f.term.includes("empty") &&
-                (!f.value || f.value === "")
+                !f.term.includes('null') &&
+                !f.term.includes('empty') &&
+                (!f.value || f.value === '')
               ) {
                 _this12.$message({
-                  message: _this12.$t("chart.filter_value_can_null"),
-                  type: "error",
-                  showClose: true,
-                });
-                return;
+                  message: _this12.$t('chart.filter_value_can_null'),
+                  type: 'error',
+                  showClose: true
+                })
+                return
               }
             }
           }
-          var params = JSON.parse(JSON.stringify(_this12.rowPermissionForm));
-          params.filter = JSON.stringify(params.filter);
-          params.enumCheckField = params.enumCheckField.join(",");
+          var params = JSON.parse(JSON.stringify(_this12.rowPermissionForm))
+          params.filter = JSON.stringify(params.filter)
+          params.enumCheckField = params.enumCheckField.join(',')
           _this12.executeAxios(
-            "plugin/dataset/rowPermissions/save",
-            "post",
+            'plugin/dataset/rowPermissions/save',
+            'post',
             params,
-            function (res) {
+            function(res) {
               if (res.success) {
                 _this12.$message({
-                  message: _this12.$t("dataset.save_success"),
-                  type: "success",
-                  showClose: true,
-                });
-                _this12.update_row_permission = false;
-                _this12.listRowPermissions(_this12.authDetail);
+                  message: _this12.$t('dataset.save_success'),
+                  type: 'success',
+                  showClose: true
+                })
+                _this12.update_row_permission = false
+                _this12.listRowPermissions(_this12.authDetail)
               }
             }
-          );
+          )
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     closeDialog() {
-      this.update_row_permission = false;
-      this.rowPermissionForm = {};
+      this.update_row_permission = false
+      this.rowPermissionForm = {}
     },
     addFilter() {
       this.rowPermissionForm.filter.push({
-        term: "eq",
-        value: "",
-      });
+        term: 'eq',
+        value: ''
+      })
     },
     removeFilter(index) {
-      this.rowPermissionForm.filter.splice(index, 1);
+      this.rowPermissionForm.filter.splice(index, 1)
     },
     onFieldChange() {
-      var _this13 = this;
+      var _this13 = this
 
-      this.filedList.forEach(function (filed) {
+      this.filedList.forEach(function(filed) {
         if (filed.id === _this13.rowPermissionForm.datasetFieldId) {
-          _this13.item = filed;
-          _this13.initOptions(_this13.item);
-          _this13.initEnumOptions();
-          _this13.rowPermissionForm.enumCheckField = [];
+          _this13.item = filed
+          _this13.initOptions(_this13.item)
+          _this13.initEnumOptions()
+          _this13.rowPermissionForm.enumCheckField = []
         }
-      });
+      })
     },
     initOptions(filed) {
       if (filed.deType === 0 || filed.deType === 5) {
-        this.options = JSON.parse(JSON.stringify(this.textOptions));
+        this.options = JSON.parse(JSON.stringify(this.textOptions))
       } else if (filed.deType === 1) {
-        this.options = JSON.parse(JSON.stringify(this.dateOptions));
+        this.options = JSON.parse(JSON.stringify(this.dateOptions))
       } else {
-        this.options = JSON.parse(JSON.stringify(this.valueOptions));
+        this.options = JSON.parse(JSON.stringify(this.valueOptions))
       }
     },
     initEnumOptions() {
-      var _this14 = this;
+      var _this14 = this
 
       // æŸ¥æ‰¾æžšä¸¾å€¼
       if (
-        this.rowPermissionForm.filterType === "enum" &&
+        this.rowPermissionForm.filterType === 'enum' &&
         (this.item.deType === 0 || this.item.deType === 5)
       ) {
-        this.loadingRowPermission = true;
+        this.loadingRowPermission = true
         this.executeAxios(
-          "dataset/field/multFieldValues",
-          "post",
+          'dataset/field/multFieldValues',
+          'post',
           { fieldIds: [this.item.id] },
-          function (res) {
-            _this14.fieldOptions = _this14.optionDatas(res.data);
-            _this14.loadingRowPermission = false;
+          function(res) {
+            _this14.fieldOptions = _this14.optionDatas(res.data)
+            _this14.loadingRowPermission = false
           }
-        );
+        )
       }
     },
     optionDatas(datas) {
-      if (!datas) return null;
+      if (!datas) return null
       return datas
-        .filter(function (item) {
-          return !!item;
+        .filter(function(item) {
+          return !!item
         })
-        .map(function (item) {
+        .map(function(item) {
           return {
             id: item,
-            text: item,
-          };
-        });
+            text: item
+          }
+        })
     },
     handleSelectionChange(items) {
-      var selectedId = [];
-      items.forEach(function (item) {
-        item.selected = true;
-        selectedId.push(item.id);
-      });
-      this.columnPermissionForm.permissions.columns.forEach(function (filed) {
+      var selectedId = []
+      items.forEach(function(item) {
+        item.selected = true
+        selectedId.push(item.id)
+      })
+      this.columnPermissionForm.permissions.columns.forEach(function(filed) {
         if (selectedId.indexOf(filed.id) < 0) {
-          filed.selected = false;
+          filed.selected = false
         }
-      });
+      })
     },
     saveColumnPermission() {
-      var _this15 = this;
+      var _this15 = this
 
-      this.$refs.columnPermissionForm.validate(function (valid) {
+      this.$refs.columnPermissionForm.validate(function(valid) {
         if (valid) {
-          var params = JSON.parse(JSON.stringify(_this15.columnPermissionForm));
-          params.permissions = JSON.stringify(params.permissions);
+          var params = JSON.parse(JSON.stringify(_this15.columnPermissionForm))
+          params.permissions = JSON.stringify(params.permissions)
           _this15.executeAxios(
-            "/plugin/dataset/columnPermissions/save",
-            "post",
+            '/plugin/dataset/columnPermissions/save',
+            'post',
             params,
-            function (res) {
+            function(res) {
               if (res.success) {
-                _this15.columnPermissionForm.id = res.data.id;
+                _this15.columnPermissionForm.id = res.data.id
                 _this15.$message({
-                  message: _this15.$t("dataset.save_success"),
-                  type: "success",
-                  showClose: true,
-                });
+                  message: _this15.$t('dataset.save_success'),
+                  type: 'success',
+                  showClose: true
+                })
               }
             }
-          );
+          )
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     handleCloseRowColumnPermissionDialog() {
-      this.show_row_column_permission = false;
+      this.show_row_column_permission = false
       this.columnPermissionForm = JSON.parse(
         JSON.stringify(this.defaultColumnPermissionForm)
-      );
-    },
-  },
-};
+      )
+    }
+  }
+}
 </script>
 
 <style scoped>

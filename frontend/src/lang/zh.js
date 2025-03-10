@@ -949,7 +949,7 @@ export default {
     special_characters_are_not_supported: '格式错误(不支持特殊字符，且不能以\'-\'开头结尾)',
     select: '选择组织',
     manager_org: '组织负责人',
-    select_manager: '选择负责人',
+    select_manager: '选择负责人'
   },
   system_parameter_setting: {
     mailbox_service_settings: '邮件设置',
@@ -2193,6 +2193,7 @@ export default {
     datasetAuth: '数据集',
     chartAuth: '视图',
     panelAuth: '仪表板',
+    formAuth: '数据填报',
     menuAuth: '菜单和操作',
     deptHead: '所有组织',
     roleHead: '所有角色',
@@ -2201,6 +2202,7 @@ export default {
     datasetAuthHead: '所有数据集',
     chartAuthHead: '所有视图',
     panelAuthHead: '所有仪表板',
+    formAuthHead: '所有数据填报',
     menuAuthHead: '所有菜单和操作',
     view: '查看',
     use: '使用',
@@ -2415,7 +2417,7 @@ export default {
     firstOfYear: '当年首月'
   },
   wizard: {
-    welcome_title: '欢迎使用医保BI数据分析平台',
+    welcome_title: '欢迎使用杨浦区街道要素平台',
     welcome_hint: '数据可视化自助探索分析工具',
     demo_video: '演示视频',
     quick_start: '快速入门',

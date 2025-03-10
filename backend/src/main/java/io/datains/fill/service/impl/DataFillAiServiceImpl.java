@@ -1,5 +1,7 @@
 package io.datains.fill.service.impl;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IoUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONArray;
@@ -30,9 +32,10 @@ public class DataFillAiServiceImpl implements DataFillAiService {
         // 保存原始文件名
         String filename = file.getOriginalFilename();
         String originalFilename = filename == null ? "文件" : filename.substring(0, filename.lastIndexOf("."));
-
+        //获取文件类型
+        String type = getFileType(file);
         // 转发文件到AI服务器并获取处理结果
-        String processedFileContent = aiHandle(file);
+        String processedFileContent = aiHandle(file, type);
         //确定表头
         JSONArray jsonArray = JSONUtil.parseArray(processedFileContent);
         List<List<String>> headList = new ArrayList<>();
@@ -48,7 +51,7 @@ public class DataFillAiServiceImpl implements DataFillAiService {
                 }
             });
         }
-        for (String headItem : head){
+        for (String headItem : head) {
             List<String> headColumn = new ArrayList<>();
             headColumn.add(headItem);
             headList.add(headColumn);
@@ -81,11 +84,12 @@ public class DataFillAiServiceImpl implements DataFillAiService {
                 .doWrite(dataList);
     }
 
-    private String aiHandle(MultipartFile file) throws IOException {
+    private String aiHandle(MultipartFile file, String type) throws IOException {
         // 1. 构建MultipartBody
         HttpResponse response = HttpRequest.post("http://121.229.107.155:50001/xunfei/analy")
                 .header("Content-Type", "multipart/form-data")
                 .form("file", file.getBytes(), file.getOriginalFilename())
+                .form("fileType", type)
                 .execute();
         // 3. 处理响应
         if (response.isOk()) {
@@ -103,26 +107,57 @@ public class DataFillAiServiceImpl implements DataFillAiService {
         }
     }
 
-    private List<List<String>> generateHead(JSONArray jsonArray) {
-        List<List<String>> head = new ArrayList<>();
-        if (!jsonArray.isEmpty()) {
-            JSONObject firstRow = jsonArray.getJSONObject(0);
-            firstRow.keySet().forEach(key -> {
-                List<String> headColumn = new ArrayList<>();
-                headColumn.add(key);
-                head.add(headColumn);
-            });
+    private String getFileType(MultipartFile file) throws IOException {
+        String type = FileUtil.extName(file.getOriginalFilename());
+        if (type == null) {
+            throw new RuntimeException("不支持的文件类型");
         }
-        return head;
+        switch (type) {
+            case "xls":
+            case "xlsx":
+            case "csv":
+                return "1";
+            case "pdf":
+                return "3";
+            case "doc":
+            case "docx":
+                return "4";
+            case "jpg":
+            case "jpeg":
+            case "png":
+            case "gif":
+            case "bmp":
+                return "2";
+            default:
+                throw new RuntimeException("不支持的文件类型");
+        }
     }
 
-    private List<List<Object>> generateData(JSONArray jsonArray) {
-        List<List<Object>> dataList = new ArrayList<>();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject obj = jsonArray.getJSONObject(i);
-            List<Object> data = new ArrayList<>(obj.values());
-            dataList.add(data);
+    @Override
+    public void excelUploadAiHandle2(MultipartFile file, HttpServletResponse response) throws IOException {
+        // 保存原始文件名
+        String filename = file.getOriginalFilename();
+        String originalFilename = filename == null ? "文件" : filename.substring(0, filename.lastIndexOf("."));
+        //获取文件类型
+        String type = getFileType(file);
+        // 1. 构建MultipartBody
+        HttpResponse apiResponse = HttpRequest.post("http://121.229.107.155:50001/xunfei/analy")
+                .header("Content-Type", "multipart/form-data")
+                .form("file", file.getBytes(), file.getOriginalFilename())
+                .form("fileType", type)
+                .execute();
+        // 3. 处理响应
+        if (apiResponse.isOk()) {
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码
+            String fileName = URLEncoder.encode(originalFilename, "UTF-8").replaceAll("\\+", "%20");
+            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+            // 将接口返回的文件流写入响应
+            IoUtil.write(response.getOutputStream(), true, apiResponse.bodyBytes());
+        } else {
+            LogUtil.error(apiResponse.body());
+            throw new RuntimeException(apiResponse.body());
         }
-        return dataList;
     }
 }

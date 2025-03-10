@@ -31,7 +31,7 @@ public class DataFillAiController {
     @PostMapping("/form/excel/excelUploadAiHandle")
     public void excelUploadAiHandle(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws Exception {
         try {
-            this.dataFillAiService.excelUploadAiHandle(file, response);
+            this.dataFillAiService.excelUploadAiHandle2(file, response);
         } catch (Exception e) {
             e.printStackTrace();
             // 重置response

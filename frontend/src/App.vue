@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" ref="containerS">
     <router-view />
     <plugin-com v-show="false" ref="de-theme" component-name="ThemeSetting" />
   </div>
@@ -7,23 +7,38 @@
 
 <script>
 import PluginCom from '@/views/system/plugin/PluginCom'
+import Watermark from '@/utils/waterMark'
+import { mapGetters } from 'vuex'
+import moment from 'moment'
 
 export default {
   name: 'App',
   components: { PluginCom },
-  beforeCreate() {
-
+  watch: {
+    $route(to, from) {
+      const nameS = this.name + '\n' + moment().format('YYYY-MM-DD HH:mm:ss')
+      this.$nextTick(function() {
+        Watermark.set(nameS, this.$refs.containerS)
+      })
+    }
+  },
+  computed: {
+    ...mapGetters(['name'])
   },
   mounted() {
     const attachParams = this.getQueryVariable('attachParams')
-    console.log('attachParams,,,',attachParams)
-    localStorage.setItem('permissionId',attachParams)
+    console.log('attachParams,,,', attachParams)
+    localStorage.setItem('permissionId', attachParams)
+    const nameS = this.name + '\n' + moment().format('YYYY-MM-DD HH:mm:ss')
+    this.$nextTick(function() {
+      Watermark.set(nameS, this.$refs.containerS)
+    })
   },
   methods: {
     getQueryVariable(variable) {
       // let query = window.location.search.substring(1)
       let query = window.location.href.split('?')[1]
-      console.log('query',query)
+      console.log('query', query)
       let vars = []
       if (!query) {
         query = document.cookie

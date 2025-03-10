@@ -2,31 +2,57 @@
   <div class="edit-excel-container">
     <div class="header">
       <div class="header-left">
-        <button class="uni-btn" type="primary" @click="handleBack">返回</button>
+        <van-button
+          class="action-button"
+          plain
+          @click="handleBack"
+        >
+          <template #icon>
+            <van-icon name="arrow-left" />
+          </template>
+          返回
+        </van-button>
       </div>
       <div class="title" v-if="props.msg.name">{{ props.msg.name }}</div>
       <div class="header-right">
-        <button class="uni-btn" type="primary" @click="handleSave">保存</button>
+        <van-button
+          class="action-button"
+          type="primary"
+          @click="handleSave"
+        >
+          <template #icon>
+            <van-icon name="save" />
+          </template>
+          保存
+        </van-button>
       </div>
     </div>
+
     <div
       id="luckysheet"
       class="luckysheet-container"
     ></div>
 
-    <div v-show="isMaskShow" class="download-mask">
-      <div class="download-content">
-        <div class="loading-icon"></div>
-        <div class="download-text">正在加载数据...</div>
+    <!-- 加载遮罩 -->
+    <Transition name="fade">
+      <div v-show="isMaskShow" class="download-mask">
+        <div class="loading-content">
+          <van-loading
+            type="spinner"
+            color="var(--primary-color)"
+            size="36"
+          />
+          <div class="loading-text">正在加载数据...</div>
+        </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { showToast } from 'vant'
-import { saveFormData, getFormData } from '@/api/datafill'
+import { getFormData, saveFormData } from '@/api/datafill'
 
 const props = defineProps({
   msg: {
@@ -106,41 +132,31 @@ onMounted(() => {
 
 <style>
 .edit-excel-container {
-  /* position: relative; */
   display: flex;
   flex-direction: column;
   height: 80vh;
   width: 100%;
   position: relative;
-  background: #fff;
+  background: var(--bg-primary);
 }
 
 .header {
-  /* position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0; */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16rpx 32rpx;
-  background-color: #f5f7fa;
-  border-bottom: 1px solid #e6e6e6;
-  height: 100rpx;
-  box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.08);
-}
-
-.uni-btn {
-  margin: 0;
-  padding: 0 20rpx;
-  height: 64rpx;
-  line-height: 64rpx;
+  padding: 12px 24px;
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  height: 56px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  z-index: 10;
 }
 
 .header .title {
-  font-size: 36rpx;
+  font-size: 16px;
   font-weight: 500;
-  color: #303133;
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -150,16 +166,27 @@ onMounted(() => {
 .header .header-left,
 .header .header-right {
   flex: 1;
+  display: flex;
+  align-items: center;
 }
 
 .header .header-left {
-  display: flex;
   justify-content: flex-start;
 }
 
 .header .header-right {
-  display: flex;
   justify-content: flex-end;
+}
+
+.action-button {
+  height: 32px;
+  font-size: 14px;
+  padding: 0 16px;
+  border-radius: var(--radius-sm);
+}
+
+.action-button :deep(.van-button__icon) {
+  font-size: 16px;
 }
 
 .luckysheet-container {
@@ -168,44 +195,49 @@ onMounted(() => {
   position: absolute;
   width: 100%;
   left: 0;
-  top: 50px;
+  top: 56px;
   bottom: 0;
+  background: var(--bg-secondary);
 }
 
 .download-mask {
   position: fixed;
-  z-index: 1000;
+  z-index: 2000;
   left: 0;
   top: 0;
   bottom: 0;
   right: 0;
   background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.loading-icon {
-  width: 84rpx;
-  height: 84rpx;
-  margin-bottom: 40rpx;
-  animation: loading 1s linear infinite;
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
-@keyframes loading {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.loading-text {
+  font-size: 14px;
+  color: var(--text-primary);
 }
 
-.download-text {
-  font-size: 40rpx;
-  color: #303133;
+/* 淡入淡出动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
 }
 
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Luckysheet 相关样式覆盖 */
 .luckysheet_info_detail {
   display: none !important;
 }
@@ -220,5 +252,49 @@ onMounted(() => {
 
 .luckysheet-rows-menu {
   z-index: 1000000 !important;
+}
+
+/* 美化 Luckysheet 工具栏 */
+#luckysheet-wa-editor {
+  background: var(--bg-primary) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.luckysheet-toolbar-button {
+  border-radius: var(--radius-sm) !important;
+  transition: background-color 0.2s !important;
+}
+
+.luckysheet-toolbar-button:hover {
+  background-color: var(--bg-tertiary) !important;
+}
+
+.luckysheet-toolbar-separator {
+  border-color: var(--border-light) !important;
+}
+
+/* 美化单元格选中状态 */
+.luckysheet-selection-corner {
+  border-color: var(--primary-color) !important;
+}
+
+.luckysheet-selection-copy {
+  border: 1px dashed var(--primary-color) !important;
+}
+
+/* 美化滚动条 */
+.luckysheet-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.luckysheet-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--text-disabled);
+  border-radius: 3px;
+}
+
+.luckysheet-scrollbar::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
 }
 </style>

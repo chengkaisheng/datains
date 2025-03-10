@@ -13,4 +13,5 @@ import java.io.IOException;
  */
 public interface DataFillAiService {
     void excelUploadAiHandle(MultipartFile file, HttpServletResponse response) throws IOException;
+    void excelUploadAiHandle2(MultipartFile file, HttpServletResponse response) throws IOException;
 }

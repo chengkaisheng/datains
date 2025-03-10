@@ -37,8 +37,8 @@
             :data-info="sourceInfo"
             show-extent
             :auth-condition="authCondition"
-            @execute-axios="executeAxios"
             :attach-active-name="targetActiveName"
+            @execute-axios="executeAxios"
           />
         </el-tab-pane>
       </el-tabs>
@@ -62,7 +62,7 @@ export default {
       default: null
     }
   },
-  data () {
+  data() {
     return {
       targetInfoArray:
         [
@@ -115,6 +115,13 @@ export default {
             authTargets: 'dept,role,user'
           },
           {
+            tabName: this.$t('auth.formAuth'),
+            head: this.$t('auth.formAuthHead'),
+            direction: 'source',
+            authType: 'data_fill',
+            authTargets: 'dept,role,user'
+          },
+          {
             tabName: this.$t('auth.menuAuth'),
             head: this.$t('auth.menuAuthHead'),
             direction: 'source',
@@ -133,7 +140,7 @@ export default {
     }
   },
   computed: {
-    sourceInfoTabs () {
+    sourceInfoTabs() {
       const tabs = []
       this.sourceInfoArray.forEach(item => {
         if (item.authTargets.indexOf(this.targetActiveName) > -1) {
@@ -143,44 +150,44 @@ export default {
       return tabs
     }
   },
-  created () {
+  created() {
     this.targetActiveName = this.targetInfoArray[0].authType
     this.sourceActiveName = this.sourceInfoArray[0].authType
   },
 
   methods: {
-    executeAxios (param) {
+    executeAxios(param) {
       this.$emit('execute-axios', param)
     },
-    handleClick (tab, event) {
+    handleClick(tab, event) {
     },
-    showSourceSearchWidget () {
+    showSourceSearchWidget() {
       this.showSourceSearchInput = true
     },
-    closeSourceSearchWidget () {
+    closeSourceSearchWidget() {
       this.sourceFilterText = ''
       this.showSourceSearchInput = false
     },
-    showTargetSearchWidget () {
+    showTargetSearchWidget() {
       this.showTargetSearchInput = true
     },
-    closeTargetSearchWidget () {
+    closeTargetSearchWidget() {
       this.targetFilterText = ''
       this.showTargetSearchInput = false
     },
-    save () {
+    save() {
       this.$refs[this.activeName].save()
       this.$emit('close-grant', 0)
     },
-    cancel () {
+    cancel() {
       this.$refs[this.activeName].cancel()
       this.$emit('close-grant', 0)
     },
-    authNodeClick (val) {
+    authNodeClick(val) {
       console.log('authNodeClick2222222')
       this.authCondition = val
     },
-    clickAuth (auth) {
+    clickAuth(auth) {
       console.log('clickAuth')
     }
   }

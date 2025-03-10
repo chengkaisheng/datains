@@ -4,55 +4,50 @@
       <div>
         <el-button type="primary" @click="handleFill">填报</el-button>
         <el-input v-model="searchName" placeholder="请输入内容" clearable style="width: 200px;margin-left: 10px;" @keyup.enter.native="getDataFill()">
-          <el-button slot="append" icon="el-icon-search" @click="getDataFill()"></el-button>
+          <el-button slot="append" icon="el-icon-search" @click="getDataFill()" />
         </el-input>
       </div>
       <div>
         <el-button type="primary" @click="refresh">刷新</el-button>
       </div>
     </div>
-    <div class="list" v-loading="tableLoading">
-      <el-table :data="tableData" style="width: 100%" >
-        <el-table-column prop="name" label="名称" width="200">
-        </el-table-column>
+    <div v-loading="tableLoading" class="list">
+      <el-table :data="tableData" style="width: 100%">
+        <el-table-column prop="name" label="名称" width="200" />
         <el-table-column prop="nodeType" label="类型" width="200">
           <template slot-scope="scope">
             <span v-if="scope.row.nodeType === 'form'">模板填报</span>
             <span v-else-if="scope.row.nodeType === 'selfReport'">自主填报</span>
           </template>
         </el-table-column>
-        <el-table-column prop="creatorName" label="创建人" width="200" >
-        </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" :formatter="formatDate">
-        </el-table-column>
+        <el-table-column prop="creatorName" label="创建人" width="200" />
+        <el-table-column prop="createTime" label="创建时间" :formatter="formatDate" />
         <el-table-column label="操作" width="300">
           <template slot-scope="scope">
             <el-button
+              v-if="hasDataPermission('export', scope.row.privileges)"
               size="mini"
               type="success"
               @click="handleFileDownload(scope.row)"
-              >下载</el-button
-            >
+            >下载</el-button>
             <el-button
               v-if="scope.row.nodeType === 'selfReport'"
               size="mini"
               type="warning"
               @click="handleExcelEdit(scope.row)"
-              >在线编辑</el-button
-            >
+            >{{ scope.row.privileges.includes('use') ? '在线查看' : '在线编辑' }}</el-button>
             <el-button
               v-if="scope.row.nodeType === 'form'"
               size="mini"
               type="primary"
               @click="handleDetail(scope.row)"
-              >详情</el-button
-            >
+            >详情</el-button>
             <el-button
+              v-if="hasDataPermission('manage', scope.row.privileges)"
               size="mini"
               type="danger"
               @click="handleDelete(scope.row)"
-              >删除</el-button
-            >
+            >删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -61,15 +56,14 @@
       <div class="pagination-container">
         <el-pagination
           background
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
           :current-page="goPage"
           :page-sizes="[10, 20, 50, 100]"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
-        >
-        </el-pagination>
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
       </div>
     </div>
 
@@ -80,23 +74,26 @@
       :visible.sync="drawer"
       :before-close="handleClose"
       size="100%"
-      :wrapperClosable="false"
-      direction="rtl">
-      <EditExcel @addDataFill="addDataFill" :currentFormId="currentFormId" :drawer.sync="drawer" :msg="msg" />
+      :wrapper-closable="false"
+      direction="rtl"
+    >
+      <EditExcel :current-form-id="currentFormId" :drawer.sync="drawer" :msg="msg" :is-read-only="isReadOnly" @addDataFill="addDataFill" />
     </el-drawer>
 
     <!-- 添加上传文件对话框 -->
     <el-dialog
       title="上传文件"
       :visible.sync="uploadDialogVisible"
-      width="500px">
+      width="500px"
+    >
       <el-form
+        ref="uploadForm"
         :model="uploadForm"
         :rules="uploadRules"
-        ref="uploadForm"
-        label-width="100px">
+        label-width="100px"
+      >
         <el-form-item label="文件名称" prop="name">
-          <el-input v-model="uploadForm.name" placeholder="请输入文件名称"></el-input>
+          <el-input v-model="uploadForm.name" placeholder="请输入文件名称" />
         </el-form-item>
         <el-form-item label="选择文件" prop="file">
           <el-upload
@@ -105,7 +102,8 @@
             :auto-upload="false"
             :on-change="handleFileChange"
             :limit="1"
-            :file-list="fileList">
+            :file-list="fileList"
+          >
             <el-button slot="trigger" size="small" type="primary">选择文件</el-button>
             <div slot="tip" class="el-upload__tip">目前只支持xlsx文件</div>
           </el-upload>
@@ -113,7 +111,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="uploadDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitUpload" :loading="selfUploadLoading">确 定</el-button>
+        <el-button type="primary" :loading="selfUploadLoading" @click="submitUpload">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -121,33 +119,36 @@
     <el-dialog
       title="填报"
       :visible.sync="fillDialogVisible"
-      width="500px">
+      width="500px"
+    >
       <el-form
+        ref="fillForm"
         :model="fillForm"
         :rules="fillRules"
-        ref="fillForm"
-        label-width="100px">
+        label-width="100px"
+      >
         <el-form-item label="填报类型" prop="type">
           <el-select v-model="fillForm.type" placeholder="请选择填报类型">
-            <el-option label="模板填报" value="form"></el-option>
-            <el-option label="自主填报" value="selfReport"></el-option>
+            <el-option label="模板填报" value="form" />
+            <el-option label="自主填报" value="selfReport" />
           </el-select>
         </el-form-item>
-        <el-form-item label="选择模板" prop="templateId" v-show="fillForm.type === 'form'">
-          <el-select 
-            v-model="fillForm.templateId" 
+        <el-form-item v-show="fillForm.type === 'form'" label="选择模板" prop="templateId">
+          <el-select
+            v-model="fillForm.templateId"
             placeholder="请选择模板"
             filterable
             remote
             :remote-method="remoteSearch"
             :loading="loading"
-            @focus="handleFocus">
+            @focus="handleFocus"
+          >
             <el-option
               v-for="item in templateList"
               :key="item.id"
               :label="item.name"
-              :value="item.id">
-            </el-option>
+              :value="item.id"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="是否开启AI" prop="isAI">
@@ -156,25 +157,25 @@
         <div v-show="fillForm.type === 'form' && fillForm.templateId" style="display: flex; justify-content: center;">
           <el-button style="margin-right: 10px;" type="primary" @click="downloadTemplate(fillForm.templateId)">下载模板</el-button>
           <el-upload
-          :action="`${baseUrl}dataFilling/form/${fillForm.templateId}/excel/upload`"
-          :multiple="false"
-          :show-file-list="false"
-          :file-list="templateFileList"
-          :data="{}"
-          accept=".xlsx"
-          name="file"
-          :before-upload="beforeUpload"
-          :on-success="uploadSuccess"
-          :on-error="uploadFail"
-          :headers="headers"
-        >
-          <el-button
-            style="margin-left: 10px"
-            icon="el-icon-upload2"
-            :loading="templateUploadLoading"
-          >上传
-          </el-button>
-        </el-upload>
+            :action="`${baseUrl}dataFilling/form/${fillForm.templateId}/excel/upload`"
+            :multiple="false"
+            :show-file-list="false"
+            :file-list="templateFileList"
+            :data="{}"
+            accept=".xlsx"
+            name="file"
+            :before-upload="beforeUpload"
+            :on-success="uploadSuccess"
+            :on-error="uploadFail"
+            :headers="headers"
+          >
+            <el-button
+              style="margin-left: 10px"
+              icon="el-icon-upload2"
+              :loading="templateUploadLoading"
+            >上传
+            </el-button>
+          </el-upload>
         </div>
         <div v-show="fillForm.type === 'selfReport'" style="display: flex; justify-content: center;">
           <el-button style="margin-right: 10px;" icon="el-icon-upload2" @click="handleUpload">上传</el-button>
@@ -189,8 +190,9 @@
       :visible.sync="detailDrawer"
       :before-close="handleDetailClose"
       size="100%"
-      :wrapperClosable="false"
-      direction="rtl">
+      :wrapper-closable="false"
+      direction="rtl"
+    >
       <no-select v-if="!displayFormData" />
       <view-table
         v-else
@@ -202,34 +204,35 @@
 </template>
 
 <script>
-import EditExcel from "./editExcel.vue";
+import EditExcel from './editExcel.vue'
 import ViewTable from '@/views/dataFilling/form/ViewTable.vue'
 import NoSelect from '@/views/dataFilling/form/NoSelect.vue'
-import datafill from "@/api/datafill/datafill";
-import { exportExcel } from "./export";
+import datafill from '@/api/datafill/datafill'
+import { exportExcel } from './export'
 import {
-  downloadTemplate,
-  saveForm,
   deleteForm,
+  downloadTemplate,
+  excelUploadAiHandle,
   getWithPrivileges,
-  excelUploadAiHandle
+  saveForm
 } from '@/views/dataFilling/form/dataFilling'
-import { getToken, setToken } from '@/utils/auth'
-const token = getToken()
+import { getToken } from '@/utils/auth'
 import i18n from '@/lang'
 
+const token = getToken()
+
 export default {
-  name: "FileList",
+  name: 'FileList',
   components: {
     EditExcel,
     ViewTable,
-    NoSelect,
+    NoSelect
   },
   props: {
     nodeData: {
       type: Object,
-      default: () => {},
-    },
+      default: () => {}
+    }
   },
   data() {
     return {
@@ -246,14 +249,14 @@ export default {
       drawer: false,
       uploadDialogVisible: false,
       uploadForm: {
-        name: "",
-        file: null,
+        name: '',
+        file: null
       },
       uploadRules: {
-        name: [{ required: true, message: "请输入文件名称", trigger: "blur" }],
+        name: [{ required: true, message: '请输入文件名称', trigger: 'blur' }],
         file: [
-          { required: true, message: "请选择要上传的文件", trigger: "change" },
-        ],
+          { required: true, message: '请选择要上传的文件', trigger: 'change' }
+        ]
       },
       msg: {},
       fileList: [],
@@ -279,35 +282,37 @@ export default {
       currentFormId: '',
       templateUploadLoading: false,
       selfUploadLoading: false,
-    };
+      isReadOnly: false,
+      tableLoading: false
+    }
   },
   watch: {
     nodeData: {
       handler(newVal) {
-        if(newVal.id) {
-          this.getDataFill();
+        if (newVal.id) {
+          this.getDataFill()
         }
       },
-      deep: true,
+      deep: true
     },
     drawer: {
       handler(newVal) {
         if (newVal === false) {
-          this.getDataFill();
+          this.getDataFill()
         }
-      },
-    },
+      }
+    }
   },
   methods: {
     handleFill() {
-      this.fillDialogVisible = true;
+      this.fillDialogVisible = true
       this.fillForm = {
         type: '',
         templateId: '',
         isAI: true
-      };
+      }
       // 如果需要获取模板列表，可以在这里调用接口
-      this.getTemplateList();
+      this.getTemplateList()
     },
     getTemplateList() {
       // TODO: 调用获取模板列表接口
@@ -317,14 +322,14 @@ export default {
       this.$refs.fillForm.validate((valid) => {
         if (valid) {
           if (this.fillForm.type === 'form' && !this.fillForm.templateId) {
-            this.$message.error('请选择模板');
-            return;
+            this.$message.error('请选择模板')
+            return
           }
           // TODO: 调用填报提交接口
-          console.log('提交填报', this.fillForm);
-          this.fillDialogVisible = false;
+          console.log('提交填报', this.fillForm)
+          this.fillDialogVisible = false
         }
-      });
+      })
     },
     refresh() {
       this.goPage = 1
@@ -333,67 +338,70 @@ export default {
     },
     getDataFill(nodeType) {
       this.tableLoading = true
-      let params = {
+      const params = {
         goPage: this.goPage,
         pageSize: nodeType === 'form' ? 100000 : this.pageSize,
         data: {
           pid: this.nodeData.id,
           name: this.searchName,
-          nodeType: nodeType ? nodeType : ''
+          nodeType: nodeType || ''
         }
-      };
+      }
       datafill.getAllFill(params).then((res) => {
-        if(nodeType === 'form') {
-          this.templateList = res.data.listObject || [];
+        console.log('res', res)
+        if (nodeType === 'form') {
+          this.templateList = res.data.listObject || []
         } else {
-          this.tableData = res.data.listObject || [];
-          this.total = res.data.itemCount || 0;
+          this.tableData = res.data.listObject || []
+          this.total = res.data.itemCount || 0
         }
         this.tableLoading = false
       }).catch(() => {
         this.tableLoading = false
-      });
+      })
     },
     handleSizeChange(val) {
-      this.pageSize = val;
-      this.goPage = 1;
-      this.getDataFill();
+      this.pageSize = val
+      this.goPage = 1
+      this.getDataFill()
     },
     handleCurrentChange(val) {
-      this.goPage = val;
-      this.getDataFill();
+      this.goPage = val
+      this.getDataFill()
     },
     handleFileEdit(file) {
-      console.log("编辑文件", file);
+      console.log('编辑文件', file)
     },
     handleFileDownload(row) {
-      if(row.nodeType === 'form') {
+      if (row.nodeType === 'form') {
         this.downloadTemplate(row.id, row.name)
       }
       datafill.getFormData(row.id).then((res) => {
         exportExcel(
           JSON.parse(res.data.formData),
           `${row.name}`
-        );
-      });
+        )
+      })
     },
     handleFilePreview(file) {
-      console.log("预览文件", file);
+      console.log('预览文件', file)
     },
     handleExcelEdit(file) {
-      console.log("编辑文件", file);
-      this.drawer = true;
+      console.log('编辑文件', file)
+      this.drawer = true
       this.msg = {
         id: file.id,
         name: file.name,
-        data: null,
-      };
+        data: null
+      }
+      this.isReadOnly = file.privileges.includes('use')
     },
     handleDetail(row) {
-      this.detailDrawer = true;
+      this.detailDrawer = true
       getWithPrivileges(row.id).then((res) => {
         this.displayFormData = res.data
-      });
+        console.log('this.displayFormData', this.displayFormData)
+      })
     },
     handleDelete(row) {
       this.$confirm('确认删除该条数据?', '提示', {
@@ -412,27 +420,27 @@ export default {
       })
     },
     handleClose(done) {
-      this.$confirm("确认关闭？")
+      this.$confirm('确认关闭？')
         .then((_) => {
-          done();
+          done()
         })
-        .catch((_) => {});
+        .catch((_) => {})
     },
     uploadExcel(file, res) {
-      let name = file.name;
-      let suffixArr = name.split("."),
-        suffix = suffixArr[suffixArr.length - 1];
-      if (suffix != "xlsx") {
-        this.$message.error("目前只支持xlsx文件");
+      const name = file.name
+      const suffixArr = name.split('.')
+      const suffix = suffixArr[suffixArr.length - 1]
+      if (suffix != 'xlsx') {
+        this.$message.error('目前只支持xlsx文件')
         this.selfUploadLoading = false
-        return;
+        return
       }
-      let _this = this;
+      const _this = this
 
       try {
         LuckyExcel.transformExcelToLucky(
           file,
-          function (exportJson, luckysheetfile) {
+          function(exportJson, luckysheetfile) {
             try {
               if (
                 !exportJson ||
@@ -440,33 +448,33 @@ export default {
                 exportJson.sheets.length === 0
               ) {
                 _this.$message.error(
-                  "无法读取Excel文件的内容，目前不支持xls文件！"
-                );
-                return;
+                  '无法读取Excel文件的内容，目前不支持xls文件！'
+                )
+                return
               }
-              _this.drawer = true;
+              _this.drawer = true
               _this.msg = {
                 id: _this.nodeData.id,
                 name: file.name,
-                data: exportJson.sheets,
-              };
+                data: exportJson.sheets
+              }
               _this.selfUploadLoading = false
-              _this.uploadDialogVisible = false;
+              _this.uploadDialogVisible = false
             } catch (err) {
               // console.error('处理Excel数据错误:', err)
-              _this.$message.error("无法读取文件内容，请检查文件是否损坏");
+              _this.$message.error('无法读取文件内容，请检查文件是否损坏')
               _this.selfUploadLoading = false
             }
           },
-          function (err) {
-            console.error("Excel解析错误:", err);
-            _this.$message.error("无法读取文件内容，请检查文件是否损坏");
+          function(err) {
+            console.error('Excel解析错误:', err)
+            _this.$message.error('无法读取文件内容，请检查文件是否损坏')
             _this.selfUploadLoading = false
           }
-        );
+        )
       } catch (err) {
         // console.error('Excel转换错误:', err)
-        _this.$message.error("无法读取文件内容，请检查文件是否损坏");
+        _this.$message.error('无法读取文件内容，请检查文件是否损坏')
         _this.selfUploadLoading = false
       }
     },
@@ -477,15 +485,15 @@ export default {
         pid: this.nodeData.id,
         level: this.nodeData.level,
         nodeType: 'selfReport',
-        formData: JSON.stringify(luckysheet.getAllSheets()),
+        formData: JSON.stringify(luckysheet.getAllSheets())
       }
       saveForm(data).then(res => {
-        if(res.success) {
+        if (res.success) {
           this.currentFormId = res.data
           this.$message({
-            type: "success",
-            message: "上传成功！",
-          });
+            type: 'success',
+            message: '上传成功！'
+          })
           this.getDataFill()
         }
       })
@@ -505,20 +513,20 @@ export default {
     },
     handleFileChange(file, fileList) {
       if (fileList.length > 0) {
-        const fileName = file.name;
+        const fileName = file.name
         const fileExt = fileName
-          .substring(fileName.lastIndexOf(".") + 1)
-          .toLowerCase();
+          .substring(fileName.lastIndexOf('.') + 1)
+          .toLowerCase()
         // 处理xlsx或其他文件
-        this.fileList = [fileList[fileList.length - 1]];
-        this.uploadForm.file = file.raw;
+        this.fileList = [fileList[fileList.length - 1]]
+        this.uploadForm.file = file.raw
 
         if (!this.uploadForm.name) {
-          const dotIndex = fileName.lastIndexOf(".");
+          const dotIndex = fileName.lastIndexOf('.')
           if (dotIndex > 0) {
-            this.uploadForm.name = fileName.substring(0, dotIndex);
+            this.uploadForm.name = fileName.substring(0, dotIndex)
           } else {
-            this.uploadForm.name = fileName;
+            this.uploadForm.name = fileName
           }
         }
         // if (fileExt === 'xls') {
@@ -581,8 +589,8 @@ export default {
         //   }
         // }
       } else {
-        this.fileList = [];
-        this.uploadForm.file = null;
+        this.fileList = []
+        this.uploadForm.file = null
       }
     },
     submitUpload() {
@@ -590,10 +598,10 @@ export default {
         if (valid) {
           this.selfUploadLoading = true
           if (!this.uploadForm.file) {
-            this.$message.error("请选择要上传的文件");
-            return;
+            this.$message.error('请选择要上传的文件')
+            return
           }
-          if(this.fillForm.isAI) {
+          if (this.fillForm.isAI) {
             this.excelUploadAiHandle(this.uploadForm.file).then(file => {
               this.uploadExcel(file)
             })
@@ -601,11 +609,20 @@ export default {
             this.uploadExcel(this.uploadForm.file)
           }
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     handleUpload() {
+      console.log('this.nodeData', this.nodeData)
+      if (!this.nodeData.id) {
+        this.$message.error('请先选择文件夹')
+        return
+      }
+      if (!this.nodeData.privileges.includes('write')) {
+        this.$message.error('您没有权限上传文件')
+        return
+      }
       this.uploadDialogVisible = true
       this.uploadForm = {
         name: '',
@@ -626,15 +643,20 @@ export default {
       })
     },
     beforeUpload(file) {
-      if(!this.fillForm.templateId) {
-        this.$message.error('请选择模板');
-        return;
+      if (!this.fillForm.templateId) {
+        this.$message.error('请选择模板')
+        return
+      }
+      const template = this.templateList.find(item => item.id === this.fillForm.templateId)
+      if (!template.privileges.includes('write')) {
+        this.$message.error('您没有权限上传文件')
+        return
       }
       this.templateUploadLoading = true
-      if(this.fillForm.isAI) {
+      if (this.fillForm.isAI) {
         return new Promise((resolve, reject) => {
           this.excelUploadAiHandle(file).then(file => {
-            if(file) {
+            if (file) {
               resolve(file)
             } else {
               reject(false)
@@ -657,37 +679,37 @@ export default {
       this.templateUploadLoading = false
       this.$message({
         type: 'success',
-        message: '上传成功！',
-      });
+        message: '上传成功！'
+      })
     },
     formatDate(row, column, cellValue) {
       if (cellValue) {
-        const date = new Date(cellValue);
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        const seconds = date.getSeconds().toString().padStart(2, '0');
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        const date = new Date(cellValue)
+        const year = date.getFullYear()
+        const month = (date.getMonth() + 1).toString().padStart(2, '0')
+        const day = date.getDate().toString().padStart(2, '0')
+        const hours = date.getHours().toString().padStart(2, '0')
+        const minutes = date.getMinutes().toString().padStart(2, '0')
+        const seconds = date.getSeconds().toString().padStart(2, '0')
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
       }
-      return '';
+      return ''
     },
     handleDetailClose(done) {
-      this.$confirm("确认关闭？")
+      this.$confirm('确认关闭？')
         .then((_) => {
-          this.displayFormData = null;
-          done();
+          this.displayFormData = null
+          done()
         })
-        .catch((_) => {});
+        .catch((_) => {})
     },
     editForm(data) {
-      console.log('编辑表单', data);
+      console.log('编辑表单', data)
     },
     remoteSearch(query) {
       if (query !== '') {
-        this.loading = true;
-        let params = {
+        this.loading = true
+        const params = {
           goPage: 1,
           pageSize: 100000,
           data: {
@@ -695,29 +717,29 @@ export default {
             name: query,
             nodeType: 'form'
           }
-        };
+        }
         datafill.getAllFill(params).then((res) => {
-          this.templateList = res.data.listObject || [];
-          this.loading = false;
+          this.templateList = res.data.listObject || []
+          this.loading = false
         }).catch(() => {
-          this.loading = false;
-        });
+          this.loading = false
+        })
       } else {
-        this.templateList = [];
+        this.templateList = []
       }
     },
     handleFocus() {
-      this.getTemplateList();
+      this.getTemplateList()
     },
     excelUploadAiHandle(file) {
-      const formData = new FormData();
-      formData.append('file', file);
+      const formData = new FormData()
+      formData.append('file', file)
 
       return excelUploadAiHandle(formData).then(res => {
         const file = new File([res], `${this.uploadForm.file}.xlsx`, {
           type: res.type,
           lastModified: Date.now()
-        });
+        })
         return file
       }).catch(() => {
         this.$message.error('上传失败')
@@ -726,8 +748,8 @@ export default {
         return false
       })
     }
-  },
-};
+  }
+}
 </script>
 
 <style lang="scss" scoped>
