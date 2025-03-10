@@ -290,6 +290,7 @@ const loadTaskTree = async () => {
   const loading = showLoadingToast({
     message: '加载中...',
     forbidClick: true,
+    duration: 0
   })
   try {
     const params = {
@@ -312,6 +313,7 @@ const loadTemplates = async () => {
   const loading = showLoadingToast({
     message: '加载中...',
     forbidClick: true,
+    duration: 0
   })
   try {
     const params = {
@@ -493,6 +495,7 @@ const handleFileChange = async (event) => {
   if (!file) return
 
   uploadForm.value.file = file
+  uploadForm.value.fileName = file.name
 
   // 如果是 Excel 文件且未开启 AI，直接处理
   if (!formData.value.enableAI && file.name.toLowerCase().endsWith('.xlsx')) {
