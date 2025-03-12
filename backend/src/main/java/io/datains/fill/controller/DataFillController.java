@@ -9,8 +9,8 @@ import io.datains.commons.utils.PageUtils;
 import io.datains.commons.utils.Pager;
 import io.datains.controller.ResultHolder;
 import io.datains.fill.dto.*;
+import io.datains.fill.entry.DataFillData;
 import io.datains.fill.entry.DataFillFormWithBLOBs;
-import io.datains.fill.entry.FillFormData;
 import io.datains.fill.request.*;
 import io.datains.fill.response.DataFillFormTableDataResponse;
 import io.datains.fill.service.*;
@@ -249,7 +249,7 @@ public class DataFillController {
 
     @ApiIgnore
     @PostMapping("/form/getFormData/{id}")
-    public FillFormData getFormData(@PathVariable String id) {
+    public DataFillData getFormData(@PathVariable String id) {
         return dataFillService.getFormData(id);
     }
 }

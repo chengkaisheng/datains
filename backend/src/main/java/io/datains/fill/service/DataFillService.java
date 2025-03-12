@@ -29,10 +29,10 @@ import io.datains.fill.dto.DataFillFormDTO;
 import io.datains.fill.dto.ExtIndexField;
 import io.datains.fill.dto.ExtTableField;
 import io.datains.fill.entry.*;
+import io.datains.fill.mapper.DataFillDataMapper;
 import io.datains.fill.mapper.DataFillFormMapper;
 import io.datains.fill.mapper.DataFillUserTaskMapper;
 import io.datains.fill.mapper.ExtDataFillFormMapper;
-import io.datains.fill.mapper.FillFormDataMapper;
 import io.datains.fill.request.DataFillFormRequest;
 import io.datains.fill.request.DataFillFormTableDataRequest;
 import io.datains.fill.response.DataFillFormTableDataResponse;
@@ -87,7 +87,7 @@ public class DataFillService {
     @Resource
     private DataFillUserTaskMapper dataFillUserTaskMapper;
     @Resource
-    private FillFormDataMapper fillFormDataMapper;
+    private DataFillDataMapper dataFillDataMapper;
 
 
     private final static Gson gson = new Gson();
@@ -504,7 +504,7 @@ public class DataFillService {
             DataFillFormExample example = new DataFillFormExample();
             example.createCriteria().andIdIn(ids);
             dataFillFormMapper.deleteByExample(example);
-            fillFormDataMapper.deleteByFormIds(ids);
+            dataFillDataMapper.deleteByFormIds(ids);
         }
 
         if (dataFillForm != null) {
@@ -945,25 +945,25 @@ public class DataFillService {
             throw new RuntimeException("保存失败");
         }
         //判断是否已经存在数据
-        FillFormData fillFormData = this.fillFormDataMapper.getByFormId(dataFillForm.getId());
+        DataFillData dataFillData = this.dataFillDataMapper.getByFormId(dataFillForm.getId());
         Long userId = AuthUtils.getUser().getUserId();
-        if (fillFormData != null) {
-            fillFormData.setFormData(dataFillForm.getFormData());
-            fillFormData.setUpdater(userId);
-            this.fillFormDataMapper.update(fillFormData);
+        if (dataFillData != null) {
+            dataFillData.setFormData(dataFillForm.getFormData());
+            dataFillData.setUpdater(userId);
+            this.dataFillDataMapper.update(dataFillData);
         } else {
-            fillFormData = new FillFormData();
-            fillFormData.setId(UUIDUtil.getUUID().toString());
-            fillFormData.setFormData(dataFillForm.getFormData());
-            fillFormData.setFormId(dataFillForm.getId());
-            fillFormData.setCreator(userId);
-            fillFormData.setUpdater(userId);
-            this.fillFormDataMapper.insert(fillFormData);
+            dataFillData = new DataFillData();
+            dataFillData.setId(UUIDUtil.getUUID().toString());
+            dataFillData.setFormData(dataFillForm.getFormData());
+            dataFillData.setFormId(dataFillForm.getId());
+            dataFillData.setCreator(userId);
+            dataFillData.setUpdater(userId);
+            this.dataFillDataMapper.insert(dataFillData);
         }
     }
 
-    public FillFormData getFormData(String formId) {
-        return this.fillFormDataMapper.getByFormId(formId);
+    public DataFillData getFormData(String formId) {
+        return this.dataFillDataMapper.getByFormId(formId);
     }
 
     @EqualsAndHashCode(callSuper = true)

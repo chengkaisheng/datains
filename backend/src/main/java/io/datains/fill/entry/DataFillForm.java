@@ -22,6 +22,10 @@ public class DataFillForm implements Serializable {
     private String datasource;
 
     private Boolean createIndex;
+    /**
+     * 状态 1-启用 0-禁用
+     */
+    private Integer status;
 
     private String createBy;
 

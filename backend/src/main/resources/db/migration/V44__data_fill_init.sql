@@ -1,20 +1,4 @@
-CREATE TABLE `fill_form_info`
-(
-    `id`          bigint   NOT NULL AUTO_INCREMENT COMMENT '自增主键ID',
-    `parent_id`   bigint            DEFAULT NULL COMMENT '父级ID（用于关联上级表单）',
-    `template_id` bigint            DEFAULT NULL COMMENT '关联的模板ID',
-    `name`        varchar(255)      DEFAULT NULL COMMENT '表单名称',
-    `description` varchar(500)      DEFAULT NULL COMMENT '表单描述',
-    `version`     int               DEFAULT NULL COMMENT '版本号',
-    `creator`     bigint            DEFAULT NULL COMMENT '创建人ID',
-    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updater`     bigint            DEFAULT NULL COMMENT '更新人ID',
-    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `is_delete`   int               DEFAULT '0' COMMENT '1-删除',
-    PRIMARY KEY (`id`)
-) COMMENT ='数据填报基本信息表';
-
-CREATE TABLE `fill_form_data`
+CREATE TABLE `data_fill_data`
 (
     `id`          bigint   NOT NULL AUTO_INCREMENT COMMENT '自增主键ID',
     `form_id`     bigint   NOT NULL COMMENT '关联的表单ID（对应 fill_form_info.id）',
@@ -26,20 +10,6 @@ CREATE TABLE `fill_form_data`
     `is_delete`   int               DEFAULT '0' COMMENT '1-删除',
     PRIMARY KEY (`id`)
 ) COMMENT ='表单数据表';
-
-CREATE TABLE `fill_form_template`
-(
-    `id`          bigint   NOT NULL AUTO_INCREMENT COMMENT '自增主键ID',
-    `name`        varchar(255)      DEFAULT NULL COMMENT '模版名称',
-    `description` varchar(500)      DEFAULT NULL COMMENT '模版描述',
-    `data`        json     NOT NULL COMMENT '模版数据（JSON数组格式）',
-    `creator`     bigint            DEFAULT NULL COMMENT '创建人ID',
-    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updater`     bigint            DEFAULT NULL COMMENT '更新人ID',
-    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    `is_delete`   int               DEFAULT '0' COMMENT '1-删除',
-    PRIMARY KEY (`id`)
-) COMMENT ='表单模版表';
 
 CREATE TABLE `data_fill_commit_log`
 (

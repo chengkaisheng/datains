@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * @since 2025-02-24 16:40
  */
 @Data
-public class FillFormData {
+public class DataFillData {
     /**
      * 主键ID
      */

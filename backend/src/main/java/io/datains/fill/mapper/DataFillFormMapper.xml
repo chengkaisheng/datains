@@ -292,6 +292,9 @@
         <if test="nodeType != null and nodeType != ''">
             AND data_fill_form.node_type = #{nodeType}
         </if>
+      <if test="status != null">
+        AND data_fill_form.status = #{status}
+      </if>
         order by data_fill_form.create_time desc
     </select>
     <update id="updateByExampleSelective" parameterType="map">
@@ -431,6 +434,9 @@
       </if>
       <if test="tableIndexes != null">
         table_indexes = #{tableIndexes,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=BIT},
       </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
