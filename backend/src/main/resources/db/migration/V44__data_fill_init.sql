@@ -145,7 +145,11 @@ INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_typ
                                `copy_id`)
 VALUES ('data_fill_write', 'data_fill', 'i18n_auth_write', 2, 0, 'write', '基础权限-写入', 'system', NULL, NULL, NULL,
         NULL);
-
+INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`,
+                               `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`,
+                               `copy_id`)
+VALUES ('data_fill_export', 'data_fill', 'i18n_auth_export', 4, 0, 'export', '基础权限-导出', 'system', NULL, NULL, NULL,
+        NULL);
 
 ALTER TABLE `datasource`
     ADD COLUMN `enable_data_fill` tinyint(1) NULL DEFAULT 0 COMMENT '开启数据填报';

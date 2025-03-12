@@ -6,7 +6,6 @@ import io.datains.base.domain.License;
 import io.datains.commons.exception.DEException;
 import io.datains.commons.utils.EncryptUtil;
 import io.datains.commons.utils.IsNullUtils;
-import io.datains.commons.utils.LogUtil;
 import io.datains.commons.utils.MacUtil;
 import io.datains.controller.sys.response.LicenseVo;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +19,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class DefaultLicenseService {
@@ -87,7 +89,13 @@ public class DefaultLicenseService {
                 }else {
                     currentIpLocalMac = macUtil.getCurrentIpLocalMac();
                 }
-                if (!licenseVo.getMacAdress().equals(currentIpLocalMac) || !licenseVo.getMacAdress().toLowerCase().equals(currentIpLocalMac)){
+                currentIpLocalMac = currentIpLocalMac.toLowerCase()
+                        .replaceAll(":", "")
+                        .replaceAll("-", "");
+                String licenseMac = licenseVo.getMacAdress().toLowerCase()
+                        .replaceAll(":", "")
+                        .replaceAll("-", "");
+                if (!licenseMac.equals(currentIpLocalMac)){
                     f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
                     return f2CLicenseResponse;
                 }

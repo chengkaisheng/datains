@@ -10,10 +10,19 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import io.datains.commons.utils.LogUtil;
 import io.datains.fill.service.DataFillAiService;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -148,16 +157,49 @@ public class DataFillAiServiceImpl implements DataFillAiService {
                 .execute();
         // 3. 处理响应
         if (apiResponse.isOk()) {
+            byte[] fileBytes = apiResponse.bodyBytes();
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码
             String fileName = URLEncoder.encode(originalFilename, "UTF-8").replaceAll("\\+", "%20");
             response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
             // 将接口返回的文件流写入响应
-            IoUtil.write(response.getOutputStream(), true, apiResponse.bodyBytes());
+            IoUtil.write(response.getOutputStream(), true, fileBytes);
         } else {
             LogUtil.error(apiResponse.body());
             throw new RuntimeException(apiResponse.body());
         }
     }
+
+    private byte[] toXlsx(byte[] fileBytes) {
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(fileBytes);
+             HSSFWorkbook oldWorkbook = new HSSFWorkbook(bis);
+             XSSFWorkbook newWorkbook = new XSSFWorkbook();
+             ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            for (int i = 0; i < oldWorkbook.getNumberOfSheets(); i++) {
+                HSSFSheet sheet = oldWorkbook.getSheetAt(i);
+                newWorkbook.createSheet(sheet.getSheetName());
+                for (int j = 0; j < sheet.getPhysicalNumberOfRows(); j++) {
+                    HSSFRow row = sheet.getRow(j);
+                    if (row == null) {
+                        continue;
+                    }
+                    XSSFRow newRow = newWorkbook.getSheet(sheet.getSheetName()).createRow(j);
+                    for (int k = 0; k < row.getPhysicalNumberOfCells(); k++) {
+                        HSSFCell cell = row.getCell(k);
+                        if (cell == null) {
+                            continue;
+                        }
+                        XSSFCell newCell = newRow.createCell(k);
+                        newCell.setCellValue(cell.getStringCellValue());
+                    }
+                }
+            }
+            newWorkbook.write(bos);
+            return bos.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
+
