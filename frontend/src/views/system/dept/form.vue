@@ -64,6 +64,7 @@
           clearable
           filterable
           remote
+          multiple
           :remote-method="remoteMethod"
           :loading="loading"
           @focus="getManagerOptions"
@@ -108,7 +109,7 @@ export default {
     return {
       header: "",
       backName: "",
-      defaultForm: { deptId: null, top: true, pid: null, leaderId: null },
+      defaultForm: { deptId: null, top: true, pid: null, leaderId: [] },
       maps: new Map(),
       form: {},
       rule: {
@@ -138,7 +139,7 @@ export default {
       formType: "add",
       pLabel: this.$t("dept.root_org"),
       page: 1,
-      size: 100,
+      size: 50000,
       managerOptions: [],
       loading: false,
       params: {},
@@ -152,7 +153,7 @@ export default {
       var row = this.$router.currentRoute.params;
       this.edit(row);
       // 获取组织负责人
-      this.getLeaderId();
+      this.getleaderIds();
     } else {
       this.create();
     }
@@ -168,10 +169,10 @@ export default {
   },
 
   methods: {
-    getLeaderId() {
+    getleaderIds() {
       this.executeAxios(`/plugin/dept/getDeptLeader/${this.$router.currentRoute.params.deptId}`, "get", {}, (res) => {
         if(res && res.data && res.data.length > 0) {
-          this.form.leaderId = res.data[0].userId;
+          this.form.leaderId = res.data.map(item => item.userId);
         }
       });
     },
@@ -242,7 +243,7 @@ export default {
       this.form = Object.assign({}, this.defaultForm);
     },
     edit(row) {
-      row.leaderId = null;
+      row.leaderId = [];
       this.formType = "modify";
       this.form = Object.assign({}, row);
       this.initDeptTree();

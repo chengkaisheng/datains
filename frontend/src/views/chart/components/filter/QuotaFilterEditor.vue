@@ -2,6 +2,8 @@
   <el-col>
     <div style="display: inline-block;">
       <el-button icon="el-icon-plus" circle size="mini" style="margin-bottom: 10px;" @click="addFilter" />
+      <el-button size="mini" style="margin-bottom: 10px;" @click="uploadLogic('logic')">上传</el-button>
+      <el-button size="mini" style="margin-bottom: 10px;" @click="downloadTemplate('logic')">下载模板</el-button>
       <el-radio-group
         v-show="item.filter && item.filter.length > 1"
         v-model="logic"
@@ -47,6 +49,8 @@
 </template>
 
 <script>
+import { excelToJson } from '@/utils/excelToJson';
+
 export default {
   name: 'QuotaFilterEditor',
   props: {
@@ -108,6 +112,76 @@ export default {
     },
     logicChange(val) {
       this.item.logic = val
+    },
+    uploadLogic(type) {
+      // 创建一个隐藏的文件输入框
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = '.xlsx'
+      input.style.display = 'none'
+      
+      input.onchange = (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+        
+        // 检查文件类型
+        if (!file.name.endsWith('.xlsx')) {
+          this.$message.error('请上传Excel文件(.xlsx格式)')
+          return
+        }
+        
+        excelToJson(file).then(json => {
+          console.log('json', json)
+          json.map(item => {
+            if(type === 'logic') {
+              let term = ''
+              this.options.map(option => {
+                option.options.map(optionItem => {
+                  if (optionItem.label === item['过滤条件']) {
+                    term = optionItem.value
+                  }
+                })
+              })
+              if(!!term) {
+                this.item.filter.push({
+                  fieldId: this.item.id,
+                  term: term,
+                  value: (term.includes('empty') || term.includes('null')) ? '' : item['过滤值']
+                })
+              }
+            } else if (type === 'enum') {
+              // 需要找到过滤值对应的字段id
+              this.fieldOptions.map(option => {
+                if (option.text === item['过滤值']) {
+                  this.enumCheckField.push(option.id)
+                }
+              })
+              this.item.enumCheckField = this.enumCheckField
+            }
+          })
+        }).catch(err => {
+          this.$message.error('文件解析失败：' + err.message)
+        })
+      }
+      
+      // 触发文件选择
+      document.body.appendChild(input)
+      input.click()
+      document.body.removeChild(input)
+    },
+    downloadTemplate(type) {
+      // 创建一个a标签用于下载
+      const link = document.createElement('a')
+      if (type === 'logic') {
+        link.href = '/template/逻辑条件模板.xlsx'
+        link.download = '逻辑条件模板.xlsx'
+      } else if (type === 'enum') {
+        link.href = '/template/字段枚举值模板.xlsx'
+        link.download = '字段枚举值模板.xlsx'
+      }
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     }
   }
 }
