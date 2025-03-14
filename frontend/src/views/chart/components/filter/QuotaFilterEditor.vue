@@ -50,6 +50,7 @@
 
 <script>
 import { excelToJson } from '@/utils/excelToJson';
+import { downloadFilterTemplate } from '@/api/panel/panel';
 
 export default {
   name: 'QuotaFilterEditor',
@@ -170,18 +171,15 @@ export default {
       document.body.removeChild(input)
     },
     downloadTemplate(type) {
-      // 创建一个a标签用于下载
-      const link = document.createElement('a')
-      if (type === 'logic') {
-        link.href = `/template/login.xlsx`
-        link.download = '逻辑条件模板.xlsx'
-      } else if (type === 'enum') {
-        link.href = `/template/enum.xlsx`
-        link.download = '字段枚举值模板.xlsx'
-      }
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      downloadFilterTemplate(`${type}.xlsx`).then(res => {
+        const blob = new Blob([res])
+        const link = document.createElement('a')
+        link.href = URL.createObjectURL(blob)
+        link.download = type === 'logic' ? '逻辑条件模板.xlsx' : '字段枚举值模板.xlsx'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
     }
   }
 }

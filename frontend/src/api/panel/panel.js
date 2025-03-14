@@ -204,3 +204,10 @@ export function initViewCache(panelId) {
   })
 }
 
+export function downloadFilterTemplate(type) {
+  return request({
+    url: `/file/download/${type}`,
+    method: 'get',
+    responseType: 'blob'
+  })
+}
