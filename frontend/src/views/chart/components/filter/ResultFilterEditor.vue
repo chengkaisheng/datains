@@ -339,10 +339,10 @@ export default {
       // 创建一个a标签用于下载
       const link = document.createElement('a')
       if (type === 'logic') {
-        link.href = '/template/逻辑条件模板.xlsx'
+        link.href = `/template/login.xlsx`
         link.download = '逻辑条件模板.xlsx'
       } else if (type === 'enum') {
-        link.href = '/template/字段枚举值模板.xlsx'
+        link.href = `/template/enum.xlsx`
         link.download = '字段枚举值模板.xlsx'
       }
       document.body.appendChild(link)
