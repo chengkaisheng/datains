@@ -31,5 +31,10 @@ public interface ExtAuthService {
     List<AuthItem> dataFillingIdByDept(Long deptId);
     List<AuthItem> dataFillingIdByRole(Long roleId);
     List<AuthItem> dataFillingIdByUser(Long userId);
+
+    List<AuthItem> dataFillingTemplateIdByDept(Long deptId);
+    List<AuthItem> dataFillingTemplateIdByRole(Long roleId);
+    List<AuthItem> dataFillingTemplateIdByUser(Long userId);
+
     List<String> parentResource(String resourceId, String type);
 }

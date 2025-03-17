@@ -1,7 +1,7 @@
 CREATE TABLE `data_fill_data`
 (
     `id`          bigint   NOT NULL AUTO_INCREMENT COMMENT '自增主键ID',
-    `form_id`     bigint   NOT NULL COMMENT '关联的表单ID（对应 fill_form_info.id）',
+    `form_id`     varchar(50)   NOT NULL COMMENT '关联的表单ID（对应 fill_form_info.id）',
     `form_data`   json     NOT NULL COMMENT '表单数据（JSON数组格式）',
     `creator`     bigint            DEFAULT NULL COMMENT '创建人ID',
     `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

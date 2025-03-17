@@ -966,6 +966,10 @@ public class DataFillService {
         return this.dataFillDataMapper.getByFormId(formId);
     }
 
+    public void updateFormStatus(String id, Integer status) {
+        this.dataFillFormMapper.updateFormStatus(id, status);
+    }
+
     @EqualsAndHashCode(callSuper = true)
     @Data
     public static class NoModelDataListener extends AnalysisEventListener<Map<Integer, String>> {

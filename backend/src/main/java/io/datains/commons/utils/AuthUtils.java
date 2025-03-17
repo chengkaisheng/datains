@@ -29,6 +29,7 @@ public class AuthUtils {
     private static final String[] defaultDataSetPermissions = { "0" };
     private static final String[] defaultLinkPermissions = { "0" };
     private static final String[] defaultDataFillingPermissions = { "0" };
+    private static final String[] defaultDataFillingTemplatePermissions = { "0" };
 
     private static final ThreadLocal<CurrentUserDto> USER_INFO = new ThreadLocal<CurrentUserDto>();
 
@@ -139,6 +140,18 @@ public class AuthUtils {
             result.addAll(deptSet);
             Arrays.stream(defaultDataFillingPermissions).forEach(item -> {
                 result.add(new AuthItem(item, ResourceAuthLevel.DATA_FILLING_LEVEL_MANAGE.getLevel()));
+            });
+            return result;
+        }else if (StringUtils.equals(DePermissionType.DATA_FILL_TEMPLATE.name().toLowerCase(), type)) {
+            Set<AuthItem> userSet = extAuthService.dataFillingTemplateIdByUser(userId).stream().collect(Collectors.toSet());
+            Set<AuthItem> roleSet = roles.stream().map(role -> extAuthService.dataFillingTemplateIdByRole(role.getId()))
+                    .flatMap(Collection::stream).collect(Collectors.toSet());
+            Set<AuthItem> deptSet = extAuthService.dataFillingTemplateIdByDept(deptId).stream().collect(Collectors.toSet());
+            result.addAll(userSet);
+            result.addAll(roleSet);
+            result.addAll(deptSet);
+            Arrays.stream(defaultDataFillingTemplatePermissions).forEach(item -> {
+                result.add(new AuthItem(item, ResourceAuthLevel.DATA_FILLING_TEMPLATE_LEVEL_MANAGE.getLevel()));
             });
             return result;
         }

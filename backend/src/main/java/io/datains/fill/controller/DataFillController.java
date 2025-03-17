@@ -37,10 +37,11 @@ public class DataFillController {
     private DataFillTaskService dataFillTaskService;
     @Resource
     private DataFillDataService dataFillDataService;
+
     @ApiIgnore
     @PostMapping("/form/selectForm/{goPage}/{pageSize}")
     public Pager<List<DataFillFormDTO>> selectForm(@PathVariable int goPage, @PathVariable int pageSize,
-                                                  @RequestBody DataFillFormRequest request) {
+                                                   @RequestBody DataFillFormRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, dataFillService.selectForm(request));
     }
@@ -61,6 +62,12 @@ public class DataFillController {
     @PostMapping("/form/update")
     public ResultHolder updateForm(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
         return dataFillService.updateForm(dataFillForm);
+    }
+
+    @ApiIgnore
+    @GetMapping("/form/updateStatus")
+    public void updateFormStatus(@RequestParam("id") String id, @RequestParam("status") Integer status) throws Exception {
+        dataFillService.updateFormStatus(id, status);
     }
 
     @ApiIgnore
@@ -237,7 +244,7 @@ public class DataFillController {
 
     @ApiIgnore
     @PostMapping("/form/excel/excelUploadToFrom/{pid}")
-    public void excelUploadToFrom(@RequestParam("file") MultipartFile file, @PathVariable String pid) throws Exception{
+    public void excelUploadToFrom(@RequestParam("file") MultipartFile file, @PathVariable String pid) throws Exception {
         dataFillService.excelUploadToFrom(file, pid);
     }
 

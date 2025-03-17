@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.datains.fill.mapper.DataFillFormTemplateMapper">
+    <delete id="deleteByIds">
+        delete from data_fill_form_template
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="countRepeatName" resultType="java.lang.Integer">
+        select count(*)
+        from data_fill_form_template
+        where name = #{name}
+        and pid = #{pid}
+        and node_type = #{nodeType}
+        <if test="id != null and id != ''">
+            and id != #{id}
+        </if>
+    </select>
+    <insert id="insertSelective" parameterType="io.datains.fill.entry.DataFillFormTemplateWithBLOBs">
+        insert into data_fill_form_template
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="pid != null">
+                pid,
+            </if>
+            <if test="level != null">
+                `level`,
+            </if>
+            <if test="nodeType != null">
+                node_type,
+            </if>
+            <if test="tableName != null">
+                `table_name`,
+            </if>
+            <if test="datasource != null">
+                datasource,
+            </if>
+            <if test="createIndex != null">
+                create_index,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="commitNewUpdate != null">
+                commit_new_update,
+            </if>
+            <if test="forms != null">
+                forms,
+            </if>
+            <if test="tableIndexes != null">
+                table_indexes,
+            </if>
+            <if test="status != null">
+                `status`
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="pid != null">
+                #{pid,jdbcType=VARCHAR},
+            </if>
+            <if test="level != null">
+                #{level,jdbcType=INTEGER},
+            </if>
+            <if test="nodeType != null">
+                #{nodeType,jdbcType=VARCHAR},
+            </if>
+            <if test="tableName != null">
+                #{tableName,jdbcType=VARCHAR},
+            </if>
+            <if test="datasource != null">
+                #{datasource,jdbcType=VARCHAR},
+            </if>
+            <if test="createIndex != null">
+                #{createIndex,jdbcType=BIT},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="commitNewUpdate != null">
+                #{commitNewUpdate,jdbcType=BIT},
+            </if>
+            <if test="forms != null">
+                #{forms,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="tableIndexes != null">
+                #{tableIndexes,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <select id="selectTemplate" resultType="io.datains.fill.dto.DataFillFormTemplateDTO">
+        select data_fill_form_template.*,
+        su.nick_name as creatorName,
+        authInfo.privileges as `privileges`
+        from (select GET_V_AUTH_MODEL_ID_P_USE(#{userId}, 'data_fill_template') cids) t,
+        data_fill_form_template
+        left join (SELECT auth_source,
+        group_concat(DISTINCT sys_auth_detail.privilege_extend) as `privileges`
+        FROM (
+        `sys_auth`
+        LEFT JOIN `sys_auth_detail` ON ((
+        `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+        )))
+        WHERE sys_auth_detail.privilege_value = 1
+        AND sys_auth.auth_source_type = 'data_fill_template'
+        AND (
+        (
+        sys_auth.auth_target_type = 'dept'
+        AND
+        sys_auth.auth_target IN (SELECT dept_id FROM sys_user WHERE user_id = #{userId})
+        )
+        OR (
+        sys_auth.auth_target_type = 'user'
+        AND sys_auth.auth_target = #{userId}
+        )
+        OR (
+        sys_auth.auth_target_type = 'role'
+        AND
+        sys_auth.auth_target IN
+        (SELECT role_id FROM sys_users_roles WHERE user_id = #{userId})
+        )
+        )
+        GROUP BY `sys_auth`.`auth_source`) authInfo
+        on data_fill_form_template.id = authInfo.auth_source
+        left join sys_user su on su.username = data_fill_form_template.create_by
+        WHERE data_fill_form_template.pid = #{pid} and data_fill_form_template.node_type != 'folder'
+        <if test="name != null and name != ''">
+            AND data_fill_form_template.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="nodeType != null and nodeType != ''">
+            AND data_fill_form_template.node_type = #{nodeType}
+        </if>
+        <if test="status != null">
+            AND data_fill_form_template.status = #{status}
+        </if>
+        order by data_fill_form_template.create_time desc
+    </select>
+
+    <select id="search" resultType="io.datains.fill.dto.DataFillFormTemplateDTO">
+        select
+        data_fill_form_template.*,
+        data_fill_form_template.`name` as label,
+        authInfo.privileges as `privileges`,
+        su.nick_name as creatorName
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'data_fill_template') cids) t, data_fill_form_template
+        left join (
+        SELECT
+        auth_source,
+        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
+        FROM
+        (
+        `sys_auth`
+        LEFT JOIN `sys_auth_detail` ON ((
+        `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+        )))
+        WHERE
+        sys_auth_detail.privilege_value = 1
+        AND sys_auth.auth_source_type = 'data_fill_template'
+        AND (
+        (
+        sys_auth.auth_target_type = 'dept'
+        AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{userId} )
+        )
+        OR (
+        sys_auth.auth_target_type = 'user'
+        AND sys_auth.auth_target = #{userId}
+        )
+        OR (
+        sys_auth.auth_target_type = 'role'
+        AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId} )
+        )
+        )
+        GROUP BY
+        `sys_auth`.`auth_source`
+        ) authInfo
+        on data_fill_form_template.id = authInfo.auth_source
+        left join sys_user su on su.user_id = data_fill_form_template.create_by
+        <where>
+            FIND_IN_SET(data_fill_form_template.id, cids)
+            <if test="id != null">
+                and data_fill_form_template.id = #{id,jdbcType=VARCHAR}
+            </if>
+            <if test="pid != null">
+                and data_fill_form_template.pid = #{pid,jdbcType=VARCHAR}
+            </if>
+            <if test="nodeType != null">
+                and data_fill_form_template.node_type = #{nodeType,jdbcType=VARCHAR}
+            </if>
+            <if test="level != null">
+                and data_fill_form_template.`level` = #{level,jdbcType=INTEGER}
+            </if>
+
+            <if test="createBy != null">
+                and data_fill_form_template.create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                and data_fill_form_template.create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                and data_fill_form_template.update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                and data_fill_form_template.update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="excludedId != null">
+                and data_fill_form_template.id != #{excludedId,jdbcType=VARCHAR}
+            </if>
+            <if test="ids != null and ids.size() > 0">
+                and data_fill_form_template.id in
+                <foreach collection="ids" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY CONVERT(`name` using gbk)
+    </select>
+    <select id="selectByPrimaryKey" resultType="io.datains.fill.entry.DataFillFormTemplateWithBLOBs">
+        select *
+        from data_fill_form_template
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="io.datains.fill.entry.DataFillFormTemplateWithBLOBs">
+        update data_fill_form_template
+        <set>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="pid != null">
+                pid = #{pid,jdbcType=VARCHAR},
+            </if>
+            <if test="level != null">
+                `level` = #{level,jdbcType=INTEGER},
+            </if>
+            <if test="nodeType != null">
+                node_type = #{nodeType,jdbcType=VARCHAR},
+            </if>
+            <if test="tableName != null">
+                `table_name` = #{tableName,jdbcType=VARCHAR},
+            </if>
+            <if test="datasource != null">
+                datasource = #{datasource,jdbcType=VARCHAR},
+            </if>
+            <if test="createIndex != null">
+                create_index = #{createIndex,jdbcType=BIT},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="commitNewUpdate != null">
+                commit_new_update = #{commitNewUpdate,jdbcType=BIT},
+            </if>
+            <if test="forms != null">
+                forms = #{forms,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="tableIndexes != null">
+                table_indexes = #{tableIndexes,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=BIT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+</mapper>

@@ -52,6 +52,9 @@ public class DeCleanerAnnotationHandler {
                 case "DATASET":
                     cleanDataSet(paramValue);
                     break;
+                case "DATA_FILL_TEMPLATE":
+                    cleanDataFilingTemplate(paramValue);
+                    break;
                 default:
                     cleanPanel(paramValue);
                     break;
@@ -100,6 +103,7 @@ public class DeCleanerAnnotationHandler {
 //            cleanCacheParent(resourceId.toString(), "link");
 //        });
     }
+
     public void cleanDataFiling(Object pid) {
         CurrentUserDto user = AuthUtils.getUser();
         CacheUtils.remove(AuthConstants.USER_DATA_FILL_NAME, "user" + user.getUserId());
@@ -112,30 +116,44 @@ public class DeCleanerAnnotationHandler {
 //            cleanCacheParent(resourceId.toString(), "data_fill");
 //        });
     }
+
+    public void cleanDataFilingTemplate(Object pid) {
+        CurrentUserDto user = AuthUtils.getUser();
+        CacheUtils.remove(AuthConstants.USER_DATA_FILL_TEMPLATE_NAME, "user" + user.getUserId());
+        CacheUtils.remove(AuthConstants.DEPT_DATA_FILL_TEMPLATE_NAME, "dept" + user.getDeptId());
+        user.getRoles().forEach(role -> {
+            CacheUtils.remove(AuthConstants.ROLE_DATA_FILL_TEMPLATE_NAME, "role" + role.getId());
+        });
+
+//        Optional.ofNullable(pid).ifPresent(resourceId -> {
+//            cleanCacheParent(resourceId.toString(), "data_fill");
+//        });
+    }
+
     private void cleanCacheParent(String pid, String type) {
         if (StringUtils.isBlank(pid) || StringUtils.isBlank(type)) {
             return;
         }
         CurrentUserDto user = AuthUtils.getUser();
         List<String> resourceIds = AuthUtils.parentResources(pid.toString(), type);
-        if (CollectionUtils.isEmpty(resourceIds))return;
+        if (CollectionUtils.isEmpty(resourceIds)) return;
         resourceIds.forEach(resourceId -> {
             AuthURD authURD = AuthUtils.authURDR(resourceId);
             Optional.ofNullable(authURD.getUserIds()).ifPresent(ids -> {
                 ids.forEach(id -> {
-                    CacheUtils.remove("user_"+type, "user" + id);
+                    CacheUtils.remove("user_" + type, "user" + id);
                 });
             });
             Optional.ofNullable(authURD.getRoleIds()).ifPresent(ids -> {
                 ids.forEach(id -> {
-                    CacheUtils.remove("role_"+type, "role" + id);
+                    CacheUtils.remove("role_" + type, "role" + id);
                 });
             });
             Optional.ofNullable(authURD.getDeptIds()).ifPresent(ids -> {
                 ids.forEach(id -> {
                     List<String> depts = AuthUtils.getAuthModels(id.toString(), "dept", user.getUserId(), user.getIsAdmin());
                     depts.forEach(deptId -> {
-                        CacheUtils.remove("dept_"+type, "dept" + deptId);
+                        CacheUtils.remove("dept_" + type, "dept" + deptId);
                     });
                 });
             });

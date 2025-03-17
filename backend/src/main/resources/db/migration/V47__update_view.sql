@@ -88,6 +88,23 @@ select `data_fill_form`.`id`                                          AS `id`,
        '0'                                                            AS `data_source_id`
 from `data_fill_form`
 union all
+select `data_fill_form_template`.`id`                                          AS `id`,
+       `data_fill_form_template`.`name`                                        AS `NAME`,
+       `data_fill_form_template`.`name`                                        AS `label`,
+       (case `data_fill_form_template`.`id`
+            when 'data_fill_list' then '0'
+            when 'default_data_fill' then '0'
+            else `data_fill_form_template`.`pid` end)                          AS `pid`,
+       if((`data_fill_form_template`.`node_type` = 'folder'), 'spine', 'leaf') AS `node_type`,
+       'data_fill'                                                    AS `model_type`,
+       'form'                                                         AS `model_inner_type`,
+       'source'                                                       AS `auth_type`,
+       `data_fill_form_template`.`create_by`                                   AS `create_by`,
+       `data_fill_form_template`.`level`                                       AS `level`,
+       0                                                              AS `mode`,
+       '0'                                                            AS `data_source_id`
+from `data_fill_form_template`
+union all
 select `dataset_table`.`id`             AS `id`,
        `dataset_table`.`name`           AS `NAME`,
        `dataset_table`.`name`           AS `lable`,

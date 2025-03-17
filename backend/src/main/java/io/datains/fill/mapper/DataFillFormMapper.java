@@ -16,8 +16,6 @@ public interface DataFillFormMapper {
 
     int deleteByPrimaryKey(String id);
 
-    int insert(DataFillFormWithBLOBs record);
-
     int insertSelective(DataFillFormWithBLOBs record);
 
     List<DataFillFormWithBLOBs> selectByExampleWithBLOBs(DataFillFormExample example);
@@ -34,9 +32,7 @@ public interface DataFillFormMapper {
 
     int updateByPrimaryKeySelective(DataFillFormWithBLOBs record);
 
-    int updateByPrimaryKeyWithBLOBs(DataFillFormWithBLOBs record);
-
-    int updateByPrimaryKey(DataFillForm record);
-
     List<DataFillFormDTO> selectForm(DataFillFormRequest request);
+
+    void updateFormStatus(@Param("id") String id, @Param("status") Integer status);
 }
