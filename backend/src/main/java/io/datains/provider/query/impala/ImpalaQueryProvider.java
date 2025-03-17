@@ -253,6 +253,12 @@ public class ImpalaQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(yFields)) st_sql.add("aggregators", yFields);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
+        if (view.getIsEdit() && StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+            st_sql.add("enableGroupLimit", true);
+            st_sql.add("groupLimitValue", view.getResultCount());
+        } else {
+            st_sql.add("enableGroupLimit", false);
+        }
         String sql = st_sql.render();
 
         ST st = stg.getInstanceOf("querySql");

@@ -4,6 +4,8 @@ import io.datains.base.domain.XpackSysDept;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * XpackSysDeptDTO
  *
@@ -13,5 +15,5 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class XpackSysDeptDTO extends XpackSysDept {
-    private Long leaderId;
+    private List<Long> leaderId;
 }

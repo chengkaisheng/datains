@@ -1,7 +1,8 @@
 package io.datains.base.domain;
 
-import java.io.Serializable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 public class ChartView implements Serializable {
@@ -36,6 +37,6 @@ public class ChartView implements Serializable {
     private Boolean isPlugin;
 
     private String dataFrom;
-
+    private Boolean isEdit;
     private static final long serialVersionUID = 1L;
 }

@@ -60,7 +60,7 @@ public class DeptXpackDefaultService implements DeptXpackService {
             if ((long_ = xpackSysDept.getPid()) != DEPT_ROOT_PID)
                 this.h.incrementalSubcount(long_);
             if (i == 1) {
-                this.sysDeptLeaderAuthService.batchInsert(Collections.singletonList(xpackSysDept.getLeaderId()), xpackSysDept.getDeptId());
+                this.sysDeptLeaderAuthService.batchInsert(xpackSysDept.getLeaderId(), xpackSysDept.getDeptId());
                 return i;
             }
         } catch (Exception exception) {
@@ -72,7 +72,7 @@ public class DeptXpackDefaultService implements DeptXpackService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int update(XpackSysDeptDTO sysDeptDTO) {
-        this.sysDeptLeaderAuthService.syncDeptLeaders(Collections.singletonList(sysDeptDTO.getLeaderId()), sysDeptDTO.getDeptId());
+        this.sysDeptLeaderAuthService.syncDeptLeaders(sysDeptDTO.getLeaderId(), sysDeptDTO.getDeptId());
         return this.i.updateByPrimaryKeySelective(sysDeptDTO);
     }
 

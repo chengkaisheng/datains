@@ -260,11 +260,14 @@ public class ChartViewService {
                     chartViewCacheService.refreshCache(id);
                     result = extChartViewMapper.searchOneFromCache(id);
                 }
+                result.setIsEdit(true);
             } else {
                 result = extChartViewMapper.searchOne(id);
-            }
-            if (result == null) {
-                DataInsException.throwException(Translator.get("i18n_chart_delete"));
+                if (result == null) {
+                    DataInsException.throwException(Translator.get("i18n_chart_delete"));
+                }else {
+                    result.setIsEdit(false);
+                }
             }
             return result;
         } catch (Exception e) {

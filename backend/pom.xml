@@ -359,6 +359,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <nonFilteredFileExtensions>
+                        <!--不加这一行，xlsx文件会被过滤，然后在maven build的时候，去target下看对应的xlsx就是损坏的-->
+                        <nonFilteredFileExtension>xlsx</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
                 <version>3.1.0</version>
             </plugin>
             <plugin>
