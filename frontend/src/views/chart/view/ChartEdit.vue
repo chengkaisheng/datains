@@ -1783,6 +1783,15 @@ export default {
         this.fieldFilter(this.searchField); // 对左侧指标重新赋值，解决datainsName被修改导致表格不新增列的问题
       }
     },
+    'view.resultMode': function(newVal, oldVal) {
+      if (newVal === 'custom' ) {
+        this.$message({
+          showClose: true,
+          message: '请注意修改，视图未选择使用全部数据',
+          type: 'warning'
+        })
+      }
+    }
   },
   created() {
     const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views'))
