@@ -96,8 +96,8 @@ select `data_fill_form_template`.`id`                                          A
             when 'default_data_fill' then '0'
             else `data_fill_form_template`.`pid` end)                          AS `pid`,
        if((`data_fill_form_template`.`node_type` = 'folder'), 'spine', 'leaf') AS `node_type`,
-       'data_fill'                                                    AS `model_type`,
-       'form'                                                         AS `model_inner_type`,
+       'data_fill_template'                                                    AS `model_type`,
+       'form_template'                                                         AS `model_inner_type`,
        'source'                                                       AS `auth_type`,
        `data_fill_form_template`.`create_by`                                   AS `create_by`,
        `data_fill_form_template`.`level`                                       AS `level`,

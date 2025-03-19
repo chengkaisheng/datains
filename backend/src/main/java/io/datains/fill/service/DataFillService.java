@@ -12,6 +12,7 @@ import com.alibaba.fastjson.parser.Feature;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.datains.auth.annotation.DeCleaner;
+import io.datains.auth.api.dto.CurrentUserDto;
 import io.datains.base.domain.Datasource;
 import io.datains.base.domain.SysUser;
 import io.datains.base.domain.SysUserExample;
@@ -25,14 +26,12 @@ import io.datains.dto.dataset.ExcelSheetData;
 import io.datains.dto.datasource.TableField;
 import io.datains.exception.DataInsException;
 import io.datains.fill.constants.DataFillConstants;
+import io.datains.fill.constants.FormLogEnum;
 import io.datains.fill.dto.DataFillFormDTO;
 import io.datains.fill.dto.ExtIndexField;
 import io.datains.fill.dto.ExtTableField;
 import io.datains.fill.entry.*;
-import io.datains.fill.mapper.DataFillDataMapper;
-import io.datains.fill.mapper.DataFillFormMapper;
-import io.datains.fill.mapper.DataFillUserTaskMapper;
-import io.datains.fill.mapper.ExtDataFillFormMapper;
+import io.datains.fill.mapper.*;
 import io.datains.fill.request.DataFillFormRequest;
 import io.datains.fill.request.DataFillFormTableDataRequest;
 import io.datains.fill.response.DataFillFormTableDataResponse;
@@ -88,7 +87,10 @@ public class DataFillService {
     private DataFillUserTaskMapper dataFillUserTaskMapper;
     @Resource
     private DataFillDataMapper dataFillDataMapper;
-
+    @Resource
+    private DataFillFormLogService dataFillFormLogService;
+    @Resource
+    private DataFillCommitLogMapper dataFillCommitLogMapper;
 
     private final static Gson gson = new Gson();
 
@@ -98,10 +100,42 @@ public class DataFillService {
         return dataFillFormMapper.selectForm(request);
     }
 
+    /**
+     * 为自定义上传表单单独写一个新增逻辑
+     */
+    @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
+    public ResultHolder saveCustomForm(DataFillFormWithBLOBs dataFillForm) {
+        String userName = AuthUtils.getUser().getUsername();
+        dataFillForm.setCreateBy(userName);
+        dataFillForm.setUpdateBy(userName);
+        Date current = new Date();
+        dataFillForm.setCreateTime(current);
+        dataFillForm.setUpdateTime(current);
+
+        String uuid = UUIDUtil.getUUID().toString();
+        dataFillForm.setId(uuid);
+
+        //先先查询文件夹下有没有同一人上传的同名文件
+        DataFillFormExample example = new DataFillFormExample();
+        example.createCriteria().andPidEqualTo(dataFillForm.getPid()).andNameEqualTo(dataFillForm.getName()).andCreateByEqualTo(userName);
+        DataFillForm form = dataFillFormMapper.selectByExample(example).stream().findFirst().orElse(null);
+        if (form != null) {
+            //有则不创建，直接保存数据生成新的版本
+            this.saveFormData(form.getId(), dataFillForm.getFormData());
+            return ResultHolder.success(form.getId());
+        } else {
+            dataFillFormMapper.insertSelective(dataFillForm);
+            dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.INSERT);
+            sysAuthService.copyAuth(uuid, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING);
+            this.saveFormData(dataFillForm.getId(), dataFillForm.getFormData());
+            return ResultHolder.success(dataFillForm.getId());
+        }
+    }
+
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
     public ResultHolder saveForm(DataFillFormWithBLOBs dataFillForm) throws Exception {
 
-
+        String userName = AuthUtils.getUser().getUsername();
         String uuid = UUIDUtil.getUUID().toString();
 
         dataFillForm.setId(uuid);
@@ -174,16 +208,14 @@ public class DataFillService {
             }
         }
 
-        dataFillForm.setCreateBy(AuthUtils.getUser().getUsername());
-        dataFillForm.setUpdateBy(AuthUtils.getUser().getUsername());
+        dataFillForm.setCreateBy(userName);
+        dataFillForm.setUpdateBy(userName);
         Date current = new Date();
         dataFillForm.setCreateTime(current);
         dataFillForm.setUpdateTime(current);
 
         dataFillFormMapper.insertSelective(dataFillForm);
-        if (StringUtils.equals(dataFillForm.getNodeType(), "selfReport")) {
-            this.saveFormData(dataFillForm);
-        }
+        dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.INSERT);
         // 清理权限缓存，应该不需要
         //clearPermissionCache();
 
@@ -217,7 +249,7 @@ public class DataFillService {
 
         dataFillForm.setUpdateTime(new Date());
         dataFillFormMapper.updateByPrimaryKeySelective(dataFillForm);
-
+        dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.UPDATE);
 //        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATA_FILL_FORM, dataFillForm.getId(), dataFillForm.getPid(), null, null);
 
         return ResultHolder.success(dataFillForm.getId());
@@ -360,7 +392,7 @@ public class DataFillService {
 
         dataFillForm.setUpdateTime(new Date());
         dataFillFormMapper.updateByPrimaryKeySelective(dataFillForm);
-
+        dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.UPDATE);
 //        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATA_FILL_FORM, dataFillForm.getId(), dataFillForm.getPid(), null, null);
 
         return ResultHolder.success(dataFillForm.getId());
@@ -505,6 +537,11 @@ public class DataFillService {
             example.createCriteria().andIdIn(ids);
             dataFillFormMapper.deleteByExample(example);
             dataFillDataMapper.deleteByFormIds(ids);
+            //删除日志
+            DataFillCommitLogExample logExample = new DataFillCommitLogExample();
+            logExample.createCriteria().andFormIdIn(ids);
+            dataFillCommitLogMapper.deleteByExample(logExample);
+            dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.DELETE);
         }
 
         if (dataFillForm != null) {
@@ -788,7 +825,8 @@ public class DataFillService {
         return dataFillForm;
     }
 
-    public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws Exception {
+    public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws
+            Exception {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
         if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
@@ -939,31 +977,43 @@ public class DataFillService {
 
     }
 
-    public void saveFormData(DataFillFormWithBLOBs dataFillForm) {
+    public void saveFormData(String formId, String formData) {
+        CurrentUserDto user = AuthUtils.getUser();
         //判断是否存在表单
-        if (dataFillForm.getId() == null || this.dataFillFormMapper.selectByPrimaryKey(dataFillForm.getId()) == null) {
+        DataFillForm dataFillForm = this.dataFillFormMapper.selectByPrimaryKey(formId);
+        if (dataFillForm == null) {
             throw new RuntimeException("保存失败");
         }
-        //判断是否已经存在数据
-        DataFillData dataFillData = this.dataFillDataMapper.getByFormId(dataFillForm.getId());
-        Long userId = AuthUtils.getUser().getUserId();
-        if (dataFillData != null) {
-            dataFillData.setFormData(dataFillForm.getFormData());
-            dataFillData.setUpdater(userId);
-            this.dataFillDataMapper.update(dataFillData);
-        } else {
-            dataFillData = new DataFillData();
-            dataFillData.setId(UUIDUtil.getUUID().toString());
-            dataFillData.setFormData(dataFillForm.getFormData());
-            dataFillData.setFormId(dataFillForm.getId());
-            dataFillData.setCreator(userId);
-            dataFillData.setUpdater(userId);
-            this.dataFillDataMapper.insert(dataFillData);
+        //进行版本号迭代
+        int version = 1;
+        List<DataFillData> dataFillDataList = this.dataFillDataMapper.getByFormId(formId);
+        if (dataFillDataList != null && !dataFillDataList.isEmpty()) {
+            version = dataFillDataList.get(0).getVersion();
+            //写入日志
+            dataFillFormLogService.insert(formId, FormLogEnum.UPDATE,
+                    String.format("%s更新表单%s的版本号：v%s -> v%s",
+                            user.getNickName(),
+                            dataFillForm.getName(),
+                            version,
+                            version + 1
+                    ));
         }
+        DataFillData dataFillData = new DataFillData();
+        dataFillData.setId(UUIDUtil.getUUID().toString());
+        dataFillData.setFormData(formData);
+        dataFillData.setFormId(formId);
+        dataFillData.setVersion(version + 1);
+        dataFillData.setCreator(user.getUsername());
+        dataFillData.setUpdater(user.getUsername());
+        this.dataFillDataMapper.insert(dataFillData);
     }
 
-    public DataFillData getFormData(String formId) {
+    public List<DataFillData> getFormData(String formId) {
         return this.dataFillDataMapper.getByFormId(formId);
+    }
+
+    public DataFillData getFormDataData(String id) {
+        return this.dataFillDataMapper.getById(id);
     }
 
     public void updateFormStatus(String id, Integer status) {

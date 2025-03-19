@@ -25,10 +25,6 @@ public class DataFillLogService {
     private DataFillCommitLogMapper dataFillCommitLogMapper;
 
 
-    public static final String COMMIT_OPERATE_INSERT = "INSERT";
-    public static final String COMMIT_OPERATE_UPDATE = "UPDATE";
-    public static final String COMMIT_OPERATE_DELETE = "DELETE";
-
 
     public List<DataFillCommitLogDTO> commitLogs(String formId, DataFillCommitLogSearchRequest request) {
 

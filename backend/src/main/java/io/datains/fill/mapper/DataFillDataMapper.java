@@ -16,7 +16,9 @@ public interface DataFillDataMapper {
 
     int update(DataFillData dataFillData);
 
-    DataFillData getByFormId(@Param("formId") String formId);
+    List<DataFillData> getByFormId(@Param("formId") String formId);
+
+    DataFillData getById(@Param("id") String id);
 
     int deleteByFormIds(@Param("formIds") List<String> formIds);
 }

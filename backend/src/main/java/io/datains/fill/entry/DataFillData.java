@@ -25,9 +25,13 @@ public class DataFillData {
      */
     private String formData;
     /**
+     * 版本号
+     */
+    private Integer version;
+    /**
      * 创建人ID
      */
-    private Long creator;
+    private String creator;
     /**
      * 创建时间
      */
@@ -35,7 +39,7 @@ public class DataFillData {
     /**
      * 更新人ID
      */
-    private Long updater;
+    private String updater;
     /**
      * 更新时间
      */

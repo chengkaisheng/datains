@@ -1,15 +1,19 @@
 package io.datains.fill.service;
 
 import cn.hutool.core.lang.Assert;
+import com.google.gson.Gson;
 import io.datains.auth.annotation.DeCleaner;
 import io.datains.commons.constants.DePermissionType;
 import io.datains.commons.constants.SysAuthConstants;
 import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.TreeUtils;
 import io.datains.controller.ResultHolder;
+import io.datains.dto.dataset.ExcelSheetData;
+import io.datains.dto.datasource.TableField;
 import io.datains.exception.DataInsException;
 import io.datains.fill.constants.DataFillConstants;
 import io.datains.fill.dto.DataFillFormTemplateDTO;
+import io.datains.fill.dto.ExtTableField;
 import io.datains.fill.entry.DataFillFormTemplate;
 import io.datains.fill.entry.DataFillFormTemplateWithBLOBs;
 import io.datains.fill.mapper.DataFillFormTemplateMapper;
@@ -19,6 +23,7 @@ import io.datains.service.sys.SysAuthService;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -42,11 +47,17 @@ public class DataFillFormTemplateService {
     private ExtDataFillFormMapper extDataFillFormMapper;
     @Resource
     private SysAuthService sysAuthService;
+    @Resource
+    private DataFillService dataFillService;
+
+    private final static Gson gson = new Gson();
 
     @DeCleaner(value = DePermissionType.DATA_FILL_TEMPLATE, key = "pid")
     public ResultHolder saveFormTemplate(DataFillFormTemplateWithBLOBs dataFillFormTemplate) {
         String uuid = UUIDUtil.getUUID().toString();
         dataFillFormTemplate.setId(uuid);
+        dataFillFormTemplate.setCreateBy(AuthUtils.getUser().getUsername());
+        dataFillFormTemplate.setUpdateBy(AuthUtils.getUser().getUsername());
         checkName(uuid, dataFillFormTemplate.getName(), dataFillFormTemplate.getPid(), dataFillFormTemplate.getNodeType(), DataFillConstants.OPT_TYPE_INSERT);
         dataFillFormTemplateMapper.insertSelective(dataFillFormTemplate);
         sysAuthService.copyAuth(uuid, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING_TEMPLATE);
@@ -147,4 +158,57 @@ public class DataFillFormTemplateService {
         List<DataFillFormTemplateDTO> list = dataFillFormTemplateMapper.search(request);
         return TreeUtils.mergeTree(list);
     }
+
+    public void excelUploadToFrom(MultipartFile file, String pid) throws Exception {
+        DataFillFormTemplateWithBLOBs dataFillForm = this.excelToFrom(file, pid);
+        this.saveFormTemplate(dataFillForm);
+    }
+
+    public DataFillFormTemplateWithBLOBs excelToFrom(MultipartFile file, String pid) throws Exception {
+        DataFillFormTemplateWithBLOBs dataFillForm = new DataFillFormTemplateWithBLOBs();
+        String filename = file.getOriginalFilename();
+        // parse file
+        List<ExcelSheetData> excelSheetDataList = dataFillService.parseExcel(filename, file.getInputStream(), true);
+        if (excelSheetDataList.isEmpty()) {
+            DataInsException.throwException("未解析出表格，请检查表格");
+        }
+        List<TableField> fields = excelSheetDataList.get(0).getFields();
+        if (fields.isEmpty()) {
+            DataInsException.throwException("未解析出表格，请检查表格");
+        }
+        //根据表格构建表单结构
+        List<ExtTableField> extFields = new ArrayList<>();
+        for (TableField tableField : fields) {
+            ExtTableField extTableField = new ExtTableField();
+            extTableField.setType("input");
+            extTableField.setTypeName("单行输入");
+            extTableField.setIcon("icon_single-line_outlined");
+            extTableField.setId(UUIDUtil.getUUID().toString());
+            extTableField.setSettings(ExtTableField.ExtTableFieldSetting.builder()
+                    .name(tableField.getFieldName())
+                    .placeholder("")
+                    .required(false)
+                    .unique(false)
+                    .inputType("text")
+                    .mapping(ExtTableField.ExtTableFieldMapping.builder()
+                            .columnName(UUIDUtil.getUUID().toString())
+                            .type(ExtTableField.BaseType.nvarchar)
+                            .build())
+                    .build());
+            extFields.add(extTableField);
+        }
+        String name = filename.substring(0, filename.lastIndexOf("."));
+        dataFillForm.setName(name);
+        dataFillForm.setTableName(UUIDUtil.getUUID().toString());
+        dataFillForm.setDatasource("default-built-in");
+        dataFillForm.setPid(pid);
+        dataFillForm.setLevel(1);
+        dataFillForm.setForms(gson.toJson(extFields));
+        dataFillForm.setCreateIndex(false);
+        dataFillForm.setTableIndexes("[]");
+        dataFillForm.setCommitNewUpdate(false);
+        dataFillForm.setNodeType("form");
+        return dataFillForm;
+    }
+
 }

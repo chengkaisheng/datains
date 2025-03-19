@@ -15,6 +15,7 @@ import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.dto.datasource.MysqlConfiguration;
 import io.datains.dto.datasource.TableField;
 import io.datains.exception.DataInsException;
+import io.datains.fill.constants.FormLogEnum;
 import io.datains.fill.dto.DataFillCommitLogDTO;
 import io.datains.fill.dto.ExtTableField;
 import io.datains.fill.entry.DataFillFormWithBLOBs;
@@ -61,7 +62,6 @@ public class DataFillDataService {
     private ExtDataFillFormMapper extDataFillFormMapper;
     @Resource
     private DatasourceService datasource;
-
     @Resource
     private DataFillLogService dataFillLogService;
 
@@ -399,7 +399,7 @@ public class DataFillDataService {
         jdbcProvider.execWithPreparedStatement(datasourceRequest);
 
         for (String id : ids) {
-            dataFillLogService.saveCommitOperation(DataFillLogService.COMMIT_OPERATE_DELETE, dataFillForm.getId(), id);
+            dataFillLogService.saveCommitOperation(FormLogEnum.DELETE.getCode(), dataFillForm.getId(), id);
         }
 
     }
@@ -648,7 +648,7 @@ public class DataFillDataService {
 
         int result = jdbcProvider.execWithPreparedStatement(datasourceRequest);
 
-        dataFillLogService.saveCommitOperations(DataFillLogService.COMMIT_OPERATE_INSERT, dataFillForm.getId(), ids);
+        dataFillLogService.saveCommitOperations(FormLogEnum.INSERT.getCode(), dataFillForm.getId(), ids);
 
         return ids;
     }
@@ -716,7 +716,7 @@ public class DataFillDataService {
             int result = jdbcProvider.execWithPreparedStatement(datasourceRequest);
         }
 
-        dataFillLogService.saveCommitOperation(DataFillLogService.COMMIT_OPERATE_UPDATE, dataFillForm.getId(), rowId);
+        dataFillLogService.saveCommitOperation(FormLogEnum.UPDATE.getCode(), dataFillForm.getId(), rowId);
 
         return rowId;
     }

@@ -15,9 +15,22 @@
                 #{updater})
     </insert>
     <select id="getByFormId" resultType="io.datains.fill.entry.DataFillData">
-        SELECT *
+        SELECT id,
+               form_id,
+               version,
+               creator,
+               create_time,
+               updater,
+               update_time,
+               is_delete
         FROM data_fill_data
         WHERE form_id = #{formId}
+        order by version desc
+    </select>
+    <select id="getById" resultType="io.datains.fill.entry.DataFillData">
+        select *
+        from data_fill_data
+        where id = #{id}
     </select>
     <update id="deleteByFormIds">
         delete from data_fill_data

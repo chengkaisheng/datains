@@ -49,6 +49,9 @@ public class DataFillController {
     @ApiIgnore
     @PostMapping("/form/save")
     public ResultHolder saveForm(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
+        if ("selfReport".equals(dataFillForm.getNodeType())) {
+            return dataFillService.saveCustomForm(dataFillForm);
+        }
         return dataFillService.saveForm(dataFillForm);
     }
 
@@ -251,12 +254,18 @@ public class DataFillController {
     @ApiIgnore
     @PostMapping("/form/saveFormData")
     public void saveFormDate(@RequestBody DataFillFormWithBLOBs dataFillForm) {
-        dataFillService.saveFormData(dataFillForm);
+        dataFillService.saveFormData(dataFillForm.getId(), dataFillForm.getFormData());
     }
 
     @ApiIgnore
-    @PostMapping("/form/getFormData/{id}")
-    public DataFillData getFormData(@PathVariable String id) {
-        return dataFillService.getFormData(id);
+    @GetMapping("/form/getFormData/{formId}")
+    public List<DataFillData> getFormData(@PathVariable String formId) {
+        return dataFillService.getFormData(formId);
+    }
+
+    @ApiIgnore
+    @GetMapping("/form/getFormDataData/{id}")
+    public DataFillData getFormDataData(@PathVariable String id) {
+        return dataFillService.getFormDataData(id);
     }
 }

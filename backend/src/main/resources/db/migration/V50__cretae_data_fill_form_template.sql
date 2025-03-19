@@ -43,3 +43,14 @@ INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_typ
 VALUES ('data_fill_template_use', 'data_fill_template', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'system', NULL,
         NULL,
         NULL, NULL);
+
+CREATE TABLE `data_fill_form_log`
+(
+    `id`          varchar(50)  NOT NULL,
+    `form_id`     varchar(50)  NOT NULL,
+    `description` varchar(255) DEFAULT NULL,
+    `operate`     varchar(50)  NOT NULL,
+    `commit_by`   varchar(255) NOT NULL,
+    `commit_time` datetime     DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+);

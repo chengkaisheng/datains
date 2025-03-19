@@ -11,6 +11,7 @@ import io.datains.fill.request.DataFillFormTemplateRequest;
 import io.datains.fill.service.DataFillFormTemplateService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
@@ -39,10 +40,14 @@ public class DataFillFormTemplateController {
 
     @ApiIgnore
     @PostMapping("/form/save")
-    public ResultHolder saveFormTemplate(@RequestBody DataFillFormTemplateWithBLOBs dataFillFormTemplate) throws Exception {
+    public ResultHolder saveFormTemplate(@RequestBody DataFillFormTemplateWithBLOBs dataFillFormTemplate) {
         return templateService.saveFormTemplate(dataFillFormTemplate);
     }
-
+    @ApiIgnore
+    @PostMapping("/form/updateName")
+    public ResultHolder updateFormName(@RequestBody DataFillFormTemplateWithBLOBs dataFillFormTemplate) {
+        return templateService.updateFormTemplate(dataFillFormTemplate);
+    }
     @ApiIgnore
     @PostMapping("/form/update")
     public ResultHolder updateForm(@RequestBody DataFillFormTemplateWithBLOBs dataFillFormTemplate) {
@@ -61,7 +66,7 @@ public class DataFillFormTemplateController {
 
     @ApiIgnore
     @PostMapping("/form/delete/{id}")
-    public void deleteForm(@PathVariable String id) throws Exception {
+    public void deleteForm(@PathVariable String id) {
         templateService.deleteFormTemplate(id);
     }
 
@@ -69,5 +74,10 @@ public class DataFillFormTemplateController {
     @PostMapping("/form/tree")
     public List<DataFillFormTemplateDTO> tree(@RequestBody DataFillFormTemplateRequest request) {
         return templateService.tree(request);
+    }
+    @ApiIgnore
+    @PostMapping("/form/excel/excelUploadToFrom/{pid}")
+    public void excelUploadToFrom(@RequestParam("file") MultipartFile file, @PathVariable String pid) throws Exception {
+        templateService.excelUploadToFrom(file, pid);
     }
 }

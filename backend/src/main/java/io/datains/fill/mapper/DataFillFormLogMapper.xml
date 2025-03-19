@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.datains.fill.mapper.DataFillFormLogMapper">
+
+    <insert id="insert">
+        insert into data_fill_form_log (id, form_id, description, operate, commit_by)
+        values (#{id}, #{formId}, #{description}, #{operate}, #{commitBy})
+    </insert>
+    <select id="select" resultType="io.datains.fill.dto.DataFillFormLogDTO">
+        select
+        dffl.*,
+        su.nick_name as creatorName
+        from data_fill_form_log dffl
+        left join sys_user su on su.username = dffl.commit_by
+        <where>
+            <if test="formId != null and formId != ''">
+                and dffl.form_id = #{formId}
+            </if>
+        </where>
+        order by dffl.commit_time desc
+    </select>
+</mapper>
