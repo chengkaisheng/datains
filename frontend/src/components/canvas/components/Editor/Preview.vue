@@ -543,8 +543,6 @@ export default {
       }
     },
     exportDetailData(chartInfo) {
-      // console.log('123123');
-      
       this.showChartInfo = chartInfo.chart
       this.exportExcel()
     },
@@ -568,14 +566,20 @@ export default {
         "cache": false,
         excelExportFlag: true
       }
-      let res = await viewData(this.showChartInfo.id, this.panelInfo.id, data)
-      if(res.success) {
-        excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
+      try {
+        let res = await viewData(this.showChartInfo.id, this.panelInfo.id, data)
+        if(res.success) {
+          excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
+          export_json_to_excel(excelHeader, excelData, excelName)
+        }
+        setTimeout(() => {
+          localStorage.setItem('exportDataFlag', 'false')
+        }, 2000)
+      } catch(err) {
+        setTimeout(() => {
+          localStorage.setItem('exportDataFlag', 'false')
+        }, 2000)
       }
-      export_json_to_excel(excelHeader, excelData, excelName)
-      setTimeout(() => {
-        localStorage.setItem('exportDataFlag', 'false')
-      }, 1000)
     },
     // exportExcel() {
     //   this.$refs['userViewDialog'].exportExcel()

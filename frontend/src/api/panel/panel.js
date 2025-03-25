@@ -56,12 +56,13 @@ export function groupTree(data, loading = true, timeout = 60000) {
   })
 }
 
-export function viewData(id, panelId, data) {
+export function viewData(id, panelId, data, loading = true) {
   console.log('view/getData/2222222222------')
   return request({
     url: '/chart/view/getData/' + id + '/' + panelId,
     method: 'post',
-    hideMsg: true,
+    hideMsg: false,
+    loading: loading,
     data
   })
 }

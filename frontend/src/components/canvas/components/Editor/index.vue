@@ -1118,7 +1118,8 @@ export default {
       linkJumpSetVisible: false,
       linkJumpSetViewId: null,
       editShow: false,
-      currentComponentType: ''
+      currentComponentType: '',
+      selectedIndex: 0
     }
   },
   computed: {
@@ -1723,10 +1724,15 @@ export default {
       this.chartDetailsVisible = true
     },
     exportExcel() {
-      this.$refs['userViewDialog'].exportExcel()
+      console.log(123123);
+      this.$refs.wrapperChild[this.selectedIndex].exportDetailData()
     },
+    // exportExcel() {
+    //   this.$refs['userViewDialog'].exportExcel()
+    // },
     showViewDetails(index) {
       console.log('第几个？', index)
+      this.selectedIndex = index
       this.$refs.wrapperChild[index].openChartDetailsDialog()
     },
     exportDetailData(index) {
