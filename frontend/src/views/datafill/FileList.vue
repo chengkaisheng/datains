@@ -2,7 +2,7 @@
   <div class="fill_box">
     <div class="header" style="display: flex; justify-content: space-between;">
       <div>
-        <el-button type="primary" @click="handleFill">填报</el-button>
+        <el-button v-if="!isTemplate" type="primary" @click="handleFill">填报</el-button>
         <el-input v-model="searchName" placeholder="请输入内容" clearable style="width: 200px;margin-left: 10px;" @keyup.enter.native="getDataFill()">
           <el-button slot="append" icon="el-icon-search" @click="getDataFill()" />
         </el-input>
@@ -12,44 +12,75 @@
       </div>
     </div>
     <div v-loading="tableLoading" class="list">
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="name" label="名称" width="200" />
-        <el-table-column prop="nodeType" label="类型" width="200">
+      <el-table ref="logTable" :height="tableHeight" :data="tableData" style="width: 100%">
+        <el-table-column prop="name" label="名称" width="180" />
+        <el-table-column v-if="!isTemplate" prop="nodeType" label="类型" width="100">
           <template slot-scope="scope">
-            <span v-if="scope.row.nodeType === 'form'">模板填报</span>
+            <span v-if="scope.row.nodeType === 'form'">表单填报</span>
             <span v-else-if="scope.row.nodeType === 'selfReport'">自主填报</span>
           </template>
         </el-table-column>
-        <el-table-column prop="creatorName" label="创建人" width="200" />
-        <el-table-column prop="createTime" label="创建时间" :formatter="formatDate" />
-        <el-table-column label="操作" width="300">
+        <el-table-column prop="creatorName" label="创建人" width="150" />
+        <el-table-column prop="createTime" label="创建时间" :formatter="formatDate" width="180" />
+        <el-table-column v-if="!isTemplate" prop="status" width="100" >
+          <template slot="header">
+            <div>
+              <span style="margin-right: 5px;">状态</span>
+              <el-tooltip class="item" effect="dark" content="当前表单是否可在移动端进行填报" placement="top">
+                <i class="el-icon-info"></i>
+              </el-tooltip>
+            </div>
+          </template>
+          <template slot-scope="scope">
+            <el-switch :disabled="!hasPermission(scope.row.privileges, 'form_update')" v-if="scope.row.nodeType === 'form'" @change="handleStatusChange(scope.row)" v-model="scope.row.status" :active-value="1" :inactive-value="0" />
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="400" fixed="right">
           <template slot-scope="scope">
             <el-button
-              v-if="hasDataPermission('export', scope.row.privileges)"
+              v-if="hasPermission(scope.row.privileges, 'export')"
               size="mini"
               type="success"
               @click="handleFileDownload(scope.row)"
             >下载</el-button>
             <el-button
-              v-if="scope.row.nodeType === 'selfReport' && hasDataPermission('use', scope.row.privileges) && !hasDataPermission('write', scope.row.privileges)"
+              v-if="scope.row.nodeType === 'selfReport' && hasPermission(scope.row.privileges, 'self_report_read') && !hasPermission(scope.row.privileges, 'self_report_update')"
               size="mini"
               type="warning"
               @click="handleFilePreview(scope.row)"
             >在线查看</el-button>
             <el-button
-              v-if="scope.row.nodeType === 'selfReport' && hasDataPermission('write', scope.row.privileges)"
+              v-if="scope.row.nodeType === 'selfReport' && hasPermission(scope.row.privileges, 'self_report_update')"
               size="mini"
               type="warning"
               @click="handleExcelEdit(scope.row)"
             >在线编辑</el-button>
             <el-button
-              v-if="scope.row.nodeType === 'form'"
+              v-if="!isTemplate && hasPermission(scope.row.privileges, 'read')"
+              size="mini"
+              type="warning"
+              @click="handlePerviewLog(scope.row)"
+            >查看日志</el-button>
+            <el-button
+              v-if="!isTemplate && scope.row.nodeType === 'form' && hasPermission(scope.row.privileges, 'form_read_data')"
               size="mini"
               type="primary"
               @click="handleDetail(scope.row)"
             >详情</el-button>
             <el-button
-              v-if="hasDataPermission('manage', scope.row.privileges)"
+              v-if="isTemplate && scope.row.nodeType === 'form' && hasPermission(scope.row.privileges, 'template_read')"
+              size="mini"
+              type="primary"
+              @click="handleDetail(scope.row)"
+            >预览</el-button>
+            <el-button
+              v-if="isTemplate && scope.row.nodeType === 'form' && hasPermission(scope.row.privileges, 'template_update')"
+              size="mini"
+              type="primary"
+              @click="handleEditTemplate(scope.row)"
+            >编辑</el-button>
+            <el-button
+              v-if="hasPermission(scope.row.privileges, 'delete')"
               size="mini"
               type="danger"
               @click="handleDelete(scope.row)"
@@ -137,14 +168,14 @@
       >
         <el-form-item label="填报类型" prop="type">
           <el-select v-model="fillForm.type" placeholder="请选择填报类型">
-            <el-option label="模板填报" value="form" />
-            <el-option label="自主填报" value="selfReport" />
+            <el-option label="表单填报" value="form" />
+            <el-option v-if="hasPermission(nodeData.privileges, 'self_report')" label="自主填报" value="selfReport" />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="fillForm.type === 'form'" label="选择模板" prop="templateId">
+        <el-form-item v-show="fillForm.type === 'form'" label="选择表单" prop="templateId">
           <el-select
             v-model="fillForm.templateId"
-            placeholder="请选择模板"
+            placeholder="请选择表单"
             filterable
             remote
             :remote-method="remoteSearch"
@@ -163,7 +194,7 @@
           <el-switch v-model="fillForm.isAI" />
         </el-form-item>
         <div v-show="fillForm.type === 'form' && fillForm.templateId" style="display: flex; justify-content: center;">
-          <el-button style="margin-right: 10px;" type="primary" @click="downloadTemplate(fillForm.templateId)">下载模板</el-button>
+          <el-button style="margin-right: 10px;" type="primary" @click="downloadTemplate(fillForm.templateId)">下载表单（模板）</el-button>
           <el-upload
             :action="`${baseUrl}dataFilling/form/${fillForm.templateId}/excel/upload`"
             :multiple="false"
@@ -191,12 +222,33 @@
       </el-form>
     </el-dialog>
 
-    <!-- 添加详情抽屉 -->
+    <!-- 选择版本对话框 进行下载 -->
+    <el-dialog
+      title="下载"
+      :visible.sync="selectedVersionVisible"
+      width="30%">
+      <div>
+        <span>版本：</span>
+        <el-select v-model="versionId" placeholder="请选择">
+          <el-option
+            v-for="item in versionList"
+            :key="item.id"
+            :label="item.version"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeVersionDialog">取 消</el-button>
+        <el-button type="primary" @click="downloadVersionData">下载</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 详情抽屉 -->
     <el-drawer
       v-if="detailDrawer"
-      title="详情"
+      :title="isTemplate ? '预览' : '详情'"
       :visible.sync="detailDrawer"
-      :before-close="handleDetailClose"
       size="100%"
       :wrapper-closable="false"
       direction="rtl"
@@ -205,8 +257,21 @@
       <view-table
         v-else
         :param="displayFormData"
+        :isTemplate="isTemplate"
         @editForm="editForm"
       />
+    </el-drawer>
+
+    <!-- 查看日志 -->
+    <el-drawer
+      v-if="logDrawer"
+      title="查看日志"
+      :visible.sync="logDrawer"
+      size="100%"
+      :wrapper-closable="false"
+      direction="rtl"
+    >
+      <LogList :formId="selectedRow.id"></LogList>
     </el-drawer>
   </div>
 </template>
@@ -215,15 +280,26 @@
 import EditExcel from './editExcel.vue'
 import ViewTable from '@/views/dataFilling/form/ViewTable.vue'
 import NoSelect from '@/views/dataFilling/form/NoSelect.vue'
+import LogList from '@/views/dataFilling/form/LogList.vue'
 import datafill from '@/api/datafill/datafill'
 import { exportExcel } from './export'
+import { hasPermission } from '@/views/dataFilling/permission.js'
 import {
   deleteForm,
   downloadTemplate,
   excelUploadAiHandle,
   getWithPrivileges,
-  saveForm
+  saveForm,
+  getFormData,
+  getFormDataData
 } from '@/views/dataFilling/form/dataFilling'
+import {
+  deleteForm as deleteTemplate,
+  // downloadTemplate as downloadTemplateTemplate,
+  excelUploadAiHandle as excelUploadAiHandleTemplate,
+  getWithPrivileges as getWithPrivilegesTemplate,
+  saveForm as saveFormTemplate
+} from '@/views/dataFilling/template/template'
 import { getToken } from '@/utils/auth'
 import i18n from '@/lang'
 
@@ -234,12 +310,18 @@ export default {
   components: {
     EditExcel,
     ViewTable,
-    NoSelect
+    NoSelect,
+    LogList
   },
   props: {
     nodeData: {
       type: Object,
       default: () => {}
+    },
+    // 是否是模板库
+    isTemplate: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -279,7 +361,7 @@ export default {
           { required: true, message: '请选择填报类型', trigger: 'change' }
         ],
         templateId: [
-          { required: true, message: '请选择模板', trigger: 'change' }
+          { required: true, message: '请选择表单', trigger: 'change' }
         ]
       },
       templateList: [],
@@ -291,18 +373,18 @@ export default {
       templateUploadLoading: false,
       selfUploadLoading: false,
       isReadOnly: false,
-      tableLoading: false
+      tableLoading: false,
+      selectedVersionVisible: false,
+      versionId: undefined,
+      versionName: '',
+      versionList: [],
+      selectedRow: {},
+      tableHeight: 0,
+      logDrawer: false,
+      selectedRow: null,
     }
   },
   watch: {
-    nodeData: {
-      handler(newVal) {
-        if (newVal.id) {
-          this.getDataFill()
-        }
-      },
-      deep: true
-    },
     drawer: {
       handler(newVal) {
         if (newVal === false) {
@@ -311,7 +393,39 @@ export default {
       }
     }
   },
+  mounted() {
+    this.$nextTick(() => {
+      this.calculateTableHeight()
+    })
+    window.addEventListener('resize', this.calculateTableHeight)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.calculateTableHeight)
+  },
   methods: {
+    hasPermission(privileges, type) {
+      return hasPermission(privileges, type)
+    },
+    calculateTableHeight() {
+      // 获取视窗高度
+      const windowHeight = window.innerHeight
+      // 获取表格元素
+      const table = this.$refs.logTable.$el
+      // 获取表格顶部到视窗顶部的距离
+      const tableTop = table.getBoundingClientRect().top
+      // 分页器高度 + 分页器上下margin
+      const paginationHeight = 52
+      // 预留一些底部空间
+      const bottomSpace = 20
+      // 计算表格可用高度
+      this.tableHeight = windowHeight - tableTop - paginationHeight - bottomSpace
+    },
+    clearAll() {
+      this.tableData = []
+      this.goPage = 1
+      this.pageSize = 10
+      this.total = 0
+    },
     handleFill() {
       this.fillDialogVisible = true
       this.fillForm = {
@@ -326,19 +440,19 @@ export default {
       // TODO: 调用获取模板列表接口
       this.getDataFill('form')
     },
-    submitFill() {
-      this.$refs.fillForm.validate((valid) => {
-        if (valid) {
-          if (this.fillForm.type === 'form' && !this.fillForm.templateId) {
-            this.$message.error('请选择模板')
-            return
-          }
-          // TODO: 调用填报提交接口
-          console.log('提交填报', this.fillForm)
-          this.fillDialogVisible = false
-        }
-      })
-    },
+    // submitFill() {
+    //   this.$refs.fillForm.validate((valid) => {
+    //     if (valid) {
+    //       if (this.fillForm.type === 'form' && !this.fillForm.templateId) {
+    //         this.$message.error('请选择模板')
+    //         return
+    //       }
+    //       // TODO: 调用填报提交接口
+    //       console.log('提交填报', this.fillForm)
+    //       this.fillDialogVisible = false
+    //     }
+    //   })
+    // },
     refresh() {
       this.goPage = 1
       this.searchName = ''
@@ -355,16 +469,21 @@ export default {
           nodeType: nodeType || ''
         }
       }
-      datafill.getAllFill(params).then((res) => {
-        console.log('res', res)
+      let method = datafill.getAllFill
+      if (this.isTemplate) {
+        method = datafill.getAllFillTemplate
+      }
+      method(params).then((res) => {
         if (nodeType === 'form') {
           this.templateList = res.data.listObject || []
         } else {
           this.tableData = res.data.listObject || []
           this.total = res.data.itemCount || 0
         }
+        this.calculateTableHeight()
         this.tableLoading = false
       }).catch(() => {
+        this.calculateTableHeight()
         this.tableLoading = false
       })
     },
@@ -383,12 +502,32 @@ export default {
     handleFileDownload(row) {
       if (row.nodeType === 'form') {
         this.downloadTemplate(row.id, row.name)
+      } else {
+        // 需要去选择版本然后下载
+        this.selectedRow = row
+        this.selectedVersionVisible = true
+        this.getVersionList(row.id)
       }
-      datafill.getFormData(row.id).then((res) => {
+    },
+    getVersionList(id) {
+      getFormData(id).then(res => {
+        this.versionList = res.data
+        this.versionId = res.data[0].id
+      })
+    },
+    closeVersionDialog() {
+      this.selectedVersionVisible = false;
+      this.versionId = undefined
+      this.versionName = ''
+    },
+    downloadVersionData() {
+      this.versionName = this.versionList.find(item => item.id == this.versionId).version
+      getFormDataData(this.versionId).then((res) => {
         exportExcel(
           JSON.parse(res.data.formData),
-          `${row.name}`
+          `${this.selectedRow.name}-${this.versionName}`
         )
+        this.closeVersionDialog()
       })
     },
     handleFilePreview(file) {
@@ -401,19 +540,26 @@ export default {
       }
       this.isReadOnly = file.privileges.includes('use')
     },
-    handleExcelEdit(file) {
-      console.log('编辑文件', file)
+    handleExcelEdit(row) {
+      console.log('编辑文件', row)
       this.drawer = true
       this.msg = {
-        id: file.id,
-        name: file.name,
+        id: row.id,
+        name: row.name,
         data: null
       }
       this.isReadOnly = false
     },
+    handlePerviewLog(row) {
+      console.log('row', row);
+      
+      this.selectedRow = row
+      this.logDrawer = true
+    },
     handleDetail(row) {
       this.detailDrawer = true
-      getWithPrivileges(row.id).then((res) => {
+      let method = this.isTemplate ? getWithPrivilegesTemplate : getWithPrivileges
+      method(row.id).then((res) => {
         this.displayFormData = res.data
         console.log('this.displayFormData', this.displayFormData)
       })
@@ -424,7 +570,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteForm(row.id).then((response) => {
+        let method = this.isTemplate ? deleteTemplate : deleteForm
+        method(row.id).then((response) => {
           this.getDataFill()
         })
       }).catch(() => {
@@ -506,7 +653,8 @@ export default {
         nodeType: 'selfReport',
         formData: JSON.stringify(luckysheet.getAllSheets())
       }
-      saveForm(data).then(res => {
+      let method = this.isTemplate ? saveFormTemplate : saveForm
+      method(data).then(res => {
         if (res.success) {
           this.currentFormId = res.data
           this.$message({
@@ -622,15 +770,6 @@ export default {
           }
           if (this.fillForm.isAI) {
             this.excelUploadAiHandle(this.uploadForm.file).then(file => {
-              // console.log('file', file)
-              // const blob = new Blob([file])
-              // const link = document.createElement('a')
-              // link.style.display = 'none'
-              // link.href = URL.createObjectURL(blob)
-              // link.download = '测试.xlsx' // 下载的文件名
-              // document.body.appendChild(link)
-              // link.click()
-              // document.body.removeChild(link)
               this.uploadExcel(file)
             })
           } else {
@@ -647,10 +786,6 @@ export default {
         this.$message.error('请先选择文件夹')
         return
       }
-      if (!this.nodeData.privileges.includes('write')) {
-        this.$message.error('您没有权限上传文件')
-        return
-      }
       this.uploadDialogVisible = true
       this.uploadForm = {
         name: '',
@@ -659,6 +794,7 @@ export default {
       this.fileList = []
     },
     downloadTemplate(id, name) {
+      // let method = this.isTemplate ? downloadTemplateTemplate : downloadTemplate
       downloadTemplate(id).then(res => {
         const blob = new Blob([res])
         const link = document.createElement('a')
@@ -672,12 +808,12 @@ export default {
     },
     beforeUpload(file) {
       if (!this.fillForm.templateId) {
-        this.$message.error('请选择模板')
+        this.$message.error('请选择表单')
         return
       }
       const template = this.templateList.find(item => item.id === this.fillForm.templateId)
-      if (!template.privileges.includes('write')) {
-        this.$message.error('您没有权限上传文件')
+      if (!this.hasPermission(template.privileges, 'form_filling')) {
+        this.$message.error('暂无该表单填报权限！')
         return
       }
       this.templateUploadLoading = true
@@ -709,6 +845,7 @@ export default {
         type: 'success',
         message: '上传成功！'
       })
+      this.fillDialogVisible = false
     },
     formatDate(row, column, cellValue) {
       if (cellValue) {
@@ -731,8 +868,11 @@ export default {
         })
         .catch((_) => {})
     },
+    handleEditTemplate(row) {
+      this.$router.push({ name: 'data-filling-form-create', query: { id: row.id, isTemplate: this.isTemplate }})
+    },
     editForm(data) {
-      console.log('编辑表单', data)
+      this.$router.push({ name: 'data-filling-form-create', query: { id: data.id, isTemplate: this.isTemplate }})
     },
     remoteSearch(query) {
       if (query !== '') {
@@ -746,7 +886,11 @@ export default {
             nodeType: 'form'
           }
         }
-        datafill.getAllFill(params).then((res) => {
+        let method = datafill.getAllFill
+        if (this.isTemplate) {
+          method = datafill.getAllFillTemplate
+        }
+        method(params).then((res) => {
           this.templateList = res.data.listObject || []
           this.loading = false
         }).catch(() => {
@@ -762,8 +906,8 @@ export default {
     excelUploadAiHandle(file) {
       const formData = new FormData()
       formData.append('file', file)
-
-      return excelUploadAiHandle(formData).then(res => {
+      let method = this.isTemplate ? excelUploadAiHandleTemplate : excelUploadAiHandle
+      return method(formData).then(res => {
         const file = new File([res], `${this.uploadForm.file}.xlsx`, {
           type: res.type,
           lastModified: Date.now()
@@ -774,6 +918,14 @@ export default {
         this.templateUploadLoading = false
         this.selfUploadLoading = false
         return false
+      })
+    },
+    handleStatusChange(row) {
+      datafill.updateFormStatus(row.id, row.status).then(res => {
+        this.$message.success('更新状态成功')
+        this.getDataFill()
+      }).catch(() => {
+        this.$message.error('更新状态失败')
       })
     }
   }

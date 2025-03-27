@@ -21,26 +21,26 @@
             @click="showTypePopup = true"
           />
 
-          <!-- 任务选择 -->
+          <!-- 文件夹选择 -->
           <van-field
             v-model="formData.taskName"
             is-link
             readonly
-            name="选择任务"
-            label="选择任务"
-            placeholder="请选择任务"
+            name="选择文件夹"
+            label="选择文件夹"
+            placeholder="请选择文件夹"
             @click="handleShowTaskPopup"
           />
 
-          <!-- 模板选择 - 仅在模板填报时显示 -->
+          <!-- 表单选择 - 仅在表单填报时显示 -->
           <van-field
-            v-show="formData.type === '模板填报'"
+            v-show="formData.type === '表单填报'"
             v-model="formData.template"
             is-link
             readonly
-            name="选择模板"
-            label="选择模板"
-            placeholder="请选择模板"
+            name="选择表单"
+            label="选择表单"
+            placeholder="请选择表单"
             @click="showTemplatePopup = true"
           />
 
@@ -57,8 +57,8 @@
 
         <!-- 按钮区域 -->
         <div style="margin: 16px">
-          <van-button v-show="formData.type === '模板填报'" round block type="primary" native-type="button" @click="downloadTemplateFn">
-            下载模板
+          <van-button v-show="formData.type === '表单填报'" round block type="primary" native-type="button" @click="downloadTemplateFn">
+            下载表单（模板）
           </van-button>
           <van-button  round block type="primary" native-type="button" style="margin-top: 16px" @click="handleUploadClick">
             上传
@@ -86,12 +86,12 @@
       </van-cell-group>
     </van-popup>
 
-    <!-- 任务选择弹窗 -->
+    <!-- 文件夹选择弹窗 -->
     <van-popup v-model:show="showTaskPopup" position="bottom" :style="{ height: '60%' }">
       <div class="task-popup">
         <div class="task-popup-header">
           <van-nav-bar
-            title="选择任务"
+            title="选择文件夹"
             left-text="取消"
             right-text="确认"
             @click-left="closeTaskPopup"
@@ -116,12 +116,12 @@
       </div>
     </van-popup>
 
-    <!-- 模板选择弹窗 -->
+    <!-- 表单选择弹窗 -->
     <van-popup v-model:show="showTemplatePopup" position="bottom" :style="{ height: '60%' }">
       <div class="template-popup">
         <div class="template-popup-header">
           <van-nav-bar
-            title="选择模板"
+            title="选择表单"
             left-text="取消"
             right-text="确认"
             @click-left="closeTemplatePopup"
@@ -129,7 +129,7 @@
           />
           <van-search
             v-model="templateSearchValue"
-            placeholder="请输入模板名称"
+            placeholder="请输入表单名称"
             @update:model-value="handleTemplateSearch"
           />
         </div>
@@ -188,7 +188,7 @@
       v-model:show="drawerVisible"
       position="right"
       :overlay="false"
-      :style="{ width: '100%', height: '100%', opacity: 0 }"
+      style="width: 100%;height: 100%;"
     >
       <editExcel
         v-if="drawerVisible"
@@ -209,6 +209,7 @@ import { showLoadingToast, showToast } from 'vant'
 import TreeNode from './TreeNode.vue'
 import { downloadTemplate, getAIData, getTaskTree, getTemplates, saveSelfReport, uploadData } from '@/api/datafill'
 import editExcel from '@/components/excel/editExcel.vue'
+import { hasPermission } from '@/utils/permission.js'
 // import LuckyExcel from 'luckyexcel'
 
 const router = useRouter()
@@ -229,20 +230,20 @@ const showTemplatePopup = ref(false)
 const showUploadPopup = ref(false)
 
 // 填报类型列表
-const fillTypes = ['模板填报', '自主填报']
+const fillTypes = ['表单填报', '自主填报']
 
-// 任务选择相关
+// 文件夹选择相关
 const selectedTask = ref({})
 const selectedTaskId = ref('')
 const activeTaskIndex = ref(0)
 const taskSearchValue = ref('')
 const taskTree = ref([])
 
-// 模板选择相关
+// 表单选择相关
 const templateSearchValue = ref('')
 const selectedTemplateId = ref('')
 
-// 模板列表
+// 表单列表
 const templates = ref([])
 
 const fileInput = ref(null)
@@ -285,7 +286,7 @@ const processTreeData = (items) => {
   }))
 }
 
-// 获取任务树数据
+// 获取文件夹树数据
 const loadTaskTree = async () => {
   const loading = showLoadingToast({
     message: '加载中...',
@@ -301,14 +302,14 @@ const loadTaskTree = async () => {
     const processedData = processTreeData(data || [])
     taskTree.value = processedData
   } catch (error) {
-    console.error('获取任务树失败：', error)
-    showToast('获取任务列表失败')
+    console.error('获取文件夹树失败：', error)
+    showToast('获取文件夹列表失败')
   } finally {
     loading.close()
   }
 }
 
-// 获取模板列表
+// 获取表单列表
 const loadTemplates = async () => {
   const loading = showLoadingToast({
     message: '加载中...',
@@ -319,31 +320,32 @@ const loadTemplates = async () => {
     const params = {
       pid: formData.value.taskId,
       name: templateSearchValue.value,
-      nodeType: 'form'
+      nodeType: 'form',
+      status: 1
     }
     const { data } = await getTemplates(params)
-    console.log('模板数据:', data)
+    console.log('表单数据:', data)
     templates.value = data.listObject || []
   } catch (error) {
-    console.error('获取模板列表失败：', error)
-    showToast('获取模板列表失败')
+    console.error('获取表单列表失败：', error)
+    showToast('获取表单列表失败')
   } finally {
     loading.close()
   }
 }
 
-// 显示任务选择弹窗
+// 显示文件夹选择弹窗
 const handleShowTaskPopup = () => {
   showTaskPopup.value = true
   loadTaskTree()
 }
 
-// 任务搜索处理
+// 文件夹搜索处理
 const handleTaskSearch = () => {
   loadTaskTree()
 }
 
-// 获取选中任务的完整路径名称
+// 获取选中文件夹的完整路径名称
 const getSelectedTaskFullName = () => {
   const findTask = (items, id, parentPath = '') => {
     for (const item of items) {
@@ -364,16 +366,16 @@ const getSelectedTaskFullName = () => {
   return findTask(taskTree.value, selectedTaskId.value)
 }
 
-// 关闭任务选择弹窗
+// 关闭文件夹选择弹窗
 const closeTaskPopup = () => {
   showTaskPopup.value = false
   selectedTaskId.value = formData.value.taskId
 }
 
-// 确认任务选择
+// 确认文件夹选择
 const confirmTaskSelection = () => {
   if (!selectedTaskId.value) {
-    showToast('请选择任务')
+    showToast('请选择文件夹')
     return
   }
   formData.value.taskId = selectedTaskId.value
@@ -384,53 +386,53 @@ const confirmTaskSelection = () => {
 // 选择处理函数
 const selectType = (type) => {
   formData.value.type = type
-  // 切换类型时清空模板相关数据
-  if (type === '模板填报') {
+  // 切换类型时清空表单相关数据
+  if (type === '表单填报') {
     formData.value.template = ''
     selectedTemplateId.value = ''
   }
   showTypePopup.value = false
 }
 
-// 模板搜索处理
+// 表单搜索处理
 const handleTemplateSearch = () => {
   loadTemplates()
 }
 
-// 关闭模板选择弹窗
+// 关闭表单选择弹窗
 const closeTemplatePopup = () => {
   showTemplatePopup.value = false
   templateSearchValue.value = ''
   selectedTemplateId.value = ''
 }
 
-// 确认模板选择
+// 确认表单选择
 const confirmTemplateSelection = () => {
   const selectedTemplate = templates.value.find(t => t.id === selectedTemplateId.value)
   if (!selectedTemplate) {
-    showToast('请选择模板')
+    showToast('请选择表单')
     return
   }
   formData.value.template = selectedTemplate.name
   showTemplatePopup.value = false
 }
 
-// 选择模板
+// 选择表单
 const selectTemplate = (template) => {
   selectedTemplateId.value = template.id
   formData.value.template = template.name
-  // 保存模板的权限信息
+  // 保存表单的权限信息
   selectedTemplate.value = template
 }
 
-// 下载模板
+// 下载表单
 const downloadTemplateFn = () => {
-  if (formData.value.type !== '模板填报') {
-    showToast('请先选择模板填报类型')
+  if (formData.value.type !== '表单填报') {
+    showToast('请先选择表单填报类型')
     return
   }
   if (!formData.value.template || !selectedTemplateId.value) {
-    showToast('请先选择模板')
+    showToast('请先选择表单')
     return
   }
   downloadTemplate(selectedTemplateId.value).then(res => {
@@ -448,7 +450,7 @@ const downloadTemplateFn = () => {
 // 表单提交
 const onSubmit = () => {
   if (!formData.value.taskId) {
-    showToast('请选择任务')
+    showToast('请选择文件夹')
     return
   }
   // TODO: 实现表单提交逻辑
@@ -467,7 +469,7 @@ const onClickItem = (item) => {
   selectedTaskId.value = item.id
 }
 
-// 监听模板弹窗显示状态
+// 监听表单弹窗显示状态
 watch(showTemplatePopup, (newVal) => {
   if (newVal && formData.value.taskId) {
     loadTemplates()
@@ -604,7 +606,7 @@ const handleUploadSubmit = async () => {
       const res = await getAIData(formData1)
 
       // 将 AI 处理后的数据转换为 Excel 文件
-      let file = new File([res], '模板.xlsx', {
+      let file = new File([res], '表单.xlsx', {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         lastModified: Date.now()
       })
@@ -671,27 +673,27 @@ const uploadExcel = (file) => {
 // 点击上传按钮
 const handleUploadClick = () => {
   if (!formData.value.taskId) {
-    showToast('请选择任务')
+    showToast('请选择文件夹')
     return
   }
 
-  if (formData.value.type === '模板填报') {
+  if (formData.value.type === '表单填报') {
     if (!formData.value.template || !selectedTemplateId.value) {
-      showToast('请先选择模板')
+      showToast('请先选择表单')
       return
     }
 
-    // 检查模板权限
+    // 检查表单权限
     if (!selectedTemplate.value || !selectedTemplate.value.privileges.includes('write')) {
-      showToast('您没有该模板的使用权限')
+      showToast('暂无该表单填报权限！')
       return
     }
 
     fileInput.value.click()
   } else {
-    // 自主填报时检查任务权限
+    // 自主填报时检查文件夹权限
     if (!selectedTask.value || !selectedTask.value.privileges?.includes('write')) {
-      showToast('您没有该任务的填报权限')
+      showToast('暂无该文件夹自主填报权限！')
       return
     }
 
@@ -713,12 +715,11 @@ const saveSelfReportFn = async () => {
     nodeType: 'selfReport',
     pid: selectedTask.value.id
   }
-  drawerVisible.value = false
+  // drawerVisible.value = false
   let res = await saveSelfReport(data)
   if(res.success) {
     formDataId.value = res.data
     showToast('保存成功')
-    drawerVisible.value = false
   } else {
     showToast(res.message || '保存失败')
   }

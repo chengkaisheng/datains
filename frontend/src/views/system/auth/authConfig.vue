@@ -121,13 +121,20 @@ export default {
             authType: 'data_fill',
             authTargets: 'dept,role,user'
           },
-          // {
-          //   tabName: this.$t('auth.menuAuth'),
-          //   head: this.$t('auth.menuAuthHead'),
-          //   direction: 'source',
-          //   authType: 'menu',
-          //   authTargets: 'dept,role,user'
-          // }
+          {
+            tabName: this.$t('auth.templateAuth'),
+            head: this.$t('auth.templateAuthHead'),
+            direction: 'source',
+            authType: 'data_fill_template',
+            authTargets: 'dept,role,user'
+          },
+          {
+            tabName: this.$t('auth.menuAuth'),
+            head: this.$t('auth.menuAuthHead'),
+            direction: 'source',
+            authType: 'menu',
+            authTargets: 'dept,role,user'
+          }
         ],
       targetActiveName: null,
       sourceActiveName: null,

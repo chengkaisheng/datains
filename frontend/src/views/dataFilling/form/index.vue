@@ -1,19 +1,22 @@
 <script>
+import { filter, forEach, find, split, get, groupBy, keys, includes, cloneDeep } from 'lodash-es'
 import DeContainer from '@/components/datains/DeContainer.vue'
 import DeAsideContainer from '@/components/datains/DeAsideContainer.vue'
 import NoSelect from './NoSelect.vue'
 import ViewTable from './ViewTable.vue'
+import datafill from '@/api/datafill/datafill'
 import { listForm, saveForm, updateFormName, deleteForm, getWithPrivileges, uploadExcelForm, excelUploadAiHandle } from '@/views/dataFilling/form/dataFilling'
-import { forEach, cloneDeep, find } from 'lodash-es'
-import { hasPermission } from '@/directive/Permission'
+import { listForm as listFormTemplate } from '@/views/dataFilling/template/template'
+// import { hasDataPermission } from '@/utils/permission'
+import { hasPermission } from '../permission.js'
 import DataFillingFormMoveSelector from './MoveSelector.vue'
 // import DataTable from '@/views/datafill/index.vue'
 import FileTree from './components/FileTree.vue'
 import FileList from '@/views/datafill/FileList.vue'
-
+import DeTree from './components/DeTree.vue'
 export default {
   name: 'DataFillingForm',
-  components: { DataFillingFormMoveSelector, DeAsideContainer, DeContainer, NoSelect, ViewTable, FileList, FileTree },
+  components: { DataFillingFormMoveSelector, DeAsideContainer, DeContainer, NoSelect, ViewTable, FileList, FileTree, DeTree },
   data() {
     return {
       selectedItem: undefined,
@@ -34,7 +37,13 @@ export default {
       updateFormData: {},
       showUpdateName: false,
       displayFormData: undefined,
-      nodeData: {}
+      nodeData: {},
+      showTemplate: false,
+      templateForm: {},
+      folderTreeShow: false,
+      folders: [],
+      templateList: [],
+      selectedParent: null,
     }
   },
   computed: {
@@ -42,7 +51,20 @@ export default {
       const result = []
       this.flattenFolder(this.formList, result)
       return result
-    }
+    },
+    isAdmin() {
+      return this.$store.state.user.user.username === 'admin'
+    },
+    selectDatasets() {
+      const result = []
+      this.templateFlattenFolder(this.folders, result)
+      return result
+    },
+    // 数据填报下的菜单
+    menusList() {
+      let dataFilling = this.$store.state.permission.routes.find(item => item.name === 'data-filling')
+      return dataFilling ? dataFilling.children : []
+    },
   },
   mounted() {
     this.treeLoading = true
@@ -74,8 +96,20 @@ export default {
     })
   },
   methods: {
-    hasPermission(binding) {
-      return hasPermission(binding)
+    hasMenuPermission(menuName) {
+      return this.menusList.findIndex(menu => menu.name === menuName) !== -1
+    },
+    hasPermission(privileges, type) {
+      return hasPermission(privileges, type)
+    },
+    filterListDeep(list) {
+      return filter(list, item => {
+        const hasChildren = item.children && item.children.length > 0
+        if (item.children) {
+          this.filterListDeep(item.children)
+        }
+        return hasChildren
+      })
     },
     createFolder(folder) {
       this.folderForm.name = undefined
@@ -192,6 +226,8 @@ export default {
           }).then(res => {
             this.formList = res.data || []
           })
+          this.nodeData = {}
+          this.$refs.fileListRef.clearAll()
         })
       }).catch(() => {
       })
@@ -228,6 +264,10 @@ export default {
         this.createExcel(data)
       } else if (data.createType === 'excelAI') {
         this.createExcelAI(data)
+      } else if (data.createType === 'template') {
+        this.showTemplate = true
+        this.selectedParent = data
+        this.getTemplateTree(data)
       }
     },
     createForm(data) {
@@ -274,7 +314,9 @@ export default {
             })
             // 刷新填报列表
             this.nodeData = data
-            this.$refs.fileListRef.getDataFill()
+            this.$nextTick(() => {
+              this.$refs.fileListRef.getDataFill()
+            })
           })
         })
       }
@@ -326,7 +368,9 @@ export default {
           })
           // 刷新填报列表
           this.nodeData = data
-          this.$refs.fileListRef.getDataFill()
+          this.$nextTick(() => {
+            this.$refs.fileListRef.getDataFill()
+          })
         })
       }
       
@@ -334,6 +378,95 @@ export default {
       document.body.appendChild(input)
       input.click()
       document.body.removeChild(input)
+    },
+    templateFilterMethod() {},
+    getTemplateList() {
+      if(!this.templateForm.folder) return;
+      const params = {
+        goPage: 1,
+        pageSize: 10000,
+        data: {
+          pid: this.templateForm.folder,
+          name: '',
+          nodeType: ''
+        }
+      }
+      datafill.getAllFillTemplate(params).then((res) => {
+        this.templateList = res.data.listObject || []
+      })
+    },
+    getTemplateTree(data) {
+      listFormTemplate({ nodeType: 'folder' }).then((val) => {
+        this.folders = this.filterListDeep(val.data) || []
+        if (this.templateForm.folder) {
+          this.$nextTick(() => {
+            this.$refs.tree.setCurrentKey(this.templateForm.folder)
+            this.$refs.tree.setCheckedKeys([this.templateForm.folder])
+          })
+        }
+      })
+    },
+    closeTemplate() {
+      this.showTemplate = false
+      this.templateForm = {}
+    },
+    confirmTemplate() {
+      this.$refs['mtemplateForm'].validate((valid) => {
+        if (valid) {
+          let selectedTemplate = this.templateList.find(item => item.id === this.templateForm.template)
+          let params = {
+            commitNewUpdate: selectedTemplate.commitNewUpdate,
+            createIndex: selectedTemplate.createIndex,
+            datasource: null,
+            forms: selectedTemplate.forms,
+            level: this.selectedParent.level,
+            name: this.templateForm.formName,
+            nodeType: 'form',
+            pid: this.selectedParent.id,
+            tableIndexes: selectedTemplate.tableIndexes,
+            tableName: null,
+          }
+          saveForm(params).then(res => {
+            this.closeTemplate()
+            this.nodeData = this.selectedParent
+            this.$nextTick(() => {
+              this.$refs.fileListRef.getDataFill()
+            })
+          })
+        }
+      })
+    },
+    floderNodeClick(data) {
+      this.$nextTick(() => {
+        this.templateForm.folder = data.id
+        this.templateForm.level = data.level + 1
+        this.folderTreeShow = false
+        // if (hasDataPermission('manage', data.privileges)) {
+        //   this.templateForm.folder = data.id
+        //   this.templateForm.level = data.level + 1
+        //   this.folderTreeShow = false
+        // } else {
+        //   this.templateForm.folder = undefined
+        //   this.templateForm.level = undefined
+        // }
+      })
+    },
+    floderFilterNode(value, data) {
+      if (!value) return true
+      return data.name.indexOf(value) !== -1
+    },
+    filterMethod(val) {
+      if (!val) this.$refs.tree.filter(val)
+      this.$refs.tree.filter(val)
+    },
+    templateFlattenFolder(list, result = []) {
+      forEach(list, item => {
+        result.push(item)
+        if (item.children && item.children.length > 0) {
+          this.templateFlattenFolder(item.children, result)
+        }
+      })
+      return result
     },
     filterNode(value, data) {
       if (!value) return true
@@ -366,15 +499,16 @@ export default {
     nodeClick(data, node) {
       // 点击节点 调用接口 获取填报列表
       this.nodeData = data
-      this.$refs.fileListRef.getDataFill()
-      // 展示对应的表数据
-      // if (data.nodeType !== 'folder') {
-      //   getWithPrivileges(data.id).then(res => {
-      //     this.displayFormData = res.data
-      //   })
-      // }
+      this.$nextTick(() => {
+        this.$refs.fileListRef.getDataFill()
+      })
     },
     tabClick() {
+      if (this.activeName === 'template') {
+        this.$router.push('/data-filling/template')
+      } else if (this.activeName === 'log') {
+        this.$router.push('/data-filling/log')
+      }
     },
     flattenFolder(list, result = []) {
       forEach(list, item => {
@@ -385,6 +519,9 @@ export default {
       })
       return result
     },
+    getTemplateFileList() {
+      console.log('getTemplateFileList')
+    }
   }
 }
 </script>
@@ -414,9 +551,9 @@ export default {
           >
 
             <div style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
-              <!-- {{ $t('data_fill.form.form_list_name') }} -->
               文件夹
               <el-button
+                v-show="isAdmin"
                 icon="el-icon-plus"
                 type="text"
                 @click="createFolder({id: '0', level: 0, firstFolder: true})"
@@ -426,10 +563,10 @@ export default {
             <div
               v-if="!formList.length && !treeLoading"
               class="no-tdata"
-            >·
-              <!-- {{ $t('data_fill.form.no_form') }} -->
+            >
               暂无数据
               <span
+                v-show="isAdmin"
                 class="no-tdata-new"
                 @click="() => createFolder({id: '0', level: 0, firstFolder: true})"
               >{{
@@ -455,7 +592,7 @@ export default {
                 >
                   <span style="display: flex; flex: 1; width: 0">
                     <span v-if="data.nodeType === 'folder'">
-                      <svg-icon icon-class="scene" />
+                      <i class="el-icon-folder"></i>
                     </span>
                     <span
                       style="
@@ -468,7 +605,7 @@ export default {
                     >{{ data.name }}</span>
                   </span>
                   <span
-                    v-if="hasDataPermission('manage', data.privileges)"
+                    
                     class="child"
                     @click.stop
                   >
@@ -487,37 +624,51 @@ export default {
                         </span>
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item
+                            v-if="hasPermission(data.privileges, 'create_folder')"
                             :command="beforeData('folder',data)"
                           >
-                            <svg-icon icon-class="scene" />
+                            <i class="el-icon-folder"></i>
                             <span style="margin-left: 5px">{{ $t('data_fill.new_folder') }}</span>
                           </el-dropdown-item>
                           <el-dropdown-item
+                            v-if="hasPermission(data.privileges, 'create_form')"
                             :command="beforeData('form',data)"
                           >
                             <svg-icon
                               icon-class="form"
                               class="ds-icon-scene"
                             />
-                            <span>新建模板</span>
+                            <span>新建表单</span>
                           </el-dropdown-item>
                           <el-dropdown-item
+                            v-if="hasPermission(data.privileges, 'create_form')"
                             :command="beforeData('excel',data)"
                           >
                             <svg-icon
                               icon-class="form"
                               class="ds-icon-scene"
                             />
-                            <span>导入模板</span>
+                            <span>导入表单</span>
                           </el-dropdown-item>
                           <el-dropdown-item
+                            v-if="hasPermission(data.privileges, 'create_form')"
                             :command="beforeData('excelAI',data)"
                           >
                             <svg-icon
                               icon-class="form"
                               class="ds-icon-scene"
                             />
-                            <span>导入模板 AI</span>
+                            <span>导入表单（AI）</span>
+                          </el-dropdown-item>
+                          <el-dropdown-item
+                            v-if="hasPermission(data.privileges, 'create_form')"
+                            :command="beforeData('template',data)"
+                          >
+                            <svg-icon
+                              icon-class="form"
+                              class="ds-icon-scene"
+                            />
+                            <span>导入表单（模板库）</span>
                           </el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
@@ -553,32 +704,14 @@ export default {
                         </span>
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item
+                            v-if="hasPermission(data.privileges, 'update_folder')"
                             icon="el-icon-edit-outline"
                             :command="beforeClickMore('rename', data, node)"
                           >
                             {{ $t('panel.rename') }}
                           </el-dropdown-item>
                           <el-dropdown-item
-                            v-if="data.nodeType !== 'folder'"
-                            icon="el-icon-edit"
-                            :command="beforeClickMore('edit', data, node)"
-                          >
-                            {{ $t('panel.edit') }}
-                          </el-dropdown-item>
-                          <el-dropdown-item
-                            icon="el-icon-right"
-                            :command="beforeClickMore('move', data, node)"
-                          >
-                            {{ $t('dataset.move_to') }}
-                          </el-dropdown-item>
-                          <el-dropdown-item
-                            v-if="data.nodeType !== 'folder'"
-                            icon="el-icon-document-copy"
-                            :command="beforeClickMore('copy', data, node)"
-                          >
-                            {{ $t('dataset.copy') }}
-                          </el-dropdown-item>
-                          <el-dropdown-item
+                            v-if="hasPermission(data.privileges, 'delete')"
                             icon="el-icon-delete"
                             :command="beforeClickMore('delete', data, node)"
                           >
@@ -595,6 +728,24 @@ export default {
 
           </div>
         </el-tab-pane>
+
+        <el-tab-pane
+          v-if="hasMenuPermission('data-filling-template')"
+          name="template"
+        >
+          <span slot="label">
+            模板库
+          </span>
+        </el-tab-pane>
+
+        <el-tab-pane
+          v-if="hasMenuPermission('data-filling-log')"
+          name="log"
+        >
+          <span slot="label">
+            审计日志
+          </span>
+        </el-tab-pane>
         
       </el-tabs>
 
@@ -602,12 +753,6 @@ export default {
     </de-aside-container>
 
     <el-main v-if="activeName === 'forms'" style="padding: 0">
-      <!-- <no-select v-if="!displayFormData" />
-      <view-table
-        v-else
-        :param="displayFormData"
-        @editForm="editForm"
-      /> -->
       <div class="file-container">
         <FileList ref="fileListRef" :nodeData="nodeData" class="file-content" />
       </div>
@@ -663,6 +808,152 @@ export default {
           <el-button
             type="primary"
             @click="doSaveFolder"
+          >{{ $t("commons.confirm") }}
+          </el-button>
+        </el-footer>
+      </el-container>
+    </el-dialog>
+
+    <!-- 从模板库选择模板导入 -->
+    <el-dialog
+      v-dialogDrag
+      append-to-body
+      title="模板库导入"
+      :visible.sync="showTemplate"
+      :show-close="true"
+      width="600px"
+      class="m-dialog"
+    >
+      <el-container
+        v-if="showTemplate"
+        style="width: 100%"
+        direction="vertical"
+      >
+        <el-form
+          ref="mtemplateForm"
+          class="m-form"
+          :model="templateForm"
+          label-position="top"
+          hide-required-asterisk
+          @submit.native.prevent
+        >
+          <el-main>
+            <el-form-item
+              prop="folder"
+              class="form-item"
+            >
+              <template #label>
+                选择文件夹
+                <span
+                  style="color: red"
+                >*</span>
+              </template>
+              <el-popover
+                v-model="folderTreeShow"
+                placement="bottom-start"
+                popper-class="user-popper dataset-filed"
+                width="552"
+                trigger="click"
+              >
+                <el-tree
+                  ref="tree"
+                  :data="folders"
+                  node-key="id"
+                  class="de-tree"
+                  :expand-on-click-node="false"
+                  highlight-current
+                  :filter-node-method="floderFilterNode"
+                  default-expand-all
+                  @node-click="floderNodeClick"
+                >
+                  <span
+                    slot-scope="{ data }"
+                    class="custom-tree-node-dataset"
+                  >
+                    <span>
+                      <i class="el-icon-folder"></i>
+                    </span>
+                    <span
+                      style="
+                        margin-left: 6px;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                      "
+                      :title="data.name"
+                    >{{ data.name }}</span>
+                  </span>
+                </el-tree>
+                <el-select
+                  slot="reference"
+                  v-model="templateForm.folder"
+                  filterable
+                  popper-class="tree-select-dataset"
+                  style="width: 100%"
+                  :filter-method="filterMethod"
+                  :placeholder="$t('commons.please_select')"
+                  required
+                >
+                  <el-option
+                    v-for="item in selectDatasets"
+                    :key="item.label"
+                    :label="item.label"
+                    :value="item.id"
+                  />
+                </el-select>
+              </el-popover>
+            </el-form-item>
+
+            <el-form-item
+              prop="template"
+              class="form-item"
+              :rules="[requiredRule]"
+            >
+              <template #label>
+                选择模板
+                <span
+                  style="color: red"
+                >*</span>
+              </template>
+              <el-select
+                v-model="templateForm.template"
+                filterable
+                style="width: 100%"
+                :filter-method="templateFilterMethod"
+                :placeholder="$t('commons.please_select')"
+                required
+                @focus="getTemplateList"
+              >
+                <el-option
+                  v-for="item in templateList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
+            </el-form-item>
+
+            <el-form-item
+              prop="formName"
+              class="form-item"
+              :rules="[requiredRule]"
+            >
+              <template #label>
+                表单名称
+                <span
+                  style="color: red"
+                >*</span>
+              </template>
+              <el-input placeholder="请输入" v-model="templateForm.formName"></el-input>
+            </el-form-item>
+
+          </el-main>
+        </el-form>
+        <el-footer class="de-footer">
+          <el-button @click="closeTemplate">{{ $t("commons.cancel") }}</el-button>
+          <el-button
+            type="primary"
+            @click="confirmTemplate"
           >{{ $t("commons.confirm") }}
           </el-button>
         </el-footer>

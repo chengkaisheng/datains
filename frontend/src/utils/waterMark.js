@@ -21,7 +21,7 @@ const setWatermark = (str, container) => {
   const cans = can.getContext('2d') // 获取canvas画布
   cans.rotate(-20 * Math.PI / 180) // 逆时针旋转π/9
   cans.font = '24px Vedana' // 设置字体
-  cans.fillStyle = 'rgba(0, 0, 0, 0.2)' // 设置字体的颜色
+  cans.fillStyle = 'rgba(0, 0, 0, 0.07)' // 设置字体的颜色
   cans.textAlign = 'center' // 文本对齐方式
   cans.textBaseline = 'Middle' // 文本基线
 

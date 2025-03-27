@@ -95,104 +95,33 @@ router.beforeEach(async(to, from, next) => {
 })
 export const loadMenus = (next, to) => {
   buildMenus().then(res => {
-    // const datas = res.data
-    let list = res.data.filter(item => item.path !== "/data-filling")
-    const datas = [ {
-      "path": "/data-filling",
-      "component": "Layout",
-      "redirect": "/data-filling/my-jobs",
-      "name": "data-filling",
-      "meta": {
-        "title": "数据填报",
-        "icon": ""
-      },
-      "pid": 0,
-      "id": 101,
-      "permission": null,
-      "hidden": false,
-      "type": 0,
-      "menuSort": 10,
-      "isPlugin": false,
-      "noLayout": null,
-      "children": [
-        {
-          "path": "my-jobs",
-          "component": "dataFilling/index",
-          "redirect": null,
-          "name": "my-jobs",
-          "meta": {
-            "title": "表单管理",
-            "icon": ""
-          },
-          "pid": 101,
-          "id": 103,
-          "permission": "data-filling-form:manage",
-          "hidden": false,
-          "type": 1,
-          "menuSort": 1,
-          "isPlugin": false,
-          "noLayout": null,
-          "children": null
-        },
-        {
-          "path": "forms",
-          "component": "dataFilling/myTask/index",
-          "redirect": null,
-          "name": "data-filling-form",
-          "meta": {
-            "title": "我的填报",
-            "icon": ""
-          },
-          "pid": 101,
-          "id": 102,
-          "permission": "my-data-filling:manage",
-          "hidden": false,
-          "type": 1,
-          "menuSort": 1,
-          "isPlugin": false,
-          "noLayout": null,
-          "children": null
-        },
-        {
-          "path": "folder",
-          "component": "dataFilling/form/create",
-          "redirect": null,
-          "name": "data-filling-form-create",
-          "meta": {
-            "title": "创建",
-            "icon": ""
-          },
-          "pid": 101,
-          "id": 104,
-          "permission": null,
-          "hidden": false,
-          "type": 1,
-          "menuSort": 1,
-          "isPlugin": false,
-          "noLayout": null,
-          "children": null
-        },
-      ]
-    }, ...list,]
+    const datas = res.data
     // console.log('datas', JSON.parse(JSON.stringify(datas)))
     const filterDatas = filterRouter(datas)
     const asyncRouter = filterAsyncRouter(filterDatas)
-    // 如果包含首页 则默认页面是 首页 否则默认页面是仪表板页面
-    if (JSON.stringify(datas).indexOf('wizard') > -1) {
-      asyncRouter.push({
-        path: '/',
-        component: Layout,
-        redirect: '/wizard/index',
-        hidden: true
-      })
-    } else {
-      asyncRouter.push({
-        path: '/',
-        component: Layout,
-        redirect: '/panel/index',
-        hidden: true
-      })
-    }
+    // 修改默认页面为数据填报
+    asyncRouter.push({
+      path: '/',
+      component: Layout,
+      redirect: '/data-filling/my-jobs',
+      hidden: true
+    })
+    // // 如果包含首页 则默认页面是 首页 否则默认页面是仪表板页面
+    // if (JSON.stringify(datas).indexOf('wizard') > -1) {
+    //   asyncRouter.push({
+    //     path: '/',
+    //     component: Layout,
+    //     redirect: '/wizard/index',
+    //     hidden: true
+    //   })
+    // } else {
+    //   asyncRouter.push({
+    //     path: '/',
+    //     component: Layout,
+    //     redirect: '/panel/index',
+    //     hidden: true
+    //   })
+    // }
 
     asyncRouter.push({
       path: '*',

@@ -16,6 +16,10 @@ const datafill = {
   getAllFill(data) {
     return request.post(`/dataFilling/form/selectForm/${data.goPage}/${data.pageSize}`, data.data)
   },
+  // 查询模板库列表
+  getAllFillTemplate(data) {
+    return request.post(`/dataFillingTemplate/form/selectForm/${data.goPage}/${data.pageSize}`, data.data)
+  },
 
   // 更新数据填报信息
   updateDataFill(data) {
@@ -43,6 +47,21 @@ const datafill = {
   },
 
   // 获取文件树
+  getDataFillTree() {
+    return request.post('/fill/tree', {})
+  },
+
+  // 更新模板填报状态
+  updateFormStatus(id, status) {
+    return request.get(`/dataFilling/form/updateStatus`, {
+      params: {
+        id,
+        status
+      }
+    })
+  },
+
+  // 获取模板文件夹树
   getDataFillTree() {
     return request.post('/fill/tree', {})
   },

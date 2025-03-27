@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="hasDataPermission('use', param.privileges)"
+    v-if="hasPermission(param.privileges, isTemplate ? 'template_read' : 'form_read_data')"
     class="view-table"
   >
     <el-row>
@@ -15,10 +15,11 @@
         >
           {{ param.name }}
         </span>
-        <el-divider direction="vertical" />
-        <span class="create-by">{{ $t('data_fill.form.creator') }}</span>
-        <span class="create-by">:{{ param.creatorName || 'N/A' }}</span>
+        <el-divider v-if="!isTemplate" direction="vertical" />
+        <span v-if="!isTemplate" class="create-by">{{ $t('data_fill.form.creator') }}</span>
+        <span v-if="!isTemplate" class="create-by">:{{ param.creatorName || 'N/A' }}</span>
         <el-popover
+          v-if="!isTemplate"
           placement="bottom"
           width="420"
           trigger="hover"
@@ -68,12 +69,13 @@
         </el-popover>
       </el-col>
       <el-col
+        v-if="!isTemplate"
         style="text-align: right"
         :span="8"
       >
         <!--  编辑 todo      -->
         <el-button
-          v-if="hasDataPermission('manage', param.privileges)"
+          v-if="hasPermission(param.privileges, 'form_update')"
           type="primary"
           @click="editForm(param)"
         >{{ $t('panel.edit') }}</el-button>
@@ -81,25 +83,22 @@
     </el-row>
 
     <el-tabs
+      v-if="!isTemplate"
       v-model="tabActive"
       class="de-tabs"
       @tab-click="tabClick"
     >
       <el-tab-pane
+        v-if="hasPermission(param.privileges, 'form_read_data')"
         :label="$t('data_fill.form.list')"
         name="dataPreview"
       />
       <el-tab-pane
+        v-if="hasPermission(param.privileges, 'form_read_data')"
         :label="$t('data_fill.form.record')"
         :lazy="true"
         name="record"
       />
-      <!-- <el-tab-pane
-        v-if="hasDataPermission('manage', param.privileges)"
-        :label="$t('data_fill.form.task_manage')"
-        :lazy="true"
-        name="task"
-      /> -->
 
     </el-tabs>
 
@@ -111,23 +110,23 @@
 
       <template>
         <div
-          v-if="hasDataPermission('write', param.privileges)"
+          v-if="!isTemplate"
           style="margin-bottom: 12px; height: 32px; display: flex; flex-direction: row;"
         >
           <el-button
-            v-if="hasDataPermission('write', param.privileges)"
+            v-if="hasPermission(param.privileges, 'form_write')"
             icon="el-icon-plus"
             size="small"
             @click="addData"
           >{{ $t('data_fill.data.add_data') }}</el-button>
           <el-button
-            v-if="hasDataPermission('write', param.privileges)"
+            v-if="hasPermission(param.privileges, 'form_read_data')"
             icon="el-icon-download"
             size="small"
             @click="downloadTemplate"
           >{{ $t('data_fill.data.download_template') }}</el-button>
           <el-upload
-            v-if="hasDataPermission('write', param.privileges)"
+            v-if="hasPermission(param.privileges, 'form_write')"
             :action="`${baseUrl}dataFilling/form/${param.id}/excel/upload`"
             :multiple="false"
             :show-file-list="false"
@@ -204,6 +203,7 @@
               </template>
             </el-table-column>
             <el-table-column
+              v-if="!isTemplate"
               :label="$t('data_fill.data.recent_committer')"
               fixed="right"
               width="100"
@@ -213,6 +213,7 @@
               </template>
             </el-table-column>
             <el-table-column
+              v-if="!isTemplate"
               :label="$t('data_fill.data.recent_commit_time')"
               fixed="right"
               width="160"
@@ -222,26 +223,28 @@
               </template>
             </el-table-column>
             <el-table-column
+              v-if="!isTemplate"
               :label="$t('data_fill.form.operation')"
               width="160"
               fixed="right"
             >
               <template slot-scope="scope">
                 <el-button
-                  v-if="hasDataPermission('write', param.privileges)"
+                  v-if="hasPermission(param.privileges, 'form_update')"
                   type="text"
                   @click="updateRow(scope.row.data)"
                 >
                   {{ $t('data_fill.form.modify') }}
                 </el-button>
                 <el-button
+                  v-if="hasPermission(param.privileges, 'export')"
                   type="text"
                   @click="openRow(scope.row.data)"
                 >
                   {{ $t('data_fill.form.show') }}
                 </el-button>
                 <el-button
-                  v-if="hasDataPermission('write', param.privileges)"
+                  v-if="hasPermission(param.privileges, 'delete')"
                   type="text"
                   @click="deleteRow(scope.row.data[paginationConfig.key])"
                 >
@@ -540,6 +543,7 @@ import { getToken, setToken } from '@/utils/auth'
 import { $alert } from '@/utils/message'
 import store from '@/store'
 import Config from '@/settings'
+import { hasPermission } from '../permission.js'
 
 const token = getToken()
 const RefreshTokenKey = Config.RefreshTokenKey
@@ -556,6 +560,10 @@ export default {
     param: {
       type: Object,
       required: true
+    },
+    isTemplate: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -683,6 +691,9 @@ export default {
     this.initTable(this.param.id)
   },
   methods: {
+    hasPermission(privileges, type) {
+      return hasPermission(privileges, type)
+    },
     beforeUpload() {
       this.uploading = true
     },
@@ -747,6 +758,7 @@ export default {
       return 'stopped'
     },
     searchTableData() {
+      if(this.isTemplate) return;
       searchTable(this.param.id, {
         currentPage: this.paginationConfig.currentPage,
         pageSize: this.paginationConfig.pageSize
@@ -878,6 +890,7 @@ export default {
     },
 
     showData(row) {
+      if(this.isTemplate) return;
       searchTable(this.param.id, {
         primaryKeyValue: row.dataId,
         currentPage: 1,

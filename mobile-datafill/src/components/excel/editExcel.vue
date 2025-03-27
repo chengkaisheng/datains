@@ -14,7 +14,7 @@
         </van-button>
       </div>
       <div class="title" v-if="props.msg.name">{{ props.msg.name }}</div>
-      <div class="header-right">
+      <!-- <div class="header-right">
         <van-button
           class="action-button"
           type="primary"
@@ -25,7 +25,7 @@
           </template>
           保存
         </van-button>
-      </div>
+      </div> -->
     </div>
 
     <div
@@ -134,7 +134,8 @@ onMounted(() => {
 .edit-excel-container {
   display: flex;
   flex-direction: column;
-  height: 80vh;
+  /* height: 80vh; */
+  height: 100%;
   width: 100%;
   position: relative;
   background: var(--bg-primary);

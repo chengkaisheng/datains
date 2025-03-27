@@ -2,6 +2,7 @@
 import { filter, forEach, find, split, get, groupBy, keys, includes, cloneDeep } from 'lodash-es'
 import { listDatasource } from '@/api/system/datasource'
 import { listForm, saveForm, updateForm } from '@/views/dataFilling/form/dataFilling'
+import { listForm as listFormTemplate, saveForm as saveFormTemplate, updateForm as updateFormTemplate } from '@/views/dataFilling/template/template'
 import { hasDataPermission } from '@/utils/permission'
 
 export default {
@@ -22,6 +23,10 @@ export default {
     showDrawer: {
       type: Boolean,
       required: true
+    },
+    isTemplate: {
+      type: Boolean,
+      default: false
     }
   },
   data: function() {
@@ -246,18 +251,20 @@ export default {
       }
     })
     const p1 = listDatasource()
-    const p2 = listForm({ nodeType: 'folder' })
+    // let method = this.isTemplate ? listFormTemplate : listForm
+    // const p2 = method({ nodeType: 'folder' })
 
-    Promise.all([p1, p2]).then((val) => {
+    // Promise.all([p1, p2]).then((val) => {
+    Promise.all([p1]).then((val) => {
       this.allDatasourceList = val[0].data
 
-      this.folders = this.filterListDeep(val[1].data) || []
-      if (this.formData.folder) {
-        this.$nextTick(() => {
-          this.$refs.tree.setCurrentKey(this.formData.folder)
-          this.$refs.tree.setCheckedKeys([this.formData.folder])
-        })
-      }
+      // this.folders = this.filterListDeep(val[1].data) || []
+      // if (this.formData.folder) {
+      //   this.$nextTick(() => {
+      //     this.$refs.tree.setCurrentKey(this.formData.folder)
+      //     this.$refs.tree.setCheckedKeys([this.formData.folder])
+      //   })
+      // }
     }).finally(() => {
       this.loading = false
     })
@@ -373,9 +380,11 @@ export default {
             commitNewUpdate: this.formData.commitNewUpdate,
             nodeType: 'form'
           }
-          updateForm(data).then(res => {
+          let method = this.isTemplate ? updateFormTemplate : updateForm
+          method(data).then(res => {
             this.closeSave()
-            this.$router.replace({ name: 'data-filling-form', query: { id: res.data }})
+            // this.$router.replace({ name: 'data-filling-form', query: { id: res.data }})
+            this.$router.back()
           }).finally(() => {
             this.loading = false
           })
@@ -401,9 +410,11 @@ export default {
             commitNewUpdate: this.formData.commitNewUpdate,
             nodeType: 'form'
           }
-          saveForm(data).then(res => {
+          let method = this.isTemplate ? saveFormTemplate : saveForm
+          method(data).then(res => {
             this.closeSave()
-            this.$router.replace({ name: 'data-filling-form', query: { id: res.data }})
+            // this.$router.replace({ name: 'data-filling-form', query: { id: res.data }})
+            this.$router.back()
           }).finally(() => {
             this.loading = false
           })
@@ -425,7 +436,7 @@ export default {
     <el-header class="de-header">
       <div class="panel-info-area">
         <span class="text16 margin-left12">
-          {{ $t('data_fill.form.save_form') }}
+          {{ isTemplate ? '保存模板' : $t('data_fill.form.save_form') }}
         </span>
       </div>
 
@@ -452,7 +463,7 @@ export default {
           :rules="[requiredRule]"
         >
           <template #label>
-            {{ $t('data_fill.form.form_name') }}
+            {{ isTemplate ? '模板名称' : $t('data_fill.form.form_name') }}
             <span
               style="color: red"
             >*</span>
@@ -466,7 +477,7 @@ export default {
           />
         </el-form-item>
 
-        <el-form-item
+        <!-- <el-form-item
           prop="folder"
           class="form-item"
           :rules="[requiredRule]"
@@ -500,7 +511,7 @@ export default {
                 class="custom-tree-node-dataset"
               >
                 <span>
-                  <svg-icon icon-class="scene" />
+                  <i class="el-icon-folder"></i>
                 </span>
                 <span
                   style="
@@ -532,10 +543,10 @@ export default {
             </el-select>
           </el-popover>
 
-        </el-form-item>
+        </el-form-item> -->
 
-        <el-form-item
-          v-if="!isEdit"
+        <!-- <el-form-item
+          v-if="!isTemplate && !isEdit"
           prop="datasource"
           class="form-item"
           :rules="[requiredRule]"
@@ -566,10 +577,10 @@ export default {
               </el-option>
             </el-option-group>
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
 
-        <el-form-item
-          v-if="!isEdit"
+        <!-- <el-form-item
+          v-if="!isTemplate && !isEdit"
           prop="table"
           class="form-item"
           :rules="[requiredRule]"
@@ -587,7 +598,7 @@ export default {
             maxlength="50"
             show-word-limit
           />
-        </el-form-item>
+        </el-form-item> -->
 
         <el-table
           :data="formData.forms"
@@ -596,7 +607,7 @@ export default {
           style="width: 100%"
         >
           <el-table-column
-            :label="$t('data_fill.form.form_column')"
+            :label="isTemplate ? '模板字段' : $t('data_fill.form.form_column')"
           >
             <template slot-scope="scope">
               {{ scope.row.settings.name }}

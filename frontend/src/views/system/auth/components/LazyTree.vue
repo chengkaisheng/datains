@@ -6,8 +6,9 @@
         v-for="auth in defaultAuthDetails"
         :key="auth.privilegeName"
         class="auth-span"
+        :class="[auth.privilegeName === 'i18n_auth_read_data' || auth.privilegeName === 'i18n_auth_create' ? 'width80' : '']"
       >
-        {{ auth.privilegeName }}
+        {{ setPrivilegeName(auth.privilegeName) }}
       </span>
     </el-row>
     <el-row style="margin-top: 5px">
@@ -22,11 +23,8 @@
         @node-click="nodeClick"
       >
         <span slot-scope="{ node, data }" class="custom-tree-node">
-          <!-- <span>
-            <span style="margin-left: 6px" v-html="data.name" />
-          </span> -->
           <!-- 文件夹图标 -->
-          <span v-if="data.nodeType === 'spine'">
+          <span v-if="data.nodeType === 'folder' || data.nodeType === 'spine'">
             <i class="el-icon-folder" />
           </span>
 
@@ -36,40 +34,28 @@
           </span>
 
           <span v-if="showExtent" @click.stop>
-            <!-- <div v-if="authDetails[data.id]">
-              <span v-for="auth in authDetails[data.id]" :key="auth.privilegeType" class="auth-span">
-                <a href="javascript:;" @click="clickAuth(node,data,auth)">
-                  <svg-icon style="width: 25px;height: 25px" :icon-class="auth.privilegeValue===1?'lock_open':'lock_closed'" />
-                </a>
-              </span>
-            </div>
-            <div v-else>
-              <span v-for="auth in defaultAuthDetails" :key="auth.privilegeType" class="auth-span">
-                <a href="javascript:;" @click="clickAuth(node,data,auth)">
-                  <svg-icon style="width: 25px;height: 25px" :icon-class="auth.privilegeValue===1?'lock_open':'lock_closed'" />
-                </a>
-              </span>
-            </div> -->
             <!-- 有权限详情时显示 -->
             <div v-if="authDetails[data.id]">
               <span
                 v-for="auth in authDetails[data.id]"
                 :key="auth.privilegeType"
                 class="auth-span"
+                :class="[auth.privilegeName === 'i18n_auth_read_data' || auth.privilegeName === 'i18n_auth_create' ? 'width80' : '']"
               >
-                <!-- 非数据集权限显示锁定图标 -->
-                <a
-                  v-show="auth.privilegeType !== 20"
-                  href="javascript:;"
-                  @click="clickAuth(node, data, auth)"
-                >
-                  <svg-icon
-                    style="width: 25px; height: 25px"
-                    :icon-class="
-                      auth.privilegeValue === 1 ? 'lock_open' : 'lock_closed'
-                    "
-                  />
-                </a>
+                <el-tooltip :disabled="activeName === 'menu'" v-if="showIconPermission(auth, data.nodeType)" effect="dark" :content="getTitlePermission(auth, data.nodeType)" placement="top">
+                  <a
+                    href="javascript:;"
+                    @click="clickAuth(node, data, auth)"
+                  >
+                    <svg-icon
+                      style="width: 25px; height: 25px"
+                      :icon-class="
+                        auth.privilegeValue === 1 ? 'lock_open' : 'lock_closed'
+                      "
+                    />
+                  </a>
+                </el-tooltip>
+                <div v-else style="width: 25px; height: 25px"></div>
 
                 <!-- 数据集权限且非分组时显示编辑按钮 -->
                 <el-button
@@ -113,19 +99,22 @@
                 v-for="auth in defaultAuthDetails"
                 :key="auth.privilegeType"
                 class="auth-span"
+                :class="[auth.privilegeName === 'i18n_auth_read_data' || auth.privilegeName === 'i18n_auth_create' ? 'width80' : '']"
               >
-                <a
-                  v-show="auth.privilegeType !== 20"
-                  href="javascript:;"
-                  @click="clickAuth(node, data, auth)"
-                >
-                  <svg-icon
-                    style="width: 25px; height: 25px"
-                    :icon-class="
-                      auth.privilegeValue === 1 ? 'lock_open' : 'lock_closed'
-                    "
-                  />
-                </a>
+                <el-tooltip :disabled="activeName === 'menu'" v-if="showIconPermission(auth, data.nodeType)" effect="dark" :content="getTitlePermission(auth, data.nodeType)" placement="top">
+                  <a
+                    href="javascript:;"
+                    @click="clickAuth(node, data, auth)"
+                  >
+                    <svg-icon
+                      style="width: 25px; height: 25px"
+                      :icon-class="
+                        auth.privilegeValue === 1 ? 'lock_open' : 'lock_closed'
+                      "
+                    />
+                  </a>
+                </el-tooltip>
+                <div v-else style="width: 25px; height: 25px"></div>
                 <div v-show="auth.privilegeType === 20">&nbsp;&nbsp;</div>
               </span>
             </div>
@@ -514,8 +503,6 @@
 </template>
 
 <script>
-// import { authChange, authDetails, authDetailsModel, authModel } from '@/api/system/sysAuth'
-// import { execute } from '@/de-base/api/de-api'
 export default {
   name: 'LazyTree',
   components: {},
@@ -768,6 +755,49 @@ export default {
           enable: true,
           columns: []
         }
+      },
+      permissions: {
+        folder: ['read', 'write', 'create_t', 'create', 'update', 'manage'],
+        form: ['read', 'write', 'read_data', 'update', 'export', 'manage'],
+        selfReport: ['read', 'update', 'export', 'manage']
+      },
+      permissionTitle: {
+        folder: {
+          read: '查看文件夹',
+          write: '自主填报',
+          create_t: '创建表单',
+          create: '创建文件夹',
+          update: '修改文件夹',
+          manage: '删除文件夹',
+        },
+        form: {
+          read: '查看表单填报：查看填报数据及操作日志',
+          write: '表单填报：填写表单数据',
+          read_data: '查看填报数据',
+          update: '修改表单数据',
+          export: '导出表单数据',
+          manage: '删除表单',
+        },
+        selfReport: {
+          read: '查看自主填报：查看填报数据及操作日志',
+          update: '修改填报数据',
+          export: '导出填报数据',
+          manage: '删除填报',
+        }
+      },
+      permissionTitleTemplate: {
+        folder: {
+          read: '查看文件夹',
+          create_t: '创建模板',
+          create: '创建文件夹',
+          update: '修改文件夹',
+          manage: '删除文件夹',
+        },
+        form: {
+          read: '使用模板：可查看模板、使用此模板创建表单',
+          update: '修改模板',
+          manage: '删除模板',
+        },
       }
     }
   },
@@ -812,16 +842,54 @@ export default {
         'get',
         {},
         (res) => {
-          this.defaultAuthDetails = res.data
+          // this.defaultAuthDetails = res.data
+          this.defaultAuthDetails = res.data.filter(item => {
+            if(item.privilegeName !== '授权') {
+              return true
+            } else {
+              return false
+            }
+          })
         }
       )
-      //   authDetailsModel(this.dataInfo.authType).then(res => {
-      //     this.defaultAuthDetails = res.data
-      //   })
       this.loadAuth()
     }
   },
   methods: {
+    setPrivilegeName(name) {
+      if(name === 'i18n_auth_read') {
+        return '查看'
+      } else if(name === 'i18n_auth_update') {
+        return '修改'
+      } else if(name === 'i18n_auth_create') {
+        return '创建文件夹'
+      } else if(name === 'i18n_auth_create_t') {
+        return this.activeName === 'data_fill_template' ? '创建模板' : '创建表单'
+      } else if(name === 'i18n_auth_read_data') {
+        return '查看填报数据'
+      } else if(name === '管理') {
+        return '删除'
+      } else if(name === '写入') {
+        return '填报'
+      } else {
+        return name
+      }
+    },
+    showIconPermission(auth, nodeType) {
+      if(this.activeName === 'menu') {
+        return true
+      }
+      return this.permissions[nodeType].includes(auth.privilegeExtend)
+    },
+    getTitlePermission(auth, nodeType) {
+      if(this.activeName === 'menu') {
+        return ''
+      }
+      if(this.activeName === 'data_fill_template') {
+        return this.permissionTitleTemplate[nodeType][auth.privilegeExtend]
+      }
+      return this.permissionTitle[nodeType][auth.privilegeExtend]
+    },
     executeAxios(url, type, data, callBack) {
       const param = {
         url: url,
@@ -863,12 +931,12 @@ export default {
           'post',
           authQueryCondition,
           (res) => {
+            Object.keys(res.data).map(key => {
+              res.data[key] = res.data[key].filter(item => item.privilegeExtend !== 'grant')
+            })
             this.authDetails = res.data
           }
         )
-        // authDetails(authQueryCondition).then(res => {
-        //   this.authDetails = res.data
-        // })
       }
     },
     loadNodes(node, resolve) {
@@ -935,13 +1003,6 @@ export default {
               this.$nextTick(() => (this.searchStatus = false))
             }
           )
-          //   authModel(queryCondition).then(res => {
-          //     // 高亮显示
-          //     this.highlights(res.data)
-          //     this.treeData = this.buildTree(res.data)
-          //     // 恢复searchStatus 状态 可以允许继续展开父级
-          //     this.$nextTick(() => (this.searchStatus = false))
-          //   })
         }
         this.destroyTimeMachine()
       }, 1500)
@@ -984,112 +1045,17 @@ export default {
     // 权限修改
     async clickAuth(node, data, auth) {
       const authChangeCondition = this.getAuthChangeCondition(data, auth)
-
-      if (!node.isLeaf) {
-        this.loading = true
-        try {
-          // 获取所有子节点
-          const allChildren = await this.getChildrenNodes(node)
-
-          const list = [authChangeCondition]
-          allChildren.forEach((item) => {
-            let auth1 = null
-            if (this.authDetails[item.id]) {
-              auth1 = this.authDetails[item.id].find((authDetail) => {
-                if (authDetail.privilegeExtend && auth.privilegeExtend) {
-                  return authDetail.privilegeExtend === auth.privilegeExtend
-                } else {
-                  return authDetail.privilegeName === auth.privilegeName
-                }
-              })
-            } else {
-              auth1 = this.defaultAuthDetails.find((authDetail) => {
-                if (authDetail.privilegeExtend && auth.privilegeExtend) {
-                  return authDetail.privilegeExtend === auth.privilegeExtend
-                } else {
-                  return auth.privilegeName.includes(
-                    authDetail.privilegeExtend
-                  )
-                }
-              })
-            }
-            auth1.privilegeValue = auth.privilegeValue
-            list.push(this.getAuthChangeCondition(item, auth1))
-          })
-
-          // 批量更新权限
-          this.executeAxios(
-            '/plugin/auth/authChangeBatch',
-            'post',
-            { auths: list },
-            (res) => {
-              this.loadAuth()
-              this.loading = false
-            }
-          )
-        } catch (error) {
-          console.error('获取子节点失败:', error)
+      this.loading = true
+      this.executeAxios(
+        '/plugin/auth/authChange',
+        'post',
+        authChangeCondition,
+        (res) => {
+          // 重新加载权限
+          this.loadAuth()
           this.loading = false
         }
-      } else {
-        this.loading = true
-        this.executeAxios(
-          '/plugin/auth/authChange',
-          'post',
-          authChangeCondition,
-          (res) => {
-            // 重新加载权限
-            this.loadAuth()
-            this.loading = false
-          }
-        )
-      }
-    },
-    // 需要层层获取子节点
-    async getChildrenNodes(node) {
-      if (node.isLeaf) return []
-
-      const queryCondition = {
-        modelType: this.dataInfo.authType
-      }
-      queryCondition[this.defaultProps.parentId] =
-        node.data[this.defaultProps.id]
-
-      // 使用Promise包装axios调用
-      const getNodes = () => {
-        return new Promise((resolve) => {
-          this.executeAxios(
-            '/plugin/auth/authModels',
-            'post',
-            queryCondition,
-            (res) => {
-              resolve(res.data || [])
-            }
-          )
-        })
-      }
-
-      // 获取当前节点的直接子节点
-      const children = await getNodes()
-
-      // 递归获取每个子节点的子节点
-      const childrenPromises = children.map(async(child) => {
-        if (!child[this.defaultProps.isLeaf]) {
-          // 为每个非叶子节点递归调用
-          const grandChildren = await this.getChildrenNodes({
-            isLeaf: child[this.defaultProps.isLeaf],
-            data: child
-          })
-          return [...grandChildren]
-        }
-        return []
-      })
-
-      // 等待所有子节点的递归调用完成
-      const allChildren = await Promise.all(childrenPromises)
-
-      // 合并所有结果
-      return [...children, ...allChildren.flat()]
+      )
     },
     getAuthChangeCondition(data, auth) {
       let authChangeCondition = {}
@@ -1473,7 +1439,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .custom-tree-node {
   flex: 1;
   display: flex;
@@ -1513,6 +1479,9 @@ export default {
   width: 50px;
   margin-right: 30px;
 }
+.width80 {
+  width: 80px;
+}
 .highlights-text {
   color: #faaa39 !important;
 }
@@ -1531,4 +1500,10 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+::v-deep .el-tree {
+  .el-tree-node__content {
+    width: 100%;
+  }
+} 
+
 </style>

@@ -6,9 +6,12 @@ import { filter, cloneDeep, find, concat, forEach, groupBy, keys, map, join } fr
 import { v4 as uuidv4 } from 'uuid'
 import { EMAIL_REGEX, PHONE_REGEX } from '@/utils/validate'
 import { getTableColumnData, getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
+import { getWithPrivileges as getWithPrivilegesTemplate } from '@/views/dataFilling/template/template'
 import { getColumnList, listDatasource } from '@/api/dataset/dataset'
 import { getTableList } from '@/api/system/datasource'
 import GridTable from '@/components/gridTable/index.vue'
+import datafill from '@/api/datafill/datafill'
+import { hasPermission } from '../permission.js'
 
 export default {
   name: 'DataFillingFormCreate',
@@ -255,7 +258,8 @@ export default {
         commitNewUpdate: false
       },
       selectedItemId: undefined,
-      tempForms: []
+      tempForms: [],
+      isTemplate: false
     }
   },
   computed: {
@@ -310,9 +314,13 @@ export default {
   },
   beforeDestroy() {
   },
-  created() {
+  async created() {
     this.isEdit = false
     this.disableCreateIndex = false
+    if (String(this.$route.query.isTemplate)) {
+      this.isTemplate = String(this.$route.query.isTemplate) == 'true' ? true : false
+      this.formSettings.name = this.isTemplate ? '未命名模板' : this.formSettings.name
+    }
     if (this.$route.query.folder !== undefined) {
       this.formSettings.folder = this.$route.query.folder
     }
@@ -321,7 +329,8 @@ export default {
     }
     if (this.$route.query.copy !== undefined) {
       const id = this.$route.query.copy
-      getWithPrivileges(id).then(res => {
+      let method = this.isTemplate ? getWithPrivilegesTemplate : getWithPrivileges
+      method(id).then(res => {
         const tempData = res.data
         this.formSettings.commitNewUpdate = !!tempData.commitNewUpdate
         this.formSettings.folder = tempData.pid
@@ -333,7 +342,37 @@ export default {
       })
     } else if (this.$route.query.id !== undefined) {
       const id = this.$route.query.id
-      getWithPrivileges(id).then(res => {
+      // 拿到id要进行权限校验，查看是否有编辑权限
+      let method1 = this.isTemplate ? datafill.getAllFillTemplate : datafill.getAllFill
+      const params = {
+        goPage: 1,
+        pageSize: 100,
+        data: {
+          id: id,
+          name: '',
+          nodeType: ''
+        }
+      }
+      try {
+        let res = await method1(params)
+        if(res && res.success && res.data.listObject.length > 0) {
+          if(!hasPermission(res.data.listObject[0].privileges, 'form_update')) {
+            // 跳转路由
+            this.$message.error('暂无编辑权限！')
+            this.$router.push('/data-filling/my-jobs')
+            return
+          }
+        } else {
+          // 跳转路由
+          this.$router.push('/data-filling/my-jobs')
+          return
+        }
+      } catch(error) {
+        this.$router.push('/data-filling/my-jobs')
+      }
+      
+      let method = this.isTemplate ? getWithPrivilegesTemplate : getWithPrivileges
+      method(id).then(res => {
         this.isEdit = true
         const tempData = cloneDeep(res.data)
         this.formSettings = tempData
@@ -421,15 +460,16 @@ export default {
     },
     closeCreate: function() {
       // back to forms list
-      if (this.$route.query.copy) {
-        this.$router.replace('/data-filling/my-jobs')
-        // this.$router.replace({ name: 'data-filling-form', query: { id: this.$route.query.copy }})
-      } else if (this.$route.query.id) {
-        this.$router.replace('/data-filling/my-jobs')
-        // this.$router.replace({ name: 'data-filling-form', query: { id: this.$route.query.id }})
-      } else {
-        this.$router.replace('/data-filling/my-jobs')
-      }
+      // if (this.$route.query.copy) {
+      //   // this.$router.replace('/data-filling/my-jobs')
+      //   // this.$router.replace({ name: 'data-filling-form', query: { id: this.$route.query.copy }})
+      // } else if (this.$route.query.id) {
+      //   // this.$router.replace('/data-filling/my-jobs')
+      //   // this.$router.replace({ name: 'data-filling-form', query: { id: this.$route.query.id }})
+      // } else {
+      //   // this.$router.replace('/data-filling/my-jobs')
+      // }
+      this.$router.back()
     },
     onMoveInComponentList(e, originalEvent) {
       if (e.relatedContext && e.relatedContext.component && e.relatedContext.component.$el && e.relatedContext.component.$el.id === 'form-drag-place') {
@@ -793,13 +833,13 @@ export default {
           v-else-if="$route.query.id"
           class="text16 margin-left12"
         >
-          {{ $t('data_fill.form.edit_form') }}
+          {{ isTemplate ? '编辑模板' : $t('data_fill.form.edit_form') }}
         </span>
         <span
           v-else
           class="text16 margin-left12"
         >
-          {{ $t('data_fill.form.create_new_form') }}
+          {{ isTemplate ? '新建模板' : $t('data_fill.form.create_new_form') }}
         </span>
       </div>
 
@@ -1056,7 +1096,7 @@ export default {
       <el-cantainer class="tools-window-right">
 
         <template v-if="selectedItemId !== undefined && selectedComponentItem !== undefined">
-          <el-header class="sub-title-header">{{ $t('data_fill.form.component_setting') }}</el-header>
+          <el-header class="sub-title-header">{{ isTemplate ? '模板设置' : $t('data_fill.form.component_setting') }}</el-header>
           <el-main style="height: calc(100vh - 60px - 56px);">
             <el-form
               ref="mRightForm"
@@ -1072,7 +1112,7 @@ export default {
                 :rules="[requiredRule]"
               >
                 <template #label>
-                  {{ $t('data_fill.form.title') }}
+                  {{ isTemplate ? '模板名称' :  $t('data_fill.form.title') }}
                   <span
                     style="color: red"
                   >*</span>
@@ -1357,7 +1397,7 @@ export default {
           </el-main>
         </template>
         <template v-else>
-          <el-header class="sub-title-header">{{ $t('data_fill.form.form_setting') }}</el-header>
+          <el-header class="sub-title-header">{{ isTemplate ? '模板设置' : $t('data_fill.form.form_setting') }}</el-header>
           <el-main style="height: calc(100vh - 60px - 56px);">
             <el-form
               ref="mRightFormBase"
@@ -1372,7 +1412,7 @@ export default {
                 :rules="[requiredRule]"
               >
                 <template #label>
-                  {{ $t('data_fill.form.form_name') }}
+                  {{ isTemplate ? '模板设置' : $t('data_fill.form.form_name') }}
                   <span
                     style="color: red"
                   >*</span>
@@ -1394,7 +1434,7 @@ export default {
                 :rules="[requiredRule]"
               >
                 <template #label>
-                  {{ $t('data_fill.form.commit_type') }}
+                  {{ isTemplate ? '模板提交方式' : $t('data_fill.form.commit_type') }}
                 </template>
                 <el-radio-group
                   v-model="formSettings.commitNewUpdate"
@@ -1443,7 +1483,7 @@ export default {
     </de-container>
 
     <el-drawer
-      :title="$t('data_fill.form.save_form')"
+      :title="isTemplate ? '保存模板' : $t('data_fill.form.save_form')"
       :visible.sync="showDrawer"
       direction="btt"
       size="100%"
@@ -1456,6 +1496,7 @@ export default {
         :disable-create-index="disableCreateIndex"
         :form.sync="formSettings"
         :show-drawer.sync="showDrawer"
+        :is-template="isTemplate"
       />
     </el-drawer>
 

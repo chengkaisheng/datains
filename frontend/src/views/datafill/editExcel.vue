@@ -6,6 +6,15 @@
       </div>
       <div v-if="msg.name" class="title">{{ msg.name }}</div>
       <div class="header-right">
+        <span>版本：</span>
+        <el-select v-model="versionId" @change="selectVersion" popper-class="versionSelect" placeholder="请选择">
+          <el-option
+            v-for="item in versionList"
+            :key="item.id"
+            :label="item.version"
+            :value="item.id">
+          </el-option>
+        </el-select>
         <el-button type="success" icon="el-icon-check" @click="handleSave">保存</el-button>
       </div>
     </div>
@@ -25,7 +34,7 @@
 
 <script>
 // import datafill from '@/api/datafill/datafill'
-import { getFormData, saveFormData } from '@/views/dataFilling/form/dataFilling'
+import { getFormData, saveFormData, getFormDataData } from '@/views/dataFilling/form/dataFilling'
 
 export default {
   name: 'EditExcel',
@@ -51,7 +60,9 @@ export default {
     return {
       selected: '',
       isMaskShow: false,
-      currentFormDataId: ''
+      currentFormDataId: '',
+      versionList: [],
+      versionId: undefined,
     }
   },
   watch: {
@@ -93,9 +104,20 @@ export default {
     },
     getFormData() {
       getFormData(this.msg.id).then(res => {
-        console.log('res', res)
+        this.versionList = res.data
+        this.versionId = res.data[0].id
+        this.getDataVersion()
+      })
+    },
+    // 获取不同版本的数据
+    getDataVersion() {
+      getFormDataData(this.versionId).then(res => {
         this.init(JSON.parse(res.data.formData))
       })
+    },
+    selectVersion(value) {
+      this.versionId = value
+      this.getDataVersion()
     },
     handleBack() {
       luckysheet.destroy()
@@ -108,6 +130,8 @@ export default {
         formData: JSON.stringify(luckysheet.getAllSheets())
       }).then(res => {
         if (res.success) {
+          // 保存成功之后版本需要切换到最新
+          this.getFormData()
           this.$message({
             type: 'success',
             message: '保存成功'
@@ -119,7 +143,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .edit-excel-container {
   display: flex;
   flex-direction: column;
@@ -219,6 +243,11 @@ li {
 
 a {
   color: #42b983;
+}
+.versionSelect {
+  li {
+    display: block;
+  }
 }
 </style>
 
