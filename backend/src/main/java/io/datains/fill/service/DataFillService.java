@@ -105,6 +105,10 @@ public class DataFillService {
      */
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
     public ResultHolder saveCustomForm(DataFillFormWithBLOBs dataFillForm) {
+        if (!checkPrivileges(dataFillForm.getPid(), "write")) {
+            //需要检查是否有自主填报的权限
+            throw new RuntimeException("请检查用户权限");
+        }
         String userName = AuthUtils.getUser().getUsername();
         dataFillForm.setCreateBy(userName);
         dataFillForm.setUpdateBy(userName);
@@ -134,7 +138,13 @@ public class DataFillService {
 
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
     public ResultHolder saveForm(DataFillFormWithBLOBs dataFillForm) throws Exception {
-
+        if ("form".equals(dataFillForm.getNodeType()) && !checkPrivileges(dataFillForm.getPid(), "create_t")) {
+            //需要检查是否有创建表单的权限
+            throw new RuntimeException("请检查用户权限");
+        }else if ("folder".equals(dataFillForm.getNodeType())&& !checkPrivileges(dataFillForm.getPid(), "create")){
+            //需要检查是否有创建文件夹的权限
+            throw new RuntimeException("请检查用户权限");
+        }
         String userName = AuthUtils.getUser().getUsername();
         String uuid = UUIDUtil.getUUID().toString();
 
@@ -229,8 +239,8 @@ public class DataFillService {
 
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
     public ResultHolder updateForm(DataFillFormWithBLOBs dataFillForm, String type) {
-        if (!checkPrivileges(dataFillForm.getId(), "manage")) {
-            throw new RuntimeException("没有权限");
+        if (!checkPrivileges(dataFillForm.getId(), "update")) {
+            throw new RuntimeException("请检查用户权限");
         }
 
 
@@ -257,8 +267,8 @@ public class DataFillService {
 
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
     public ResultHolder updateForm(DataFillFormWithBLOBs dataFillForm) throws Exception {
-        if (!checkPrivileges(dataFillForm.getId(), "manage")) {
-            throw new RuntimeException("没有权限");
+        if (!checkPrivileges(dataFillForm.getId(), "update")) {
+            throw new RuntimeException("请检查用户权限");
         }
 
         Assert.notNull(dataFillForm.getId(), "id cannot be null");
@@ -997,14 +1007,14 @@ public class DataFillService {
                             version,
                             version + 1
                     ));
+            version += 1;
         }
         DataFillData dataFillData = new DataFillData();
         dataFillData.setId(UUIDUtil.getUUID().toString());
         dataFillData.setFormData(formData);
         dataFillData.setFormId(formId);
-        dataFillData.setVersion(version + 1);
+        dataFillData.setVersion(version);
         dataFillData.setCreator(user.getUsername());
-        dataFillData.setUpdater(user.getUsername());
         this.dataFillDataMapper.insert(dataFillData);
     }
 
@@ -1017,6 +1027,9 @@ public class DataFillService {
     }
 
     public void updateFormStatus(String id, Integer status) {
+        if (!checkPrivileges(id, "update")) {
+            throw new RuntimeException("请检查用户权限");
+        }
         this.dataFillFormMapper.updateFormStatus(id, status);
     }
 

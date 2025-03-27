@@ -16,6 +16,20 @@
             <if test="formId != null and formId != ''">
                 and dffl.form_id = #{formId}
             </if>
+            <if test="operate != null and operate != ''">
+                and dffl.operate = #{operate}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and (dffl.form_id like concat('%', #{keyword}, '%')
+                or dffl.commit_by like concat('%', #{keyword}, '%')
+                or dffl.description like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="beginTime != null">
+                and dffl.commit_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and dffl.commit_time &lt;= #{endTime}
+            </if>
         </where>
         order by dffl.commit_time desc
     </select>

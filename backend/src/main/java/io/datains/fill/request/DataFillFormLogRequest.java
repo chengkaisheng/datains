@@ -4,6 +4,8 @@ import io.datains.fill.entry.DataFillFormLog;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 /**
  * DataFillFormLogRequest
  *
@@ -13,5 +15,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class DataFillFormLogRequest extends DataFillFormLog {
-
+    private String keyword;
+    private Date beginTime;
+    private Date endTime;
 }

@@ -282,7 +282,13 @@
         GROUP BY `sys_auth`.`auth_source`) authInfo
         on data_fill_form.id = authInfo.auth_source
         left join sys_user su on su.username = data_fill_form.create_by
-        WHERE data_fill_form.pid = #{pid} and data_fill_form.node_type != 'folder'
+        WHERE FIND_IN_SET(data_fill_form.id, cids)
+        <if test="pid != null and pid != ''">
+            and data_fill_form.pid = #{pid} and data_fill_form.node_type != 'folder'
+        </if>
+        <if test="id != null and id != ''">
+            AND data_fill_form.id = #{id}
+        </if>
         <if test="name != null and name != ''">
             AND data_fill_form.name LIKE CONCAT('%', #{name}, '%')
         </if>

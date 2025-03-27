@@ -7,22 +7,19 @@
          form_id,
          form_data,
          creator,
-         updater)
+         version)
         values (#{id},
                 #{formId},
                 #{formData},
                 #{creator},
-                #{updater})
+                #{version})
     </insert>
     <select id="getByFormId" resultType="io.datains.fill.entry.DataFillData">
         SELECT id,
                form_id,
                version,
                creator,
-               create_time,
-               updater,
-               update_time,
-               is_delete
+               create_time
         FROM data_fill_data
         WHERE form_id = #{formId}
         order by version desc
@@ -47,9 +44,6 @@
             </if>
             <if test="formData != null">
                 form_data = #{formData},
-            </if>
-            <if test="updater != null">
-                updater = #{updater},
             </if>
         </set>
         WHERE id = #{id}

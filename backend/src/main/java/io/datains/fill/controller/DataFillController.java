@@ -15,6 +15,7 @@ import io.datains.fill.request.*;
 import io.datains.fill.response.DataFillFormTableDataResponse;
 import io.datains.fill.service.*;
 import io.swagger.annotations.ApiOperation;
+import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
@@ -52,6 +53,8 @@ public class DataFillController {
         if ("selfReport".equals(dataFillForm.getNodeType())) {
             return dataFillService.saveCustomForm(dataFillForm);
         }
+        dataFillForm.setTableName(UUIDUtil.getUUID().toString());
+        dataFillForm.setDatasource("default-built-in");
         return dataFillService.saveForm(dataFillForm);
     }
 

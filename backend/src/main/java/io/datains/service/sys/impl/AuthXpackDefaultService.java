@@ -92,17 +92,9 @@ public class AuthXpackDefaultService implements AuthXpackService {
         }
         arrayList.add(sysAuthByAuthSource.get(0).getId());
         if (PluginSystemConstants.PRIVILEGE_VALUE.ON.equals(xpackSysAuthDetail.getPrivilegeValue())) {
-            if (xpackSysAuthRequest.getAuthSourceType().equalsIgnoreCase("panel") && xpackSysAuthDetail.getPrivilegeType() == 3) {
-                this.i.authDetailsChange2(PluginSystemConstants.PRIVILEGE_VALUE.OFF, xpackSysAuthDetail.getPrivilegeType(), arrayList);
-            } else {
-                this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.OFF, xpackSysAuthDetail.getPrivilegeType(), arrayList);
-            }
+            this.i.authDetailsChange2(PluginSystemConstants.PRIVILEGE_VALUE.OFF, xpackSysAuthDetail.getPrivilegeType(), arrayList);
         } else {
-            if (xpackSysAuthRequest.getAuthSourceType().equalsIgnoreCase("panel") && xpackSysAuthDetail.getPrivilegeType() == 3) {
-                this.i.authDetailsChange2(PluginSystemConstants.PRIVILEGE_VALUE.ON, xpackSysAuthDetail.getPrivilegeType(), arrayList);
-            } else {
-                this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.ON, xpackSysAuthDetail.getPrivilegeType(), arrayList);
-            }
+            this.i.authDetailsChange2(PluginSystemConstants.PRIVILEGE_VALUE.ON, xpackSysAuthDetail.getPrivilegeType(), arrayList);
         }
     }
 
@@ -142,11 +134,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
             }
         }
         arrayList.add(sysAuthByAuthSource.get(0).getId());
-        if (authSourceType.equalsIgnoreCase("panel") && privilegeType == 3) {
-            this.i.authDetailsChange2(privilegeValue, privilegeType, arrayList);
-        } else {
-            this.i.authDetailsChange(privilegeValue, privilegeType, arrayList);
-        }
+        this.i.authDetailsChange2(privilegeValue, privilegeType, arrayList);
     }
 
     public List<XpackSysAuthDetail> authDetailsModel(String authType) {

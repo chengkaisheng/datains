@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.datains.base.domain.Datasource;
 import io.datains.commons.enums.DatasourceTypes;
+import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.CommonBeanFactory;
 import io.datains.controller.request.datasource.DatasourceRequest;
 import io.datains.dto.datasource.MysqlConfiguration;
@@ -17,10 +18,12 @@ import io.datains.dto.datasource.TableField;
 import io.datains.exception.DataInsException;
 import io.datains.fill.constants.FormLogEnum;
 import io.datains.fill.dto.DataFillCommitLogDTO;
+import io.datains.fill.dto.DataFillFormDTO;
 import io.datains.fill.dto.ExtTableField;
 import io.datains.fill.entry.DataFillFormWithBLOBs;
 import io.datains.fill.mapper.DataFillFormMapper;
 import io.datains.fill.mapper.ExtDataFillFormMapper;
+import io.datains.fill.request.DataFillFormRequest;
 import io.datains.fill.request.DataFillFormTableDataRequest;
 import io.datains.fill.response.DataFillFormTableDataResponse;
 import io.datains.i18n.Translator;
@@ -142,7 +145,13 @@ public class DataFillDataService {
     }
 
     public DataFillFormTableDataResponse listData(DataFillFormTableDataRequest searchRequest) throws Exception {
-        return listData(searchRequest, true);
+        if (checkPrivileges(searchRequest.getId(), "read_data")) {
+            return listData(searchRequest, true);
+        } else {
+            DataFillFormTableDataResponse response = listData(searchRequest, false);
+            response.setData(new Object());
+            return response;
+        }
     }
 
     public DataFillFormTableDataResponse listData(DataFillFormTableDataRequest searchRequest, boolean withLogs) throws Exception {
@@ -1207,5 +1216,16 @@ public class DataFillDataService {
         }
         return date;
     }
-
+    public boolean checkPrivileges(String id, String needPrivileges) {
+        //先查出权限信息
+        DataFillFormRequest request = new DataFillFormRequest();
+        String userId = String.valueOf(AuthUtils.getUser().getUserId());
+        request.setUserId(userId);
+        request.setId(id);
+        List<DataFillFormDTO> dataFillForm = this.extDataFillFormMapper.search(request);
+        if (dataFillForm.isEmpty()) {
+            return false;
+        }
+        return dataFillForm.get(0).getPrivileges().contains(needPrivileges);
+    }
 }
