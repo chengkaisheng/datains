@@ -786,6 +786,10 @@ export default {
         this.$message.error('请先选择文件夹')
         return
       }
+      if (!this.hasPermission(this.nodeData.privileges, 'self_report')) {
+        this.$message.error('暂无该文件夹自主填报权限！')
+        return
+      }
       this.uploadDialogVisible = true
       this.uploadForm = {
         name: '',
