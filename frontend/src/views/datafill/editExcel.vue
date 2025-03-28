@@ -6,8 +6,8 @@
       </div>
       <div v-if="msg.name" class="title">{{ msg.name }}</div>
       <div class="header-right">
-        <span>版本：</span>
-        <el-select v-model="versionId" @change="selectVersion" popper-class="versionSelect" placeholder="请选择">
+        <span style="display: flex; align-items: center;">版本：</span>
+        <el-select style="margin-right: 10px;" v-model="versionId" @change="selectVersion" popper-class="versionSelect" placeholder="请选择">
           <el-option
             v-for="item in versionList"
             :key="item.id"

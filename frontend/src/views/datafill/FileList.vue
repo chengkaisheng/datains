@@ -570,10 +570,21 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let method = this.isTemplate ? deleteTemplate : deleteForm
-        method(row.id).then((response) => {
-          this.getDataFill()
-        })
+          let method = this.isTemplate ? deleteTemplate : deleteForm
+          method(row.id).then((res) => {
+            if(res.success) {
+              this.$message({
+                type: 'success',
+                message: '删除成功！'
+              })
+              this.getDataFill()
+            }
+          }).catch(() => {
+            this.$message({
+              type: 'error',
+              message: '删除失败！'
+            })
+          })
       }).catch(() => {
         this.$message({
           type: 'info',
