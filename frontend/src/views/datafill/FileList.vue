@@ -628,7 +628,7 @@ export default {
               _this.drawer = true
               _this.msg = {
                 id: _this.nodeData.id,
-                name: file.name,
+                name: _this.uploadForm.name,
                 data: exportJson.sheets
               }
               _this.selfUploadLoading = false
@@ -923,7 +923,7 @@ export default {
       formData.append('file', file)
       let method = this.isTemplate ? excelUploadAiHandleTemplate : excelUploadAiHandle
       return method(formData).then(res => {
-        const file = new File([res], `${this.uploadForm.file}.xlsx`, {
+        const file = new File([res], `${this.uploadForm.name}.xlsx`, {
           type: res.type,
           lastModified: Date.now()
         })
