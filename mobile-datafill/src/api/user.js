@@ -10,6 +10,27 @@ export function login(data) {
   })
 }
 
+// 获取用户信息
+export function getUserInfo (token) {
+  try {
+    getInfo(token).then(res => {
+      if (res.success) {
+        // 使用昵称作为水印，如果没有昵称则使用用户名
+        sessionStorage.setItem('nickName', res.data.nickName || '水印')
+      }
+    })
+  } catch (error) {
+    console.error('获取用户信息失败:', error)
+  }
+}
+
+export function qyyLogin(qyyToken) {
+  return request({
+    url: '/api/auth/qyyLogin?qyyToken=' + qyyToken,
+    method: 'get',
+  })
+}
+
 export function logout() {
   return request({
     url: '/api/auth/logout',

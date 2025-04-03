@@ -31,7 +31,7 @@
 import { onBeforeMount, onBeforeUnmount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { showToast } from 'vant'
-import { getInfo, getPublicKey, login } from '@/api/user'
+import { getUserInfo, getPublicKey, login } from '@/api/user'
 import Cookies from 'js-cookie'
 import { encrypt } from '@/utils/rsaEncrypt'
 
@@ -54,18 +54,7 @@ onBeforeMount(async () => {
   }
 })
 
-// 获取用户信息
-const getUserInfo = async (token) => {
-  try {
-    const res = await getInfo(token)
-    if (res.success) {
-      // 使用昵称作为水印，如果没有昵称则使用用户名
-      sessionStorage.setItem('nickName', res.data.nickName || '水印')
-    }
-  } catch (error) {
-    console.error('获取用户信息失败:', error)
-  }
-}
+
 
 const onSubmit = async (values) => {
   try {

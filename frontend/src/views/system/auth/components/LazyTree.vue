@@ -30,6 +30,7 @@
 
           <!-- 节点名称 -->
           <span class="auth-span-father">
+            <!-- <span class="auth-span-inner" v-html="dataInfo.authType === 'user' ? data.nickName : data.name" /> -->
             <span class="auth-span-inner" v-html="data.name" />
           </span>
 

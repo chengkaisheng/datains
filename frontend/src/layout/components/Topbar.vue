@@ -44,24 +44,24 @@
           <span><i class="el-icon-arrow-down el-icon--right" /></span>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/person-info/index">
+          <!-- <router-link to="/person-info/index">
             <el-dropdown-item>{{ $t('commons.personal_info') }}</el-dropdown-item>
-          </router-link>
+          </router-link> -->
 
           <!--          <router-link v-if="$store.getters.validate" to="/ukey/index">-->
           <!--            <el-dropdown-item>{{ $t('commons.ukey_title') }}</el-dropdown-item>-->
           <!--          </router-link>-->
 
-          <router-link to="/person-pwd/index">
+          <!-- <router-link to="/person-pwd/index">
             <el-dropdown-item>{{ $t('user.change_password') }}</el-dropdown-item>
-          </router-link>
+          </router-link> -->
 
           <router-link to="/about/index">
             <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
           </router-link>
-          <el-dropdown-item divided @click.native="logout">
+          <!-- <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">{{ $t('commons.exit_system') }}</span>
-          </el-dropdown-item>
+          </el-dropdown-item> -->
         </el-dropdown-menu>
       </el-dropdown>
     </div>

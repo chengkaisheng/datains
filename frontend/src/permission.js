@@ -34,13 +34,16 @@ router.beforeEach(async(to, from, next) => {
   // 如果是从轻应用跳转的需要获取传过来的qyyToken给后端接口，获取平台token
   if(to.path === '/data-filling/my-jobs') {
     const hasToken = getToken()
-    if(!hasToken) {
-      const qyyToken = getQueryVariable('token') // 获取轻应用token
-      if(qyyToken) {
-        let res = await store.dispatch('user/qyyLogin', {qyyToken})
-        // console.log('qyy', res);
-        next()
-      }
+    const qyyToken = getQueryVariable('token') // 获取轻应用token 有token 执行登录
+    let qyyLogin = sessionStorage.getItem('qyyLogin')
+    if(qyyToken && qyyLogin !== 'true') {
+      clearAllCookies()
+      let res = await store.dispatch('user/qyyLogin', {qyyToken})
+      // console.log('qyy', res);
+      next()
+    } else if (!hasToken) {
+      next(`/login?redirect=${to.path}`)
+      NProgress.done()
     }
   }
 
@@ -288,4 +291,12 @@ const getQueryVariable = (variable) => {
     }
   }
   return (null)
+}
+
+const clearAllCookies = () => {
+  const cookies = document.cookie.split("; ");
+  for (const cookie of cookies) {
+    const [name] = cookie.split("=");
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  }
 }

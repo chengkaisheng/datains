@@ -90,6 +90,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       qyyLogin(qyyToken).then(response => {
         console.log('login', response)
+        sessionStorage.setItem('qyyLogin', 'true')
         const { data } = response
         commit('SET_TOKEN', data.token)
         commit('SET_LOGIN_MSG', null)
