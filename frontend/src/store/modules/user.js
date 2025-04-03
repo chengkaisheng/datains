@@ -1,4 +1,4 @@
-import { login, logout, getInfo, getUIinfo, languageApi } from '@/api/user'
+import { login, qyyLogin, logout, getInfo, getUIinfo, languageApi } from '@/api/user'
 import { getToken, setToken, removeToken, setSysUI } from '@/utils/auth'
 import { resetRouter } from '@/router'
 import { format } from '@/utils/formatUi'
@@ -74,6 +74,21 @@ const actions = {
     const { username, password, loginType } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password, loginType: loginType }).then(response => {
+        console.log('login', response)
+        const { data } = response
+        commit('SET_TOKEN', data.token)
+        commit('SET_LOGIN_MSG', null)
+        setToken(data.token)
+        resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+  qyyLogin({ commit }, userInfo) {
+    const { qyyToken } = userInfo
+    return new Promise((resolve, reject) => {
+      qyyLogin(qyyToken).then(response => {
         console.log('login', response)
         const { data } = response
         commit('SET_TOKEN', data.token)

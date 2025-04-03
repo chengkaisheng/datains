@@ -8,6 +8,13 @@ export function login(data) {
   })
 }
 
+export function qyyLogin(token) {
+  return request({
+    url: '/api/auth/qyyLogin?qyyToken=' + token,
+    method: 'get',
+  })
+}
+
 // export function delToken(){
 //   return request({
 //     url: '/api/user/delRedisToken',

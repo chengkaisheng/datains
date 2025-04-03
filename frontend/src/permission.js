@@ -31,6 +31,19 @@ router.beforeEach(async(to, from, next) => {
   const mobileIgnores = ['/delink']
   const mobilePreview = '/preview/'
 
+  // 如果是从轻应用跳转的需要获取传过来的qyyToken给后端接口，获取平台token
+  if(to.path === '/data-filling/my-jobs') {
+    const hasToken = getToken()
+    if(!hasToken) {
+      const qyyToken = getQueryVariable('token') // 获取轻应用token
+      if(qyyToken) {
+        let res = await store.dispatch('user/qyyLogin', {qyyToken})
+        // console.log('qyy', res);
+        next()
+      }
+    }
+  }
+
   // if (isMobile() && !to.path.includes(mobilePreview) && mobileIgnores.indexOf(to.path) === -1) {
   //   window.location.href = window.origin + '/app.html'
   //   NProgress.done()
@@ -256,3 +269,23 @@ router.afterEach(() => {
   // finish progress bar
   NProgress.done()
 })
+
+const getQueryVariable = (variable) => {
+  // let query = window.location.search.substring(1)
+  let query = window.location.href.split('?')[1]
+  let vars = []
+  if (!query) {
+    // query = document.cookie
+    // vars = query.split(';')
+    return null
+  } else {
+    vars = query.split('&')
+  }
+  for (var i = 0; i < vars.length; i++) {
+    const pair = vars[i].split('=')
+    if (pair[0].trim() === variable) {
+      return pair[1]
+    }
+  }
+  return (null)
+}

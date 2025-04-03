@@ -444,7 +444,7 @@
                       />
                     </el-col>
 
-                    <!-- 删除按钮 -->
+                    <!-- 管理按钮 -->
                     <el-col :span="6">
                       <el-button
                         type="text"
@@ -768,7 +768,7 @@ export default {
           create_t: '创建表单',
           create: '创建文件夹',
           update: '修改文件夹',
-          manage: '删除文件夹',
+          manage: '管理文件夹',
         },
         form: {
           read: '查看表单填报：查看填报数据及操作日志',
@@ -776,13 +776,13 @@ export default {
           read_data: '查看填报数据',
           update: '修改表单数据',
           export: '导出表单数据',
-          manage: '删除表单',
+          manage: '管理表单',
         },
         selfReport: {
           read: '查看自主填报：查看填报数据及操作日志',
           update: '修改填报数据',
           export: '导出填报数据',
-          manage: '删除填报',
+          manage: '管理填报',
         }
       },
       permissionTitleTemplate: {
@@ -791,12 +791,12 @@ export default {
           create_t: '创建模板',
           create: '创建文件夹',
           update: '修改文件夹',
-          manage: '删除文件夹',
+          manage: '管理文件夹',
         },
         form: {
           read: '使用模板：可查看模板、使用此模板创建表单',
           update: '修改模板',
-          manage: '删除模板',
+          manage: '管理模板',
         },
       }
     }
@@ -868,7 +868,7 @@ export default {
       } else if(name === 'i18n_auth_read_data') {
         return '查看填报数据'
       } else if(name === '管理') {
-        return '删除'
+        return '管理'
       } else if(name === '写入') {
         return '填报'
       } else {
