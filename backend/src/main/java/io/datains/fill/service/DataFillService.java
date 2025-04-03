@@ -141,7 +141,7 @@ public class DataFillService {
         if ("form".equals(dataFillForm.getNodeType()) && !checkPrivileges(dataFillForm.getPid(), "create_t")) {
             //需要检查是否有创建表单的权限
             throw new RuntimeException("请检查用户权限");
-        }else if ("folder".equals(dataFillForm.getNodeType())&& !checkPrivileges(dataFillForm.getPid(), "create")){
+        } else if ("folder".equals(dataFillForm.getNodeType()) && !"0".equals(dataFillForm.getPid()) && !checkPrivileges(dataFillForm.getPid(), "create")) {
             //需要检查是否有创建文件夹的权限
             throw new RuntimeException("请检查用户权限");
         }

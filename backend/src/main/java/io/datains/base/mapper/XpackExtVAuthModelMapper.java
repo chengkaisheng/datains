@@ -12,4 +12,5 @@ import java.util.List;
  */
 public interface XpackExtVAuthModelMapper {
     List<XpackVAuthModelDTO> searchTree(XpackBaseTreeRequest paramXpackBaseTreeRequest);
+    List<XpackVAuthModelDTO> searchTree2(XpackBaseTreeRequest paramXpackBaseTreeRequest);
 }

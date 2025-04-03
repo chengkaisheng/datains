@@ -1,5 +1,6 @@
 package io.datains.auth.server;
 
+import cn.hutool.core.bean.BeanUtil;
 import io.datains.auth.api.AuthApi;
 import io.datains.auth.api.dto.CurrentRoleDto;
 import io.datains.auth.api.dto.CurrentUserDto;
@@ -14,6 +15,7 @@ import io.datains.auth.util.RsaUtil;
 import io.datains.auth.util.UserKey;
 import io.datains.commons.utils.*;
 import io.datains.controller.sys.request.LdapAddRequest;
+import io.datains.controller.sys.request.SysUserCreateRequest;
 import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
 import io.datains.plugins.common.entity.XpackLdapUserEntity;
@@ -23,8 +25,8 @@ import io.datains.plugins.xpack.ldap.dto.request.LdapValidateRequest;
 import io.datains.plugins.xpack.ldap.dto.response.ValidateResult;
 import io.datains.plugins.xpack.ldap.service.LdapXpackService;
 import io.datains.plugins.xpack.oidc.service.OidcXpackService;
+import io.datains.qyy.service.CertificationService;
 import io.datains.service.sys.SysUserService;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -33,13 +35,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 @RestController
 public class AuthServer implements AuthApi {
@@ -55,6 +53,8 @@ public class AuthServer implements AuthApi {
 
     @Resource
     private RedisService redisService;
+    @Resource
+    private CertificationService certificationService;
 
     int i = 0;
     Integer userId = null;
@@ -123,21 +123,21 @@ public class AuthServer implements AuthApi {
             pwd = CodingUtil.md5(pwd);
 
             if (!StringUtils.equals(pwd, realPwd)) {
-                if (i == 0){
+                if (i == 0) {
                     userId = user.getUserId().intValue();
                 }
-                if (user.getUserId().intValue()!=userId){
+                if (user.getUserId().intValue() != userId) {
                     userId = user.getUserId().intValue();
                     i = 0;
                 }
                 i++;
-                if (i==5){
+                if (i == 5) {
                     authUserService.updateEnabled(user.getUserId().intValue());
                 }
                 DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
             }
         }
-         i = 0;
+        i = 0;
         Map<String, Object> result = new HashMap<>();
         TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
         String token = JWTUtils.sign(tokenInfo, realPwd);
@@ -145,12 +145,66 @@ public class AuthServer implements AuthApi {
         result.put("token", token);
         ServletUtils.setToken(token);
         authUserService.clearCache(user.getUserId());
-        String s = redisService.get(UserKey.getById, "datains_"+user.getUserId().toString());
-        if (StringUtils.isEmpty(s)){
-            boolean set = redisService.set(UserKey.getById, "datains_"+user.getUserId().toString(), token);
+        String s = redisService.get(UserKey.getById, "datains_" + user.getUserId().toString());
+        if (StringUtils.isEmpty(s)) {
+            boolean set = redisService.set(UserKey.getById, "datains_" + user.getUserId().toString(), token);
             System.err.println(set);
         }
         return result;
+    }
+
+    @Override
+    public Object qyyLogin(String qyyToken) throws Exception {
+        if (StringUtils.isEmpty(qyyToken)) {
+            DataInsException.throwException("token不能为空");
+        }
+        //先去获取用户信息
+        CertificationService.QyyUser qyyUser = certificationService.certification(qyyToken);
+        String username = null;
+        if (qyyUser.getSysRoleScenarios().getKey().equals("1")) {
+            //超级管理员特殊处理
+            username = "admin";
+        }
+        //再自动创建用户
+        qyyAutoCreateUser(qyyUser);
+        //登录用户
+        username = username == null ? "q_" + qyyUser.getId() : username;
+        SysUserEntity user = authUserService.getUserByName(username);
+        String realPwd = user.getPassword();
+        Map<String, Object> result = new HashMap<>();
+        TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
+        String token = JWTUtils.sign(tokenInfo, realPwd);
+        // 记录token操作时间
+        result.put("token", token);
+        ServletUtils.setToken(token);
+        authUserService.clearCache(user.getUserId());
+        String s = redisService.get(UserKey.getById, "datains_" + user.getUserId().toString());
+        if (StringUtils.isEmpty(s)) {
+            boolean set = redisService.set(UserKey.getById, "datains_" + user.getUserId().toString(), token);
+            System.err.println(set);
+        }
+        return result;
+    }
+
+    private void qyyAutoCreateUser(CertificationService.QyyUser qyyUser) {
+        String username = "q_" + qyyUser.getId();
+        SysUserEntity user = authUserService.getUserByName(username);
+        if (user != null) {
+            //已有账号，更新账号信息
+            SysUserCreateRequest request = new SysUserCreateRequest();
+            BeanUtil.copyProperties(user, request);
+            request.setRoleIds(Collections.singletonList(Long.valueOf(qyyUser.getSysRoleScenarios().getKey())));
+            request.setNickName(qyyUser.getName());
+            sysUserService.update(request);
+            return;
+        }
+        //没有账号，开始创建
+        SysUserCreateRequest request = new SysUserCreateRequest();
+        request.setUsername("q_" + qyyUser.getId());
+        request.setNickName(qyyUser.getName());
+        request.setRoleIds(Collections.singletonList(Long.valueOf(qyyUser.getSysRoleScenarios().getKey())));
+        request.setEnabled(1L);
+        sysUserService.save(request);
     }
 
     public static void main(String[] args) {
@@ -203,16 +257,16 @@ public class AuthServer implements AuthApi {
             return "success";
         }
         try {
-             userId = JWTUtils.tokenInfoByToken(token).getUserId();
+            userId = JWTUtils.tokenInfoByToken(token).getUserId();
             authUserService.clearCache(userId);
         } catch (Exception e) {
             LogUtil.error(e);
             return "fail";
         }
-       // CurrentUserDto user = AuthUtils.getUser();
-        boolean set = redisService.delete(UserKey.getById, "datains_"+userId.toString());
+        // CurrentUserDto user = AuthUtils.getUser();
+        boolean set = redisService.delete(UserKey.getById, "datains_" + userId.toString());
 
-        System.err.println("token注销"+set);
+        System.err.println("token注销" + set);
         return "success";
     }
 

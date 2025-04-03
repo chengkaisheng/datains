@@ -6,10 +6,10 @@ import io.datains.auth.api.dto.LoginDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
-import springfox.documentation.annotations.ApiIgnore;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Map;
 
@@ -21,6 +21,10 @@ public interface AuthApi {
     @ApiOperation("登录")
     @PostMapping("/login")
     Object login(LoginDto loginDto) throws Exception;
+
+    @ApiOperation("轻应用跳转登录")
+    @GetMapping("/qyyLogin")
+    Object qyyLogin(@RequestParam String token) throws Exception;
 
     @ApiOperation("获取用户信息")
     @PostMapping("/userInfo")

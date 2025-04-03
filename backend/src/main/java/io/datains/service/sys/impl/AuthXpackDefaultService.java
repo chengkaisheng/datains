@@ -39,7 +39,13 @@ public class AuthXpackDefaultService implements AuthXpackService {
 
     public List<XpackVAuthModelDTO> searchAuthModelTree(XpackBaseTreeRequest xpackBaseTreeRequest, Long long_, Boolean bool) {
         xpackBaseTreeRequest.setCreateBy(String.valueOf(long_));
-        return this.g.searchTree(xpackBaseTreeRequest);
+        if ("dept".equals(xpackBaseTreeRequest.getModelType())
+                || "user".equals(xpackBaseTreeRequest.getModelType())
+                || "role".equals(xpackBaseTreeRequest.getModelType())
+                || ("menu".equals(xpackBaseTreeRequest.getModelType()) && 1L == long_)) {
+            return this.g.searchTree(xpackBaseTreeRequest);
+        }
+        return this.g.searchTree2(xpackBaseTreeRequest);
     }
 
     public Map<String, List<XpackSysAuthDetailDTO>> searchAuthDetails(XpackSysAuthRequest xpackSysAuthRequest) {
@@ -92,8 +98,14 @@ public class AuthXpackDefaultService implements AuthXpackService {
         }
         arrayList.add(sysAuthByAuthSource.get(0).getId());
         if (PluginSystemConstants.PRIVILEGE_VALUE.ON.equals(xpackSysAuthDetail.getPrivilegeValue())) {
+            if (15L == xpackSysAuthDetail.getPrivilegeType()) {
+                this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.OFF, xpackSysAuthDetail.getPrivilegeType(), arrayList);
+            }
             this.i.authDetailsChange2(PluginSystemConstants.PRIVILEGE_VALUE.OFF, xpackSysAuthDetail.getPrivilegeType(), arrayList);
         } else {
+            if (15L == xpackSysAuthDetail.getPrivilegeType()) {
+                this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.ON, xpackSysAuthDetail.getPrivilegeType(), arrayList);
+            }
             this.i.authDetailsChange2(PluginSystemConstants.PRIVILEGE_VALUE.ON, xpackSysAuthDetail.getPrivilegeType(), arrayList);
         }
     }

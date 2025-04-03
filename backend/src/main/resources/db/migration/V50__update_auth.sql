@@ -18,7 +18,7 @@ VALUES ('data_fill_read', 'data_fill', 'i18n_auth_read', 1, 0, 'read', '基础�
         NULL),
        ('data_fill_export', 'data_fill', 'i18n_auth_export', 7, 0, 'export', '基础权限-导出', 'system', NULL, NULL, NULL,
         NULL),
-       ('data_fill_manage', 'data_fill', 'i18n_auth_manage', 8, 0, 'manage', '基础权限-管理', 'system', NULL, NULL, NULL,
+       ('data_fill_manage', 'data_fill', 'i18n_auth_manage', 15, 0, 'manage', '基础权限-管理', 'system', NULL, NULL, NULL,
         NULL)
 ;
 INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`,
@@ -32,6 +32,6 @@ VALUES ('data_fill_template_read', 'data_fill_template', 'i18n_auth_read', 1, 0,
         NULL),
        ('data_fill_template_update', 'data_fill_template', 'i18n_auth_update', 6, 0, 'update', '基础权限-更新', 'system', NULL, NULL, NULL,
         NULL),
-       ('data_fill_template_manage', 'data_fill_template', 'i18n_auth_manage', 8, 0, 'manage', '基础权限-管理', 'system', NULL, NULL, NULL,
+       ('data_fill_template_manage', 'data_fill_template', 'i18n_auth_manage', 15, 0, 'manage', '基础权限-管理', 'system', NULL, NULL, NULL,
         NULL)
 ;
