@@ -7,7 +7,7 @@
             style="width: 300px;"
             :disabled="!!this.formId"
             v-model="searchForm.keyword"
-            placeholder="请输入formId、操作人、操作描述"
+            placeholder="请输入表单编号、操作人、操作描述"
             clearable
             @keyup.enter.native="handleSearch"
           />
@@ -44,7 +44,7 @@
       style="width: 100%"
       :height="tableHeight"
       >
-      <el-table-column prop="formId" label="formId" width="300" />
+      <el-table-column prop="formId" label="表单编号" width="300" />
       <el-table-column prop="commitBy" label="操作人" width="120" />
       <el-table-column prop="commitTime" label="操作时间" width="180">
         <template slot-scope="scope">
