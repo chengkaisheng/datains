@@ -46,10 +46,7 @@ router.beforeEach(async(to, from, next) => {
         sessionStorage.setItem('qyyLogin', 'true')
         const token = res.data.token
         // 设置会话 cookie，不设置 expires，浏览器关闭即失效
-        Cookies.set('token', token, {
-          path: '/',
-          secure: process.env.NODE_ENV === 'production'
-        })
+        Cookies.set('token', token)
         // 获取用户信息，传入 token
         await getUserInfo(token)
         // router.push('/')
