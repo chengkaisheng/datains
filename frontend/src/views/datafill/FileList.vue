@@ -25,7 +25,7 @@
         <el-table-column v-if="!isTemplate" prop="status" width="100" >
           <template slot="header">
             <div>
-              <span style="margin-right: 5px;">状态</span>
+              <span style="margin-right: 5px;">填报状态</span>
               <el-tooltip class="item" effect="dark" content="当前表单是否可在移动端进行填报" placement="top">
                 <i class="el-icon-info"></i>
               </el-tooltip>

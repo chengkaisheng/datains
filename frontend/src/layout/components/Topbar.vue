@@ -3,7 +3,7 @@
     <div v-loading="!axiosFinished" class="log">
       <div v-if="!logoUrl && axiosFinished" class="custom-logo">
         <img :src="require('@/assets/datains-logo.png')" alt="" srcset="">
-        <span class="custom-logo-title">杨浦区街道要素平台</span>
+        <span class="custom-logo-title">杨浦区街道数据填报平台</span>
       </div>
       <!-- <svg-icon v-if="!logoUrl && axiosFinished" icon-class="datains-logo2" custom-class="top-nav-logo-icon" /> -->
       <img v-if="logoUrl && axiosFinished" :src="logoUrl" width="140" alt="" style="padding-top: 10px;">

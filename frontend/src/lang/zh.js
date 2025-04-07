@@ -2419,7 +2419,7 @@ export default {
     firstOfYear: '当年首月'
   },
   wizard: {
-    welcome_title: '欢迎使用杨浦区街道要素平台',
+    welcome_title: '欢迎使用杨浦区街道数据填报平台',
     welcome_hint: '数据可视化自助探索分析工具',
     demo_video: '演示视频',
     quick_start: '快速入门',

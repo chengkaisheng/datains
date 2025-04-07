@@ -9,7 +9,7 @@ export default function getPageTitle(pageTitle) {
     title = uiInfo['ui.title'].paramValue
   }
   if (pageTitle) {
-    return `${pageTitle} - ${title}`
+    return pageTitle
   }
   return `${title}`
 }
