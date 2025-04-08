@@ -3,7 +3,7 @@
     <div class="header" style="display: flex; justify-content: space-between;">
       <div>
         <el-button v-if="!isTemplate" type="primary" @click="handleFill">填报</el-button>
-        <el-input v-model="searchName" placeholder="请输入内容" clearable style="width: 200px;margin-left: 10px;" @keyup.enter.native="getDataFill()">
+        <el-input v-model="searchName" placeholder="请输入内容" clearable style="width: 300px;margin-left: 10px;" @keyup.enter.native="getDataFill()">
           <el-button slot="append" icon="el-icon-search" @click="getDataFill()" />
         </el-input>
       </div>
@@ -14,10 +14,11 @@
     <div v-loading="tableLoading" class="list">
       <el-table ref="logTable" :height="tableHeight" :data="tableData" style="width: 100%">
         <el-table-column prop="name" label="名称" width="180" />
-        <el-table-column v-if="!isTemplate" prop="nodeType" label="类型" width="100">
+        <el-table-column v-if="!isTemplate" prop="nodeType" label="类型" width="120">
           <template slot-scope="scope">
             <span v-if="scope.row.nodeType === 'form'">表单填报</span>
             <span v-else-if="scope.row.nodeType === 'selfReport'">自主填报</span>
+            <span v-else-if="scope.row.nodeType === 'selfReport_template'">自主填报模板</span>
           </template>
         </el-table-column>
         <el-table-column prop="creatorName" label="创建人" width="150" />
@@ -44,13 +45,13 @@
               @click="handleFileDownload(scope.row)"
             >下载</el-button>
             <el-button
-              v-if="scope.row.nodeType === 'selfReport' && hasPermission(scope.row.privileges, 'self_report_read') && !hasPermission(scope.row.privileges, 'self_report_update')"
+              v-if="scope.row.nodeType.includes('selfReport') && hasPermission(scope.row.privileges, 'self_report_read') && !hasPermission(scope.row.privileges, 'self_report_update')"
               size="mini"
               type="warning"
               @click="handleFilePreview(scope.row)"
             >在线查看</el-button>
             <el-button
-              v-if="scope.row.nodeType === 'selfReport' && hasPermission(scope.row.privileges, 'self_report_update')"
+              v-if="scope.row.nodeType.includes('selfReport') && hasPermission(scope.row.privileges, 'self_report_update')"
               size="mini"
               type="warning"
               @click="handleExcelEdit(scope.row)"
@@ -382,6 +383,7 @@ export default {
       tableHeight: 0,
       logDrawer: false,
       selectedRow: null,
+      selfReportTemplate: false,
     }
   },
   watch: {
@@ -503,7 +505,7 @@ export default {
       if (row.nodeType === 'form') {
         this.downloadTemplate(row.id, row.name)
       } else {
-        // 需要去选择版本然后下载
+        // 自主填报模板 自主填报 需要去选择版本然后下载
         this.selectedRow = row
         this.selectedVersionVisible = true
         this.getVersionList(row.id)
@@ -661,12 +663,17 @@ export default {
         name: this.uploadForm.name,
         pid: this.nodeData.id,
         level: this.nodeData.level,
-        nodeType: 'selfReport',
+        nodeType: this.selfReportTemplate ? 'selfReport_template' : 'selfReport',
+        // nodeType: 'selfReport',
         formData: JSON.stringify(luckysheet.getAllSheets())
       }
       let method = this.isTemplate ? saveFormTemplate : saveForm
       method(data).then(res => {
         if (res.success) {
+          if(this.selfReportTemplate) {
+            this.selfReportTemplate = false
+            this.$emit('refreshFolderTree')
+          }
           this.currentFormId = res.data
           this.$message({
             type: 'success',

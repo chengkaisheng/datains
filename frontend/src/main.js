@@ -126,10 +126,58 @@ Vue.prototype.checkPermission = function(pers) {
   })
   return hasPermission
 }
-new Vue({
 
-  router,
-  store,
-  i18n,
-  render: h => h(App)
-}).$mount('#app')
+// 获取URL参数
+const getQueryVariable = (variable) => {
+  // let query = window.location.search.substring(1)
+  let query = window.location.href.split('?')[1]
+  let vars = []
+  if (!query) {
+    // query = document.cookie
+    // vars = query.split(';')
+    return null
+  } else {
+    vars = query.split('&')
+  }
+  for (var i = 0; i < vars.length; i++) {
+    const pair = vars[i].split('=')
+    if (pair[0].trim() === variable) {
+      return pair[1]
+    }
+  }
+  return (null)
+}
+
+const clearAllCookies = () => {
+  const cookies = document.cookie.split("; ");
+  for (const cookie of cookies) {
+    const [name] = cookie.split("=");
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  }
+}
+
+// 处理登录逻辑
+const handleLogin = async () => {
+  const token = getQueryVariable('token')
+  if (token) {
+    clearAllCookies()
+    try {
+      await store.dispatch('user/qyyLogin', { qyyToken: token })
+    } catch (error) {
+      console.error('登录失败:', error)
+      // router.push('/login')
+    }
+  } else {
+    // router.push('/login')
+  }
+}
+
+// 执行登录逻辑
+handleLogin().then(() => {
+  new Vue({
+    router,
+    store,
+    i18n,
+    render: h => h(App)
+  }).$mount('#app')
+})

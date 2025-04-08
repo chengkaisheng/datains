@@ -145,6 +145,14 @@ export default {
         }
       })
     },
+    refreshFolderTree() {
+      listForm({
+        name: '',
+        nodeType: 'folder'
+      }).then(res => {
+        this.formList = res.data || []
+      })
+    },
     beforeData(type, data) {
       return {
         ...data,
@@ -268,6 +276,11 @@ export default {
         this.showTemplate = true
         this.selectedParent = data
         this.getTemplateTree(data)
+      } else if(data.createType === 'selfReport_template') {
+        this.nodeData = data
+        this.$refs.fileListRef.uploadDialogVisible = true
+        this.$refs.fileListRef.selfReportTemplate = true
+        this.$refs.fileListRef.fillForm.isAI = true
       }
     },
     createForm(data) {
@@ -642,6 +655,16 @@ export default {
                           </el-dropdown-item>
                           <el-dropdown-item
                             v-if="hasPermission(data.privileges, 'create_form')"
+                            :command="beforeData('selfReport_template',data)"
+                          >
+                            <svg-icon
+                              icon-class="form"
+                              class="ds-icon-scene"
+                            />
+                            <span>新建自主填报模板</span>
+                          </el-dropdown-item>
+                          <el-dropdown-item
+                            v-if="hasPermission(data.privileges, 'create_form')"
                             :command="beforeData('excel',data)"
                           >
                             <svg-icon
@@ -754,7 +777,7 @@ export default {
 
     <el-main v-if="activeName === 'forms'" style="padding: 0">
       <div class="file-container">
-        <FileList ref="fileListRef" :nodeData="nodeData" class="file-content" />
+        <FileList ref="fileListRef" :nodeData="nodeData" class="file-content" @refreshFolderTree="refreshFolderTree" />
       </div>
     </el-main>
 
@@ -1029,6 +1052,8 @@ export default {
         @moveSuccess="onMoveSuccess"
       />
     </el-dialog>
+
+    
 
   </de-container>
 </template>

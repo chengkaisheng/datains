@@ -87,10 +87,10 @@ const actions = {
   },
   qyyLogin({ commit }, userInfo) {
     const { qyyToken } = userInfo
-    return new Promise((resolve, reject) => {
-      qyyLogin(qyyToken).then(response => {
+    return new Promise(async (resolve, reject) => {
+      await qyyLogin(qyyToken).then(response => {
         console.log('login', response)
-        sessionStorage.setItem('qyyLogin', 'true')
+        // sessionStorage.setItem('qyyLogin', 'true')
         const { data } = response
         commit('SET_TOKEN', data.token)
         commit('SET_LOGIN_MSG', null)

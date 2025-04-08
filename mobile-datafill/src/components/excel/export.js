@@ -1,5 +1,6 @@
 // import { createCellPos } from './translateNumToLetter'
-const Excel = require('exceljs')
+// const Excel = require('exceljs')
+import Excel from 'exceljs'
 
 import FileSaver from 'file-saver'
 

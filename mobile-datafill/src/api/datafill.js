@@ -9,7 +9,7 @@ export function getTaskTree(data) {
   })
 }
 
-// 获取模板列表
+// 获取文件夹下的列表
 export function getTemplates(data) {
   return request({
     url: '/dataFilling/form/selectForm/1/10000',
@@ -24,6 +24,14 @@ export function downloadTemplate(templateId) {
     url: `/dataFilling/form/${templateId}/excel/template`,
     method: 'post',
     responseType: 'blob'
+  })
+}
+
+// 下载自主填报模板
+export function downloadSelfReportTemplate(id) {
+  return request({
+    url: `dataFilling/form/getSelfReportTemplate/${id}`,
+    method: 'post',
   })
 }
 

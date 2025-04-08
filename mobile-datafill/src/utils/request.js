@@ -39,7 +39,7 @@ service.interceptors.response.use(
       Cookies.remove('token')
       sessionStorage.removeItem('username') // 清除用户名
       localStorage.clear()
-      router.push('/login')
+      // router.push('/login')
       return Promise.reject(new Error(res.message || '认证失败'))
     }
 
@@ -55,7 +55,7 @@ service.interceptors.response.use(
       Cookies.remove('token')
       sessionStorage.removeItem('username') // 清除用户名
       localStorage.clear()
-      router.push('/login')
+      // router.push('/login')
     }
     return Promise.reject(error)
   }

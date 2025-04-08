@@ -3,7 +3,7 @@
     <div v-loading="!axiosFinished" class="log">
       <div v-if="!logoUrl && axiosFinished" class="custom-logo">
         <img :src="require('@/assets/datains-logo.png')" alt="" srcset="">
-        <span class="custom-logo-title">杨浦区街道数据填报平台</span>
+        <span class="custom-logo-title">杨浦区城运中心数据填报工具</span>
       </div>
       <!-- <svg-icon v-if="!logoUrl && axiosFinished" icon-class="datains-logo2" custom-class="top-nav-logo-icon" /> -->
       <img v-if="logoUrl && axiosFinished" :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
@@ -27,7 +27,7 @@
     <div class="right-menu" style="color: var(--TopTextColor)">
       <template>
 
-        <notification class="right-menu-item hover-effect" />
+        <!-- <notification class="right-menu-item hover-effect" /> -->
         <!-- <lang-select class="right-menu-item hover-effect" /> -->
 
       </template>
@@ -365,7 +365,7 @@ export default {
     width: 22px;
   }
   .custom-logo-title {
-    margin-left: 10px;
+    margin-left: 5px;
     color: #409eff;
     font-size: 16px;
     font-weight: 400;

@@ -35,29 +35,29 @@ const router = createRouter({
 router.beforeEach(async(to, from, next) => {
   const token = Cookies.get('token')
 
-  // 如果是从轻应用跳转的需要获取传过来的qyyToken给后端接口，获取平台token
-  if(to.path === '/pages/tabBar/home/index') {
-    const qyyToken = getQueryVariable('token') // 获取轻应用token
-    let qyyLoginFlag = sessionStorage.getItem('qyyLogin')
-    if(qyyToken && qyyLoginFlag !== 'true') {
-      clearAllCookies()
-      let res = await qyyLogin(qyyToken)
-      if (res.success) {
-        sessionStorage.setItem('qyyLogin', 'true')
-        const token = res.data.token
-        // 设置会话 cookie，不设置 expires，浏览器关闭即失效
-        Cookies.set('token', token)
-        // 获取用户信息，传入 token
-        await getUserInfo(token)
-        // router.push('/')
-      }
-      next()
-    } else if (!token) {
-      next(`/login`)
-    }
-  }
+  // // 如果是从轻应用跳转的需要获取传过来的qyyToken给后端接口，获取平台token
+  // if(to.path === '/pages/tabBar/home/index') {
+  //   const qyyToken = getQueryVariable('token') // 获取轻应用token
+  //   let qyyLoginFlag = sessionStorage.getItem('qyyLogin')
+  //   if(qyyToken && qyyLoginFlag !== 'true') {
+  //     clearAllCookies()
+  //     let res = await qyyLogin(qyyToken)
+  //     if (res.success) {
+  //       sessionStorage.setItem('qyyLogin', 'true')
+  //       const token = res.data.token
+  //       // 设置会话 cookie，不设置 expires，浏览器关闭即失效
+  //       Cookies.set('token', token)
+  //       // 获取用户信息，传入 token
+  //       await getUserInfo(token)
+  //       // router.push('/')
+  //     }
+  //     next()
+  //   } else if (!token) {
+  //     next(`/login`)
+  //   }
+  // }
   if (to.meta.requiresAuth && !token) {
-    next('/login')
+    // next('/login')
   } else if (to.path === '/login' && token) {
     next('/')
   } else {

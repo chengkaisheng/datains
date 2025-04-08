@@ -60,6 +60,9 @@
           <van-button v-show="formData.type === '表单填报'" round block type="primary" native-type="button" @click="downloadTemplateFn">
             下载表单（模板）
           </van-button>
+          <van-button v-show="formData.type === '自主填报'" round block type="primary" native-type="button" @click="downloadSelfTemplateFn">
+            下载模板
+          </van-button>
           <van-button  round block type="primary" native-type="button" style="margin-top: 16px" @click="handleUploadClick">
             上传
           </van-button>
@@ -207,10 +210,11 @@ import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { showLoadingToast, showToast } from 'vant'
 import TreeNode from './TreeNode.vue'
-import { downloadTemplate, getAIData, getTaskTree, getTemplates, saveSelfReport, uploadData } from '@/api/datafill'
+import { downloadTemplate, getAIData, getTaskTree, getTemplates, saveSelfReport, uploadData, downloadSelfReportTemplate } from '@/api/datafill'
 import editExcel from '@/components/excel/editExcel.vue'
 import { hasPermission } from '@/utils/permission.js'
 // import LuckyExcel from 'luckyexcel'
+import {exportExcel} from '../excel/export.js'
 
 const router = useRouter()
 
@@ -425,7 +429,34 @@ const selectTemplate = (template) => {
   selectedTemplate.value = template
 }
 
-// 下载表单
+// 下载自主填报模板
+const downloadSelfTemplateFn = async () => {
+  // 请先选择文件夹
+  if (!formData.value.taskName) {
+    showToast('请先选择文件夹')
+    return
+  }
+  
+  // 先获取模板id 
+  const params = {
+    pid: formData.value.taskId,
+    name: '',
+    nodeType: 'selfReport_template',
+  }
+  const { data } = await getTemplates(params)
+  // 获取到模板id后获取模板json数据
+  if(data.listObject.length > 0) {
+    let res = await downloadSelfReportTemplate(data.listObject[0].id)
+    exportExcel(
+      JSON.parse(res.data.formData),
+      `${res.data.name}`
+    )
+  } else {
+    showToast('当前文件夹下暂无模板')
+  }
+}
+
+// 下载表单（模板）
 const downloadTemplateFn = () => {
   if (formData.value.type !== '表单填报') {
     showToast('请先选择表单填报类型')

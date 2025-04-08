@@ -6,8 +6,7 @@
     />
     <div class="content">
       <div class="welcome-section">
-        <div class="welcome-title">欢迎使用数据填报系统</div>
-        <div class="welcome-desc">快速、便捷的数据填报工具</div>
+        <div class="welcome-title">杨浦区城运中心数据填报工具</div>
       </div>
       <div class="action-card">
         <van-button

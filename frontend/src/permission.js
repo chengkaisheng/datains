@@ -32,20 +32,23 @@ router.beforeEach(async(to, from, next) => {
   const mobilePreview = '/preview/'
 
   // 如果是从轻应用跳转的需要获取传过来的qyyToken给后端接口，获取平台token
-  if(to.path === '/data-filling/my-jobs') {
-    const hasToken = getToken()
-    const qyyToken = getQueryVariable('token') // 获取轻应用token 有token 执行登录
-    let qyyLogin = sessionStorage.getItem('qyyLogin')
-    if(qyyToken && qyyLogin !== 'true') {
-      clearAllCookies()
-      let res = await store.dispatch('user/qyyLogin', {qyyToken})
-      // console.log('qyy', res);
-      next()
-    } else if (!hasToken) {
-      next(`/login?redirect=${to.path}`)
-      NProgress.done()
-    }
-  }
+  // if(to.path === '/data-filling/my-jobs') {
+  //   const hasToken = getToken()
+  //   const qyyToken = getQueryVariable('token') // 获取轻应用token 有token 执行登录
+  //   // let qyyLogin = sessionStorage.getItem('qyyLogin')
+  //   // if(qyyToken && qyyLogin !== 'true') {
+  //   if(qyyToken) {
+  //     clearAllCookies()
+  //     let res = await store.dispatch('user/qyyLogin', {qyyToken})
+  //     next()
+  //     // store.dispatch('user/qyyLogin', {qyyToken}).then(res => {
+  //     //   next('/data-filling/my-jobs')
+  //     // })
+  //   } else if (!hasToken) {
+  //     next(`/login?redirect=${to.path}`)
+  //     NProgress.done()
+  //   }
+  // }
 
   // if (isMobile() && !to.path.includes(mobilePreview) && mobileIgnores.indexOf(to.path) === -1) {
   //   window.location.href = window.origin + '/app.html'
@@ -104,7 +107,7 @@ router.beforeEach(async(to, from, next) => {
       next()
     } else {
       // other pages that do not have permission to access are redirected to the login page.
-      next(`/login?redirect=${to.path}`)
+      // next(`/login?redirect=${to.path}`)
       NProgress.done()
     }
   }
@@ -273,30 +276,3 @@ router.afterEach(() => {
   NProgress.done()
 })
 
-const getQueryVariable = (variable) => {
-  // let query = window.location.search.substring(1)
-  let query = window.location.href.split('?')[1]
-  let vars = []
-  if (!query) {
-    // query = document.cookie
-    // vars = query.split(';')
-    return null
-  } else {
-    vars = query.split('&')
-  }
-  for (var i = 0; i < vars.length; i++) {
-    const pair = vars[i].split('=')
-    if (pair[0].trim() === variable) {
-      return pair[1]
-    }
-  }
-  return (null)
-}
-
-const clearAllCookies = () => {
-  const cookies = document.cookie.split("; ");
-  for (const cookie of cookies) {
-    const [name] = cookie.split("=");
-    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-  }
-}

@@ -8,7 +8,10 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "FileSaver": "^0.10.0",
     "axios": "^1.8.1",
+    "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
     "js-cookie": "^3.0.5",
     "jsencrypt": "^3.3.2",
     "moment": "^2.30.1",
