@@ -74,27 +74,33 @@ const handleLogin = async () => {
   }
 }
 
-// 在创建应用和路由之前执行登录逻辑
-await handleLogin()
+// 初始化应用
+const initApp = async () => {
+  // 在创建应用和路由之前执行登录逻辑
+  await handleLogin()
 
-const app = createApp(App)
+  const app = createApp(App)
 
-// 注册 Vant 组件
-app.use(router)
-app.use(Button)
-app.use(Cell)
-app.use(CellGroup)
-app.use(Form)
-app.use(Field)
-app.use(Popup)
-app.use(Search)
-app.use(NavBar)
-app.use(DropdownMenu)
-app.use(DropdownItem)
-app.use(Icon)
-app.use(Toast)
-app.use(TreeSelect)
-app.use(Switch)
+  // 注册 Vant 组件
+  app.use(router)
+  app.use(Button)
+  app.use(Cell)
+  app.use(CellGroup)
+  app.use(Form)
+  app.use(Field)
+  app.use(Popup)
+  app.use(Search)
+  app.use(NavBar)
+  app.use(DropdownMenu)
+  app.use(DropdownItem)
+  app.use(Icon)
+  app.use(Toast)
+  app.use(TreeSelect)
+  app.use(Switch)
 
-app.mount('#app') 
+  app.mount('#app')
+}
+
+// 执行初始化
+initApp() 
 
