@@ -25,6 +25,12 @@
     </el-menu>
 
     <div class="right-menu" style="color: var(--TopTextColor)">
+      <div class="waring">
+        <div class="scroll-container">
+          <div class="text">请注意：数据无小事，泄密即事故！</div>
+          <div class="text">请注意：数据无小事，泄密即事故！</div>
+        </div>
+      </div>
       <template>
 
         <notification class="right-menu-item hover-effect" />
@@ -379,6 +385,35 @@ export default {
     color: #409eff;
     font-size: 16px;
     font-weight: 400;
+  }
+}
+
+.waring {
+  width: 300px;
+  margin-right: 20px;
+  font-size: 30px;
+  font-weight: 700;
+  color: red;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.scroll-container {
+  display: inline-block;
+  animation: scroll-text 20s linear infinite;
+}
+
+.text {
+  display: inline-block;
+  padding-right: 50px;
+}
+
+@keyframes scroll-text {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
   }
 }
 </style>

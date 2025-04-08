@@ -49,6 +49,12 @@
             <div class="login-msg">
               {{ msg }}
             </div>
+            <div class="waring">
+              <div class="scroll-container">
+                <div class="text">请注意：数据无小事，泄密即事故！</div>
+                <div class="text">请注意：数据无小事，泄密即事故！</div>
+              </div>
+            </div>
           </el-form>
         </el-col>
         <!-- <el-col v-loading="!axiosFinished" :span="12">
@@ -382,6 +388,34 @@ export default {
     @media only screen and (max-width: 1280px) {
       height: 380px;
     }
+  }
+}
+
+.waring {
+  margin: 40px 40px 0 40px;
+  font-size: 30px;
+  font-weight: 700;
+  color: red;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.scroll-container {
+  display: inline-block;
+  animation: scroll-text 20s linear infinite;
+}
+
+.text {
+  display: inline-block;
+  padding-right: 50px;
+}
+
+@keyframes scroll-text {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
   }
 }
 </style>
