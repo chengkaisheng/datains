@@ -42,7 +42,7 @@
                 class="auth-span"
                 :class="[auth.privilegeName === 'i18n_auth_read_data' || auth.privilegeName === 'i18n_auth_create' ? 'width80' : '']"
               >
-                <el-tooltip :disabled="activeName === 'menu'" v-if="showIconPermission(auth, data.nodeType)" effect="dark" :content="getTitlePermission(auth, data.nodeType)" placement="top">
+                <el-tooltip :disabled="activeName === 'menu'" v-if="showIconPermission(auth, data.nodeType === 'selfReport_template' ? 'selfReport' : data.nodeType)" effect="dark" :content="getTitlePermission(auth, data.nodeType === 'selfReport_template' ? 'selfReport' : data.nodeType)" placement="top">
                   <a
                     href="javascript:;"
                     @click="clickAuth(node, data, auth)"
@@ -101,7 +101,7 @@
                 class="auth-span"
                 :class="[auth.privilegeName === 'i18n_auth_read_data' || auth.privilegeName === 'i18n_auth_create' ? 'width80' : '']"
               >
-                <el-tooltip :disabled="activeName === 'menu'" v-if="showIconPermission(auth, data.nodeType)" effect="dark" :content="getTitlePermission(auth, data.nodeType)" placement="top">
+                <el-tooltip :disabled="activeName === 'menu'" v-if="showIconPermission(auth, data.nodeType === 'selfReport_template' ? 'selfReport' : data.nodeType)" effect="dark" :content="getTitlePermission(auth, data.nodeType === 'selfReport_template' ? 'selfReport' : data.nodeType)" placement="top">
                   <a
                     href="javascript:;"
                     @click="clickAuth(node, data, auth)"
