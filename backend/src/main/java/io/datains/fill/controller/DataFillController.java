@@ -50,7 +50,7 @@ public class DataFillController {
     @ApiIgnore
     @PostMapping("/form/save")
     public ResultHolder saveForm(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
-        if ("selfReport".equals(dataFillForm.getNodeType())) {
+        if ("selfReport".equals(dataFillForm.getNodeType()) || "selfReport_template".equals(dataFillForm.getNodeType())) {
             return dataFillService.saveCustomForm(dataFillForm);
         }
         dataFillForm.setTableName(UUIDUtil.getUUID().toString());
@@ -283,6 +283,7 @@ public class DataFillController {
     public DataFillData getFormDataData(@PathVariable String id) {
         return dataFillService.getFormDataData(id);
     }
+
     @ApiOperation("获取自主填报模版")
     @ApiIgnore
     @GetMapping("/form/getSelfReportTemplate/{formId}")
