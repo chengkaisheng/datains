@@ -49,9 +49,9 @@ public class DataFillController {
 
     @ApiIgnore
     @PostMapping("/form/save")
-    public ResultHolder saveForm(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
-        if ("selfReport".equals(dataFillForm.getNodeType())) {
-            return dataFillService.saveCustomForm(dataFillForm);
+    public ResultHolder saveForm(MultipartFile file, DataFillFormWithBLOBs dataFillForm) throws Exception {
+        if ("selfReport".equals(dataFillForm.getNodeType()) || "selfReport_template".equals(dataFillForm.getNodeType())) {
+            return dataFillService.saveCustomForm(file, dataFillForm);
         }
         dataFillForm.setTableName(UUIDUtil.getUUID().toString());
         dataFillForm.setDatasource("default-built-in");
@@ -236,6 +236,12 @@ public class DataFillController {
     }
 
     @ApiIgnore
+    @GetMapping("/form/{formId}/excel/exportExcelData")
+    public void exportExcelData(@PathVariable String formId, @RequestParam("password") String password, HttpServletResponse response) throws Exception {
+        dataFillService.getExcelData(formId, password, response);
+    }
+
+    @ApiIgnore
     @PostMapping("/form/{formId}/excel/upload")
     public void excelUpload(@RequestParam("file") MultipartFile file, @PathVariable String formId) throws Exception {
         String filename = file.getOriginalFilename();
@@ -256,8 +262,8 @@ public class DataFillController {
 
     @ApiIgnore
     @PostMapping("/form/saveFormData")
-    public void saveFormDate(@RequestBody DataFillFormWithBLOBs dataFillForm) {
-        dataFillService.saveFormData(dataFillForm.getId(), dataFillForm.getFormData());
+    public void saveFormDate(MultipartFile file, DataFillFormWithBLOBs dataFillForm) {
+        dataFillService.saveFormData(dataFillForm.getId(), file);
     }
 
     @ApiIgnore
@@ -267,8 +273,28 @@ public class DataFillController {
     }
 
     @ApiIgnore
-    @GetMapping("/form/getFormDataData/{id}")
-    public DataFillData getFormDataData(@PathVariable String id) {
-        return dataFillService.getFormDataData(id);
+    @GetMapping("/form/exportFormDataData/{formId}/{id}")
+    public void exportFormDataData(@PathVariable String formId, @PathVariable String id, @RequestParam String password, HttpServletResponse response) {
+        dataFillService.exportFormDataData(formId, id, password, response);
+    }
+
+    @ApiIgnore
+    @GetMapping("/form/getFormDataData/{formId}/{id}")
+    public void getFormDataData(@PathVariable String formId, @PathVariable String id, HttpServletResponse response) {
+        dataFillService.getFormDataData(formId, id, response);
+    }
+
+    @ApiOperation("获取自主填报模版")
+    @ApiIgnore
+    @GetMapping("/form/getSelfReportTemplate/{formId}")
+    public void getSelfReportTemplate(@PathVariable String formId, HttpServletResponse response) {
+        dataFillService.getSelfReportTemplate(formId, response);
+    }
+
+    @ApiOperation("批量导出文件夹下所有填报")
+    @ApiIgnore
+    @GetMapping("/form/exportBatch/{pid}")
+    public void exportBatch(@PathVariable String pid, HttpServletResponse response) {
+        dataFillService.exportBatch(pid, response);
     }
 }

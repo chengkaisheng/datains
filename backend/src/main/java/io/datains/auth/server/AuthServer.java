@@ -194,7 +194,7 @@ public class AuthServer implements AuthApi {
             SysUserCreateRequest request = new SysUserCreateRequest();
             BeanUtil.copyProperties(user, request);
             request.setRoleIds(Collections.singletonList(Long.valueOf(qyyUser.getSysRoleScenarios().getKey())));
-            request.setNickName(qyyUser.getName());
+//            request.setNickName(qyyUser.getName());
             sysUserService.update(request);
             return;
         }

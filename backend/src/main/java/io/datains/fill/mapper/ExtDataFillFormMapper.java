@@ -8,6 +8,7 @@ import io.datains.fill.dto.DataFillUserTaskDTO;
 import io.datains.fill.entry.DataFillTask;
 import io.datains.fill.request.DataFillFormRequest;
 import io.datains.fill.request.DataFillTaskSearchRequest;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,8 @@ public interface ExtDataFillFormMapper {
     List<DataFillCommitLogDTO> selectLatestLogByFormDataIds(String formId, List<String> dataIds);
 
     List<DataFillCommitLogDTO> selectDataFillLogs(String formId, String commitByName);
+
+    List<DataFillCommitLogDTO> selectDataFillLogsByCommitBy(@Param("formId") String formId,@Param("commitBy") String commitBy);
 
     List<DataFillTaskDTO> selectDataFillTasks(DataFillTaskSearchRequest request);
     List<DataFillTask> selectActiveDataFillTasks();

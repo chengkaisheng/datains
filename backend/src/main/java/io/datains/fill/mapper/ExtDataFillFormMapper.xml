@@ -258,5 +258,11 @@
         </where>
         ORDER BY t1.end_time DESC, t1.start_time
     </select>
+    <select id="selectDataFillLogsByCommitBy" resultType="io.datains.fill.dto.DataFillCommitLogDTO">
+        SELECT *
+        FROM data_fill_commit_log
+        WHERE form_id = #{formId}
+          AND commit_by = #{commitBy}
+    </select>
 
 </mapper>

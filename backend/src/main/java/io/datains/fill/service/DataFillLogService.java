@@ -25,12 +25,15 @@ public class DataFillLogService {
     private DataFillCommitLogMapper dataFillCommitLogMapper;
 
 
-
     public List<DataFillCommitLogDTO> commitLogs(String formId, DataFillCommitLogSearchRequest request) {
 
 
         return extDataFillFormMapper.selectDataFillLogs(formId, request.getCommitByName());
 
+    }
+
+    public List<DataFillCommitLogDTO> selectDataFillLogsByCommitBy(String formId, String commitBy) {
+        return extDataFillFormMapper.selectDataFillLogsByCommitBy(formId, commitBy);
     }
 
     public void saveCommitOperation(String operate, String formId, String dataId) {

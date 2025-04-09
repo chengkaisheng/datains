@@ -2,10 +2,11 @@ CREATE TABLE `data_fill_data`
 (
     `id`          varchar(50) NOT NULL COMMENT '自增主键ID',
     `form_id`     varchar(50)          DEFAULT NULL COMMENT '关联的表单ID',
-    `form_data`   json        NOT NULL COMMENT '表单数据（JSON数组格式）',
     `version`     int         NOT NULL DEFAULT '1' COMMENT '版本号',
     `creator`     varchar(255)         DEFAULT NULL COMMENT '创建人',
     `create_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `file_key`    varchar(255)         DEFAULT NULL COMMENT '文件在minio中的key',
+    `is_delete`   int         NOT NULL DEFAULT '0' COMMENT '0-未删除 1-已删除',
     PRIMARY KEY (`id`)
 ) COMMENT ='表单数据表';
 
@@ -18,7 +19,7 @@ CREATE TABLE `data_fill_commit_log`
     `commit_by`   varchar(255) NOT NULL,
     `commit_time` datetime     DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
-    KEY `data_fill_commit_log_form_id_index` (`form_id`)
+    KEY           `data_fill_commit_log_form_id_index` (`form_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
@@ -45,11 +46,13 @@ CREATE TABLE `data_fill_form`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT ='数据填报表单';
 
-CREATE DEFINER =`root`@`%` TRIGGER `delete_auth_data_fill_form`
+CREATE
+DEFINER =`root`@`%` TRIGGER `delete_auth_data_fill_form`
     AFTER DELETE
-    ON `data_fill_form`
-    FOR EACH ROW select delete_auth_source(OLD.id, 'data_fill')
-                 into @ee;
+ON `data_fill_form`
+    FOR EACH ROW
+select delete_auth_source(OLD.id, 'data_fill')
+into @ee;
 
 
 CREATE TABLE `data_fill_task`
@@ -72,7 +75,7 @@ CREATE TABLE `data_fill_task`
     `role_list`               longtext COMMENT '收件角色',
     `org_list`                longtext COMMENT '收件组织',
     PRIMARY KEY (`id`),
-    KEY `data_fill_task_form_id_index` (`form_id`)
+    KEY                       `data_fill_task_form_id_index` (`form_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT ='数据填报任务';
@@ -88,8 +91,8 @@ CREATE TABLE `data_fill_user_task`
     `end_time`    datetime DEFAULT NULL COMMENT '结束时间',
     `finish_time` datetime DEFAULT NULL COMMENT '完成时间',
     PRIMARY KEY (`id`),
-    KEY `data_fill_user_task_form_id_index` (`form_id`),
-    KEY `data_fill_user_task_task_id_index` (`task_id`)
+    KEY           `data_fill_user_task_form_id_index` (`form_id`),
+    KEY           `data_fill_user_task_task_id_index` (`task_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci COMMENT ='数据填报用户任务';
@@ -146,11 +149,13 @@ CREATE TABLE `data_fill_form_template`
     PRIMARY KEY (`id`)
 ) COMMENT ='数据填报模版';
 
-CREATE DEFINER =`root`@`%` TRIGGER `delete_auth_data_fill_form_template`
+CREATE
+DEFINER =`root`@`%` TRIGGER `delete_auth_data_fill_form_template`
     AFTER DELETE
-    ON `data_fill_form_template`
-    FOR EACH ROW select delete_auth_source(OLD.id, 'data_fill_template')
-                 into @ee;
+ON `data_fill_form_template`
+    FOR EACH ROW
+select delete_auth_source(OLD.id, 'data_fill_template')
+into @ee;
 
 INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`,
                                `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`,

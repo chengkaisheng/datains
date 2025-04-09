@@ -158,6 +158,7 @@ public class JWTUtils {
      * @return
      */
     public static Long tokenLastOperateTime(String token) {
+        System.err.println(token);
         DecodedJWT jwt = JWT.decode(token);
         Date expiresAt = jwt.getExpiresAt();
         return expiresAt.getTime();
