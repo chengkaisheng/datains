@@ -300,6 +300,12 @@
         </if>
         order by data_fill_form.create_time desc
     </select>
+    <select id="selectFormByPid" resultType="io.datains.fill.entry.DataFillForm">
+        select *
+        from data_fill_form
+        where pid = #{pid}
+          and node_type != 'folder'
+    </select>
     <update id="updateByExampleSelective" parameterType="map">
         update data_fill_form
         <set>

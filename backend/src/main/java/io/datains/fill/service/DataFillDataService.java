@@ -148,9 +148,19 @@ public class DataFillDataService {
         if (checkPrivileges(searchRequest.getId(), "read_data")) {
             return listData(searchRequest, true);
         } else {
-            DataFillFormTableDataResponse response = listData(searchRequest, false);
-            response.setData(new Object());
-            return response;
+            //没有读取数据的权限，那么默认只能查看自己创建的数据
+
+            //首先确认用户创建了哪些数据，需要从data_fill_commit_log表中读取
+            String username = AuthUtils.getUser().getUsername();
+            List<DataFillCommitLogDTO> dataFillCommitLogs = dataFillLogService.selectDataFillLogsByCommitBy(searchRequest.getId(), username);
+            //根绝查出的提交数据的id传入参数
+            if (dataFillCommitLogs == null || dataFillCommitLogs.isEmpty()) {
+                searchRequest.setPrimaryKeyValue("null");
+            } else {
+                List<String> dataIds = dataFillCommitLogs.stream().map(DataFillCommitLogDTO::getDataId).collect(Collectors.toList());
+                searchRequest.setPrimaryKeyValueList(dataIds);
+            }
+            return listData(searchRequest, true);
         }
     }
 
@@ -1216,6 +1226,7 @@ public class DataFillDataService {
         }
         return date;
     }
+
     public boolean checkPrivileges(String id, String needPrivileges) {
         //先查出权限信息
         DataFillFormRequest request = new DataFillFormRequest();

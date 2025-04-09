@@ -14,11 +14,11 @@ import java.util.List;
 public interface DataFillDataMapper {
     int insert(DataFillData dataFillData);
 
-    int update(DataFillData dataFillData);
-
     List<DataFillData> getByFormId(@Param("formId") String formId);
 
-    DataFillData getById(@Param("id") String id);
+    DataFillData getByIdAndFormId(@Param("formId") String formId, @Param("id") String id);
+
+    DataFillData getMaxVersionByFormId(@Param("formId") String formId);
 
     int deleteByFormIds(@Param("formIds") List<String> formIds);
 }

@@ -2,7 +2,7 @@ DROP VIEW IF EXISTS v_auth_model;
 CREATE VIEW `v_auth_model` AS
 select `sys_user`.`user_id`   AS `id`,
        `sys_user`.`username`  AS `name`,
-       `sys_user`.`username`  AS `label`,
+       `sys_user`.`nick_name`  AS `label`,
        '0'                    AS `pid`,
        'leaf'                 AS `node_type`,
        'user'                 AS `model_type`,

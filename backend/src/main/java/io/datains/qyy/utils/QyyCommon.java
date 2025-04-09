@@ -13,6 +13,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class QyyCommon {
     private String host = "http://qyy.lingbtech.com:9140";
-    private String scenId = "sjtb_001";
-    private String secretKey = "5FD21BFAB8449CB0572D9A3E6E0B483D";
+    private String scenId = "sjtbgld_001";
+    private String secretKey = "C833B9DFD8E5298DD5B9F0B4D45BF527";
 }

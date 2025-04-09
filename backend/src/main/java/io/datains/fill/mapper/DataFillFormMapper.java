@@ -35,4 +35,6 @@ public interface DataFillFormMapper {
     List<DataFillFormDTO> selectForm(DataFillFormRequest request);
 
     void updateFormStatus(@Param("id") String id, @Param("status") Integer status);
+
+    List<DataFillForm> selectFormByPid(@Param("pid") String pid);
 }
