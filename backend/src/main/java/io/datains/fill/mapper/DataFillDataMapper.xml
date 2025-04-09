@@ -5,12 +5,12 @@
         INSERT INTO data_fill_data
         (id,
          form_id,
-         file_key,
+         form_data,
          creator,
          version)
         values (#{id},
                 #{formId},
-                #{fileKey},
+                #{formData},
                 #{creator},
                 #{version})
     </insert>
@@ -19,20 +19,23 @@
                form_id,
                version,
                creator,
-               create_time,
-               file_key
+               create_time
         FROM data_fill_data
         WHERE form_id = #{formId}
-          and is_delete = 0
         order by version desc
     </select>
-    <select id="getByIdAndFormId" resultType="io.datains.fill.entry.DataFillData">
+    <select id="getById" resultType="io.datains.fill.entry.DataFillData">
         select *
         from data_fill_data
         where id = #{id}
-          and is_delete = 0
-          and form_id = #{formId}
     </select>
+    <update id="deleteByFormIds">
+        delete from data_fill_data
+        WHERE form_id IN
+        <foreach collection="formIds" item="formId" open="(" separator="," close=")">
+            #{formId}
+        </foreach>
+    </update>
     <select id="getMaxVersionByFormId" resultType="io.datains.fill.entry.DataFillData">
         SELECT *
         FROM data_fill_data
@@ -41,11 +44,4 @@
         order by version desc
         limit 1
     </select>
-    <update id="deleteByFormIds">
-        update data_fill_data set is_delete = 1
-        WHERE form_id IN
-        <foreach collection="formIds" item="formId" open="(" separator="," close=")">
-            #{formId}
-        </foreach>
-    </update>
 </mapper>

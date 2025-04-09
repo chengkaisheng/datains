@@ -49,9 +49,9 @@ public class DataFillController {
 
     @ApiIgnore
     @PostMapping("/form/save")
-    public ResultHolder saveForm(MultipartFile file, DataFillFormWithBLOBs dataFillForm) throws Exception {
-        if ("selfReport".equals(dataFillForm.getNodeType()) || "selfReport_template".equals(dataFillForm.getNodeType())) {
-            return dataFillService.saveCustomForm(file, dataFillForm);
+    public ResultHolder saveForm(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
+        if ("selfReport".equals(dataFillForm.getNodeType())) {
+            return dataFillService.saveCustomForm(dataFillForm);
         }
         dataFillForm.setTableName(UUIDUtil.getUUID().toString());
         dataFillForm.setDatasource("default-built-in");
@@ -262,8 +262,8 @@ public class DataFillController {
 
     @ApiIgnore
     @PostMapping("/form/saveFormData")
-    public void saveFormDate(MultipartFile file, DataFillFormWithBLOBs dataFillForm) {
-        dataFillService.saveFormData(dataFillForm.getId(), file);
+    public void saveFormDate(@RequestBody DataFillFormWithBLOBs dataFillForm) {
+        dataFillService.saveFormData(dataFillForm.getId(), dataFillForm.getFormData());
     }
 
     @ApiIgnore
@@ -279,16 +279,22 @@ public class DataFillController {
     }
 
     @ApiIgnore
-    @GetMapping("/form/getFormDataData/{formId}/{id}")
-    public void getFormDataData(@PathVariable String formId, @PathVariable String id, HttpServletResponse response) {
-        dataFillService.getFormDataData(formId, id, response);
+    @GetMapping("/form/getFormDataData/{id}")
+    public DataFillData getFormDataData(@PathVariable String id) {
+        return dataFillService.getFormDataData(id);
+    }
+    @ApiOperation("获取自主填报模版")
+    @ApiIgnore
+    @GetMapping("/form/getSelfReportTemplate/{formId}")
+    public DataFillData getSelfReportTemplate(@PathVariable String formId) {
+        return dataFillService.getSelfReportTemplate(formId);
     }
 
     @ApiOperation("获取自主填报模版")
     @ApiIgnore
-    @GetMapping("/form/getSelfReportTemplate/{formId}")
-    public void getSelfReportTemplate(@PathVariable String formId, HttpServletResponse response) {
-        dataFillService.getSelfReportTemplate(formId, response);
+    @GetMapping("/form/getSelfReportTemplate2/{formId}")
+    public void getSelfReportTemplate2(@PathVariable String formId, HttpServletResponse response) {
+        dataFillService.getSelfReportTemplate2(formId, response);
     }
 
     @ApiOperation("批量导出文件夹下所有填报")

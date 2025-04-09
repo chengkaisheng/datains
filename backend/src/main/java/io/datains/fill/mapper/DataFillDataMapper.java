@@ -16,7 +16,7 @@ public interface DataFillDataMapper {
 
     List<DataFillData> getByFormId(@Param("formId") String formId);
 
-    DataFillData getByIdAndFormId(@Param("formId") String formId, @Param("id") String id);
+    DataFillData getById(@Param("id") String id);
 
     DataFillData getMaxVersionByFormId(@Param("formId") String formId);
 

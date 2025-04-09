@@ -21,6 +21,10 @@ public class DataFillData {
      */
     private String formId;
     /**
+     * 表单数据（JSON数组格式，需自定义类型处理器或手动解析）
+     */
+    private String formData;
+    /**
      * 版本号
      */
     private Integer version;

@@ -46,7 +46,6 @@ import io.datains.provider.datasource.DatasourceProvider;
 import io.datains.provider.datasource.ExtDDLProvider;
 import io.datains.provider.datasource.JdbcProvider;
 import io.datains.service.sys.SysAuthService;
-import io.minio.ObjectWriteResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.collections4.CollectionUtils;
@@ -113,7 +112,7 @@ public class DataFillService {
      * 为自定义上传表单单独写一个新增逻辑
      */
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
-    public ResultHolder saveCustomForm(MultipartFile file, DataFillFormWithBLOBs dataFillForm) throws Exception {
+    public ResultHolder saveCustomForm(DataFillFormWithBLOBs dataFillForm) throws Exception {
         if (!checkPrivileges(dataFillForm.getPid(), "write")) {
             //需要检查是否有自主填报的权限
             throw new RuntimeException("请检查用户权限");
@@ -152,13 +151,13 @@ public class DataFillService {
         DataFillForm form = dataFillFormMapper.selectByExample(example).stream().findFirst().orElse(null);
         if (form != null) {
             //有则不创建，直接保存数据生成新的版本
-            this.saveFormData(form.getId(), file);
+            this.saveFormData(form.getId(), dataFillForm.getFormData());
             return ResultHolder.success(form.getId());
         } else {
             dataFillFormMapper.insertSelective(dataFillForm);
             dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.INSERT);
             sysAuthService.copyAuth(uuid, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING);
-            this.saveFormData(dataFillForm.getId(), file);
+            this.saveFormData(form.getId(), dataFillForm.getFormData());
             return ResultHolder.success(dataFillForm.getId());
         }
     }
@@ -1082,7 +1081,7 @@ public class DataFillService {
 
     }
 
-    public void saveFormData(String formId, MultipartFile file) {
+    public void saveFormData(String formId, String formData) {
         CurrentUserDto user = AuthUtils.getUser();
         //判断是否存在表单
         DataFillForm dataFillForm = this.dataFillFormMapper.selectByPrimaryKey(formId);
@@ -1105,15 +1104,8 @@ public class DataFillService {
             version += 1;
         }
         DataFillData dataFillData = new DataFillData();
-        //将文件传入minio
-        try (InputStream inputStream = file.getInputStream()) {
-            ObjectWriteResponse response = minIOUtils.uploadFile(UUIDUtil.getUUID().toString(), inputStream);
-            dataFillData.setFileKey(response.object());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("上传文件失败");
-        }
         dataFillData.setId(UUIDUtil.getUUID().toString());
+        dataFillData.setFormData(formData);
         dataFillData.setFormId(formId);
         dataFillData.setVersion(version);
         dataFillData.setCreator(user.getUsername());
@@ -1124,19 +1116,8 @@ public class DataFillService {
         return this.dataFillDataMapper.getByFormId(formId);
     }
 
-    public void getFormDataData(String formId, String id, HttpServletResponse response) {
-        DataFillData dataFillData = this.dataFillDataMapper.getByIdAndFormId(formId, id);
-        if (dataFillData == null) {
-            throw new RuntimeException("数据不存在");
-        }
-        try (InputStream inputStream = minIOUtils.getObject(dataFillData.getFileKey())) {
-            byte[] content = IoUtil.readBytes(inputStream);
-            ExcelUtil.downloadExcel("数据", response, content);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.reset();
-            throw new RuntimeException("获取文件失败");
-        }
+    public DataFillData getFormDataData(String id) {
+        return this.dataFillDataMapper.getById(id);
     }
 
     public void updateFormStatus(String id, Integer status) {
@@ -1146,7 +1127,15 @@ public class DataFillService {
         this.dataFillFormMapper.updateFormStatus(id, status);
     }
 
-    public void getSelfReportTemplate(String formId, HttpServletResponse response) {
+    public DataFillData getSelfReportTemplate(String formId) {
+        DataFillData dataFillData = this.dataFillDataMapper.getMaxVersionByFormId(formId);
+        if (dataFillData == null) {
+            throw new RuntimeException("不存在自主填报模版");
+        }
+        return dataFillData;
+    }
+
+    public void getSelfReportTemplate2(String formId, HttpServletResponse response) {
         DataFillData dataFillData = this.dataFillDataMapper.getMaxVersionByFormId(formId);
         if (dataFillData == null) {
             throw new RuntimeException("不存在自主填报模版");
@@ -1162,23 +1151,23 @@ public class DataFillService {
     }
 
     public void exportFormDataData(String formId, String id, String password, HttpServletResponse response) {
-        if (!checkPrivileges(formId, "export")) {
-            throw new RuntimeException("请检查用户权限");
-        }
-        //自主填报的导出，需要添加水印
-        DataFillData dataFillData = this.dataFillDataMapper.getByIdAndFormId(formId, id);
-
-        if (dataFillData == null) {
-            throw new RuntimeException("数据不存在");
-        }
-        try (InputStream inputStream = minIOUtils.getObject(dataFillData.getFileKey())) {
-            ExcelUtil.responseHandle(response, "数据");
-            ExcelUtil.addWaterMark(inputStream, response.getOutputStream(), password);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.reset();
-            throw new RuntimeException("获取文件失败");
-        }
+//        if (!checkPrivileges(formId, "export")) {
+//            throw new RuntimeException("请检查用户权限");
+//        }
+//        //自主填报的导出，需要添加水印
+//        DataFillData dataFillData = this.dataFillDataMapper.getByIdAndFormId(formId, id);
+//
+//        if (dataFillData == null) {
+//            throw new RuntimeException("数据不存在");
+//        }
+//        try (InputStream inputStream = minIOUtils.getObject(dataFillData.getFileKey())) {
+//            ExcelUtil.responseHandle(response, "数据");
+//            ExcelUtil.addWaterMark(inputStream, response.getOutputStream(), password);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            response.reset();
+//            throw new RuntimeException("获取文件失败");
+//        }
     }
 
     public void exportBatch(String pid, String password, HttpServletResponse response) {
@@ -1203,7 +1192,14 @@ public class DataFillService {
                 paths.add(path);
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 if (child.getNodeType().equals("form")) {
-                    //表单
+                    //表单导出逻辑
+                    DataFillFormTableDataRequest req = new DataFillFormTableDataRequest();
+                    req.setId(child.getId());
+                    DataFillFormTableDataResponse dataResponse = dataFillDataService.listData(req, false);
+                    List<List<String>> head = this.buildExcelHead(dataResponse.getFields());
+                    List<Map<String, Object>> searchData = (List<Map<String, Object>>) dataResponse.getData();
+                    List<List<Object>> data = this.buildExcelData(dataResponse.getFields(), searchData);
+
                 }
                 streams.add(os);
             }
