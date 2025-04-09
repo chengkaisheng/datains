@@ -195,7 +195,7 @@
           <el-switch v-model="fillForm.isAI" />
         </el-form-item>
         <div v-show="fillForm.type === 'form' && fillForm.templateId" style="display: flex; justify-content: center;">
-          <el-button style="margin-right: 10px;" type="primary" @click="downloadTemplate(fillForm.templateId)">下载表单（模板）</el-button>
+          <el-button style="margin-right: 10px;" type="primary" @click="handleDownloadTemplate">下载表单（模板）</el-button>
           <el-upload
             :action="`${baseUrl}dataFilling/form/${fillForm.templateId}/excel/upload`"
             :multiple="false"
@@ -274,6 +274,28 @@
     >
       <LogList :formId="selectedRow.id"></LogList>
     </el-drawer>
+
+    <!-- 密码对话框 -->
+    <el-dialog
+      title="输入密码"
+      :visible.sync="passwordDialogVisible"
+      width="30%"
+    >
+      <el-form
+        ref="passwordForm"
+        :model="passwordForm"
+        :rules="passwordRules"
+        label-width="120px"
+      >
+        <el-form-item label="文件加密密码" prop="password">
+          <el-input v-model="passwordForm.password" placeholder="请输入" @keyup.enter.native="handlePasswordConfirm" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="passwordDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handlePasswordConfirm">确认</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -379,11 +401,20 @@ export default {
       versionId: undefined,
       versionName: '',
       versionList: [],
-      selectedRow: {},
+      selectedRow: null,
       tableHeight: 0,
       logDrawer: false,
-      selectedRow: null,
       selfReportTemplate: false,
+      passwordDialogVisible: false,
+      password: '',
+      passwordForm: {
+        password: ''
+      },
+      passwordRules: {
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ]
+      }
     }
   },
   watch: {
@@ -502,14 +533,27 @@ export default {
       console.log('编辑文件', file)
     },
     handleFileDownload(row) {
-      if (row.nodeType === 'form') {
-        this.downloadTemplate(row.id, row.name)
+      this.selectedRow = row
+      this.passwordDialogVisible = true
+    },
+    handlePasswordConfirm() {
+      console.log('验证密码：', this.passwordForm)
+      
+      if (!this.passwordForm || !this.passwordForm.password) {
+        this.$message.error('请输入密码')
+        return
+      }
+      
+      this.passwordDialogVisible = false
+      if (this.selectedRow.nodeType === 'form') {
+        console.log('下载文件，密码：', this.passwordForm.password)
+        this.downloadTemplate(this.selectedRow.id, this.passwordForm.password)
       } else {
         // 自主填报模板 自主填报 需要去选择版本然后下载
-        this.selectedRow = row
         this.selectedVersionVisible = true
-        this.getVersionList(row.id)
+        this.getVersionList(this.selectedRow.id)
       }
+      this.passwordForm.password = ''
     },
     getVersionList(id) {
       getFormData(id).then(res => {
@@ -815,14 +859,14 @@ export default {
       }
       this.fileList = []
     },
-    downloadTemplate(id, name) {
+    downloadTemplate(id, password) {
       // let method = this.isTemplate ? downloadTemplateTemplate : downloadTemplate
-      downloadTemplate(id).then(res => {
+      downloadTemplate(id, password).then(res => {
         const blob = new Blob([res])
         const link = document.createElement('a')
         link.style.display = 'none'
         link.href = URL.createObjectURL(blob)
-        link.download = name ? name + '.xlsx' : this.templateList.find(item => item.id === id).name + '.xlsx' // 下载的文件名
+        link.download = password ? this.selectedRow.name + '.xlsx' : this.templateList.find(item => item.id === id).name + '.xlsx' // 下载的文件名
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
@@ -949,6 +993,13 @@ export default {
       }).catch(() => {
         this.$message.error('更新状态失败')
       })
+    },
+    handleDownloadTemplate() {
+      if (this.fillForm.templateId) {
+        this.downloadTemplate(this.fillForm.templateId)
+      } else {
+        this.$message.error('请先选择表单')
+      }
     }
   }
 }
