@@ -157,7 +157,7 @@ public class DataFillService {
             dataFillFormMapper.insertSelective(dataFillForm);
             dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.INSERT);
             sysAuthService.copyAuth(uuid, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING);
-            this.saveFormData(form.getId(), dataFillForm.getFormData());
+            this.saveFormData(dataFillForm.getId(), dataFillForm.getFormData());
             return ResultHolder.success(dataFillForm.getId());
         }
     }
