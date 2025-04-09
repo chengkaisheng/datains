@@ -294,7 +294,7 @@ public class DataFillController {
     @ApiOperation("批量导出文件夹下所有填报")
     @ApiIgnore
     @GetMapping("/form/exportBatch/{pid}")
-    public void exportBatch(@PathVariable String pid, HttpServletResponse response) {
-        dataFillService.exportBatch(pid, response);
+    public void exportBatch(@PathVariable String pid, @RequestParam String password, HttpServletResponse response) {
+        dataFillService.exportBatch(pid, password, response);
     }
 }

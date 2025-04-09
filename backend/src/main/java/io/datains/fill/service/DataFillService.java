@@ -21,6 +21,7 @@ import io.datains.base.domain.SysUserExample;
 import io.datains.base.mapper.SysUserMapper;
 import io.datains.commons.constants.DePermissionType;
 import io.datains.commons.constants.SysAuthConstants;
+import io.datains.commons.pool.PriorityThreadPoolExecutor;
 import io.datains.commons.utils.*;
 import io.datains.controller.ResultHolder;
 import io.datains.controller.request.datasource.DatasourceRequest;
@@ -60,9 +61,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -99,6 +98,8 @@ public class DataFillService {
     private DataFillCommitLogMapper dataFillCommitLogMapper;
     @Resource
     private MinIOUtils minIOUtils;
+    @Resource
+    private PriorityThreadPoolExecutor priorityExecutor;
 
     private final static Gson gson = new Gson();
 
@@ -804,6 +805,9 @@ public class DataFillService {
         List<List<String>> head = new ArrayList<>();
         for (ExtTableField header : headers) {
             // 使用表头的name作为列名
+            if (header.isRemoved()) {
+                continue;
+            }
             String columnName = header.getSettings().getName();
             head.add(Collections.singletonList(columnName));
         }
@@ -1177,17 +1181,59 @@ public class DataFillService {
         }
     }
 
-    public void exportBatch(String pid, HttpServletResponse response) {
+    public void exportBatch(String pid, String password, HttpServletResponse response) {
         if (!checkPrivileges(pid, "export")) {
             throw new RuntimeException("请检查用户权限");
         }
         try {
-            //获取文件夹下的填报信息
-//            List<DataFillFormDTO> form = this.dataFillFormMapper.selectFormByPid(pid);
+            List<DataFillForm> allChildren = getAllChildren(pid);
+            Map<String, DataFillForm> map = new HashMap<>();
+            allChildren.forEach(child -> map.put(child.getId(), child));
+            List<String> paths = new ArrayList<>();
+            List<OutputStream> streams = new ArrayList<>();
+
+            for (DataFillForm child : allChildren) {
+                List<String> parentNames = getParentNames(child, map);
+                String path;
+                if (parentNames.isEmpty()) {
+                    path = child.getName();
+                } else {
+                    path = String.join("/", parentNames) + "/" + child.getName();
+                }
+                paths.add(path);
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                if (child.getNodeType().equals("form")) {
+                    //表单
+                }
+                streams.add(os);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private List<String> getParentNames(DataFillForm form, Map<String, DataFillForm> map) {
+        List<String> parentNames = new ArrayList<>();
+        String currentPid = form.getPid();
+        while (currentPid != null && !currentPid.isEmpty()) {
+            DataFillForm parent = map.get(currentPid);
+            if (parent == null) {
+                break;
+            }
+            parentNames.add(0, parent.getName());
+            currentPid = parent.getPid();
+        }
+        return parentNames;
+    }
+
+    private List<DataFillForm> getAllChildren(String pid) {
+        List<DataFillForm> children = this.dataFillFormMapper.selectFormByPid(pid);
+        List<DataFillForm> result = new ArrayList<>(children);
+        for (DataFillForm child : children) {
+            result.addAll(getAllChildren(child.getId()));
+        }
+        return result;
     }
 
     @EqualsAndHashCode(callSuper = true)
