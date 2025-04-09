@@ -26,7 +26,7 @@ import java.util.List;
  * @since 2025-04-09 15:17
  */
 public class ExcelUtil {
-    public static void addWaterMark(InputStream inputStream, OutputStream outputStream, String password) throws IOException {
+    public static void addWaterMark(InputStream inputStream, OutputStream outputStream, String password,String waterMark) throws IOException {
         // 缓存流到字节数组
         byte[] excelBytes = IOUtils.toByteArray(inputStream); // 使用 Apache Commons IO 或手动实现
 
@@ -55,6 +55,19 @@ public class ExcelUtil {
         }
         excelWriter.finish();
         reader.finish();
+    }
+
+    public static void createExcelWithWaterMark(List<List<String>> head, List<List<Object>> data, String password, OutputStream outputStream) {
+        EasyExcel.write(outputStream)
+                .head(head)
+                .automaticMergeHead(false)
+                .password(password)
+                .inMemory(true)
+                .registerWriteHandler(new WaterMarkHandler(AuthUtils.getUser().getNickName()))
+                .autoCloseStream(Boolean.FALSE)
+                .sheet("数据")
+                .registerWriteHandler(new CustomCellWriteWidthConfig())
+                .doWrite(data);
     }
 
     public static void createExcelWithWaterMark(List<List<String>> head, List<List<Object>> data, String password, String fileName, HttpServletResponse response) throws Exception {

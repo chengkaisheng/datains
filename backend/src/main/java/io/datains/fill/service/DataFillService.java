@@ -1203,7 +1203,23 @@ public class DataFillService {
                 paths.add(path);
                 ByteArrayOutputStream os = new ByteArrayOutputStream();
                 if (child.getNodeType().equals("form")) {
-                    //表单
+                    //表单导出逻辑
+                    DataFillFormTableDataRequest req = new DataFillFormTableDataRequest();
+                    req.setId(child.getId());
+                    DataFillFormTableDataResponse dataResponse = dataFillDataService.listData(req, false);
+                    List<List<String>> head = this.buildExcelHead(dataResponse.getFields());
+                    List<Map<String, Object>> searchData = (List<Map<String, Object>>) dataResponse.getData();
+                    List<List<Object>> data = this.buildExcelData(dataResponse.getFields(), searchData);
+                    ExcelUtil.createExcelWithWaterMark(head, data, password, os);
+                } else if (child.getNodeType().equals("selfReport")) {
+                    //自主填报导出逻辑
+                    //首先查询自主填报最高版本的数据
+                    DataFillData dataFillData = this.dataFillDataMapper.getMaxVersionByFormId(child.getId());
+                    try (InputStream inputStream = minIOUtils.getObject(dataFillData.getFileKey())) {
+                        ExcelUtil.addWaterMark(inputStream, os, password);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 streams.add(os);
             }
