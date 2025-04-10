@@ -161,7 +161,11 @@ public class DataFillService {
 
         //先先查询文件夹下有没有同一人上传的同名文件
         DataFillFormExample example = new DataFillFormExample();
-        example.createCriteria().andPidEqualTo(dataFillForm.getPid()).andNameEqualTo(dataFillForm.getName()).andCreateByEqualTo(userName);
+        example.createCriteria()
+                .andPidEqualTo(dataFillForm.getPid())
+                .andNameEqualTo(dataFillForm.getName())
+                .andCreateByEqualTo(userName)
+                .andNodeTypeEqualTo("selfReport");
         DataFillForm form = dataFillFormMapper.selectByExample(example).stream().findFirst().orElse(null);
         if (form != null) {
             //有则不创建，直接返回原来的表单，让其覆盖成为新版本，以阻止用户创建同名文件
@@ -1126,7 +1130,7 @@ public class DataFillService {
             this.dataFillDataMapper.insert(dataFillData);
         } catch (Exception e) {
             //如果是第一个版本创建失败，则需要删除自主填报表单，避免出现脏数据
-            if (version == 1){
+            if (version == 1) {
                 this.deleteForm(formId);
             }
             throw new RuntimeException(e);
