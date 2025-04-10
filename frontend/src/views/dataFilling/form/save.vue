@@ -4,6 +4,7 @@ import { listDatasource } from '@/api/system/datasource'
 import { listForm, saveForm, updateForm } from '@/views/dataFilling/form/dataFilling'
 import { listForm as listFormTemplate, saveForm as saveFormTemplate, updateForm as updateFormTemplate } from '@/views/dataFilling/template/template'
 import { hasDataPermission } from '@/utils/permission'
+import { uuid } from 'vue-uuid'
 
 export default {
   name: 'DataFillingFormSave',
@@ -398,6 +399,10 @@ export default {
       this.loading = true
       this.$refs['mRightForm'].validate((valid) => {
         if (valid) {
+          // this.formData.forms  uuid 设置数据库字段表名称
+          this.formData.forms.map(item => {
+            item.settings.mapping.columnName = uuid.v1()
+          })
           const data = {
             name: this.formData.name,
             tableName: this.formData.table,
@@ -613,7 +618,7 @@ export default {
               {{ scope.row.settings.name }}
             </template>
           </el-table-column>
-          <el-table-column>
+          <!-- <el-table-column>
             <template
               slot="header"
             >
@@ -669,7 +674,7 @@ export default {
                 </el-form-item>
               </template>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column
             :label="$t('data_fill.form.column_type')"
           >

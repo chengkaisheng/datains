@@ -8,9 +8,9 @@ export function saveForm(data) {
     data
   })
 }
-export function saveFormData(data) {
+export function saveFormData(id, data) {
   return request({
-    url: 'dataFilling/form/saveFormData',
+    url: `dataFilling/form/saveFormData/${id}`,
     method: 'post',
     loading: true,
     data
@@ -23,11 +23,20 @@ export function getFormData(id) {
     loading: true,
   })
 }
-export function getFormDataData(id) {
+export function getFormDataData(formId, id) {
   return request({
-    url: 'dataFilling/form/getFormDataData/' + id,
+    url: `dataFilling/form/getFormDataData/${formId}/${id}`,
     method: 'get',
     loading: true,
+    responseType: 'blob'
+  })
+}
+export function exportFormDataData(formId, id , password) {
+  return request({
+    url: `dataFilling/form/exportFormDataData/${formId}/${id}?password=${password}`,
+    method: 'get',
+    loading: true,
+    responseType: 'blob'
   })
 }
 export function updateForm(data) {

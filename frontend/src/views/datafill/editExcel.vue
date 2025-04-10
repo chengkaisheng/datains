@@ -34,8 +34,8 @@
 
 <script>
 // import datafill from '@/api/datafill/datafill'
-import { getFormData, saveFormData, getFormDataData } from '@/views/dataFilling/form/dataFilling'
-
+import { getFormData, saveFormData, getFormDataData, deleteForm } from '@/views/dataFilling/form/dataFilling'
+import { exportExcel } from './export'
 export default {
   name: 'EditExcel',
   props: {
@@ -74,8 +74,8 @@ export default {
     if (this.msg.data) {
       this.init(this.msg.data, 'save')
     } else {
-      this.getFormData()
       this.currentFormDataId = this.msg.id
+      this.getFormData()
     }
   },
   methods: {
@@ -102,18 +102,56 @@ export default {
         }
       })
     },
-    getFormData() {
-      getFormData(this.msg.id).then(res => {
+    getFormData(isInit) {
+      getFormData(this.currentFormDataId).then(res => {
         this.versionList = res.data
         this.versionId = res.data[0].id
-        this.getDataVersion()
+        isInit ? null : this.getDataVersion()
       })
     },
     // 获取不同版本的数据
     getDataVersion() {
-      getFormDataData(this.versionId).then(res => {
-        this.init(JSON.parse(res.data.formData))
+      let formId = this.versionList.find(item => item.id === this.versionId).formId
+      getFormDataData(formId, this.versionId).then(res => {
+        // 返回文件流
+        this.fileToData(new Blob([res], {
+          type: 'application/vnd.ms-excel;charset=utf-8'
+        }))
       })
+    },
+    fileToData(file) {
+      file.name = this.msg.name + '.xlsx'
+      let _this = this
+      try {
+        LuckyExcel.transformExcelToLucky(
+          file,
+          function(exportJson, luckysheetfile) {
+            try {
+              if (
+                !exportJson ||
+                !exportJson.sheets ||
+                exportJson.sheets.length === 0
+              ) {
+                _this.$message.error(
+                  '无法读取Excel文件的内容，目前不支持xls文件！'
+                )
+                return
+              }
+              _this.init(exportJson.sheets)
+            } catch (err) {
+              console.error('处理Excel数据错误:', err)
+              _this.$message.error('无法读取文件内容，请检查文件是否损坏')
+            }
+          },
+          function(err) {
+            console.error('Excel解析错误:', err)
+            _this.$message.error('无法读取文件内容，请检查文件是否损坏')
+          }
+        )
+      } catch (err) {
+        console.error('Excel转换错误:', err)
+        _this.$message.error('无法读取文件内容，请检查文件是否损坏')
+      }
     },
     selectVersion(value) {
       this.versionId = value
@@ -124,14 +162,28 @@ export default {
       this.$emit('update:drawer', false)
     },
     handleSave(type) {
-      saveFormData({
-        id: this.currentFormDataId,
-        // id: this.msg.id || this.currentFormDataId,
-        formData: JSON.stringify(luckysheet.getAllSheets())
-      }).then(res => {
+      this.$confirm('保存会创建一个新版本', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.saveFile()
+      }).catch(() => {
+      })
+    },
+    async saveFile(id) {
+      // 无id表示需要从页面获取文件进行保存
+      let blob = null;
+      if(!id) {
+        blob = await exportExcel(luckysheet.getAllSheets(), this.msg.name, true)
+      }
+      this.currentFormDataId = id ? id : this.currentFormDataId
+      const formData = new FormData();
+      formData.append('file', id ? this.msg.file : blob)
+      saveFormData(this.currentFormDataId, formData).then(res => {
         if (res.success) {
-          // 保存成功之后版本需要切换到最新
-          this.getFormData()
+          // true 表示初始化保存只需要获取版本  false 需要获取版本并重新渲染
+          this.getFormData(id ? true : false);
           this.$message({
             type: 'success',
             message: '保存成功'

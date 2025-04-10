@@ -31,7 +31,8 @@ export function downloadTemplate(templateId) {
 export function downloadSelfReportTemplate(id) {
   return request({
     url: `dataFilling/form/getSelfReportTemplate/${id}`,
-    method: 'post',
+    method: 'get',
+    responseType: 'blob'
   })
 }
 
@@ -69,9 +70,9 @@ export function saveSelfReport(data) {
   })
 }
 
-export function saveFormData(data) {
+export function saveFormData(id, data) {
   return request({
-    url: '/dataFilling/form/saveFormData',
+    url: `/dataFilling/form/saveFormData/${id}`,
     method: 'post',
     data
   })
@@ -80,6 +81,13 @@ export function saveFormData(data) {
 export function getFormData(id) {
   return request({
     url: '/dataFilling/form/getFormData/' + id,
+    method: 'post',
+  })
+}
+
+export function deleteForm(id) {
+  return request({
+    url: 'dataFilling/form/delete/' + id,
     method: 'post',
   })
 }

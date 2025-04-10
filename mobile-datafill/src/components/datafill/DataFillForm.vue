@@ -210,7 +210,7 @@ import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { showLoadingToast, showToast } from 'vant'
 import TreeNode from './TreeNode.vue'
-import { downloadTemplate, getAIData, getTaskTree, getTemplates, saveSelfReport, uploadData, downloadSelfReportTemplate } from '@/api/datafill'
+import { downloadTemplate, getAIData, getTaskTree, getTemplates, saveSelfReport, uploadData, downloadSelfReportTemplate, saveFormData, deleteForm } from '@/api/datafill'
 import editExcel from '@/components/excel/editExcel.vue'
 import { hasPermission } from '@/utils/permission.js'
 // import LuckyExcel from 'luckyexcel'
@@ -447,10 +447,14 @@ const downloadSelfTemplateFn = async () => {
   // 获取到模板id后获取模板json数据
   if(data.listObject.length > 0) {
     let res = await downloadSelfReportTemplate(data.listObject[0].id)
-    exportExcel(
-      JSON.parse(res.data.formData),
-      `${res.data.name}`
-    )
+    const blob = new Blob([res])
+    const link = document.createElement('a')
+    link.style.display = 'none'
+    link.href = URL.createObjectURL(blob)
+    link.download = formData.value.taskName + '.xlsx'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   } else {
     showToast('当前文件夹下暂无模板')
   }
@@ -680,6 +684,7 @@ const uploadExcel = (file) => {
             id: formData.value.taskId,
             name: uploadForm.value.fileName,
             data: exportJson.sheets,
+            file: file,
           };
           closeUploadPopup()
         } catch (err) {
@@ -740,7 +745,7 @@ const formDataId = ref('')
 // 保存自报数据
 const saveSelfReportFn = async () => {
   let data = {
-    formData: JSON.stringify(luckysheet.getAllSheets()),
+    // formData: JSON.stringify(luckysheet.getAllSheets()),
     level: selectedTask.value.level,
     name: msg.value.name,
     nodeType: 'selfReport',
@@ -750,10 +755,20 @@ const saveSelfReportFn = async () => {
   let res = await saveSelfReport(data)
   if(res.success) {
     formDataId.value = res.data
-    showToast('保存成功')
-  } else {
-    showToast(res.message || '保存失败')
-  }
+    saveFile(res.data)
+  } 
+}
+// 保存自主填报文件
+const saveFile = async (formId) => {
+  const formData = new FormData()
+  formData.append('file', msg.value.file1)
+  saveFormData(formId, formData).then(res => {
+    if (res.success) {
+      showToast('保存成功')
+    } else {
+      showToast(res.message || '保存失败')
+    }
+  })
 }
 </script>
 

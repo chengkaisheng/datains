@@ -115,7 +115,7 @@
       :wrapper-closable="false"
       direction="rtl"
     >
-      <EditExcel :current-form-id="currentFormId" :drawer.sync="drawer" :msg="msg" :is-read-only="isReadOnly" @addDataFill="addDataFill" />
+      <EditExcel ref="editExcelRef" :current-form-id="currentFormId" :drawer.sync="drawer" :msg="msg" :is-read-only="isReadOnly" @addDataFill="addDataFill" />
     </el-drawer>
 
     <!-- 添加上传文件对话框 -->
@@ -228,20 +228,24 @@
       title="下载"
       :visible.sync="selectedVersionVisible"
       width="30%">
-      <div>
-        <span>版本：</span>
-        <el-select v-model="versionId" placeholder="请选择">
-          <el-option
-            v-for="item in versionList"
-            :key="item.id"
-            :label="item.version"
-            :value="item.id">
-          </el-option>
-        </el-select>
-      </div>
+      <el-form ref="versionForm" :model="versionForm" :rules="versionRules" label-width="120px">
+        <el-form-item label="版本：" prop="versionId">
+          <el-select v-model="versionForm.versionId" placeholder="请选择">
+            <el-option
+              v-for="item in versionList"
+              :key="item.id"
+              :label="item.version"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="文件加密密码：" prop="password">
+          <el-input v-model="versionForm.password" placeholder="请输入密码"></el-input>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="closeVersionDialog">取 消</el-button>
-        <el-button type="primary" @click="downloadVersionData">下载</el-button>
+        <el-button type="primary" @click="downloadVersionData">确认</el-button>
       </span>
     </el-dialog>
 
@@ -305,7 +309,6 @@ import ViewTable from '@/views/dataFilling/form/ViewTable.vue'
 import NoSelect from '@/views/dataFilling/form/NoSelect.vue'
 import LogList from '@/views/dataFilling/form/LogList.vue'
 import datafill from '@/api/datafill/datafill'
-import { exportExcel } from './export'
 import { hasPermission } from '@/views/dataFilling/permission.js'
 import {
   deleteForm,
@@ -314,7 +317,7 @@ import {
   getWithPrivileges,
   saveForm,
   getFormData,
-  getFormDataData
+  exportFormDataData
 } from '@/views/dataFilling/form/dataFilling'
 import {
   deleteForm as deleteTemplate,
@@ -411,6 +414,18 @@ export default {
         password: ''
       },
       passwordRules: {
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' }
+        ]
+      },
+      versionForm: {
+        versionId: '',
+        password: ''
+      },
+      versionRules: {
+        versionId: [
+          { required: true, message: '请选择版本', trigger: 'change' }
+        ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' }
         ]
@@ -534,57 +549,63 @@ export default {
     },
     handleFileDownload(row) {
       this.selectedRow = row
-      this.passwordDialogVisible = true
+      if (this.selectedRow.nodeType === 'form') {
+        this.passwordDialogVisible = true
+      } else {
+        // 自主填报模板 自主填报 需要去选择版本，输入密码然后下载
+        this.selectedVersionVisible = true
+        this.getVersionList(this.selectedRow.id)
+      }
+      
     },
     handlePasswordConfirm() {
-      console.log('验证密码：', this.passwordForm)
-      
       if (!this.passwordForm || !this.passwordForm.password) {
         this.$message.error('请输入密码')
         return
       }
-      
-      this.passwordDialogVisible = false
-      if (this.selectedRow.nodeType === 'form') {
-        console.log('下载文件，密码：', this.passwordForm.password)
-        this.downloadTemplate(this.selectedRow.id, this.passwordForm.password)
-      } else {
-        // 自主填报模板 自主填报 需要去选择版本然后下载
-        this.selectedVersionVisible = true
-        this.getVersionList(this.selectedRow.id)
-      }
-      this.passwordForm.password = ''
+      this.downloadTemplate(this.selectedRow.id, this.passwordForm.password)
     },
     getVersionList(id) {
       getFormData(id).then(res => {
         this.versionList = res.data
-        this.versionId = res.data[0].id
+        if (res.data && res.data.length > 0) {
+          this.versionForm.versionId = res.data[0].id
+        }
       })
     },
     closeVersionDialog() {
       this.selectedVersionVisible = false;
-      this.versionId = undefined
-      this.versionName = ''
+      this.versionForm.versionId = '';
+      this.versionForm.password = '';
+      this.versionName = '';
     },
     downloadVersionData() {
-      this.versionName = this.versionList.find(item => item.id == this.versionId).version
-      getFormDataData(this.versionId).then((res) => {
-        exportExcel(
-          JSON.parse(res.data.formData),
-          `${this.selectedRow.name}-${this.versionName}`
-        )
-        this.closeVersionDialog()
+      this.$refs.versionForm.validate((valid) => {
+        if (valid) {
+          this.versionName = this.versionList.find(item => item.id == this.versionForm.versionId).version
+          exportFormDataData(this.selectedRow.id, this.versionForm.versionId, this.versionForm.password).then((res) => {
+            const blob = new Blob([res])
+            const link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = URL.createObjectURL(blob)
+            link.download = this.selectedRow.name + '.xlsx'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            this.closeVersionDialog()
+          })
+        }
       })
     },
-    handleFilePreview(file) {
-      console.log('查看文件', file)
+    handleFilePreview(row) {
+      console.log('查看文件', row)
       this.drawer = true
       this.msg = {
-        id: file.id,
-        name: file.name,
+        id: row.id,
+        name: row.name,
         data: null
       }
-      this.isReadOnly = file.privileges.includes('use')
+      this.isReadOnly = row.privileges.includes('use')
     },
     handleExcelEdit(row) {
       console.log('编辑文件', row)
@@ -675,7 +696,8 @@ export default {
               _this.msg = {
                 id: _this.nodeData.id,
                 name: _this.uploadForm.name,
-                data: exportJson.sheets
+                data: exportJson.sheets,
+                file: _this.uploadForm.file,
               }
               _this.selfUploadLoading = false
               _this.uploadDialogVisible = false
@@ -702,14 +724,13 @@ export default {
       }
     },
     addDataFill() {
-      // 上传成功的处理逻辑
+      // 自主填报 上传成功的处理逻辑
       const data = {
         name: this.uploadForm.name,
         pid: this.nodeData.id,
         level: this.nodeData.level,
         nodeType: this.selfReportTemplate ? 'selfReport_template' : 'selfReport',
-        // nodeType: 'selfReport',
-        formData: JSON.stringify(luckysheet.getAllSheets())
+        // formData: JSON.stringify(luckysheet.getAllSheets())
       }
       let method = this.isTemplate ? saveFormTemplate : saveForm
       method(data).then(res => {
@@ -719,10 +740,8 @@ export default {
             this.$emit('refreshFolderTree')
           }
           this.currentFormId = res.data
-          this.$message({
-            type: 'success',
-            message: '上传成功！'
-          })
+          // 需要保存文件
+          this.$refs.editExcelRef.saveFile(this.currentFormId)
           this.getDataFill()
         }
       })
@@ -758,65 +777,6 @@ export default {
             this.uploadForm.name = fileName
           }
         }
-        // if (fileExt === 'xls') {
-        //   // 显示加载提示
-        //   const loading = this.$loading({
-        //     lock: true,
-        //     text: '正在转换文件格式...',
-        //     spinner: 'el-icon-loading',
-        //     background: 'rgba(0, 0, 0, 0.7)'
-        //   });
-
-        //   // 设置 Worker 的消息处理函数
-        //   this.worker.onmessage = (e) => {
-        //     loading.close();
-
-        //     if (e.data.success) {
-        //       // 创建新的 Blob 和 File 对象
-        //       const blob = new Blob([e.data.data], {
-        //         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        //       });
-        //       const xlsxFile = new File([blob], fileName.replace('.xls', '.xlsx'), {
-        //         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        //       });
-
-        //       this.fileList = [{
-        //         name: xlsxFile.name,
-        //         raw: xlsxFile
-        //       }];
-        //       this.uploadForm.file = xlsxFile;
-
-        //       // 自动填充文件名（不包含扩展名）
-        //       if (!this.uploadForm.name) {
-        //         const dotIndex = xlsxFile.name.lastIndexOf('.');
-        //         if (dotIndex > 0) {
-        //           this.uploadForm.name = xlsxFile.name.substring(0, dotIndex);
-        //         }
-        //       }
-        //     } else {
-        //       this.$message.error('文件转换失败: ' + e.data.error);
-        //       this.fileList = [];
-        //       this.uploadForm.file = null;
-        //     }
-        //   };
-
-        //   // 发送文件到 Worker 进行处理
-        //   this.worker.postMessage({ file: file.raw });
-
-        // } else {
-        //   // 处理xlsx或其他文件
-        //   this.fileList = [fileList[fileList.length - 1]];
-        //   this.uploadForm.file = file.raw;
-
-        //   if (!this.uploadForm.name) {
-        //     const dotIndex = fileName.lastIndexOf('.');
-        //     if (dotIndex > 0) {
-        //       this.uploadForm.name = fileName.substring(0, dotIndex);
-        //     } else {
-        //       this.uploadForm.name = fileName;
-        //     }
-        //   }
-        // }
       } else {
         this.fileList = []
         this.uploadForm.file = null
@@ -860,7 +820,6 @@ export default {
       this.fileList = []
     },
     downloadTemplate(id, password) {
-      // let method = this.isTemplate ? downloadTemplateTemplate : downloadTemplate
       downloadTemplate(id, password).then(res => {
         const blob = new Blob([res])
         const link = document.createElement('a')
@@ -870,6 +829,8 @@ export default {
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
+        this.passwordDialogVisible = false
+        this.passwordForm.password = ''
       })
     },
     beforeUpload(file) {
