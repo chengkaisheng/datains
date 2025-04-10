@@ -254,48 +254,46 @@ public class DataFillController {
         return dataFillDataService.listColumnData(optionDatasource, request.getOptionTable(), request.getOptionColumn(), request.getOptionOrder());
     }
 
+    @ApiOperation("导入表格形成表单")
     @ApiIgnore
     @PostMapping("/form/excel/excelUploadToFrom/{pid}")
     public void excelUploadToFrom(@RequestParam("file") MultipartFile file, @PathVariable String pid) throws Exception {
         dataFillService.excelUploadToFrom(file, pid);
     }
 
+    @ApiOperation("保存自主填报文件")
     @ApiIgnore
-    @PostMapping("/form/saveFormData")
-    public void saveFormDate(@RequestBody DataFillFormWithBLOBs dataFillForm) {
-        dataFillService.saveFormData(dataFillForm.getId(), dataFillForm.getFormData());
+    @PostMapping("/form/saveFormData/{formId}")
+    public void saveFormDate(MultipartFile file, @PathVariable String formId) {
+        dataFillService.saveFormData(formId, file);
     }
 
+    @ApiOperation("获取自主填报版本文件列表")
     @ApiIgnore
     @GetMapping("/form/getFormData/{formId}")
     public List<DataFillData> getFormData(@PathVariable String formId) {
         return dataFillService.getFormData(formId);
     }
 
+    @ApiOperation("导出自主填报某个版本的文件")
     @ApiIgnore
     @GetMapping("/form/exportFormDataData/{formId}/{id}")
     public void exportFormDataData(@PathVariable String formId, @PathVariable String id, @RequestParam String password, HttpServletResponse response) {
         dataFillService.exportFormDataData(formId, id, password, response);
     }
 
+    @ApiOperation("获取自主填报某个版本的文件")
     @ApiIgnore
-    @GetMapping("/form/getFormDataData/{id}")
-    public DataFillData getFormDataData(@PathVariable String id) {
-        return dataFillService.getFormDataData(id);
+    @GetMapping("/form/getFormDataData/{formId}/{id}")
+    public void getFormDataData(@PathVariable String formId, @PathVariable String id, HttpServletResponse response) {
+        dataFillService.getFormDataData(formId, id, response);
     }
 
     @ApiOperation("获取自主填报模版")
     @ApiIgnore
     @GetMapping("/form/getSelfReportTemplate/{formId}")
-    public DataFillData getSelfReportTemplate(@PathVariable String formId) {
-        return dataFillService.getSelfReportTemplate(formId);
-    }
-
-    @ApiOperation("获取自主填报模版")
-    @ApiIgnore
-    @GetMapping("/form/getSelfReportTemplate2/{formId}")
-    public void getSelfReportTemplate2(@PathVariable String formId, HttpServletResponse response) {
-        dataFillService.getSelfReportTemplate2(formId, response);
+    public void getSelfReportTemplate(@PathVariable String formId, HttpServletResponse response) {
+        dataFillService.getSelfReportTemplate(formId, response);
     }
 
     @ApiOperation("批量导出文件夹下所有填报")

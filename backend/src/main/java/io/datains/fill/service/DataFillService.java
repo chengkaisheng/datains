@@ -1,7 +1,9 @@
 package io.datains.fill.service;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.ZipUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.context.AnalysisContext;
@@ -32,6 +34,7 @@ import io.datains.file.utils.MinIOUtils;
 import io.datains.fill.constants.DataFillConstants;
 import io.datains.fill.constants.FormLogEnum;
 import io.datains.fill.dto.DataFillFormDTO;
+import io.datains.fill.dto.ExportTaskEntry;
 import io.datains.fill.dto.ExtIndexField;
 import io.datains.fill.dto.ExtTableField;
 import io.datains.fill.entry.*;
@@ -46,8 +49,10 @@ import io.datains.provider.datasource.DatasourceProvider;
 import io.datains.provider.datasource.ExtDDLProvider;
 import io.datains.provider.datasource.JdbcProvider;
 import io.datains.service.sys.SysAuthService;
+import io.minio.ObjectWriteResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -62,12 +67,15 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class DataFillService {
@@ -117,12 +125,14 @@ public class DataFillService {
             //需要检查是否有自主填报的权限
             throw new RuntimeException("请检查用户权限");
         }
+        //首先判断此文件夹下有没有已经创建了自主填报的模版
+        DataFillFormExample dataFillFormExample = new DataFillFormExample();
+        dataFillFormExample.createCriteria().andPidEqualTo(dataFillForm.getPid()).andNodeTypeEqualTo("selfReport_template");
+        List<DataFillForm> template = this.dataFillFormMapper.selectByExample(dataFillFormExample);
+
         //如果是创建自主填报的模版，需要先创建一个文件夹用来归类
         if ("selfReport_template".equals(dataFillForm.getNodeType())) {
-            //首先判断此文件夹下有没有已经创建了自主填报的模版
-            DataFillFormExample example = new DataFillFormExample();
-            example.createCriteria().andPidEqualTo(dataFillForm.getPid()).andNodeTypeEqualTo("selfReport_template");
-            if (this.dataFillFormMapper.countByExample(example) > 0) {
+            if (template != null && !template.isEmpty()) {
                 throw new RuntimeException("文件夹下已有自主填报的模版，请勿重复创建");
             }
             DataFillFormWithBLOBs folder = new DataFillFormWithBLOBs();
@@ -135,6 +145,10 @@ public class DataFillService {
             dataFillForm.setPid(resultHolder.getData().toString());
             dataFillForm.setLevel(dataFillForm.getLevel() + 1);
         }
+        //如果是填报，需要检查有没有模版，以及判断模版的状态
+//        if (template == null || template.get(0).getStatus() == 0) {
+//            throw new RuntimeException("没有模版或者填报已停止");
+//        }
         String userName = AuthUtils.getUser().getUsername();
         dataFillForm.setCreateBy(userName);
         dataFillForm.setUpdateBy(userName);
@@ -150,14 +164,12 @@ public class DataFillService {
         example.createCriteria().andPidEqualTo(dataFillForm.getPid()).andNameEqualTo(dataFillForm.getName()).andCreateByEqualTo(userName);
         DataFillForm form = dataFillFormMapper.selectByExample(example).stream().findFirst().orElse(null);
         if (form != null) {
-            //有则不创建，直接保存数据生成新的版本
-            this.saveFormData(form.getId(), dataFillForm.getFormData());
+            //有则不创建，直接返回原来的表单，让其覆盖成为新版本，以阻止用户创建同名文件
             return ResultHolder.success(form.getId());
         } else {
             dataFillFormMapper.insertSelective(dataFillForm);
             dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.INSERT);
             sysAuthService.copyAuth(uuid, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING);
-            this.saveFormData(dataFillForm.getId(), dataFillForm.getFormData());
             return ResultHolder.success(dataFillForm.getId());
         }
     }
@@ -791,7 +803,8 @@ public class DataFillService {
         List<List<Object>> data = this.buildExcelData(dataResponse.getFields(), searchData);
 
         try {
-            ExcelUtil.createExcelWithWaterMark(head, data, password, "数据", response);
+            String waterMark = AuthUtils.getUser().getNickName();
+            ExcelUtil.createExcelWithWaterMark(head, data, password, "数据", response, waterMark);
         } catch (Exception e) {
             e.printStackTrace();
             // 重置response
@@ -1081,7 +1094,7 @@ public class DataFillService {
 
     }
 
-    public void saveFormData(String formId, String formData) {
+    public void saveFormData(String formId, MultipartFile file) {
         CurrentUserDto user = AuthUtils.getUser();
         //判断是否存在表单
         DataFillForm dataFillForm = this.dataFillFormMapper.selectByPrimaryKey(formId);
@@ -1104,8 +1117,15 @@ public class DataFillService {
             version += 1;
         }
         DataFillData dataFillData = new DataFillData();
+        //将文件传入minio
+        try (InputStream inputStream = file.getInputStream()) {
+            ObjectWriteResponse response = minIOUtils.uploadFile(UUIDUtil.getUUID().toString(), inputStream);
+            dataFillData.setFileKey(response.object());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("上传文件失败");
+        }
         dataFillData.setId(UUIDUtil.getUUID().toString());
-        dataFillData.setFormData(formData);
         dataFillData.setFormId(formId);
         dataFillData.setVersion(version);
         dataFillData.setCreator(user.getUsername());
@@ -1116,8 +1136,19 @@ public class DataFillService {
         return this.dataFillDataMapper.getByFormId(formId);
     }
 
-    public DataFillData getFormDataData(String id) {
-        return this.dataFillDataMapper.getById(id);
+    public void getFormDataData(String formId, String id, HttpServletResponse response) {
+        DataFillData dataFillData = this.dataFillDataMapper.getByIdAndFormId(formId, id);
+        if (dataFillData == null) {
+            throw new RuntimeException("数据不存在");
+        }
+        try (InputStream inputStream = minIOUtils.getObject(dataFillData.getFileKey())) {
+            byte[] content = IoUtil.readBytes(inputStream);
+            ExcelUtil.downloadExcel("数据", response, content);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.reset();
+            throw new RuntimeException("获取文件失败");
+        }
     }
 
     public void updateFormStatus(String id, Integer status) {
@@ -1127,15 +1158,7 @@ public class DataFillService {
         this.dataFillFormMapper.updateFormStatus(id, status);
     }
 
-    public DataFillData getSelfReportTemplate(String formId) {
-        DataFillData dataFillData = this.dataFillDataMapper.getMaxVersionByFormId(formId);
-        if (dataFillData == null) {
-            throw new RuntimeException("不存在自主填报模版");
-        }
-        return dataFillData;
-    }
-
-    public void getSelfReportTemplate2(String formId, HttpServletResponse response) {
+    public void getSelfReportTemplate(String formId, HttpServletResponse response) {
         DataFillData dataFillData = this.dataFillDataMapper.getMaxVersionByFormId(formId);
         if (dataFillData == null) {
             throw new RuntimeException("不存在自主填报模版");
@@ -1151,61 +1174,233 @@ public class DataFillService {
     }
 
     public void exportFormDataData(String formId, String id, String password, HttpServletResponse response) {
-//        if (!checkPrivileges(formId, "export")) {
-//            throw new RuntimeException("请检查用户权限");
-//        }
-//        //自主填报的导出，需要添加水印
-//        DataFillData dataFillData = this.dataFillDataMapper.getByIdAndFormId(formId, id);
-//
-//        if (dataFillData == null) {
-//            throw new RuntimeException("数据不存在");
-//        }
-//        try (InputStream inputStream = minIOUtils.getObject(dataFillData.getFileKey())) {
-//            ExcelUtil.responseHandle(response, "数据");
-//            ExcelUtil.addWaterMark(inputStream, response.getOutputStream(), password);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            response.reset();
-//            throw new RuntimeException("获取文件失败");
-//        }
+        if (!checkPrivileges(formId, "export")) {
+            throw new RuntimeException("请检查用户权限");
+        }
+        //自主填报的导出，需要添加水印
+        DataFillData dataFillData = this.dataFillDataMapper.getByIdAndFormId(formId, id);
+
+        if (dataFillData == null) {
+            throw new RuntimeException("数据不存在");
+        }
+        try (InputStream inputStream = minIOUtils.getObject(dataFillData.getFileKey())) {
+            ExcelUtil.responseHandle(response, "数据");
+            String waterMark = AuthUtils.getUser().getNickName();
+            ExcelUtil.addWaterMark(inputStream, response.getOutputStream(), password, waterMark);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.reset();
+            throw new RuntimeException("获取文件失败");
+        }
     }
 
-    public void exportBatch(String pid, String password, HttpServletResponse response) {
+    private static final Map<String, ExportTaskEntry> exportTask = new HashMap<>();
+
+    public void exportBatch(String taskId, String pid, String password, HttpServletResponse response) {
         if (!checkPrivileges(pid, "export")) {
             throw new RuntimeException("请检查用户权限");
         }
+        String waterMark = AuthUtils.getUser().getNickName();
+        //生成一个任务
+        String finalTaskId = UUIDUtil.getUUID().toString();
+        ExportTaskEntry entry = new ExportTaskEntry();
+        entry.setZipPath("/opt/datains/temp" + "/" + finalTaskId + ".zip");
+        entry.setPid(pid);
+        entry.setPassword(password);
+        entry.setWaterMark(waterMark);
         try {
-            List<DataFillForm> allChildren = getAllChildren(pid);
+            exportBatch(entry);
+            // 设置响应头
+            ExcelUtil.downloadZip(response, finalTaskId);
+            InputStream inputStream = Files.newInputStream(Paths.get(entry.getZipPath()));
+            byte[] content = IoUtil.readBytes(inputStream);
+            IoUtil.write(response.getOutputStream(), false, content);
+            //务必删除文件
+            FileUtil.del(new File(entry.getZipPath()));
+        } catch (Exception e) {
+            //无论任务有没有成功，都要将任务停止
+            log.error("导出任务失败:::{}", e.getMessage());
+            e.printStackTrace();
+            entry.setStatus("error");
+            //务必删除文件
+            FileUtil.del(new File(entry.getZipPath()));
+            response.reset();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void exportBatchV2(String taskId, String status, String pid, String password, HttpServletResponse response) {
+        if (!checkPrivileges(pid, "export")) {
+            throw new RuntimeException("请检查用户权限");
+        }
+        String waterMark = AuthUtils.getUser().getNickName();
+        if ("begin".equals(status)) {
+            //生成一个任务
+            String finalTaskId = UUIDUtil.getUUID().toString();
+            ExportTaskEntry entry = new ExportTaskEntry();
+            entry.setTaskId(finalTaskId);
+            entry.setStatus("running");
+            entry.setZipPath("/opt/datains/temp" + "/" + finalTaskId + ".zip");
+            entry.setPid(pid);
+            entry.setPassword(password);
+            entry.setWaterMark(waterMark);
+            exportTask.put(finalTaskId, entry);
+            priorityExecutor.execute(() -> {
+                try {
+                    exportBatch(entry);
+                } catch (Exception e) {
+                    //无论任务有没有成功，都要将任务停止
+                    log.error("导出任务失败:::{}", e.getMessage());
+                    e.printStackTrace();
+                    entry.setStatus("error");
+                    //务必删除文件
+                    FileUtil.del(new File(entry.getZipPath()));
+                }
+            });
+        } else if ("stop".equals(status)) {
+            //中止导出操作
+            ExportTaskEntry entry = exportTask.get(taskId);
+            if (entry != null) {
+                entry.setStatus("stop");
+                //务必删除文件
+                FileUtil.del(new File(entry.getZipPath()));
+            }
+        } else {
+            ExportTaskEntry entry = exportTask.get(taskId);
+            if (entry == null) {
+                throw new RuntimeException("任务不存在");
+            } else if ("running".equals(entry.getStatus())) {
+                //任务正在进行中，返回进度
+                try {
+                    response.reset();
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("utf-8");
+                    response.setStatus(200);
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("success", true);
+                    map.put("message", "");
+                    map.put("data", entry.getProgress());
+                    response.getWriter().println(new Gson().toJson(map));
+                } catch (Exception e) {
+                    response.reset();
+                    throw new RuntimeException(e);
+                }
+            } else if ("end".equals(entry.getStatus())) {
+                //任务完成，返回前端
+                try {
+                    exportTask.remove(taskId);
+                    response.reset();
+                    // 设置响应头
+                    ExcelUtil.downloadZip(response, entry.getTaskId());
+                    InputStream inputStream = Files.newInputStream(Paths.get(entry.getZipPath()));
+                    byte[] content = IoUtil.readBytes(inputStream);
+                    IoUtil.write(response.getOutputStream(), false, content);
+                } catch (Exception e) {
+                    response.reset();
+                    throw new RuntimeException(e);
+                } finally {
+                    //无论有没有返回成功，都应该删除文件
+                    FileUtil.del(new File(entry.getZipPath()));
+                }
+            } else if ("error".equals(entry.getStatus())) {
+                //任务失败，返回前端
+                try {
+                    exportTask.remove(taskId);
+                    response.reset();
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("utf-8");
+                    response.setStatus(500);
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("success", false);
+                    map.put("message", "任务失败，请重试");
+                    map.put("data", "");
+                    response.getWriter().println(new Gson().toJson(map));
+                } catch (Exception e) {
+                    response.reset();
+                    throw new RuntimeException(e);
+                } finally {
+                    //务必删除文件
+                    FileUtil.del(new File(entry.getZipPath()));
+                }
+            }
+        }
+    }
+
+    public void exportBatch(ExportTaskEntry entry) {
+        try {
+            List<DataFillForm> allChildren = getAllChildren(entry.getPid());
+            //总个数
+            int count = allChildren.size();
+            //当前进度
+            int current = 0;
+            if (allChildren.isEmpty()) {
+                throw new RuntimeException("没有可导出的文件");
+            }
             Map<String, DataFillForm> map = new HashMap<>();
             allChildren.forEach(child -> map.put(child.getId(), child));
             List<String> paths = new ArrayList<>();
-            List<OutputStream> streams = new ArrayList<>();
-
+            List<InputStream> streams = new ArrayList<>();
             for (DataFillForm child : allChildren) {
+                if ("stop".equals(entry.getStatus())) {
+                    //如果任务中止，则跳出循环，并释放所有资源
+                    //关闭所有流
+                    for (InputStream inputStream : streams) {
+                        IoUtil.close(inputStream);
+                    }
+                    break;
+                }
                 List<String> parentNames = getParentNames(child, map);
                 String path;
+                String fileName = child.getName() + "_" + entry.getWaterMark() + ".xlsx";
                 if (parentNames.isEmpty()) {
-                    path = child.getName();
+                    path = fileName;
                 } else {
-                    path = String.join("/", parentNames) + "/" + child.getName();
+                    path = String.join("/", parentNames) + "/" + fileName;
                 }
-                paths.add(path);
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                if (child.getNodeType().equals("form")) {
-                    //表单导出逻辑
-                    DataFillFormTableDataRequest req = new DataFillFormTableDataRequest();
-                    req.setId(child.getId());
-                    DataFillFormTableDataResponse dataResponse = dataFillDataService.listData(req, false);
-                    List<List<String>> head = this.buildExcelHead(dataResponse.getFields());
-                    List<Map<String, Object>> searchData = (List<Map<String, Object>>) dataResponse.getData();
-                    List<List<Object>> data = this.buildExcelData(dataResponse.getFields(), searchData);
+                try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+                    if (child.getNodeType().equals("form")) {
+                        //表单导出逻辑
+                        DataFillFormTableDataRequest req = new DataFillFormTableDataRequest();
+                        req.setId(child.getId());
+                        DataFillFormTableDataResponse dataResponse = dataFillDataService.listData(req, false);
+                        List<List<String>> head = this.buildExcelHead(dataResponse.getFields());
+                        List<Map<String, Object>> searchData = (List<Map<String, Object>>) dataResponse.getData();
+                        List<List<Object>> data = this.buildExcelData(dataResponse.getFields(), searchData);
+                        //添加水印
+                        ExcelUtil.createExcelWithWaterMark(head, data, entry.getPassword(), os, entry.getWaterMark());
+                        InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
+                        streams.add(inputStream);
+                        paths.add(path);
+                    } else if (child.getNodeType().equals("selfReport")) {
+                        //自主填报导出逻辑
+                        //首先查询自主填报最高版本的数据
+                        DataFillData dataFillData = this.dataFillDataMapper.getMaxVersionByFormId(child.getId());
+                        //从minio中获取文件流
+                        try (InputStream inputStream = minIOUtils.getObject(dataFillData.getFileKey())) {
+                            //添加水印
+                            ExcelUtil.addWaterMark(inputStream, os, entry.getPassword(), entry.getWaterMark());
+                            streams.add(new ByteArrayInputStream(os.toByteArray()));
+                            paths.add(path);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
 
+                    //进度加一
+                    current += 1;
+                    //放入进度
+                    entry.setProgress(current * 100 / count);
+                } catch (Exception e) {
+                    //一个文件失败不会导致任务停止
+                    e.printStackTrace();
                 }
-                streams.add(os);
             }
-
+            String[] pathsArr = paths.toArray(new String[0]);
+            InputStream[] streamsArr = streams.toArray(new InputStream[0]);
+            //调用压缩方法，方法中会自动关闭流
+            ZipUtil.zip(FileUtil.newFile(entry.getZipPath()), pathsArr, streamsArr, StandardCharsets.UTF_8);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
