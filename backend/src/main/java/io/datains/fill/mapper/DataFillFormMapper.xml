@@ -298,7 +298,9 @@
         <if test="status != null">
             AND data_fill_form.status = #{status}
         </if>
-        order by data_fill_form.create_time desc
+        order by
+        IF(data_fill_form.node_type = 'selfReport_template', 0, 1),
+        data_fill_form.create_time desc
     </select>
     <select id="selectFormByPid" resultType="io.datains.fill.entry.DataFillForm">
         select *
