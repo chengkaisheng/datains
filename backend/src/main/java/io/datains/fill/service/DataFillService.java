@@ -560,15 +560,12 @@ public class DataFillService {
         return result;
     }
 
-    public void deleteForm(String id) throws Exception {
+    public void deleteForm(String id) {
 
         if (!checkPrivileges(id, "manage")) {
             throw new RuntimeException("没有权限");
         }
-
         Assert.notNull(id, "id cannot be null");
-        sysAuthService.checkTreeNoManageCount(SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING, id);
-
         Map<String, String> stringStringMap = extDataFillFormMapper.searchChildrenIds(id, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING);
         String[] split = stringStringMap.get("ids").split(",");
 
@@ -591,13 +588,8 @@ public class DataFillService {
             dataFillCommitLogMapper.deleteByExample(logExample);
             dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.DELETE);
         }
-
         if (dataFillForm != null) {
-
-//            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DATA_FILL_FORM, dataFillForm.getId(), dataFillForm.getPid(), null, null);
-
             dataFillTaskService.deleteTaskByFormId(id);
-
         }
     }
 
@@ -1094,42 +1086,51 @@ public class DataFillService {
 
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void saveFormData(String formId, MultipartFile file) {
         CurrentUserDto user = AuthUtils.getUser();
         //判断是否存在表单
         DataFillForm dataFillForm = this.dataFillFormMapper.selectByPrimaryKey(formId);
         if (dataFillForm == null) {
-            throw new RuntimeException("保存失败");
+            throw new RuntimeException("不存在表单");
         }
-        //进行版本号迭代
         int version = 1;
-        List<DataFillData> dataFillDataList = this.dataFillDataMapper.getByFormId(formId);
-        if (dataFillDataList != null && !dataFillDataList.isEmpty()) {
-            version = dataFillDataList.get(0).getVersion();
-            //写入日志
-            dataFillFormLogService.insert(formId, FormLogEnum.UPDATE,
-                    String.format("%s更新表单%s的版本号：v%s -> v%s",
-                            user.getNickName(),
-                            dataFillForm.getName(),
-                            version,
-                            version + 1
-                    ));
-            version += 1;
-        }
-        DataFillData dataFillData = new DataFillData();
-        //将文件传入minio
-        try (InputStream inputStream = file.getInputStream()) {
-            ObjectWriteResponse response = minIOUtils.uploadFile(UUIDUtil.getUUID().toString(), inputStream);
-            dataFillData.setFileKey(response.object());
+        try {
+            //进行版本号迭代
+            List<DataFillData> dataFillDataList = this.dataFillDataMapper.getByFormId(formId);
+            if (dataFillDataList != null && !dataFillDataList.isEmpty()) {
+                version = dataFillDataList.get(0).getVersion();
+                //写入日志
+                dataFillFormLogService.insert(formId, FormLogEnum.UPDATE,
+                        String.format("%s更新表单%s的版本号：v%s -> v%s",
+                                user.getNickName(),
+                                dataFillForm.getName(),
+                                version,
+                                version + 1
+                        ));
+                version += 1;
+            }
+            DataFillData dataFillData = new DataFillData();
+            //将文件传入minio
+            try (InputStream inputStream = file.getInputStream()) {
+                ObjectWriteResponse response = minIOUtils.uploadFile(UUIDUtil.getUUID().toString(), inputStream);
+                dataFillData.setFileKey(response.object());
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("上传文件失败");
+            }
+            dataFillData.setId(UUIDUtil.getUUID().toString());
+            dataFillData.setFormId(formId);
+            dataFillData.setVersion(version);
+            dataFillData.setCreator(user.getUsername());
+            this.dataFillDataMapper.insert(dataFillData);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("上传文件失败");
+            //如果是第一个版本创建失败，则需要删除自主填报表单，避免出现脏数据
+            if (version == 1){
+                this.deleteForm(formId);
+            }
+            throw new RuntimeException(e);
         }
-        dataFillData.setId(UUIDUtil.getUUID().toString());
-        dataFillData.setFormId(formId);
-        dataFillData.setVersion(version);
-        dataFillData.setCreator(user.getUsername());
-        this.dataFillDataMapper.insert(dataFillData);
     }
 
     public List<DataFillData> getFormData(String formId) {

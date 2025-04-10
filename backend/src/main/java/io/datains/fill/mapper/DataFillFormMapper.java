@@ -37,6 +37,4 @@ public interface DataFillFormMapper {
     void updateFormStatus(@Param("id") String id, @Param("status") Integer status);
 
     List<DataFillForm> selectFormByPid(@Param("pid") String pid);
-
-    DataFillForm selectSelfReportTemplate();
 }
