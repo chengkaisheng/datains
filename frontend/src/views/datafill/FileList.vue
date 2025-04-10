@@ -313,6 +313,7 @@ import { hasPermission } from '@/views/dataFilling/permission.js'
 import {
   deleteForm,
   downloadTemplate,
+  exportExcelData,
   excelUploadAiHandle,
   getWithPrivileges,
   saveForm,
@@ -828,7 +829,7 @@ export default {
       this.fileList = []
     },
     downloadTemplate(id, password) {
-      downloadTemplate(id, password).then(res => {
+      exportExcelData(id, password).then(res => {
         const blob = new Blob([res])
         const link = document.createElement('a')
         link.style.display = 'none'

@@ -761,7 +761,7 @@ const saveSelfReportFn = async () => {
 // 保存自主填报文件
 const saveFile = async (formId) => {
   const formData = new FormData()
-  formData.append('file', msg.value.file1)
+  formData.append('file', msg.value.file)
   saveFormData(formId, formData).then(res => {
     if (res.success) {
       showToast('保存成功')

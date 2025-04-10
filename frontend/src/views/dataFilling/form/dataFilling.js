@@ -94,9 +94,16 @@ export function deleteData(formId, rowId) {
     loading: true
   })
 }
-export function downloadTemplate(formId,password) {
+export function downloadTemplate(formId) {
   return request({
-    // url: 'dataFilling/form/' + formId + '/excel/template', // 导出表单模板
+    url: 'dataFilling/form/' + formId + '/excel/template', // 导出表单模板
+    method: 'post',
+    loading: true,
+    responseType: 'blob'
+  })
+}
+export function exportExcelData(formId,password) {
+  return request({
     url: 'dataFilling/form/' + formId + '/excel/exportExcelData?password=' + password, // 导出表单数据
     method: 'get',
     loading: true,
