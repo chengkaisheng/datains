@@ -180,8 +180,7 @@ public class AuthServer implements AuthApi {
         authUserService.clearCache(user.getUserId());
         String s = redisService.get(UserKey.getById, "datains_" + user.getUserId().toString());
         if (StringUtils.isEmpty(s)) {
-            boolean set = redisService.set(UserKey.getById, "datains_" + user.getUserId().toString(), token);
-            System.err.println(set);
+            boolean set = redisService.set2(UserKey.getById, "datains_" + user.getUserId().toString(), token);
         }
         return result;
     }
