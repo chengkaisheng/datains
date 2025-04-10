@@ -740,6 +740,11 @@ export default {
         if (res.success) {
           if(this.selfReportTemplate) {
             this.selfReportTemplate = false
+            this.uploadForm = {
+              name: '',
+              file: null
+            }
+            this.fileList = []
             this.$emit('refreshFolderTree')
           }
           this.currentFormId = res.data

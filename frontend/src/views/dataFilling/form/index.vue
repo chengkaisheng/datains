@@ -279,6 +279,11 @@ export default {
       } else if(data.createType === 'selfReport_template') {
         this.nodeData = data
         this.$refs.fileListRef.uploadDialogVisible = true
+        this.$refs.fileListRef.uploadForm = {
+          name: '',
+          file: null
+        }
+        this.$refs.fileListRef.fileList = []
         this.$refs.fileListRef.selfReportTemplate = true
         this.$refs.fileListRef.fillForm.isAI = true
       }
