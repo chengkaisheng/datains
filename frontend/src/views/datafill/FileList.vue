@@ -239,7 +239,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="文件加密密码：" prop="password">
+        <el-form-item v-if="selectedRow && selectedRow.nodeType === 'selfReport'" label="文件加密密码：" prop="password">
           <el-input v-model="versionForm.password" placeholder="请输入密码"></el-input>
         </el-form-item>
       </el-form>
@@ -317,7 +317,8 @@ import {
   getWithPrivileges,
   saveForm,
   getFormData,
-  exportFormDataData
+  exportFormDataData,
+  getFormDataData
 } from '@/views/dataFilling/form/dataFilling'
 import {
   deleteForm as deleteTemplate,
@@ -552,7 +553,7 @@ export default {
       if (this.selectedRow.nodeType === 'form') {
         this.passwordDialogVisible = true
       } else {
-        // 自主填报模板 自主填报 需要去选择版本，输入密码然后下载
+        //  自主填报 需要去选择版本，输入密码然后下载  自主填报模板 不加密
         this.selectedVersionVisible = true
         this.getVersionList(this.selectedRow.id)
       }
@@ -582,8 +583,10 @@ export default {
     downloadVersionData() {
       this.$refs.versionForm.validate((valid) => {
         if (valid) {
+          this.selectedVersionVisible = false;
           this.versionName = this.versionList.find(item => item.id == this.versionForm.versionId).version
-          exportFormDataData(this.selectedRow.id, this.versionForm.versionId, this.versionForm.password).then((res) => {
+          let method = this.selectedRow.nodeType === 'selfReport' ? exportFormDataData : getFormDataData
+          method(this.selectedRow.id, this.versionForm.versionId, this.versionForm.password).then((res) => {
             const blob = new Blob([res])
             const link = document.createElement('a')
             link.style.display = 'none'
