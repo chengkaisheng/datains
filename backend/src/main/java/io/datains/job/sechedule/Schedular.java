@@ -18,7 +18,7 @@ public class Schedular {
     @Resource
     private KettleService kettleService;
 
-    @QuartzScheduled(cron = "0 0/3 * * * ?")
+//    @QuartzScheduled(cron = "0 0/3 * * * ?")
     public void updateDatasetTableStatus() {
         dataSetTableService.updateDatasetTableStatus();
     }

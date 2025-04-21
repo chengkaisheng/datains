@@ -907,6 +907,8 @@ public class ImpalaQueryProvider extends QueryProvider {
                     String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                     String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
                     whereValue = String.format(ImpalaConstants.WHERE_BETWEEN, startTime, endTime);
+                } else if (DeTypeConstants.DE_INT.equals(request.getDatasetTableField().getDeType()) || DeTypeConstants.DE_FLOAT.equals(request.getDatasetTableField().getDeType())) {
+                    whereValue = String.format("%s AND %s", value.get(0), value.get(1));
                 } else {
                     whereValue = String.format(ImpalaConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
