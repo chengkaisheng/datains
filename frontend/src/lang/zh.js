@@ -211,7 +211,7 @@ export default {
     operating: '操作',
     input_limit: '长度在 {0} 到 {1} 个字符',
     login: '登录',
-    welcome: '一站式开源数据分析平台',
+    welcome: '一站式开源数据分析模块',
     username: '姓名',
     password: '密码',
     input_username: '请输入用户姓名',
@@ -2159,7 +2159,7 @@ export default {
     firstOfYear: '当年首月'
   },
   wizard: {
-    welcome_title: '欢迎使用医保BI数据分析平台',
+    welcome_title: '欢迎使用医保BI数据分析模块',
     welcome_hint: '数据可视化自助探索分析工具',
     demo_video: '演示视频',
     quick_start: '快速入门',

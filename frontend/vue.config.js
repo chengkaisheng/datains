@@ -37,7 +37,7 @@ module.exports = {
         // target: 'http://192.168.3.223/',
         // target: 'http://106.54.52.9:9530', // 张庆
         target: 'http://192.168.3.16:17303', // 张子航
-        // target: 'http://106.54.52.9:17304', // 张子航
+        // target: 'http://106.54.52.9:8081', // 张子航
         // target: 'http://183.194.64.166:9527', // 张庆
         // target: 'http://106.54.52.9:9533', // 张庆
         // target: 'https://wp2sewslcjhe.ngrok.xiaomiqiu123.top',

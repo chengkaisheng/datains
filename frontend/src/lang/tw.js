@@ -1973,7 +1973,7 @@ export default {
     firstOfYear: '當年首月'
   },
   wizard: {
-    welcome_title: '歡迎使用可視化配置平台',
+    welcome_title: '歡迎使用可視化配置模块',
     data_connection: '数据连接',
     data_preparation: '数据准备',
     analysis_display: '分析展现',
