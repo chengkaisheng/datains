@@ -27,8 +27,8 @@ INSERT INTO `sys_menu` VALUES (52, 0, 0, 1, '关于', 'about', 'system/about/ind
 COMMIT;
 
 BEGIN;
-INSERT INTO `sys_user` VALUES (1, 0, 'admin', '管理员', '男', NULL, 'admin@zhejintech.com', '36d91e269f9fb3e859af3383baae94e3', b'1', 1, NULL, NULL, NULL, NULL, 1615184951534, 'zh_CN');
-INSERT INTO `sys_user` VALUES (2, 1, 'demo', 'demo', '男', NULL, 'demo@zhejintech.com', '36d91e269f9fb3e859af3383baae94e3', b'0', 1, NULL, NULL, NULL, 1619086036234, 1622533509697, 'zh_CN');
+INSERT INTO `sys_user` VALUES (1, 0, 'admin', '管理员', '男', NULL, 'admin@zhejintech.com', 'e10adc3949ba59abbe56e057f20f883e', b'1', 1, NULL, NULL, NULL, NULL, 1615184951534, 'zh_CN');
+INSERT INTO `sys_user` VALUES (2, 1, 'demo', 'demo', '男', NULL, 'demo@zhejintech.com', 'e10adc3949ba59abbe56e057f20f883e', b'0', 1, NULL, NULL, NULL, 1619086036234, 1622533509697, 'zh_CN');
 COMMIT;
 
 
