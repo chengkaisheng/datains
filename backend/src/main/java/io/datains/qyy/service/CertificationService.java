@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 import java.util.Date;
 
 /**
- * CertificationService
+ * 根据token获取用户信息
  *
  * @author zhangzihang
  * @since 2025-04-02 15:47

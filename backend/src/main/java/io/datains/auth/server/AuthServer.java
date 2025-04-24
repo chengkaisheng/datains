@@ -165,7 +165,7 @@ public class AuthServer implements AuthApi {
             //超级管理员特殊处理
             username = "admin";
         }
-        //再自动创建用户
+        //判断账号
         qyyAutoCreateUser(qyyUser);
         //登录用户
         username = username == null ? "q_" + qyyUser.getId() : username;
@@ -198,12 +198,7 @@ public class AuthServer implements AuthApi {
             return;
         }
         //没有账号，开始创建
-        SysUserCreateRequest request = new SysUserCreateRequest();
-        request.setUsername("q_" + qyyUser.getId());
-        request.setNickName(qyyUser.getName());
-        request.setRoleIds(Collections.singletonList(Long.valueOf(qyyUser.getSysRoleScenarios().getKey())));
-        request.setEnabled(1L);
-        sysUserService.save(request);
+        throw new RuntimeException("账号无访问权限");
     }
 
     public static void main(String[] args) {
