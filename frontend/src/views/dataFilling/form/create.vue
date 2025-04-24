@@ -1323,9 +1323,9 @@ export default {
                     <el-radio :label="1">
                       {{ $t('data_fill.form.custom') }}
                     </el-radio>
-                    <el-radio :label="2">
+                    <!-- <el-radio :label="2">
                       {{ $t('data_fill.form.use_datasource') }}
-                    </el-radio>
+                    </el-radio> -->
                   </el-radio-group>
                 </el-form-item>
 

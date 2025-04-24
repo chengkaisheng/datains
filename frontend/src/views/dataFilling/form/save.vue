@@ -401,7 +401,12 @@ export default {
         if (valid) {
           // this.formData.forms  uuid 设置数据库字段表名称
           this.formData.forms.map(item => {
-            item.settings.mapping.columnName = uuid.v1()
+            if(item.type === 'dateRange') {
+              item.settings.mapping.columnName1 = uuid.v4()
+              item.settings.mapping.columnName2 = uuid.v4()
+            } else {
+              item.settings.mapping.columnName = uuid.v4()
+            }
           })
           const data = {
             name: this.formData.name,
