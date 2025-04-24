@@ -110,6 +110,14 @@ export function exportExcelData(formId,password) {
     responseType: 'blob'
   })
 }
+export function exportBatch(id,password,taskId='') {
+  return request({
+    url: `dataFilling/form/exportBatch/${id}?password=${password}&taskId=${taskId}`, // 批量下载
+    method: 'get',
+    loading: true,
+    responseType: 'blob'
+  })
+}
 export function getWithPrivileges(id) {
   return request({
     url: 'dataFilling/manage/form/' + id,

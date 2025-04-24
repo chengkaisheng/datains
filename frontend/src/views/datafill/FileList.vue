@@ -1,6 +1,6 @@
 <template>
   <div class="fill_box">
-    <div class="header" style="display: flex; justify-content: space-between;">
+    <div v-if="JSON.stringify(nodeData) !== '{}'" class="header" style="display: flex; justify-content: space-between;">
       <div>
         <el-button v-if="!isTemplate" type="primary" @click="handleFill">填报</el-button>
         <el-input v-model="searchName" placeholder="请输入内容" clearable style="width: 300px;margin-left: 10px;" @keyup.enter.native="getDataFill()">
@@ -8,10 +8,11 @@
         </el-input>
       </div>
       <div>
+        <el-button v-if="hasPermission(nodeData.privileges, 'export')" type="primary" @click="batchDownloadVisible">批量下载</el-button>
         <el-button type="primary" @click="refresh">刷新</el-button>
       </div>
     </div>
-    <div v-loading="tableLoading" class="list">
+    <div v-if="JSON.stringify(nodeData) !== '{}'" v-loading="tableLoading" class="list">
       <el-table ref="logTable" :height="tableHeight" :data="tableData" style="width: 100%">
         <el-table-column prop="name" label="名称" width="180" />
         <el-table-column v-if="!isTemplate" prop="nodeType" label="类型" width="120">
@@ -104,6 +105,8 @@
         />
       </div>
     </div>
+
+    <div v-else class="empty"></div>
 
     <el-drawer
       v-if="drawer"
@@ -296,7 +299,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="passwordDialogVisible = false">取消</el-button>
+        <el-button @click="closePasswordDialog">取消</el-button>
         <el-button type="primary" @click="handlePasswordConfirm">确认</el-button>
       </span>
     </el-dialog>
@@ -314,6 +317,7 @@ import {
   deleteForm,
   downloadTemplate,
   exportExcelData,
+  exportBatch,
   excelUploadAiHandle,
   getWithPrivileges,
   saveForm,
@@ -411,7 +415,8 @@ export default {
       logDrawer: false,
       selfReportTemplate: false,
       passwordDialogVisible: false,
-      password: '',
+      // password: '',
+      batchDownloadFlag: false,
       passwordForm: {
         password: ''
       },
@@ -560,12 +565,28 @@ export default {
       }
       
     },
+    batchDownloadVisible() {
+      this.passwordDialogVisible = true
+      this.batchDownloadFlag = true
+    },
+    closePasswordDialog() {
+      this.batchDownloadFlag = false
+      this.passwordDialogVisible = false
+      this.passwordForm = {
+        password: ''
+      }
+    },
     handlePasswordConfirm() {
       if (!this.passwordForm || !this.passwordForm.password) {
         this.$message.error('请输入密码')
         return
       }
-      this.downloadTemplate(this.selectedRow.id, this.passwordForm.password)
+      if(this.batchDownloadFlag) {
+        // console.log('nodeData', this.nodeData)
+        this.batchDownload(this.nodeData.id, this.passwordForm.password)
+      } else {
+        this.downloadTemplate(this.selectedRow.id, this.passwordForm.password)
+      }
     },
     getVersionList(id) {
       getFormData(id).then(res => {
@@ -838,8 +859,21 @@ export default {
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
-        this.passwordDialogVisible = false
-        this.passwordForm.password = ''
+        this.closePasswordDialog()
+      })
+    },
+    batchDownload(id, password) {
+      this.closePasswordDialog()
+      exportBatch(id, password).then(res => {
+        const blob = new Blob([res])
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = this.nodeData.name + '.zip' // 下载的文件名
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        this.closePasswordDialog()
       })
     },
     beforeUpload(file) {
