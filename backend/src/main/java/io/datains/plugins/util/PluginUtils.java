@@ -2,17 +2,11 @@ package io.datains.plugins.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datains.auth.api.dto.PluginSysMenuCustom;
-import io.datains.base.domain.License;
 import io.datains.base.mapper.LicenseMapper;
 import io.datains.commons.license.DefaultLicenseService;
-import io.datains.commons.license.F2CLicense;
 import io.datains.commons.license.F2CLicenseResponse;
 import io.datains.commons.utils.EncryptUtil;
-import io.datains.commons.utils.IsNullUtils;
-import io.datains.commons.utils.MacUtil;
-import io.datains.controller.sys.response.LicenseVo;
 import io.datains.plugins.common.dto.PluginSysMenu;
 import io.datains.plugins.config.SpringContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
 
 @Component
 public class PluginUtils {
@@ -56,8 +46,8 @@ public class PluginUtils {
     }
 
     public static List<PluginSysMenu> pluginMenus() throws IOException {
-        F2CLicenseResponse f2CLicenseResponse = LicenseProving();
-        if (f2CLicenseResponse.getStatus() != F2CLicenseResponse.Status.valid) return new ArrayList<>();
+//        F2CLicenseResponse f2CLicenseResponse = LicenseProving();
+//        if (f2CLicenseResponse.getStatus() != F2CLicenseResponse.Status.valid) return new ArrayList<>();
 /*        Map<String, PluginMenuService> pluginMenuServiceMap = SpringContextUtil.getApplicationContext().getBeansOfType(PluginMenuService.class);
         List<PluginSysMenu> menus = pluginMenuServiceMap.values().stream().flatMap(item -> item.menus().stream()).collect(Collectors.toList());*/
         List<PluginSysMenu> menus = getMenus();
@@ -65,95 +55,14 @@ public class PluginUtils {
     }
     public static F2CLicenseResponse LicenseProving() {
         F2CLicenseResponse f2CLicenseResponse = new F2CLicenseResponse();
-        f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
-        try {
-            List<License> list1 = licenseMapper.lists();
-            if (IsNullUtils.isNotNull(list1)) {
-                EncryptUtil instance = EncryptUtil.getInstance();
-                //Base64解密
-                String s1 = instance.Base64Decode(list1.get(0).getLicense());
-                System.err.println(s1);
-                //DES解密
-                String s3 = instance.DESdecode(s1, key);
-                ObjectMapper mapper = new ObjectMapper();
-                LicenseVo licenseVo = null;
-                licenseVo = mapper.readValue(s3, LicenseVo.class);
-                F2CLicense licenseResponse = new F2CLicense();
-                licenseResponse.setCorporation(licenseVo.getCompany());
-                licenseResponse.setCount(Long.valueOf(licenseVo.getAmount()));
-                licenseResponse.setEdition("Standard");
-                licenseResponse.setExpired(licenseVo.getExpirationTime());
-                licenseResponse.setLicenseVersion(licenseVo.getEdition());
-                licenseResponse.setProduct(licenseVo.getProduct());
-                //判断此服务器是否授权
-                MacUtil macUtil = new MacUtil();
-                String currentIpLocalMac = null;
-                Map<String, String> mac = getMac();
-                if (mac.get("code").equals("200")) {
-                    currentIpLocalMac = mac.get("mac");
-                } else {
-                    currentIpLocalMac = macUtil.getCurrentIpLocalMac();
-                }
-                System.err.println("服务器mac:" + currentIpLocalMac);
-                System.err.println("license文件中的mac:" + licenseVo.getMacAdress());
-                String replacedString = currentIpLocalMac.replaceAll(":", "").replaceAll("-", "");
-                String licenseMac = licenseVo.getMacAdress().replaceAll(":", "").replaceAll("-", "");
-                System.err.println("服务器替换后mac:" + licenseMac);
-                System.err.println("license文件中替换后的mac:" + licenseMac);
-                if (!licenseMac.equalsIgnoreCase(replacedString)) {
-                    f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
-                    return f2CLicenseResponse;
-                }
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date expirationTime = simpleDateFormat.parse(licenseVo.getExpirationTime());
-                String format = simpleDateFormat.format(new Date());
-                Date newData = simpleDateFormat.parse(format);
-                //转换成数字类型
-                long endTime = expirationTime.getTime();
-                long nowTime = newData.getTime();
-                if (endTime < nowTime) {
-                    f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.expired);
-                } else {
-                    f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.valid);
-                }
-                f2CLicenseResponse.setLicense(licenseResponse);
-                return f2CLicenseResponse;
-            }
-            return f2CLicenseResponse;
-        } catch (Exception e) {
-            e.printStackTrace();
-            f2CLicenseResponse.setMessage(e.getMessage());
-            return f2CLicenseResponse;
-        }
-
-    }
-
-
-    public static Map<String, String> getMac() {
-        try {
-            Map<String, String> map = new HashMap<>();
-            String fileName = mac;
-            Path path = Paths.get(fileName);
-            byte[] bytes = Files.readAllBytes(path);
-            List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
-            if (IsNullUtils.isNotNull(allLines.size())) {
-                map.put("code", "200");
-                map.put("mac", allLines.get(0));
-                return map;
-            }
-            map.put("code", "500");
-            return map;
-        } catch (Exception e) {
-            Map<String, String> map = new HashMap<>();
-            map.put("code", "500");
-            return map;
-        }
+        f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.valid);
+        return f2CLicenseResponse;
     }
 
     public static List<PluginSysMenuCustom> getMenusPluginSysMenuCustom() {
         try {
-            F2CLicenseResponse f2CLicenseResponse = LicenseProving();
-            if (f2CLicenseResponse.getStatus() != F2CLicenseResponse.Status.valid) return new ArrayList<>();
+//            F2CLicenseResponse f2CLicenseResponse = LicenseProving();
+//            if (f2CLicenseResponse.getStatus() != F2CLicenseResponse.Status.valid) return new ArrayList<>();
             String res = getMenusFromKey();
             return JSONArray.parseArray(res, PluginSysMenuCustom.class);
         } catch (Exception e) {

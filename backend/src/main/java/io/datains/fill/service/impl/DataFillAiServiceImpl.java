@@ -150,7 +150,7 @@ public class DataFillAiServiceImpl implements DataFillAiService {
         //获取文件类型
         String type = getFileType(file);
         // 1. 构建MultipartBody
-        HttpResponse apiResponse = HttpRequest.post("http://121.229.107.155:50001/xunfei/analy")
+        HttpResponse apiResponse = HttpRequest.post("http://10.216.115.28:50001/xunfei/analy")
                 .header("Content-Type", "multipart/form-data")
                 .form("file", file.getBytes(), file.getOriginalFilename())
                 .form("fileType", type)

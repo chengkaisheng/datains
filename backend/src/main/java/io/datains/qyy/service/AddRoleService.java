@@ -6,6 +6,7 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,22 @@ import java.util.List;
  * @author zhangzihang
  * @since 2025-04-02 11:30
  */
+@Service
 public class AddRoleService {
+    public void addRoles(List<Role> roles, String key, String scenId, String url) {
+        SecureUtil.disableBouncyCastle();
+        String encryptedData = SecureUtil.aes(key.getBytes()).encryptBase64(JSONUtil.parse(roles).toString());
+        Request request = Request.builder().scenId(scenId).encryptedData(encryptedData).build();
+        try (HttpResponse response = HttpRequest.post(url)
+                .contentType("application/json")
+                .body(JSONUtil.parse(request).toString())
+                .execute()) {
+            System.out.println(response.body());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void addRoles(List<Role> roles) {
         SecureUtil.disableBouncyCastle();
         String encryptedData = SecureUtil.aes("BD569076999F11473AAE4E66486E43DC".getBytes()).encryptBase64(JSONUtil.parse(roles).toString());
@@ -57,7 +73,7 @@ public class AddRoleService {
 
     @Data
     @Builder
-    private static class Role {
+    public static class Role {
         /**
          * 角色名称
          */

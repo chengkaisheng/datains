@@ -47,6 +47,7 @@ public class TokenInterceptorConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/plugin/theme/themes")
                 .excludePathPatterns("/plugin/theme/items/*")
                 .excludePathPatterns("/chart/view/getData/*/*")
+                .excludePathPatterns("/dataFillingAi/addRole")
 
 
         ;

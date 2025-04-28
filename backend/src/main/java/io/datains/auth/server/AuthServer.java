@@ -198,7 +198,12 @@ public class AuthServer implements AuthApi {
             return;
         }
         //没有账号，开始创建
-        throw new RuntimeException("账号无访问权限");
+        SysUserCreateRequest request = new SysUserCreateRequest();
+        request.setUsername("q_" + qyyUser.getId());
+        request.setNickName(qyyUser.getName());
+        request.setRoleIds(Collections.singletonList(Long.valueOf(qyyUser.getSysRoleScenarios().getKey())));
+        request.setEnabled(1L);
+        sysUserService.save(request);
     }
 
     public static void main(String[] args) {

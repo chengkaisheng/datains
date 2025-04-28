@@ -1,10 +1,9 @@
 package io.datains.fill.controller;
 
+import io.datains.fill.dto.AddRoleDTO;
 import io.datains.fill.service.DataFillAiService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import io.datains.qyy.service.AddRoleService;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -18,11 +17,13 @@ import javax.servlet.http.HttpServletResponse;
  * @since 2025-03-05 15:43
  */
 @ApiIgnore
-@RequestMapping("dataFillingAi")
+@RequestMapping("/dataFillingAi")
 @RestController
 public class DataFillAiController {
     @Resource
     private DataFillAiService dataFillAiService;
+    @Resource
+    private AddRoleService addRoleService;
 
     @ApiIgnore
     @PostMapping("/form/excel/excelUploadAiHandle")
@@ -37,5 +38,9 @@ public class DataFillAiController {
             response.setCharacterEncoding("utf-8");
             throw new RuntimeException(e.getMessage());
         }
+    }
+    @PostMapping("/addRole")
+    public void addRole(@RequestBody AddRoleDTO roleDTO){
+        this.addRoleService.addRoles(roleDTO.getRole(), roleDTO.getKey(), roleDTO.getScenId(), roleDTO.getUrl());
     }
 }

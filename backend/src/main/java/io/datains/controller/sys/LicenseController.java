@@ -1,18 +1,10 @@
 package io.datains.controller.sys;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.datains.base.domain.License;
 import io.datains.base.mapper.LicenseMapper;
 import io.datains.commons.license.DefaultLicenseService;
-import io.datains.commons.license.F2CLicense;
-import io.datains.commons.license.F2CLicenseResponse;
-import io.datains.commons.utils.EncryptUtil;
 import io.datains.commons.utils.IsNullUtils;
-import io.datains.commons.utils.MacUtil;
 import io.datains.controller.ResultHolder;
-import io.datains.controller.sys.response.LicenseVo;
-import io.datains.exception.DataInsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,95 +43,7 @@ public class LicenseController {
 
     @GetMapping(value = "anonymous/license/validate")
     public ResultHolder validateLicense() throws Exception {
-        if (!need_validate_lic) {
-            return ResultHolder.success(null);
-        }
-//        F2CLicenseResponse f2CLicenseResponse = defaultLicenseService.validateLicense();
-        F2CLicenseResponse f2CLicenseResponse = LicenseProving();
-        switch (f2CLicenseResponse.getStatus()) {
-            case no_record:
-                return ResultHolder.success(f2CLicenseResponse);
-            case valid:
-                return ResultHolder.success(null);
-            case expired:
-                String expired = f2CLicenseResponse.getLicense().getExpired();
-//                DataInsException.throwException("License has expired since " + expired + ", please update license.");
-                DataInsException.throwException("许可证已于 " + expired + " 过期, 请及时更新！");
-            case invalid:
-                DataInsException.throwException(f2CLicenseResponse.getMessage());
-            default:
-//                DataInsException.throwException("Invalid License.");
-                DataInsException.throwException("无效的许可证");
-
-        }
-        return new ResultHolder();
-    }
-
-
-    public F2CLicenseResponse LicenseProving() {
-        F2CLicenseResponse f2CLicenseResponse = new F2CLicenseResponse();
-        f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
-        try {
-            List<License> list1 = licenseMapper.lists();
-            if (IsNullUtils.isNotNull(list1)) {
-                EncryptUtil instance = EncryptUtil.getInstance();
-                //Base64解密
-                String s1 = instance.Base64Decode(list1.get(0).getLicense());
-                System.err.println(s1);
-                //DES解密
-                String s3 = instance.DESdecode(s1, key);
-                ObjectMapper mapper = new ObjectMapper();
-                LicenseVo licenseVo = null;
-                licenseVo = mapper.readValue(s3, LicenseVo.class);
-                F2CLicense licenseResponse = new F2CLicense();
-                licenseResponse.setCorporation(licenseVo.getCompany());
-                licenseResponse.setCount(Long.valueOf(licenseVo.getAmount()));
-                licenseResponse.setEdition("Standard");
-                licenseResponse.setExpired(licenseVo.getExpirationTime());
-                licenseResponse.setLicenseVersion(licenseVo.getEdition());
-                licenseResponse.setProduct(licenseVo.getProduct());
-                f2CLicenseResponse.setLicense(licenseResponse);
-                //判断此服务器是否授权
-                MacUtil macUtil = new MacUtil();
-                String currentIpLocalMac = null;
-                Map<String, String> mac = this.getMac();
-                if (mac.get("code").equals("200")) {
-                    currentIpLocalMac = mac.get("mac");
-                } else {
-                    currentIpLocalMac = macUtil.getCurrentIpLocalMac();
-                }
-                currentIpLocalMac = currentIpLocalMac.toLowerCase()
-                        .replaceAll(":", "")
-                        .replaceAll("-", "");
-                String licenseMac = licenseVo.getMacAdress().toLowerCase()
-                        .replaceAll(":", "")
-                        .replaceAll("-", "");
-                if (!licenseMac.equalsIgnoreCase(currentIpLocalMac)) {
-                    f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
-                    return f2CLicenseResponse;
-                }
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date expirationTime = simpleDateFormat.parse(licenseVo.getExpirationTime());
-                String format = simpleDateFormat.format(new Date());
-                Date newData = simpleDateFormat.parse(format);
-                //转换成数字类型
-                long endTime = expirationTime.getTime();
-                long nowTime = newData.getTime();
-                if (endTime < nowTime) {
-                    f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.expired);
-                } else {
-                    f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.valid);
-                }
-
-                return f2CLicenseResponse;
-            }
-            return f2CLicenseResponse;
-        } catch (Exception e) {
-            e.printStackTrace();
-            f2CLicenseResponse.setMessage(e.getMessage());
-            return f2CLicenseResponse;
-        }
-
+        return ResultHolder.success(null);
     }
 
 

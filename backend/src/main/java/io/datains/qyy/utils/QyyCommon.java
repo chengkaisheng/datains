@@ -1,6 +1,7 @@
 package io.datains.qyy.utils;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,7 +13,14 @@ import org.springframework.stereotype.Service;
 @Data
 @Service
 public class QyyCommon {
-    private String host = "http://qyy.lingbtech.com:9140";
-    private String scenId = "sjtbgld_001";
-    private String secretKey = "C833B9DFD8E5298DD5B9F0B4D45BF527";
+    @Value("${qyy.host}")
+    private String host;
+    @Value("${qyy.scen_id}")
+    private String scenId;
+    @Value("${qyy.secret_key}")
+    private String secretKey;
+    @Value("${qyy.scen_id2}")
+    private String scenId2;
+    @Value("${qyy.secret_key2}")
+    private String secretKey2;
 }

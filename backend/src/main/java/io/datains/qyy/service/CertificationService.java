@@ -23,9 +23,27 @@ public class CertificationService {
 
     public QyyUser certification(String token) {
         String path = String.format("%s?token=%s&scenId=%s",
-                qyyCommon.getHost() + "/api/token/certification",
+                qyyCommon.getHost() + "/token/certification",
                 token,
                 qyyCommon.getScenId());
+        try (HttpResponse response = HttpRequest.get(path)
+                .execute()) {
+            if (!response.isOk()) {
+                throw new RuntimeException("轻应用请求失败");
+            } else {
+                Response response1 = JSONUtil.toBean(response.body(), Response.class);
+                if (response1.getCode() != 200) {
+                    throw new RuntimeException(response1.getMessage());
+                }
+                return response1.getData();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        path = String.format("%s?token=%s&scenId=%s",
+                qyyCommon.getHost() + "/token/certification",
+                token,
+                qyyCommon.getScenId2());
         try (HttpResponse response = HttpRequest.get(path)
                 .execute()) {
             if (!response.isOk()) {

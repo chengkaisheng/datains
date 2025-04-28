@@ -1,13 +1,9 @@
 package io.datains.commons.license;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import io.datains.base.domain.License;
 import io.datains.commons.exception.DEException;
-import io.datains.commons.utils.EncryptUtil;
 import io.datains.commons.utils.IsNullUtils;
-import io.datains.commons.utils.MacUtil;
-import io.datains.controller.sys.response.LicenseVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,65 +55,8 @@ public class DefaultLicenseService {
 
     public F2CLicenseResponse validateLicense(String product, String licenseKey) {
         F2CLicenseResponse f2CLicenseResponse = new F2CLicenseResponse();
-        f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
-        try {
-            if (IsNullUtils.isNotNull(licenseKey)){
-                EncryptUtil instance = EncryptUtil.getInstance();
-                //Base64解密
-                String s1 = instance.Base64Decode(licenseKey);
-                System.err.println(s1);
-                //DES解密
-                String s3 = instance.DESdecode(s1,product);
-                ObjectMapper mapper = new ObjectMapper();
-                LicenseVo licenseVo = null;
-                licenseVo = mapper.readValue(s3, LicenseVo.class);
-                F2CLicense licenseResponse= new F2CLicense();
-                licenseResponse.setCorporation(licenseVo.getCompany());
-                licenseResponse.setCount(Long.valueOf(licenseVo.getAmount()));
-                licenseResponse.setEdition("Standard");
-                licenseResponse.setExpired(licenseVo.getExpirationTime());
-                licenseResponse.setLicenseVersion(licenseVo.getEdition());
-                licenseResponse.setProduct(licenseVo.getProduct());
-                //判断此服务器是否授权
-                MacUtil macUtil = new MacUtil();
-                String currentIpLocalMac = null;
-                Map<String, String> mac = this.getMac();
-                if (mac.get("code").equals("200")){
-                    currentIpLocalMac = mac.get("mac");
-                }else {
-                    currentIpLocalMac = macUtil.getCurrentIpLocalMac();
-                }
-                currentIpLocalMac = currentIpLocalMac.toLowerCase()
-                        .replaceAll(":", "")
-                        .replaceAll("-", "");
-                String licenseMac = licenseVo.getMacAdress().toLowerCase()
-                        .replaceAll(":", "")
-                        .replaceAll("-", "");
-                if (!licenseMac.equals(currentIpLocalMac)){
-                    f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.no_record);
-                    return f2CLicenseResponse;
-                }
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                Date expirationTime = simpleDateFormat.parse(licenseVo.getExpirationTime());
-                String format = simpleDateFormat.format(new Date());
-                Date newData = simpleDateFormat.parse(format);
-                //转换成数字类型
-                long endTime = expirationTime.getTime();
-                long nowTime = newData.getTime();
-                if (endTime < nowTime){
-                    f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.expired);
-                }else {
-                    f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.valid);
-                }
-                f2CLicenseResponse.setLicense(licenseResponse);
-                return f2CLicenseResponse;
-            }
-            return f2CLicenseResponse;
-        } catch (Exception e) {
-            e.printStackTrace();
-            f2CLicenseResponse.setMessage(e.getMessage());
-            return f2CLicenseResponse;
-        }
+        f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.valid);
+        return f2CLicenseResponse;
     }
 
     public Map<String,String> getMac(){
