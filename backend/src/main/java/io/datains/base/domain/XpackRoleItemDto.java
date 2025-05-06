@@ -13,4 +13,6 @@ public class XpackRoleItemDto {
     private Long id;
 
     private String name;
+
+    private String description;
 }

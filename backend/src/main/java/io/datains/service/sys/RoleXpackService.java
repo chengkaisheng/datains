@@ -5,6 +5,7 @@ package io.datains.service.sys;
  * @Date: 2022/05/06/ 10:52
  * @Description
  */
+import io.datains.base.domain.XpackRoleItemDto;
 import io.datains.base.domain.XpackSysRole;
 
 import java.util.List;
@@ -18,5 +19,5 @@ import java.util.List;
 
     public abstract List<XpackSysRole> query(XpackSysRole paramXpackGridRequest);
 
-    public abstract List<XpackSysRole> allRoles();
+    public abstract List<XpackRoleItemDto> allRoles();
 }

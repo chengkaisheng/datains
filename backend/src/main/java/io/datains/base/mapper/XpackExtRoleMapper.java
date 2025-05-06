@@ -1,5 +1,6 @@
 package io.datains.base.mapper;
 
+import io.datains.base.domain.XpackRoleItemDto;
 import io.datains.base.domain.XpackSysRole;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,7 +17,7 @@ public interface XpackExtRoleMapper {
 
     int deleteUserMapping(@Param("roleId") Long paramLong);
 
-    List<XpackSysRole> queryAll();
+    List<XpackRoleItemDto> queryAll();
 
     List<XpackSysRole> query(XpackSysRole xpackSysRole);
 

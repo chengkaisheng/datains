@@ -1,27 +1,19 @@
 package io.datains.service.sys.impl;
 
-import io.dataease.plugins.common.dto.PluginSysMenu;
-import io.dataease.plugins.common.entity.XpackGridExample;
+import io.dataease.plugins.common.util.PluginCommonUtil;
+import io.datains.base.domain.XpackRoleItemDto;
 import io.datains.base.domain.XpackSysRole;
 import io.datains.base.mapper.XpackExtRoleMapper;
 import io.datains.base.mapper.XpackSysRoleMapper;
 import io.datains.commons.utils.IsNullUtils;
-import io.datains.plugins.common.entity.XpackGridRequest;
-import io.dataease.plugins.common.util.PluginCommonUtil;
-import io.datains.plugins.xpack.role.dto.response.XpackRoleDto;
-import io.dataease.plugins.xpack.role.dto.response.XpackRoleItemDto;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-
 import io.datains.service.sys.RoleXpackService;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
+
+import javax.annotation.Resource;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author Mr.zhang
@@ -72,7 +64,7 @@ public class RoleXpackDefaultService implements RoleXpackService {
         return arrayList.add(pluginSysMenu2);
     }*/
 
-    public List<XpackSysRole> allRoles() {
+    public List<XpackRoleItemDto> allRoles() {
         return this.h.queryAll();
     }
 

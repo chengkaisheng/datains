@@ -28,8 +28,16 @@ public class AddRoleService {
                 .body(JSONUtil.parse(request).toString())
                 .execute()) {
             System.out.println(response.body());
+            if (!response.isOk()) {
+                throw new RuntimeException("轻应用请求失败");
+            } else {
+                CertificationService.Response response1 = JSONUtil.toBean(response.body(), CertificationService.Response.class);
+                if (response1.getCode() != 200) {
+                    throw new RuntimeException(response1.getMessage());
+                }
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -86,5 +94,15 @@ public class AddRoleService {
          * 角色标识 --角色的id
          */
         private String key;
+
+        public Role() {
+
+        }
+
+        public Role(String name, String describe, String key) {
+            this.name = name;
+            this.describe = describe;
+            this.key = key;
+        }
     }
 }

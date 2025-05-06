@@ -4,9 +4,12 @@ package io.datains.plugins.server;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.datains.auth.service.ExtAuthService;
+import io.datains.base.domain.XpackRoleItemDto;
 import io.datains.base.domain.XpackSysRole;
 import io.datains.commons.utils.PageUtils;
 import io.datains.commons.utils.Pager;
+import io.datains.qyy.service.AddRoleService;
+import io.datains.qyy.utils.QyyCommon;
 import io.datains.service.sys.RoleXpackService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +20,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Api(tags = "xpack：角色管理")
 @RequestMapping("/plugin/role")
 @RestController
@@ -27,11 +32,15 @@ public class XRoleServer {
 
     @Resource
     private RoleXpackService roleXpackService;
+    @Resource
+    private AddRoleService addRoleService;
+    @Resource
+    private QyyCommon qyyCommon;
 
     @RequiresPermissions("role:add")
     @ApiOperation("新增角色")
     @PostMapping("/create")
-    public void create(@RequestBody XpackSysRole role){
+    public void create(@RequestBody XpackSysRole role) {
         roleXpackService.save(role);
     }
 
@@ -39,7 +48,7 @@ public class XRoleServer {
     @RequiresPermissions("role:del")
     @ApiOperation("删除角色")
     @PostMapping("/delete/{roleId}")
-    public void delete(@PathVariable("roleId") Long roleId){
+    public void delete(@PathVariable("roleId") Long roleId) {
         extAuthService.clearRoleResource(roleId);
         roleXpackService.delete(roleId);
     }
@@ -48,7 +57,7 @@ public class XRoleServer {
     @RequiresPermissions("role:edit")
     @ApiOperation("更新角色")
     @PostMapping("/update")
-    public void update(@RequestBody XpackSysRole role){
+    public void update(@RequestBody XpackSysRole role) {
         roleXpackService.update(role);
     }
 
@@ -63,7 +72,25 @@ public class XRoleServer {
 
     @ApiIgnore
     @PostMapping("/all")
-    public List<XpackSysRole> all() {
+    public List<XpackRoleItemDto> all() {
         return roleXpackService.allRoles();
+    }
+
+
+    @ApiOperation("同步角色到轻应用")
+    @GetMapping("/syncRoleToQyy")
+    public void syncRoleToQyy() {
+        List<XpackRoleItemDto> all = roleXpackService.allRoles();
+        if (all == null || all.isEmpty()) {
+            throw new RuntimeException("角色为空");
+        }
+        List<AddRoleService.Role> qyyRoles = all.stream().map(item -> AddRoleService.Role.builder()
+                        .key(item.getId() + "")
+                        .name(item.getName())
+                        .describe(item.getDescription())
+                        .build()
+        ).collect(Collectors.toList());
+        addRoleService.addRoles(qyyRoles, qyyCommon.getSecretKey(), qyyCommon.getScenId(), qyyCommon.getHost());
+        addRoleService.addRoles(qyyRoles, qyyCommon.getSecretKey2(), qyyCommon.getScenId2(), qyyCommon.getHost());
     }
 }

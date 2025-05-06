@@ -52,7 +52,8 @@
     </delete>
 
     <select id="queryAll" resultMap="xpackRoleItemMap">
-        select role_id as id, name from sys_role
+        select role_id as id, name, description
+        from sys_role
     </select>
 
 
