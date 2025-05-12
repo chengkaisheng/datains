@@ -1,7 +1,6 @@
 package io.datains.config;
 
 import com.github.pagehelper.PageInterceptor;
-import io.datains.base.domain.*;
 import io.datains.base.domain.AuthSource;
 import io.datains.base.domain.Datasource;
 import io.datains.base.domain.FileContent;
@@ -28,7 +27,7 @@ public class MybatisConfig {
     public PageInterceptor pageInterceptor() {
         PageInterceptor pageInterceptor = new PageInterceptor();
         Properties properties = new Properties();
-        properties.setProperty("helperDialect", "mysql");
+        properties.setProperty("helperDialect", "dm");
         properties.setProperty("rowBoundsWithCount", "true");
         properties.setProperty("reasonable", "true");
         properties.setProperty("offsetAsPageNum", "true");
