@@ -17,6 +17,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +37,9 @@ import java.util.List;
  */
 @Service
 public class DataFillAiServiceImpl implements DataFillAiService {
+    @Value("ai.url")
+    private String aiUrl;
+
     @Override
     public void excelUploadAiHandle(MultipartFile file, HttpServletResponse response) throws IOException {
         // 保存原始文件名
@@ -95,7 +99,7 @@ public class DataFillAiServiceImpl implements DataFillAiService {
 
     private String aiHandle(MultipartFile file, String type) throws IOException {
         // 1. 构建MultipartBody
-        HttpResponse response = HttpRequest.post("http://121.229.107.155:50001/xunfei/analy")
+        HttpResponse response = HttpRequest.post(aiUrl)
                 .header("Content-Type", "multipart/form-data")
                 .form("file", file.getBytes(), file.getOriginalFilename())
                 .form("fileType", type)

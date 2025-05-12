@@ -138,7 +138,6 @@ public class DataFillFormTemplateService {
             throw new RuntimeException("没有权限");
         }
         Assert.notNull(id, "id cannot be null");
-        sysAuthService.checkTreeNoManageCount(SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING_TEMPLATE, id);
         Map<String, String> stringStringMap = extDataFillFormMapper.searchChildrenIds(id, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING_TEMPLATE);
         String[] split = stringStringMap.get("ids").split(",");
         List<String> ids = new ArrayList<>();
