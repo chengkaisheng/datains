@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(exclude = {
         QuartzAutoConfiguration.class,
         LdapAutoConfiguration.class
-})
+}, scanBasePackages = {"io.datains", "com.mybatis.interceptor"})
 @ServletComponentScan
 @EnableScheduling
 @MapperScan(basePackages = {"io.datains.base.mapper", "io.datains.fill.mapper"})
