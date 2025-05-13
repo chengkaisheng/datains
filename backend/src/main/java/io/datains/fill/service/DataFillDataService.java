@@ -13,6 +13,7 @@ import io.datains.commons.enums.DatasourceTypes;
 import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.CommonBeanFactory;
 import io.datains.controller.request.datasource.DatasourceRequest;
+import io.datains.dto.datasource.DmConfiguration;
 import io.datains.dto.datasource.MysqlConfiguration;
 import io.datains.dto.datasource.TableField;
 import io.datains.exception.DataInsException;
@@ -100,7 +101,34 @@ public class DataFillDataService {
 
         return datasource;
     }
+    private Datasource getBuiltInDataSourceDm() {
+        DmConfiguration dmConfiguration = new DmConfiguration();
+        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:dm://(.*):(\\d+)/(.*)");
+        Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
+        if (!matcher.find()) {
+            return null;
+        }
+        dmConfiguration.setHost(matcher.group(1));
+        dmConfiguration.setPort(Integer.valueOf(matcher.group(2)));
+        String[] databasePrams = matcher.group(3).split("\\?");
+        dmConfiguration.setDataBase(databasePrams[0]);
+        if (databasePrams.length == 2) {
+            dmConfiguration.setExtraParams(databasePrams[1]);
+        }
+        if (StringUtils.isNotEmpty(dmConfiguration.getExtraParams()) && !dmConfiguration.getExtraParams().contains("connectionCollation")) {
+            dmConfiguration.setExtraParams(dmConfiguration.getExtraParams() + "&connectionCollation=utf8mb4_general_ci");
+        }
+        dmConfiguration.setUsername(env.getProperty("spring.datasource.username"));
+        dmConfiguration.setPassword(env.getProperty("spring.datasource.password"));
 
+        Datasource datasource = new Datasource();
+        datasource.setId("default-built-in");
+        datasource.setType("dm");
+        datasource.setName(Translator.get("I18N_DATA_FILL_DATASOURCE_DEFAULT_BUILT_IN"));
+        datasource.setConfiguration(new Gson().toJson(dmConfiguration));
+
+        return datasource;
+    }
     public Datasource getDataSource(String datasourceId) {
         return getDataSource(datasourceId, false);
     }
@@ -108,7 +136,7 @@ public class DataFillDataService {
     public Datasource getDataSource(String datasourceId, boolean withCreatePrivileges) {
         Datasource ds = null;
         if (StringUtils.equals("default-built-in", datasourceId)) {
-            ds = getBuiltInDataSource();
+            ds = getBuiltInDataSourceDm();
         } else {
             if (!withCreatePrivileges) {
                 ds = datasource.get(datasourceId);

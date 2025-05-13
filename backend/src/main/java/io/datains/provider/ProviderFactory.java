@@ -21,6 +21,8 @@ public class ProviderFactory implements ApplicationContextAware {
             case mariadb:
             case mysql:
                 return context.getBean("extMysqlDDLProvider", ExtDDLProvider.class);
+            case dm:
+                return context.getBean("extDmDDLProvider", ExtDDLProvider.class);
             default:
                 return context.getBean("defaultExtDDLProvider", ExtDDLProvider.class);
         }

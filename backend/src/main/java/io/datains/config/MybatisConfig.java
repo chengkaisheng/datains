@@ -27,7 +27,7 @@ public class MybatisConfig {
     public PageInterceptor pageInterceptor() {
         PageInterceptor pageInterceptor = new PageInterceptor();
         Properties properties = new Properties();
-        properties.setProperty("helperDialect", "dm");
+        properties.setProperty("helperDialect", "mysql");
         properties.setProperty("rowBoundsWithCount", "true");
         properties.setProperty("reasonable", "true");
         properties.setProperty("offsetAsPageNum", "true");

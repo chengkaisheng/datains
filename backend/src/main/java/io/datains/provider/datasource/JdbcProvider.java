@@ -786,6 +786,14 @@ public class JdbcProvider extends DatasourceProvider {
                 dataSource.setDriverClassName(db2Configuration.getDriver());
                 dataSource.setUrl(db2Configuration.getJdbc());
                 jdbcConfiguration = db2Configuration;
+                break;
+            case dm:
+                DmConfiguration dmConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), DmConfiguration.class);
+                dataSource.setPassword(dmConfiguration.getPassword());
+                dataSource.setDriverClassName(dmConfiguration.getDriver());
+                dataSource.setUrl(dmConfiguration.getJdbc());
+                jdbcConfiguration = dmConfiguration;
+                break;
             default:
                 break;
         }

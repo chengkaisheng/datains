@@ -155,9 +155,6 @@
     <logger name="io.datains" level="INFO">
         <appender-ref ref="console"/>
     </logger>
-    <logger name="com.mybatis.interceptor.config" level="DEBUG">
-        <appender-ref ref="console"/>
-    </logger>
 
     <logger name="io.datains.base.mapper" level="${logger.sql.level}">
         <appender-ref ref="console"/>

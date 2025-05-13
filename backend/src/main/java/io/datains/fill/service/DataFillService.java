@@ -232,7 +232,6 @@ public class DataFillService {
             datasourceRequest.setQuery("SELECT VERSION()");
 
             JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-            String version = jdbcProvider.getData(datasourceRequest).get(0)[0];
 
             //拼sql
             ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());

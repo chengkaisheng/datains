@@ -28,7 +28,7 @@
         LEFT JOIN (
         SELECT
         auth_source,
-        group_concat( DISTINCT sys_auth_detail.privilege_extend ) AS `privileges`
+        WM_CONCAT( DISTINCT sys_auth_detail.privilege_extend ) AS `privileges`
         FROM
         (
         `sys_auth`
@@ -105,7 +105,7 @@
                 #{item}
             </foreach>
         </if>
-        ORDER BY v_auth_model.node_type desc, CONVERT(v_auth_model.label using gbk) asc
+        ORDER BY v_auth_model.node_type desc, NLSSORT(v_auth_model.label,'NLS_SORT = SCHINESE_PINYIN_M') asc
     </select>
 
     <select id="queryAuthModelViews" resultMap="ExtResultMap">
@@ -130,7 +130,7 @@
                 </foreach>
             </if>
         </where>
-        ORDER BY CONVERT(chart_view.name using gbk) asc
+        ORDER BY NLSSORT(chart_view.name,'NLS_SORT = SCHINESE_PINYIN_M') asc
     </select>
 
 
@@ -139,7 +139,7 @@
             *
         FROM
             v_history_chart_view viewsOriginal
-        ORDER BY viewsOriginal.node_type desc, CONVERT(viewsOriginal.label using gbk) asc
+        ORDER BY viewsOriginal.node_type desc,NLSSORT(viewsOriginal.label,'NLS_SORT = SCHINESE_PINYIN_M') asc
     </select>
 
 </mapper>
