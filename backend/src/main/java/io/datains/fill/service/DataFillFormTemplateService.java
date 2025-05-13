@@ -29,7 +29,6 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -138,8 +137,8 @@ public class DataFillFormTemplateService {
             throw new RuntimeException("没有权限");
         }
         Assert.notNull(id, "id cannot be null");
-        Map<String, String> stringStringMap = extDataFillFormMapper.searchChildrenIds(id, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING_TEMPLATE);
-        String[] split = stringStringMap.get("ids").split(",");
+        String stringStringMap = extDataFillFormMapper.searchChildrenIds(id, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING_TEMPLATE);
+        String[] split = stringStringMap.split(",");
         List<String> ids = new ArrayList<>();
         for (String dsId : split) {
             if (dsId != null) {

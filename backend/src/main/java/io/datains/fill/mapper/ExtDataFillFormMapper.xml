@@ -87,7 +87,7 @@
         ORDER BY name
     </select>
 
-    <select id="searchChildrenIds" resultType="java.util.Map">
+    <select id="searchChildrenIds" resultType="String">
         select GET_V_AUTH_MODEL_WITH_CHILDREN(#{id}, #{type}) ids
     </select>
 

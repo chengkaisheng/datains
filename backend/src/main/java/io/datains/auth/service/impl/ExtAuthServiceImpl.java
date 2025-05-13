@@ -126,8 +126,8 @@ public class ExtAuthServiceImpl implements ExtAuthService {
             @CacheEvict(value = AuthConstants.USER_LINK_NAME, key = "'user' + #userId"),
             @CacheEvict(value = AuthConstants.USER_DATASET_NAME, key = "'user' + #userId"),
             @CacheEvict(value = AuthConstants.USER_PANEL_NAME, key = "'user' + #userId"),
-            @CacheEvict(value = AuthConstants.USER_DATA_FILL_NAME, key = "'user' + #userId"),
-            @CacheEvict(value = AuthConstants.USER_DATA_FILL_TEMPLATE_NAME, key = "'user' + #userId")
+//            @CacheEvict(value = AuthConstants.USER_DATA_FILL_NAME, key = "'user' + #userId"),
+//            @CacheEvict(value = AuthConstants.USER_DATA_FILL_TEMPLATE_NAME, key = "'user' + #userId")
     })
     public void clearUserResource(Long userId) {
         LogUtil.info("all permission resource of user {} is cleanning...", userId);
@@ -137,8 +137,8 @@ public class ExtAuthServiceImpl implements ExtAuthService {
             @CacheEvict(value = AuthConstants.DEPT_LINK_NAME, key = "'dept' + #deptId"),
             @CacheEvict(value = AuthConstants.DEPT_DATASET_NAME, key = "'dept' + #deptId"),
             @CacheEvict(value = AuthConstants.DEPT_PANEL_NAME, key = "'dept' + #deptId"),
-            @CacheEvict(value = AuthConstants.DEPT_DATA_FILL_NAME, key = "'dept' + #deptId"),
-            @CacheEvict(value = AuthConstants.DEPT_DATA_FILL_TEMPLATE_NAME, key = "'dept' + #deptId")
+//            @CacheEvict(value = AuthConstants.DEPT_DATA_FILL_NAME, key = "'dept' + #deptId"),
+//            @CacheEvict(value = AuthConstants.DEPT_DATA_FILL_TEMPLATE_NAME, key = "'dept' + #deptId")
     })
     public void clearDeptResource(Long deptId) {
         LogUtil.info("all permission resource of dept {} is cleanning...", deptId);
@@ -148,8 +148,8 @@ public class ExtAuthServiceImpl implements ExtAuthService {
             @CacheEvict(value = AuthConstants.ROLE_LINK_NAME, key = "'role' + #roleId"),
             @CacheEvict(value = AuthConstants.ROLE_DATASET_NAME, key = "'role' + #roleId"),
             @CacheEvict(value = AuthConstants.ROLE_PANEL_NAME, key = "'role' + #roleId"),
-            @CacheEvict(value = AuthConstants.ROLE_DATA_FILL_NAME, key = "'role' + #roleId"),
-            @CacheEvict(value = AuthConstants.ROLE_DATA_FILL_TEMPLATE_NAME, key = "'role' + #roleId")
+//            @CacheEvict(value = AuthConstants.ROLE_DATA_FILL_NAME, key = "'role' + #roleId"),
+//            @CacheEvict(value = AuthConstants.ROLE_DATA_FILL_TEMPLATE_NAME, key = "'role' + #roleId")
     })
     public void clearRoleResource(Long roleId) {
         LogUtil.info("all permission resource of role {} is cleanning...", roleId);

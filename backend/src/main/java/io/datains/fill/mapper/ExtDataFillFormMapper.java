@@ -12,12 +12,11 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public interface ExtDataFillFormMapper {
     List<DataFillFormDTO> search(DataFillFormRequest request);
 
-    Map<String, String> searchChildrenIds(String id, String type);
+    String searchChildrenIds(String id, String type);
 
     List<DataFillCommitLogDTO> selectLatestLogByFormDataIds(String formId, List<String> dataIds);
 

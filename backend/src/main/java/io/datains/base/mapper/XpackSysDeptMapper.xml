@@ -97,11 +97,11 @@
         </if>
     </delete>
     <insert id="insert" parameterType="io.datains.base.domain.XpackSysDept" useGeneratedKeys="true" keyProperty="deptId">
-    insert into sys_dept (dept_id, pid, sub_count,
+    insert into sys_dept ( pid, sub_count,
       `name`, dept_sort, create_by,
       update_by, create_time, update_time
       )
-    values (#{deptId,jdbcType=BIGINT}, #{pid,jdbcType=BIGINT}, #{subCount,jdbcType=INTEGER},
+    values (#{pid,jdbcType=BIGINT}, #{subCount,jdbcType=INTEGER},
       #{name,jdbcType=VARCHAR}, #{deptSort,jdbcType=INTEGER}, #{createBy,jdbcType=VARCHAR},
       #{updateBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}
       )

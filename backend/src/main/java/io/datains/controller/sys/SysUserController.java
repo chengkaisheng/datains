@@ -13,7 +13,6 @@ import io.datains.auth.util.JWTUtils;
 import io.datains.auth.util.RedisService;
 import io.datains.auth.util.UserKey;
 import io.datains.base.domain.SysRole;
-import io.datains.base.domain.SysUser;
 import io.datains.base.mapper.SysUserMapper;
 import io.datains.commons.utils.*;
 import io.datains.controller.response.ExistLdapUser;
@@ -95,27 +94,7 @@ public class SysUserController {
     @PostMapping("/create")
     @Transactional
     public void create(@RequestBody SysUserCreateRequest request) throws Exception {
-        int save = sysUserService.save(request);
-//        if (save>0){
-//            Map<String, Object> token = getToken();
-//            if (token.get("code").equals(500)){
-//                token.get("errMsg");
-//            }
-//            Map<String,Object> map = new HashMap<>();
-//            SysUserEntity user = authUserService.getUserByName(request.getUsername());
-//           // map.put("accessToken",token.get("token"));
-//            map.put("biz_id",user.getUserId());
-//            map.put("loginName",user.getUsername());
-//            map.put("card_no",user.getUsername());
-//            map.put("phone",user.getPhone());
-//            int a = user.getEnabled()==1?1:(user.getEnabled()==0?2:0);
-//            map.put("operateType",a);
-//
-//            List<Map<String,Object>> list = new ArrayList<>();
-//            list.add(map);
-//            String s = HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/syncAccountInfo", JSON.toJSONString(list),token.get("token").toString());
-//            System.err.println(s);
-//        }
+        sysUserService.save(request);
     }
 
     @ApiOperation("更新用户")
@@ -124,23 +103,6 @@ public class SysUserController {
     @Transactional
     public void update(@RequestBody SysUserCreateRequest request) throws Exception {
         int update = sysUserService.update(request);
-        /*if (update>0){
-            Map<String, Object> token = getToken();
-
-            if (token.get("code").equals(500)){
-                token.get("errMsg");
-            }
-            Map<String,Object> map = new HashMap<>();
-            SysUserEntity user = authUserService.getUserByName(request.getUsername());
-           // map.put("accessToken",token.get("token"));
-            map.put("biz_id",user.getUserId());
-            map.put("loginName",user.getUsername());
-            map.put("card_no",user.getUsername());
-            map.put("phone",user.getPhone());
-            int a = user.getEnabled()==1?1:(user.getEnabled()==0?2:0);
-            map.put("operateType",a);
-            HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/syncAccountInfo", JSON.toJSONString(map),token.get("token").toString());
-        }*/
     }
 
     @Transactional
@@ -149,22 +111,7 @@ public class SysUserController {
     @PostMapping("/delete/{userId}")
     @ApiImplicitParam(paramType = "path", value = "用户ID", name = "userId", required = true, dataType = "Integer")
     public void delete(@PathVariable("userId") Long userId) throws Exception {
-
-        Map<String, Object> token = getToken();
-        Map<String, Object> map = new HashMap<>();
-        SysUser user = sysUserMapper.selectByPrimaryKey(userId);
-        //map.put("accessToken",token.get("token"));
-        map.put("biz_id", user.getUserId());
-        map.put("loginName", user.getUsername());
-        map.put("card_no", user.getUsername());
-        map.put("phone", user.getPhone());
-        // int a = user.getEnabled()==1?1:(user.getEnabled()==0?2:0);
-        map.put("operateType", 2);
-        List<Map<String, Object>> list = new ArrayList<>();
-        list.add(map);
-        HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/syncAccountInfo", JSON.toJSONString(list), token.get("token").toString());
-
-        int delete = sysUserService.delete(userId);
+        sysUserService.delete(userId);
     }
 
     @ApiOperation("更新用户状态")

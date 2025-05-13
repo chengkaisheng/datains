@@ -569,8 +569,8 @@ public class DataFillService {
             throw new RuntimeException("没有权限");
         }
         Assert.notNull(id, "id cannot be null");
-        Map<String, String> stringStringMap = extDataFillFormMapper.searchChildrenIds(id, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING);
-        String[] split = stringStringMap.get("ids").split(",");
+        String stringStringMap = extDataFillFormMapper.searchChildrenIds(id, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING);
+        String[] split = stringStringMap.split(",");
 
         DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(id);
 
