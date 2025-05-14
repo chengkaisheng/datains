@@ -59,9 +59,9 @@
           <router-link to="/about/index">
             <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
           </router-link>
-          <!-- <el-dropdown-item divided @click.native="logout">
+          <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">{{ $t('commons.exit_system') }}</span>
-          </el-dropdown-item> -->
+          </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>

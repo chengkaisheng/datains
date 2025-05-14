@@ -315,8 +315,8 @@ import datafill from '@/api/datafill/datafill'
 import { hasPermission } from '@/views/dataFilling/permission.js'
 import {
   deleteForm,
-  downloadTemplate,
-  exportExcelData,
+  downloadTemplate, // 不加密
+  exportExcelData, // 加密
   exportBatch,
   excelUploadAiHandle,
   getWithPrivileges,
@@ -327,7 +327,6 @@ import {
 } from '@/views/dataFilling/form/dataFilling'
 import {
   deleteForm as deleteTemplate,
-  // downloadTemplate as downloadTemplateTemplate,
   excelUploadAiHandle as excelUploadAiHandleTemplate,
   getWithPrivileges as getWithPrivilegesTemplate,
   saveForm as saveFormTemplate
@@ -585,7 +584,7 @@ export default {
         // console.log('nodeData', this.nodeData)
         this.batchDownload(this.nodeData.id, this.passwordForm.password)
       } else {
-        this.downloadTemplate(this.selectedRow.id, this.passwordForm.password)
+        this.exportExcelDataPwd(this.selectedRow.id, this.passwordForm.password)
       }
     },
     getVersionList(id) {
@@ -849,13 +848,26 @@ export default {
       }
       this.fileList = []
     },
-    downloadTemplate(id, password) {
+    exportExcelDataPwd(id, password) {
       exportExcelData(id, password).then(res => {
         const blob = new Blob([res])
         const link = document.createElement('a')
         link.style.display = 'none'
         link.href = URL.createObjectURL(blob)
         link.download = password ? this.selectedRow.name + '.xlsx' : this.templateList.find(item => item.id === id).name + '.xlsx' // 下载的文件名
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        this.closePasswordDialog()
+      })
+    },
+    downloadTemplate(id) {
+      downloadTemplate(id).then(res => {
+        const blob = new Blob([res])
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = this.templateList.find(item => item.id === id).name + '.xlsx' // 下载的文件名
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
