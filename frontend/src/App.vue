@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" ref="containerS">
     <router-view />
     <plugin-com v-show="false" ref="de-theme" component-name="ThemeSetting" />
   </div>
@@ -7,6 +7,9 @@
 
 <script>
 import PluginCom from '@/views/system/plugin/PluginCom'
+import Watermark from '@/utils/waterMark'
+import { mapGetters } from 'vuex'
+import moment from 'moment'
 
 export default {
   name: 'App',
@@ -14,10 +17,27 @@ export default {
   beforeCreate() {
 
   },
+  watch: {
+    $route(to, from) {
+      let userId = String(this.user.userId).slice(-8)
+      const nameS = this.user.username + '\n' + userId + '\n' + moment().format('YYYYMMDD')
+      this.$nextTick(function() {
+        Watermark.set(nameS, this.$refs.containerS)
+      })
+    }
+  },
+  computed: {
+    ...mapGetters(['user'])
+  },
   mounted() {
     const attachParams = this.getQueryVariable('attachParams')
     console.log('attachParams,,,',attachParams)
     localStorage.setItem('permissionId',attachParams)
+    let userId = String(this.user.userId).slice(-8)
+    const nameS = this.user.username + '\n' + userId + '\n' + moment().format('YYYYMMDD')
+    this.$nextTick(function() {
+      Watermark.set(nameS, this.$refs.containerS)
+    })
   },
   methods: {
     getQueryVariable(variable) {

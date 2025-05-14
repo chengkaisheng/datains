@@ -24,6 +24,7 @@
               </el-form-item>
               <el-form-item prop="username">
                 <el-input v-model="loginForm.username" placeholder="ID" autofocus :disabled="loginTypes.includes(2) && loginForm.loginType === 2" />
+                <!-- <el-input v-model="loginForm.username" placeholder="ID" autofocus :disabled="true" /> -->
               </el-form-item>
               <el-form-item prop="password">
                 <el-input
@@ -36,12 +37,25 @@
                   :disabled="loginTypes.includes(2) && loginForm.loginType === 2"
                   @keypress.enter.native="handleLogin"
                 />
+                <!-- <el-input
+                  v-model="loginForm.password"
+                  :placeholder="$t('login.password')"
+                  show-password
+                  maxlength="30"
+                  show-word-limit
+                  autocomplete="new-password"
+                  :disabled="true"
+                  @keypress.enter.native="handleLogin"
+                /> -->
               </el-form-item>
             </div>
             <div class="login-btn">
               <el-button type="primary" class="submit" size="default" :disabled="loginTypes.includes(2) && loginForm.loginType === 2" @click.native.prevent="handleLogin">
                 {{ $t('commons.login') }}
               </el-button>
+              <!-- <el-button type="primary" class="submit" size="default" :disabled="true" @click.native.prevent="handleLogin">
+                {{ $t('commons.login') }}
+              </el-button> -->
               <div v-if="uiInfo && uiInfo['ui.demo.tips'] && uiInfo['ui.demo.tips'].paramValue" class="demo-tips">
                 {{ uiInfo['ui.demo.tips'].paramValue }}
               </div>
@@ -64,7 +78,14 @@
       </el-row>
     </div>
     <plugin-com v-if="loginTypes.includes(2) && loginForm.loginType === 2" ref="SSOComponent" component-name="SSOComponent" />
-
+    <div class="tip">
+      <div>接上级单位通知，该登录页面将于2025年5月16日暂停登录功能，请通过统一门户登录。</div>
+      <div>医保专网登录地址：<span style="cursor: pointer" @click="open('http://100.0.0.234:3000/intranet100/#/login')">http://100.0.0.234:3000/intranet100/#/login</span></div>
+      <div>医保内网登录地址：<span style="cursor: pointer" @click="open('http://10.59.13.234:3000/intranet10/#/login')">http://10.59.13.234:3000/intranet10/#/login</span></div>
+      <div>账号：身份证号</div>
+      <div>初始密码：身份证号后6位+@xzyb</div>
+      <div>若有问题，请联系应用厂商或统一门户工作人员：董偲楠，联系电话：17798828696。</div>
+    </div>
   </div>
 </template>
 
@@ -171,6 +192,9 @@ export default {
   },
 
   methods: {
+    open(url) {
+      window.open(url)
+    },
     clearOidcMsg() {
       Cookies.remove('OidcError')
       Cookies.remove('IdToken')
@@ -198,6 +222,7 @@ export default {
     },
 
     handleLogin() {
+      // return null;
       // console.log('111111')
       this.initCache()
       this.clearOidcMsg()
@@ -245,6 +270,7 @@ export default {
 }
 
 .login-background {
+  position: relative;
   // background-color: var(--MainBG, $--background-color-base);
   height: 100vh;
   // @include login-center;
@@ -417,5 +443,20 @@ export default {
   100% {
     transform: translateX(-50%);
   }
+}
+
+.tip {
+  position: absolute;
+  bottom: 50px;
+  right: 50px;
+  // transform: translateY(-50%);
+  width: 420px;
+  // height: 500px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #fff;
+  background-color: rgba(10, 123, 224, 0.3);
+  padding: 10px;
+  border-radius: 10px;
 }
 </style>
