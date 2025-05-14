@@ -19,8 +19,8 @@ export default {
   },
   watch: {
     $route(to, from) {
-      let userId = String(this.user.userId).slice(-8)
-      const nameS = this.user.username + '\n' + userId + '\n' + moment().format('YYYYMMDD')
+      let username = String(this.user.username).slice(-8)
+      const nameS = this.user.nickName + '\n' + username + '\n' + moment().format('YYYYMMDD')
       this.$nextTick(function() {
         Watermark.set(nameS, this.$refs.containerS)
       })
@@ -33,8 +33,8 @@ export default {
     const attachParams = this.getQueryVariable('attachParams')
     console.log('attachParams,,,',attachParams)
     localStorage.setItem('permissionId',attachParams)
-    let userId = String(this.user.userId).slice(-8)
-    const nameS = this.user.username + '\n' + userId + '\n' + moment().format('YYYYMMDD')
+    let username = String(this.user.username).slice(-8)
+    const nameS = this.user.nickName + '\n' + username + '\n' + moment().format('YYYYMMDD')
     this.$nextTick(function() {
       Watermark.set(nameS, this.$refs.containerS)
     })
