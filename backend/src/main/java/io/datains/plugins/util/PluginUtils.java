@@ -1,22 +1,19 @@
 package io.datains.plugins.util;
 
+import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import io.datains.auth.api.dto.PluginSysMenuCustom;
 import io.datains.base.mapper.LicenseMapper;
 import io.datains.commons.license.DefaultLicenseService;
 import io.datains.commons.license.F2CLicenseResponse;
-import io.datains.commons.utils.EncryptUtil;
 import io.datains.plugins.common.dto.PluginSysMenu;
 import io.datains.plugins.config.SpringContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -53,6 +50,7 @@ public class PluginUtils {
         List<PluginSysMenu> menus = getMenus();
         return menus;
     }
+
     public static F2CLicenseResponse LicenseProving() {
         F2CLicenseResponse f2CLicenseResponse = new F2CLicenseResponse();
         f2CLicenseResponse.setStatus(F2CLicenseResponse.Status.valid);
@@ -71,14 +69,7 @@ public class PluginUtils {
     }
 
     public static String getMenusFromKey() throws IOException {
-        ClassLoader classLoader = PluginUtils.class.getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream("menus/menus.key");
-        InputStreamReader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        BufferedReader br = new BufferedReader(isr);
-        EncryptUtil instance = EncryptUtil.getInstance();
-        String s1 = instance.Base64Decode(br.readLine());
-        //DES解密
-        String s3 = instance.DESdecode(s1, "DataIns");
+        String s3 = FileUtil.readString("classpath:menus/menus.key", StandardCharsets.UTF_8);
         return JSON.toJSON(s3).toString();
     }
 
