@@ -105,7 +105,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
             lists.forEach(tNode -> {
                 if (tNode.getPid().equals(node.getId())) {
                     if (node.getChildren() == null) {
-                        node.setChildren(new ArrayList<DynamicMenuDto>());
+                        node.setChildren(new ArrayList<>());
                         node.setRedirect(node.getPath() + "/" + tNode.getPath());//第一个子节点的path
                     }
                     node.getChildren().add(tNode);

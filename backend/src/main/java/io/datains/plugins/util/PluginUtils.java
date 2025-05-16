@@ -1,6 +1,6 @@
 package io.datains.plugins.util;
 
-import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.resource.ResourceUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import io.datains.auth.api.dto.PluginSysMenuCustom;
@@ -69,7 +69,7 @@ public class PluginUtils {
     }
 
     public static String getMenusFromKey() throws IOException {
-        String s3 = FileUtil.readString("classpath:menus/menus.key", StandardCharsets.UTF_8);
+        String s3 = ResourceUtil.readStr("menus/menus.key", StandardCharsets.UTF_8);
         return JSON.toJSON(s3).toString();
     }
 
