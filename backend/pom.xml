@@ -220,6 +220,8 @@
         <dependency>
             <groupId>io.datains</groupId>
             <artifactId>datains-plugin-view</artifactId>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/datains-plugin-view-1.9.0.jar</systemPath>
             <version>1.9.0</version>
         </dependency>
         <dependency>
