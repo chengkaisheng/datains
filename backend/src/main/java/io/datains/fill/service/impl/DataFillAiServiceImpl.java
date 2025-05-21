@@ -37,7 +37,7 @@ import java.util.List;
  */
 @Service
 public class DataFillAiServiceImpl implements DataFillAiService {
-    @Value("ai.url")
+    @Value("${ai.url}")
     private String aiUrl;
 
     @Override
