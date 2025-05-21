@@ -415,7 +415,8 @@ export default {
     },
     getTemplateTree(data) {
       listFormTemplate({ nodeType: 'folder' }).then((val) => {
-        this.folders = this.filterListDeep(val.data) || []
+        // this.folders = this.filterListDeep(val.data) || []
+        this.folders = val.data || []
         if (this.templateForm.folder) {
           this.$nextTick(() => {
             this.$refs.tree.setCurrentKey(this.templateForm.folder)
