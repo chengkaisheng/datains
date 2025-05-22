@@ -85,12 +85,12 @@ public class XRoleServer {
             throw new RuntimeException("角色为空");
         }
         List<AddRoleService.Role> qyyRoles = all.stream().map(item -> AddRoleService.Role.builder()
-                        .key(item.getId() + "")
-                        .name(item.getName())
-                        .describe(item.getDescription())
-                        .build()
+                .key(item.getId() + "")
+                .name(item.getName())
+                .describe(item.getDescription())
+                .build()
         ).collect(Collectors.toList());
-        addRoleService.addRoles(qyyRoles, qyyCommon.getSecretKey(), qyyCommon.getScenId(), qyyCommon.getHost());
-        addRoleService.addRoles(qyyRoles, qyyCommon.getSecretKey2(), qyyCommon.getScenId2(), qyyCommon.getHost());
+        addRoleService.addRoles(qyyRoles, qyyCommon.getSecretKey(), qyyCommon.getScenId(), qyyCommon.getHost() + "/function/add");
+        addRoleService.addRoles(qyyRoles, qyyCommon.getSecretKey2(), qyyCommon.getScenId2(), qyyCommon.getHost() + "/function/add");
     }
 }
