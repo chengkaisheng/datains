@@ -160,6 +160,9 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
             return;
         }
         for (SysDeptLeaderAuth auth : auths) {
+            if (auth.getPrivilegeType() == null) {
+                continue;
+            }
             //为每一个负责人进行权限修改
             for (Long userId : userIds) {
                 //权限的类型，例如授权、查看、导出等
