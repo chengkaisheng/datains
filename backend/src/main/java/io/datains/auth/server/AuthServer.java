@@ -170,6 +170,9 @@ public class AuthServer implements AuthApi {
         //登录用户
         username = username == null ? "q_" + qyyUser.getId() : username;
         SysUserEntity user = authUserService.getUserByName(username);
+        if (ObjectUtils.isEmpty(user)) {
+            DataInsException.throwException("用户不存在");
+        }
         String realPwd = user.getPassword();
         Map<String, Object> result = new HashMap<>();
         TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();

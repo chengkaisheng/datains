@@ -16,6 +16,7 @@ import java.util.List;
 public class XpackSysRole implements Serializable {
 
     private List<XpackConditionEntity> conditions;
+    private List<String> roleGroups;
     private List<String> orders;
 
 
@@ -40,5 +41,6 @@ public class XpackSysRole implements Serializable {
     @ApiModelProperty("更新日期")
     private Long updateTime;
 
-
+    @ApiModelProperty("角色分组")
+    private String roleGroup;
 }

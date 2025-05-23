@@ -12,7 +12,7 @@
         from sys_role
         where 1 = 1
         <if test="roleId != null">
-            role_id = #{roleId,jdbcType=BIGINT}
+            and role_id = #{roleId,jdbcType=BIGINT}
         </if>
         <if test="name != null">
             and `name` = #{name,jdbcType=VARCHAR}
@@ -26,6 +26,12 @@
         <if test="updateBy != null">
             and update_by = #{updateBy,jdbcType=VARCHAR}
         </if>
+        <if test="roleGroups != null">
+            and role_group in
+            <foreach collection="roleGroups" item="roleGroup" open="(" separator="," close=")">
+                #{roleGroup}
+            </foreach>
+        </if>
         order by create_time desc
 
     </select>
@@ -35,7 +41,13 @@
         from sys_role
         where 1 = 1
         <if test="name != null">
-        and name like CONCAT(CONCAT('%', #{name}), '%')
+            and name like CONCAT(CONCAT('%', #{name}), '%')
+        </if>
+        <if test="roleGroups != null">
+            and role_group in
+            <foreach collection="roleGroups" item="roleGroup" open="(" separator="," close=")">
+                #{roleGroup}
+            </foreach>
         </if>
         order by create_time desc
 
@@ -55,9 +67,19 @@
         select role_id as id, name, description
         from sys_role
     </select>
-
-
-
+    <select id="queryByIds" resultType="io.datains.base.domain.XpackSysRole">
+        select *
+        from sys_role
+        where role_id in
+        <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </select>
+    <select id="queryById" resultType="io.datains.base.domain.XpackSysRole">
+        select *
+        from sys_role
+        where role_id = #{roleId}
+    </select>
 
 
 </mapper>

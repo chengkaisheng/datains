@@ -1,10 +1,13 @@
 package io.datains.service.sys.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import io.dataease.plugins.common.util.PluginCommonUtil;
+import io.datains.auth.api.dto.CurrentRoleDto;
 import io.datains.base.domain.XpackRoleItemDto;
 import io.datains.base.domain.XpackSysRole;
 import io.datains.base.mapper.XpackExtRoleMapper;
 import io.datains.base.mapper.XpackSysRoleMapper;
+import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.IsNullUtils;
 import io.datains.service.sys.RoleXpackService;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +39,7 @@ public class RoleXpackDefaultService implements RoleXpackService {
     private XpackExtRoleMapper h;
 
     public void save(XpackSysRole xpackSysRole) {
-        Long long_ = Long.valueOf(System.currentTimeMillis());
+        Long long_ = System.currentTimeMillis();
         xpackSysRole.setCreateTime(long_);
         xpackSysRole.setUpdateTime(long_);
         this.i.insert(xpackSysRole);
@@ -68,14 +72,36 @@ public class RoleXpackDefaultService implements RoleXpackService {
         return this.h.queryAll();
     }
 
+    @Override
+    public XpackSysRole queryById(Long roleId) {
+        return this.h.queryById(roleId);
+    }
+
     public List<XpackSysRole> query(XpackSysRole xpackGridRequest) {
-        if (IsNullUtils.isNotNull(xpackGridRequest.getConditions())){
-            xpackGridRequest.setName(xpackGridRequest.getConditions().get(0).getValue().toString());
-            if (xpackGridRequest.getConditions().get(0).getOperator().equals("like")){
-                return (List<XpackSysRole>)this.h.querylike(xpackGridRequest).stream().map(a -> (XpackSysRole)PluginCommonUtil.copyBean(new XpackSysRole(), a)).collect(Collectors.toList());
+        boolean isAdmin = false;
+        //判断用户是否为超级管理员
+        List<CurrentRoleDto> currentRoleDtos = AuthUtils.getUser().getRoles();
+        if (ObjectUtil.isNotEmpty(currentRoleDtos)) {
+            for (CurrentRoleDto currentRoleDto : currentRoleDtos) {
+                if (currentRoleDto.getId().equals(1L)) {
+                    isAdmin = true;
+                    break;
+                }
             }
+            if (!isAdmin) {
+                List<XpackSysRole> roles = this.h.queryByIds(currentRoleDtos.stream().map(CurrentRoleDto::getId).collect(Collectors.toList()));
+                List<String> roleGroups = roles.stream().map(XpackSysRole::getRoleGroup).collect(Collectors.toList());
+                xpackGridRequest.setRoleGroups(roleGroups);
+            }
+            if (IsNullUtils.isNotNull(xpackGridRequest.getConditions())) {
+                xpackGridRequest.setName(xpackGridRequest.getConditions().get(0).getValue().toString());
+                if (xpackGridRequest.getConditions().get(0).getOperator().equals("like")) {
+                    return this.h.querylike(xpackGridRequest).stream().map(a -> PluginCommonUtil.copyBean(new XpackSysRole(), a)).collect(Collectors.toList());
+                }
+            }
+            return this.h.query(xpackGridRequest).stream().map(a -> PluginCommonUtil.copyBean(new XpackSysRole(), a)).collect(Collectors.toList());
         }
-        return (List<XpackSysRole>)this.h.query(xpackGridRequest).stream().map(a -> (XpackSysRole)PluginCommonUtil.copyBean(new XpackSysRole(), a)).collect(Collectors.toList());
+        return new ArrayList<>();
     }
 
     public void delete(Long long_) {

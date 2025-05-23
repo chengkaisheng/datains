@@ -44,6 +44,14 @@ public class XRoleServer {
         roleXpackService.save(role);
     }
 
+    @GetMapping("/getRoleById/{roleId}")
+    public XpackSysRole getRoleById(@PathVariable Long roleId) {
+        if (roleId == null) {
+            return null;
+        }
+        return roleXpackService.queryById(roleId);
+    }
+
 
     @RequiresPermissions("role:del")
     @ApiOperation("删除角色")
@@ -66,8 +74,7 @@ public class XRoleServer {
     @PostMapping("/roleGrid/{goPage}/{pageSize}")
     public Pager<List<XpackSysRole>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody XpackSysRole request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        Pager<List<XpackSysRole>> listPager = PageUtils.setPageInfo(page, roleXpackService.query(request));
-        return listPager;
+        return PageUtils.setPageInfo(page, roleXpackService.query(request));
     }
 
     @ApiIgnore

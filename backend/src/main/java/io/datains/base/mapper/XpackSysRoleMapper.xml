@@ -76,10 +76,10 @@
     <insert id="insert" parameterType="io.datains.base.domain.XpackSysRole">
     insert into sys_role (`name`, description,
       create_by, update_by, create_time,
-      update_time)
+      update_time, role_group)
     values (#{name,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
       #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT},
-      #{updateTime,jdbcType=BIGINT})
+      #{updateTime,jdbcType=BIGINT},#{roleGroup,jdbcType=VARCHAR})
   </insert>
     <insert id="insertSelective" parameterType="io.datains.base.domain.XpackSysRole">
         insert into sys_role
@@ -227,7 +227,8 @@
       create_by = #{createBy,jdbcType=VARCHAR},
       update_by = #{updateBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
-      update_time = #{updateTime,jdbcType=BIGINT}
+      update_time = #{updateTime,jdbcType=BIGINT},
+      role_group = #{roleGroup,jdbcType=VARCHAR}
     where role_id = #{roleId,jdbcType=BIGINT}
   </update>
 </mapper>

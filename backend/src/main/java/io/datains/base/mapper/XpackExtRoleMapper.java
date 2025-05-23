@@ -17,9 +17,13 @@ public interface XpackExtRoleMapper {
 
     int deleteUserMapping(@Param("roleId") Long paramLong);
 
+    XpackSysRole queryById(@Param("roleId") Long roleId);
+
     List<XpackRoleItemDto> queryAll();
 
     List<XpackSysRole> query(XpackSysRole xpackSysRole);
 
     List<XpackSysRole> querylike(XpackSysRole xpackSysRole);
+
+    List<XpackSysRole> queryByIds(@Param("roleIds") List<Long> roleIds);
 }

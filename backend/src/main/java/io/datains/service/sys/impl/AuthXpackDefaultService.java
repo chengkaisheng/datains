@@ -6,14 +6,15 @@ package io.datains.service.sys.impl;
  * @Description
  */
 
+import cn.hutool.core.util.ObjectUtil;
 import io.dataease.plugins.common.constants.PluginSystemConstants;
+import io.datains.auth.api.dto.CurrentRoleDto;
 import io.datains.base.domain.*;
-import io.datains.base.mapper.XpackExtSysAuthDetailMapper;
-import io.datains.base.mapper.XpackExtSysAuthMapper;
-import io.datains.base.mapper.XpackExtVAuthModelMapper;
-import io.datains.base.mapper.XpackSysAuthDetailMapper;
+import io.datains.base.mapper.*;
+import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.IsNullUtils;
 import io.datains.service.sys.AuthXpackService;
+import io.datains.service.sys.RoleXpackService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,14 +37,65 @@ public class AuthXpackDefaultService implements AuthXpackService {
 
     @Resource
     private XpackSysAuthDetailMapper xpackSysAuthDetailMapper;
+    @Resource
+    private RoleXpackService roleXpackService;
+    @Resource
+    private XpackExtRoleMapper xpackExtRoleMapper;
+    @Resource
+    private SysUsersRolesMapper sysUsersRolesMapper;
 
     public List<XpackVAuthModelDTO> searchAuthModelTree(XpackBaseTreeRequest xpackBaseTreeRequest, Long long_, Boolean bool) {
         xpackBaseTreeRequest.setCreateBy(String.valueOf(long_));
         if ("dept".equals(xpackBaseTreeRequest.getModelType())
                 || "user".equals(xpackBaseTreeRequest.getModelType())
                 || "role".equals(xpackBaseTreeRequest.getModelType())
-                || ("menu".equals(xpackBaseTreeRequest.getModelType()) && 1L == long_)) {
-            return this.g.searchTree(xpackBaseTreeRequest);
+                || ("menu".equals(xpackBaseTreeRequest.getModelType()))) {
+            boolean isAdmin = false;
+            //判断用户是否为超级管理员
+            List<CurrentRoleDto> currentRoleDtos = AuthUtils.getUser().getRoles();
+            if (ObjectUtil.isNotEmpty(currentRoleDtos)) {
+                List<XpackVAuthModelDTO> src = this.g.searchTree(xpackBaseTreeRequest);
+                for (CurrentRoleDto currentRoleDto : currentRoleDtos) {
+                    if (currentRoleDto.getId().equals(1L)) {
+                        isAdmin = true;
+                        break;
+                    }
+                }
+                if (!isAdmin) {
+                    // 查出同一组下的所有角色
+                    XpackSysRole role = new XpackSysRole();
+                    List<XpackSysRole> roles = this.xpackExtRoleMapper.queryByIds(currentRoleDtos.stream().map(CurrentRoleDto::getId).collect(Collectors.toList()));
+                    List<String> roleGroups = roles.stream().map(XpackSysRole::getRoleGroup).collect(Collectors.toList());
+                    role.setRoleGroups(roleGroups);
+                    List<XpackSysRole> roles1 = roleXpackService.query(role);
+                    // 不是管理员 要对用户和角色进行过滤
+                    if ("user".equals(xpackBaseTreeRequest.getModelType())) {
+                        // 根据角色id筛选出用户
+                        List<SysUsersRolesKey> users = sysUsersRolesMapper.selectByRoleIds(roles1.stream().map(XpackSysRole::getRoleId).collect(Collectors.toList()));
+                        if (ObjectUtil.isEmpty(users)) {
+                            return new ArrayList<>();
+                        }
+                        List<Long> userIds = users.stream().map(SysUsersRolesKey::getUserId).collect(Collectors.toList());
+                        return src.stream().filter(xpackVAuthModelDTO -> userIds.contains(Long.valueOf(xpackVAuthModelDTO.getId()))).collect(Collectors.toList());
+                    }
+                    if ("role".equals(xpackBaseTreeRequest.getModelType())) {
+                        return src.stream().filter(xpackVAuthModelDTO -> roles1.stream().map(XpackSysRole::getRoleId).collect(Collectors.toList()).contains(Long.valueOf(xpackVAuthModelDTO.getId()))).collect(Collectors.toList());
+                    }
+                    //对菜单进行过滤
+                    if ("menu".equals(xpackBaseTreeRequest.getModelType())) {
+                        return src.stream().filter(xpackVAuthModelDTO -> {
+                            if (xpackVAuthModelDTO.getPid().equals("0")) {
+                                return xpackVAuthModelDTO.getId().equals("102");
+                            } else {
+                                return true;
+                            }
+                        }).collect(Collectors.toList());
+                    }
+                }
+                return src;
+            } else {
+                return new ArrayList<>();
+            }
         }
         return this.g.searchTree2(xpackBaseTreeRequest);
     }

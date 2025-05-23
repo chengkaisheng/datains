@@ -2,8 +2,9 @@ package io.datains.base.mapper;
 
 import io.datains.base.domain.SysUsersRolesExample;
 import io.datains.base.domain.SysUsersRolesKey;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface SysUsersRolesMapper {
     long countByExample(SysUsersRolesExample example);
@@ -21,4 +22,6 @@ public interface SysUsersRolesMapper {
     int updateByExampleSelective(@Param("record") SysUsersRolesKey record, @Param("example") SysUsersRolesExample example);
 
     int updateByExample(@Param("record") SysUsersRolesKey record, @Param("example") SysUsersRolesExample example);
+
+    List<SysUsersRolesKey> selectByRoleIds(@Param("roleIds") List<Long> roleIds);
 }

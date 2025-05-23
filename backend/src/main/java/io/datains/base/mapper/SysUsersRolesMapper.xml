@@ -120,7 +120,13 @@
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+    <select id="selectByRoleIds" resultType="io.datains.base.domain.SysUsersRolesKey">
+      select * from sys_users_roles where role_id in
+      <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+        #{roleId}
+      </foreach>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
     update sys_users_roles
     <set>
       <if test="record.userId != null">

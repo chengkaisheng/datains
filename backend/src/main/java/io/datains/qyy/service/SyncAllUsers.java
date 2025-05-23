@@ -14,7 +14,7 @@ import lombok.Data;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,24 +36,16 @@ public class SyncAllUsers {
     private SysUserService sysUserService;
 
     private void syncUser() {
-        //需要更改用户状态的列表
-        List<Long> needChangeStatusUserIds = new ArrayList<>();
-        //需要创建的用户列表
-
-
         //获取轻应用用户
-        List<QyyUser> qyyUsers = selectByScenIdAppUser();
+        List<QyyUser> qyyUsers = fetchMobileUsers();
         //取出所有已存在的用户
         List<SysUser> sysUsers = sysUserMapper.selectByExample(new SysUserExample());
-
 
     }
 
 
-    private List<QyyUser> selectByScenIdAppUser() {
-        String path = String.format("%s?scenId=%s",
-                qyyCommon.getHost() + "/api/appconfig/selectByScenIdAppUser",
-                qyyCommon.getScenId());
+    private List<QyyUser> fetchMobileUsers() {
+        String path = "/api/fetchMobileUsers";
         try (HttpResponse response = HttpRequest.get(path)
                 .execute()) {
             if (!response.isOk()) {
@@ -75,6 +67,10 @@ public class SyncAllUsers {
         SysUserCreateRequest request = new SysUserCreateRequest();
         request.setUsername("q_" + qyyUser.getId());
         request.setNickName(qyyUser.getName());
+        request.setPhone(qyyUser.getPhone());
+        request.setDeptId(qyyUser.getOrgId());
+        request.setEmail(qyyUser.getEmail());
+        request.setRoleIds(Collections.singletonList(Long.valueOf(qyyUser.getAppRole().getKey())));
         request.setEnabled(1L);
         sysUserService.save(request);
     }
@@ -96,18 +92,69 @@ public class SyncAllUsers {
         /**
          * 用户名称
          */
+        private String userName;
+        /**
+         * 用户真实姓名
+         */
         private String name;
         /**
-         * 用户所在机构id
+         * 用户手机号
+         */
+        private String phone;
+        /**
+         * 用户性别 1-男 2-女
+         */
+        private Integer sex;
+        /**
+         * 用户邮箱
+         */
+        private String email;
+        /**
+         * 用户账号
+         */
+        private String account;
+        /**
+         * 用户组织id
          */
         private Long orgId;
         /**
-         * 用户所在机构名称
+         * Pc填报角色信息
          */
-        private String orgName;
+        private Role Pcrole;
         /**
-         * 编码
+         * App填报角色信息
          */
-        private String roleCode;
+        private Role AppRole;
+
     }
+
+    @Data
+    public static class Role {
+        private Long id;
+        /**
+         * 场景编码
+         */
+        private String appId;
+        /**
+         * 场景名称
+         */
+        private String appName;
+        /**
+         * 角色唯一标识
+         */
+        private String permissionTypeId;
+        /**
+         * 角色名称
+         */
+        private String permissionTypeName;
+        /**
+         * 场景中角色权限标识符
+         */
+        private String key;
+        /**
+         * 角色描述
+         */
+        private String describe;
+    }
+
 }
