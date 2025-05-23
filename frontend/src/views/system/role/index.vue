@@ -10,6 +10,7 @@
       :search-config="searchConfig"
       @search="search"
       @sort-change="sortChange"
+      :pagination-config="paginationConfig"
     >
       <!-- 工具栏 slot -->
       <template #toolbar>
@@ -28,7 +29,7 @@
       </template>
 
       <!-- 分页 slot -->
-      <template #sourcepage>
+      <!-- <template #sourcepage>
         <el-pagination
           :current-page="paginationConfig.currentPage"
           :page-sizes="[5, 10, 20, 50, 100]"
@@ -38,13 +39,19 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
-      </template>
+      </template> -->
 
       <!-- 表格列 -->
       <el-table-column
         prop="name"
         :sortable="'custom'"
         :label="$t('commons.name')"
+      />
+
+      <el-table-column
+        prop="roleGroup"
+        :label="$t('role.roleGroup')"
+        show-overflow-tooltip
       />
 
       <el-table-column
@@ -143,14 +150,14 @@ export default {
     this.search();
   },
   methods: {
-    handleSizeChange(val) {
-      this.paginationConfig.pageSize = val;
-      this.search(this.last_condition);
-    },
-    handleCurrentChange(val) {
-      this.paginationConfig.currentPage = val;
-      this.search(this.last_condition);
-    },
+    // handleSizeChange(val) {
+    //   this.paginationConfig.pageSize = val;
+    //   this.search(this.last_condition);
+    // },
+    // handleCurrentChange(val) {
+    //   this.paginationConfig.currentPage = val;
+    //   this.search(this.last_condition);
+    // },
     sortChange(_ref) {
       var column = _ref.column,
         prop = _ref.prop,

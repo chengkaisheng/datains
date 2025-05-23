@@ -913,7 +913,12 @@ export default {
     confirm_delete: '确认删除角色 ',
     role_name: '角色名称',
     search_by_name: '按名称搜索',
-    pls_input_name: '请输入名称'
+    pls_input_name: '请输入名称',
+    name: '名称',
+    description: '描述',
+    input_name: '请输入角色名称',
+    roleGroup: '分组',
+    roleGroup_name: '请输入分组'
   },
   menu: {
     parent_category: '上级目录',

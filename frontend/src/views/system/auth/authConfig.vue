@@ -8,7 +8,7 @@
         </el-input>
       </div>
       <el-tabs v-model="targetActiveName" :class="{'de-search-header': showTargetSearchInput}" @tab-click="handleClick">
-        <el-tab-pane v-for="(targetInfo, index) in targetInfoArray" :key="index" :lazy="true" :label="targetInfo.tabName" :name="targetInfo.authType">
+        <el-tab-pane v-for="(targetInfo, index) in targetInfoArray1" :key="index" :lazy="true" :label="targetInfo.tabName" :name="targetInfo.authType">
           <lazy-tree
             v-if="targetActiveName===targetInfo.authType"
             :active-name="targetActiveName"
@@ -52,6 +52,7 @@ import DeContainer from '@/components/datains/DeContainer'
 import DeAsideContainer from '@/components/datains/DeAsideContainer'
 import DeMainContainer from '@/components/datains/DeMainContainer'
 import LazyTree from './components/LazyTree'
+import store from '@/store'
 
 export default {
   name: 'Authority',
@@ -147,13 +148,31 @@ export default {
     }
   },
   computed: {
+    targetInfoArray1() {
+      // 超管、管理员才可以看到 组织选项
+      const isAdmin = store.getters.roles.findIndex(item => item.id === 1) !== -1
+      if(isAdmin) {
+        return this.targetInfoArray
+      } else {
+        const index = this.targetInfoArray.findIndex(item => item.authType === 'dept')
+        this.targetInfoArray.splice(0, 1)
+        return this.targetInfoArray
+      }
+    },
     sourceInfoTabs() {
       const tabs = []
+      console.log('store123', store.getters.roles);
       this.sourceInfoArray.forEach(item => {
         if (item.authTargets.indexOf(this.targetActiveName) > -1) {
           tabs.push(item)
         }
       })
+      // 超管、管理员才可以看到菜单操作
+      const isAdmin = store.getters.roles.findIndex(item => item.id === 1) !== -1
+      const index = tabs.findIndex(item => item.authType === 'menu')
+      if(!isAdmin && index !== -1) {
+        tabs.splice(index, 1)
+      }
       return tabs
     }
   },
