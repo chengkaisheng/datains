@@ -117,12 +117,15 @@ export default {
 
   methods: {
     getRoleById() {
+      let _this = this
       const roleIdList = store.getters.roles.map(item => item.id)
       // 如果是管理员就不进行 分组默认赋值
       if(roleIdList.length > 0 && roleIdList.findIndex(item => item === 1) === -1) {
         this.executeAxios(`/plugin/role/getRoleById/${roleIdList[0]}`, "get", {}, function (res) {
+          console.log('res', res);
+          
           if(res && res.data && res.data.roleGroup) {
-            this.form.roleGroup = res.data.roleGroup
+            _this.form.roleGroup = res.data.roleGroup
           }
         });
       }

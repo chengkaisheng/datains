@@ -155,24 +155,23 @@ export default {
         return this.targetInfoArray
       } else {
         const index = this.targetInfoArray.findIndex(item => item.authType === 'dept')
-        this.targetInfoArray.splice(0, 1)
+        this.targetInfoArray.splice(index, 1)
         return this.targetInfoArray
       }
     },
     sourceInfoTabs() {
       const tabs = []
-      console.log('store123', store.getters.roles);
       this.sourceInfoArray.forEach(item => {
         if (item.authTargets.indexOf(this.targetActiveName) > -1) {
           tabs.push(item)
         }
       })
-      // 超管、管理员才可以看到菜单操作
-      const isAdmin = store.getters.roles.findIndex(item => item.id === 1) !== -1
-      const index = tabs.findIndex(item => item.authType === 'menu')
-      if(!isAdmin && index !== -1) {
-        tabs.splice(index, 1)
-      }
+      // // 超管、管理员才可以看到菜单操作
+      // const isAdmin = store.getters.roles.findIndex(item => item.id === 1) !== -1
+      // const index = tabs.findIndex(item => item.authType === 'menu')
+      // if(!isAdmin && index !== -1) {
+      //   tabs.splice(index, 1)
+      // }
       return tabs
     }
   },
