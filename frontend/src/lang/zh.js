@@ -906,7 +906,7 @@ export default {
     org_admin: '组织管理员',
     org_member: '组织成员',
     add: '新建角色',
-    syncRoleToQyy: '同步角色',
+    syncRoleToQyy: '同步到轻应用',
     delete: '删除角色',
     modify: '修改角色',
     tips: '提示',

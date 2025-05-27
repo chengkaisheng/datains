@@ -247,9 +247,29 @@ export default {
       return !row.updateTime;
     },
     syncRoleToQyy() {
-      get("/plugin/role/syncRoleToQyy").then(res => {
-
-      })
+      this.$confirm('确认同步角色到轻应用？', '同步角色', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        get("/plugin/role/syncRoleToQyy").then(res => {
+          // console.log('res', res);
+          if(res.success) {
+            // 用户点击确定时的回调
+            this.$message({
+              type: 'success',
+              message: res.message
+            });
+          }
+        })
+      }).catch(() => {
+        // 用户点击取消时的回调
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        });
+      });
+      
     }
   },
 };
