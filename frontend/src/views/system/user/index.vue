@@ -54,7 +54,8 @@
       </el-table-column>
       <el-table-column prop="status" sortable="custom" :label="$t('commons.status')" width="80">
         <template v-slot:default="scope">
-          <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" :disabled="!checkPermission(['user:edit']) || scope.row.isAdmin" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
+          <!-- <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" :disabled="!checkPermission(['user:edit']) || scope.row.isAdmin" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" /> -->
+          <el-switch v-model="scope.row.enabled" :active-value="1" :inactive-value="0" :disabled="true" inactive-color="#DCDFE6" @change="changeSwitch(scope.row)" />
         </template>
       </el-table-column>
       <el-table-column :show-overflow-tooltip="true" prop="createTime" sortable="custom" :label="$t('commons.create_time')" width="180">
@@ -369,34 +370,39 @@ export default {
       })
     },
     create() {
-      this.$router.push({ name: 'system-user-form' })
+      // 禁用操作
+      // this.$router.push({ name: 'system-user-form' })
     },
 
     edit(row) {
-      this.$router.push({ name: 'system-user-form', params: row })
+      // 禁用操作
+      // this.$router.push({ name: 'system-user-form', params: row })
     },
     showAuth(row) {
-      this.$router.push({ name: 'system-user-form', params: row })
+      // 禁用操作
+      // this.$router.push({ name: 'system-user-form', params: row })
     },
 
     editPassword(row) {
-      this.editPasswordVisible = true
-      const tempForm = Object.assign({}, row)
-      this.ruleForm = { userId: tempForm.userId }
+      // 禁用操作
+      // this.editPasswordVisible = true
+      // const tempForm = Object.assign({}, row)
+      // this.ruleForm = { userId: tempForm.userId }
     },
     del(row) {
-      this.$confirm(this.$t('user.delete_confirm'), '', {
-        confirmButtonText: this.$t('commons.confirm'),
-        cancelButtonText: this.$t('commons.cancel'),
-        type: 'warning'
-      }).then(() => {
-        delUser(encodeURIComponent(row.userId)).then(res => {
-          this.$success(this.$t('commons.delete_success'))
-          this.search()
-        })
-      }).catch(() => {
-        this.$info(this.$t('commons.delete_cancel'))
-      })
+      // 禁用操作
+      // this.$confirm(this.$t('user.delete_confirm'), '', {
+      //   confirmButtonText: this.$t('commons.confirm'),
+      //   cancelButtonText: this.$t('commons.cancel'),
+      //   type: 'warning'
+      // }).then(() => {
+      //   delUser(encodeURIComponent(row.userId)).then(res => {
+      //     this.$success(this.$t('commons.delete_success'))
+      //     this.search()
+      //   })
+      // }).catch(() => {
+      //   this.$info(this.$t('commons.delete_cancel'))
+      // })
     },
     createUser(createUserForm) {
       this.$refs[createUserForm].validate(valid => {

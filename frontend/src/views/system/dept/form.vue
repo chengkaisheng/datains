@@ -325,39 +325,41 @@ export default {
       }
     },
     reset() {
-      if (this.formType !== "add") {
-        var row = this.$router.currentRoute.params;
-        this.edit(row);
-      } else {
-        this.$refs.deptForm.resetFields();
-      }
+      // 禁用操作
+      // if (this.formType !== "add") {
+      //   var row = this.$router.currentRoute.params;
+      //   this.edit(row);
+      // } else {
+      //   this.$refs.deptForm.resetFields();
+      // }
     },
     save() {
-      var _this2 = this;
+      // 禁用操作
+      // var _this2 = this;
 
-      this.$refs.deptForm.validate(function (valid) {
-        if (valid) {
-          var url =
-            _this2.formType === "add"
-              ? "/plugin/dept/create"
-              : "/plugin/dept/update";
-          _this2.executeAxios(url, "post", _this2.form, function (res) {
-            if (res.data && res.data === -2) {
-              var msg =
-                _this2.pLabel +
-                _this2.$t("dept.name_exist_pre") +
-                _this2.form.name +
-                _this2.$t("dept.name_exist_suf");
-              _this2.$warning(msg);
-              return;
-            }
-            _this2.$success(_this2.$t("commons.save_success"));
-            _this2.backToList();
-          });
-        } else {
-          return false;
-        }
-      });
+      // this.$refs.deptForm.validate(function (valid) {
+      //   if (valid) {
+      //     var url =
+      //       _this2.formType === "add"
+      //         ? "/plugin/dept/create"
+      //         : "/plugin/dept/update";
+      //     _this2.executeAxios(url, "post", _this2.form, function (res) {
+      //       if (res.data && res.data === -2) {
+      //         var msg =
+      //           _this2.pLabel +
+      //           _this2.$t("dept.name_exist_pre") +
+      //           _this2.form.name +
+      //           _this2.$t("dept.name_exist_suf");
+      //         _this2.$warning(msg);
+      //         return;
+      //       }
+      //       _this2.$success(_this2.$t("commons.save_success"));
+      //       _this2.backToList();
+      //     });
+      //   } else {
+      //     return false;
+      //   }
+      // });
     },
     backToList() {
       this.$router.push({ name: "system-dept" });

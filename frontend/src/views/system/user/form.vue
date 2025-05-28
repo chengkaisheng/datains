@@ -352,21 +352,23 @@ export default {
       }.bind(this))
     },
     reset() {
-      this.$refs.createUserForm.resetFields()
+      // 禁用操作
+      // this.$refs.createUserForm.resetFields()
     },
     save() {
-      this.$refs.createUserForm.validate(valid => {
-        if (valid) {
-          // !this.form.deptId && (this.form.deptId = 0)
-          const method = this.formType === 'add' ? addUser : editUser
-          method(this.form).then(res => {
-            this.$success(this.$t('commons.save_success'))
-            this.backToList()
-          })
-        } else {
-          return false
-        }
-      })
+      // 禁用操作
+      // this.$refs.createUserForm.validate(valid => {
+      //   if (valid) {
+      //     // !this.form.deptId && (this.form.deptId = 0)
+      //     const method = this.formType === 'add' ? addUser : editUser
+      //     method(this.form).then(res => {
+      //       this.$success(this.$t('commons.save_success'))
+      //       this.backToList()
+      //     })
+      //   } else {
+      //     return false
+      //   }
+      // })
     },
     backToList() {
       this.$router.push({ name: 'system-user' })

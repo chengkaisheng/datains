@@ -173,10 +173,12 @@ export default {
         });
     },
     create() {
-      this.$router.push({ name: "system-dept-form" });
+      // 禁用操作
+      // this.$router.push({ name: "system-dept-form" });
     },
     edit(row) {
-      this.$router.push({ name: "system-dept-form", params: row });
+      // 禁用操作
+      // this.$router.push({ name: "system-dept-form", params: row });
     },
 
     search(condition) {
@@ -264,34 +266,35 @@ export default {
       );
     },
     _handleDelete(organization) {
-      var _this3 = this;
+      // 禁用操作
+      // var _this3 = this;
 
-      this.$confirm(this.$t("organization.delete_confirm"), "", {
-        confirmButtonText: this.$t("commons.confirm"),
-        cancelButtonText: this.$t("commons.cancel"),
-        type: "warning",
-      })
-        .then(function () {
-          var requests = [
-            { deptId: organization.deptId, pid: organization.pid },
-          ];
-          _this3.executeAxios(
-            "/plugin/dept/delete",
-            "post",
-            requests,
-            function (res) {
-              _this3.$success(_this3.$t("commons.delete_success"));
-              _this3.search();
-              _this3.reloadByPid(organization.pid);
-            }
-          );
-        })
-        .catch(function () {
-          _this3.$message({
-            type: "info",
-            message: _this3.$t("commons.delete_cancelled"),
-          });
-        });
+      // this.$confirm(this.$t("organization.delete_confirm"), "", {
+      //   confirmButtonText: this.$t("commons.confirm"),
+      //   cancelButtonText: this.$t("commons.cancel"),
+      //   type: "warning",
+      // })
+      //   .then(function () {
+      //     var requests = [
+      //       { deptId: organization.deptId, pid: organization.pid },
+      //     ];
+      //     _this3.executeAxios(
+      //       "/plugin/dept/delete",
+      //       "post",
+      //       requests,
+      //       function (res) {
+      //         _this3.$success(_this3.$t("commons.delete_success"));
+      //         _this3.search();
+      //         _this3.reloadByPid(organization.pid);
+      //       }
+      //     );
+      //   })
+      //   .catch(function () {
+      //     _this3.$message({
+      //       type: "info",
+      //       message: _this3.$t("commons.delete_cancelled"),
+      //     });
+      //   });
     },
     reloadByPid(pid) {
       if (pid !== 0 && this.maps.get(pid)) {

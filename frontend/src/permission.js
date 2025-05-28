@@ -31,25 +31,6 @@ router.beforeEach(async(to, from, next) => {
   const mobileIgnores = ['/delink']
   const mobilePreview = '/preview/'
 
-  // 如果是从轻应用跳转的需要获取传过来的qyyToken给后端接口，获取平台token
-  // if(to.path === '/data-filling/my-jobs') {
-  //   const hasToken = getToken()
-  //   const qyyToken = getQueryVariable('token') // 获取轻应用token 有token 执行登录
-  //   // let qyyLogin = sessionStorage.getItem('qyyLogin')
-  //   // if(qyyToken && qyyLogin !== 'true') {
-  //   if(qyyToken) {
-  //     clearAllCookies()
-  //     let res = await store.dispatch('user/qyyLogin', {qyyToken})
-  //     next()
-  //     // store.dispatch('user/qyyLogin', {qyyToken}).then(res => {
-  //     //   next('/data-filling/my-jobs')
-  //     // })
-  //   } else if (!hasToken) {
-  //     next(`/login?redirect=${to.path}`)
-  //     NProgress.done()
-  //   }
-  // }
-
   // if (isMobile() && !to.path.includes(mobilePreview) && mobileIgnores.indexOf(to.path) === -1) {
   //   window.location.href = window.origin + '/app.html'
   //   NProgress.done()
@@ -107,7 +88,8 @@ router.beforeEach(async(to, from, next) => {
       next()
     } else {
       // other pages that do not have permission to access are redirected to the login page.
-      next(`/login?redirect=${to.path}`)
+      // next(`/login?redirect=${to.path}`)
+      window.location.href = 'http://microportal.shyp.gov.cn:9140/'
       NProgress.done()
     }
   }
@@ -253,6 +235,16 @@ const filterRouter = routers => {
   })
 }
 const hasPermission = (router, user_permissions) => {
+  if(router.path === 'role-form') {
+    router.isPlugin = false
+    router.component = "system/role/form"
+  }
+  // if(router.permission === 'role:add') {
+  //   console.log('123');
+    
+  //   router.isPlugin = false
+  //   router.component = "system/role/create"
+  // }
   // 菜单要求权限 但是当前用户权限没有包含菜单权限
   if (router.permission && !user_permissions.includes(router.permission)) {
     return false
