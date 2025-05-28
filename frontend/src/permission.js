@@ -88,8 +88,8 @@ router.beforeEach(async(to, from, next) => {
       next()
     } else {
       // other pages that do not have permission to access are redirected to the login page.
-      // next(`/login?redirect=${to.path}`)
-      window.location.href = window.qyyUrl
+      next(`/login?redirect=${to.path}`)
+      // window.location.href = 'http://microportal.shyp.gov.cn:9140/'
       NProgress.done()
     }
   }

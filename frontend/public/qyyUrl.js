@@ -1,1 +1,0 @@
-window.qyyUrl = 'http://microportal.shyp.gov.cn:9140/'

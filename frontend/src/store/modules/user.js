@@ -168,7 +168,7 @@ const actions = {
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
-        window.location.href = window.qyyUrl
+        window.location.href = 'http://microportal.shyp.gov.cn:9140/'
         resolve()
       }).catch(error => {
         reject(error)
