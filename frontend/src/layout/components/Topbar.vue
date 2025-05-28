@@ -56,9 +56,9 @@
             <el-dropdown-item>{{ $t('user.change_password') }}</el-dropdown-item>
           </router-link> -->
 
-          <router-link to="/about/index">
+          <!-- <router-link to="/about/index">
             <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
-          </router-link>
+          </router-link> -->
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">{{ $t('commons.exit_system') }}</span>
           </el-dropdown-item>
@@ -287,7 +287,7 @@ export default {
       localStorage.clear()
       // delToken().then((res) => {})
       await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
     loadUiInfo() {
       this.$store.dispatch('user/getUI').then(() => {

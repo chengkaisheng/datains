@@ -235,9 +235,10 @@ export default {
             "post",
             {},
             function (res) {
-              //   this.$success(this.$t('commons.modify_success'))
-              _this2.$success(_this2.$t("commons.delete_success"));
-              _this2.search();
+              if(res.success) {
+                _this2.$success(_this2.$t("commons.delete_success"));
+                _this2.search();
+              }
             }
           );
         })

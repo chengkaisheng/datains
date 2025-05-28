@@ -190,7 +190,6 @@ export default {
       localStorage.clear()
       await this.$store.dispatch('user/logout')
       // this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-      window.location.href = 'http://microportal.shyp.gov.cn:9140/'
     },
     support() {
       const url = 'http://mivicelab.com/'

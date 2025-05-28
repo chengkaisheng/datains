@@ -168,6 +168,7 @@ const actions = {
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
+        window.location.href = window.qyyUrl
         resolve()
       }).catch(error => {
         reject(error)
