@@ -244,7 +244,9 @@ export default {
         .catch(function () {});
     },
     btnDisabled(row) {
-      return !row.updateTime;
+      // return !row.updateTime;
+      // 管理员角色禁止操作，其他角色可以进行操作
+      return row.roleId === 1;
     },
     syncRoleToQyy() {
       this.$confirm('确认同步角色到轻应用？', '同步角色', {
