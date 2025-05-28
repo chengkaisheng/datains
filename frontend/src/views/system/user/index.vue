@@ -13,7 +13,7 @@
       @sort-change="sortChange"
     >
       <template #toolbar>
-        <el-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('user.create') }}</el-button>
+        <!-- <el-button v-permission="['user:add']" icon="el-icon-circle-plus-outline" @click="create">{{ $t('user.create') }}</el-button> -->
 
         <!-- <el-button v-permission="['user:import']" icon="el-icon-download" @click="importLdap">{{ $t('user.import_ldap') }}</el-button> -->
         <!-- <el-button v-if="openLdap" v-permission="['user:import']" icon="el-icon-download" @click="importLdap">{{ $t('user.import_ldap') }}</el-button> -->
@@ -193,14 +193,15 @@ export default {
       header: '',
       columns: [],
       buttons: [
+        // {
+        //   label: this.$t('commons.edit'), icon: 'el-icon-edit', type: 'primary', click: this.edit,
+        //   show: this.checkPermission(['user:edit'])
+        // }, {
+        //   label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del,
+        //   disabled: this.btnDisabled,
+        //   show: this.checkPermission(['user:del'])
+        // },
         {
-          label: this.$t('commons.edit'), icon: 'el-icon-edit', type: 'primary', click: this.edit,
-          show: this.checkPermission(['user:edit'])
-        }, {
-          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.del,
-          disabled: this.btnDisabled,
-          show: this.checkPermission(['user:del'])
-        }, {
           label: this.$t('member.edit_password'), icon: 'el-icon-s-tools', type: 'success', click: this.editPassword,
           show: this.checkPermission(['user:editPwd'])
         }
@@ -384,10 +385,9 @@ export default {
     },
 
     editPassword(row) {
-      // 禁用操作
-      // this.editPasswordVisible = true
-      // const tempForm = Object.assign({}, row)
-      // this.ruleForm = { userId: tempForm.userId }
+      this.editPasswordVisible = true
+      const tempForm = Object.assign({}, row)
+      this.ruleForm = { userId: tempForm.userId }
     },
     del(row) {
       // 禁用操作

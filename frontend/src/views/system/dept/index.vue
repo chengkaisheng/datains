@@ -9,13 +9,13 @@
     >
       <!-- 工具栏插槽 -->
       <template #toolbar>
-        <el-button
+        <!-- <el-button
           v-permission="['dept:add']"
           icon="el-icon-circle-plus-outline"
           @click="create"
         >
           {{ $t("organization.create") }}
-        </el-button>
+        </el-button> -->
       </template>
 
       <!-- 表格主体 -->
@@ -71,11 +71,11 @@
         </el-table-column>
 
         <!-- 操作列 -->
-        <fu-table-operations
+        <!-- <fu-table-operations
           :buttons="buttons"
           :label="$t('commons.operating')"
           fix=""
-        />
+        /> -->
       </el-table>
     </tree-table>
   </layout-content>
@@ -111,21 +111,21 @@ export default {
       header: "",
       columns: [],
       buttons: [
-        {
-          label: this.$t("commons.edit"),
-          icon: "el-icon-edit",
-          type: "primary",
-          click: this.edit,
-          show: this.checkPermission(["dept:edit"]),
-        },
-        {
-          label: this.$t("commons.delete"),
-          icon: "el-icon-delete",
-          type: "danger",
-          click: this._handleDelete,
-          disabled: this.btnDisabled,
-          show: this.checkPermission(["dept:del"]),
-        },
+        // {
+        //   label: this.$t("commons.edit"),
+        //   icon: "el-icon-edit",
+        //   type: "primary",
+        //   click: this.edit,
+        //   show: this.checkPermission(["dept:edit"]),
+        // },
+        // {
+        //   label: this.$t("commons.delete"),
+        //   icon: "el-icon-delete",
+        //   type: "danger",
+        //   click: this._handleDelete,
+        //   disabled: this.btnDisabled,
+        //   show: this.checkPermission(["dept:del"]),
+        // },
       ],
       searchConfig: {
         useQuickSearch: true,
