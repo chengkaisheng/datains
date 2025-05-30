@@ -94,7 +94,21 @@ export function baseTableInfo(s2, container, chart, action, tableData, fontFamil
     width: containerDom.offsetWidth,
     height: containerDom.offsetHeight,
     // showSeriesNumber: true
-    style: getSize(chart)
+    style: getSize(chart),
+    interaction: {
+      // 是否开启复制
+      enableCopy: true,
+      // 复制格式化后的数据 (s2DataConfig.meta 中配置的 formatter)
+      copyWithFormat: false,
+      // 复制数值时是否携带所对应的行列头维值
+      copyWithHeader: false,
+      // 圈选复制前，需要开启圈选功能
+      brushSelection: {
+        data: true, // 圈选数值单元格 （默认开启）
+        row: true,  // 圈选行头单元格
+        col: true,  // 圈选列头单元格
+      }
+    }
   }
 
   // 开始渲染
@@ -207,7 +221,21 @@ export function baseTableNormal(s2, container, chart, action, tableData, fontFam
     width: containerDom.offsetWidth,
     height: containerDom.offsetHeight,
     // showSeriesNumber: true
-    style: getSize(chart)
+    style: getSize(chart),
+    interaction: {
+      // 是否开启复制
+      enableCopy: true,
+      // 复制格式化后的数据 (s2DataConfig.meta 中配置的 formatter)
+      copyWithFormat: false,
+      // 复制数值时是否携带所对应的行列头维值
+      copyWithHeader: false,
+      // 圈选复制前，需要开启圈选功能
+      brushSelection: {
+        data: true, // 圈选数值单元格 （默认开启）
+        row: true,  // 圈选行头单元格
+        col: true,  // 圈选列头单元格
+      }
+    }
   }
 
   // 开始渲染
@@ -392,6 +420,20 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
     height: containerDom.offsetHeight,
     style: getSize(chart),
     totals: totalCfg,
+    interaction: {
+      // 是否开启复制
+      enableCopy: true,
+      // 复制格式化后的数据 (s2DataConfig.meta 中配置的 formatter)
+      copyWithFormat: false,
+      // 复制数值时是否携带所对应的行列头维值
+      copyWithHeader: false,
+      // 圈选复制前，需要开启圈选功能
+      brushSelection: {
+        data: true, // 圈选数值单元格 （默认开启）
+        row: true,  // 圈选行头单元格
+        col: true,  // 圈选列头单元格
+      }
+    }
     // rowCell: (node, s2, headConfig) => {
     //   console.log('rowCell,,,',node, s2, headConfig)
     // },

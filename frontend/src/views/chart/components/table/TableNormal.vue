@@ -20,6 +20,7 @@
         :class="[chart.id, 'table-class', chart.type === 'table-normal' ? 'table-normal-class' : '']"
         :show-summary="showSummary"
         :summary-method="summaryMethod"
+        @cell-click="(row, column, cell, event) => cellClick(row, column, cell, event)"
       >
         <ux-table-column
           v-for="field in fields"
@@ -82,6 +83,7 @@
 import { mapState } from 'vuex'
 import { hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
+import { copyToClipboard } from '@/utils/index'
 
 export default {
   name: 'TableNormal',
@@ -199,8 +201,36 @@ export default {
     eventBus.$on('resizing', (componentId) => {
       this.chartResize()
     })
+    // 表格合计添加点击复制
+    this.$nextTick(() => {
+      this.footerClick()
+    })
   },
   methods: {
+    footerClick() {
+      setTimeout(() => {
+        const footerColumns = this.$refs.plxTable.$el.getElementsByClassName('elx-footer--column');
+        // console.log('footerColumns', footerColumns);
+        if(footerColumns.length === 0) {
+          this.footerClick()
+        } else {
+          for(let i = 0; i < footerColumns.length; i++) {
+            footerColumns[i].addEventListener('click', (e) => {
+              copyToClipboard(e.target.innerText)
+            })
+          }
+        }
+        
+      }, 1000)
+    },
+    cellClick(row, column, cell, event) {
+      // console.log('row, column, cell, event', row, column, cell, event);
+      // console.log('cell', cell.innerText);
+      this.copyToClipboard(cell.innerText)
+    },
+    copyToClipboard(text) {
+      copyToClipboard(text)
+    },
     changeColumnWidth({ column, columnIndex }) {
       console.log('23123213213231232132121', column, columnIndex)
       // if (column.width !== column.renderWidth) {
@@ -608,6 +638,9 @@ export default {
 /* 针对Webkit内核浏览器的隐藏滚动条样式 */
 .table-normal-class >>> .elx-table--body-wrapper::-webkit-scrollbar {
   display: none;
+}
+.table-normal-class >>> .col--ellipsis {
+  cursor: pointer;
 }
 </style>
 

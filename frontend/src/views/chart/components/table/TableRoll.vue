@@ -7,7 +7,8 @@
           <li v-for="(items,inde) in dataInfo" :key="inde" :style="newHeight" class="table_bode_li">
             <div :style="table_header_class">
               <div v-for="(item,index) in fields" :key="index" :style="inde == 2?scrollId:''" class="header_title">
-                <div :style="haderStyle" class="tite_left">{{ item.name }} :</div>{{ items[item.datainsName] }}
+                <div :style="haderStyle" class="tite_left" @click="copyToClipboard(item.name)">{{ item.name }} :</div>
+                <div style="cursor: pointer;" @click="copyToClipboard(items[item.datainsName])">{{ items[item.datainsName] }}</div>
                 <!-- <el-row>
                   <el-col :span="2"><el-col>
                     <el-col :span="2"><el-col>
@@ -27,6 +28,7 @@ import { hexColorToRGBA } from '../../chart/util'
 import { mapState } from 'vuex'
 import vueSeamlessScroll from 'vue-seamless-scroll'
 import eventBus from '@/components/canvas/utils/eventBus'
+import { copyToClipboard } from '@/utils/index'
 
 export default {
   name: 'TableNormal',
@@ -190,6 +192,9 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    copyToClipboard(text) {
+      copyToClipboard(text)
+    },
     scorllEvent() {
       var isScroll = true // 也可以定义到data里
       this.$nextTick(() => {
@@ -478,6 +483,7 @@ export default {
   }
   .tite_left{
     padding-left:5px;
+    cursor: pointer;
   }
 #scrollId{
   // background:#f99;

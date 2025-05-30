@@ -324,3 +324,23 @@ export function DataType(tgt, type) {
   return type ? dataType === type : dataType;
 }
 
+export async function copyToClipboard  (text) {
+  try {
+    if(navigator.clipboard) {
+      await navigator.clipboard.writeText(text);
+      // message.success('复制成功');
+    } else {
+      const input = document.createElement('input');
+      input.value = text;
+      input.style.position = 'absolute';
+      input.style.opacity = '0';
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      // message.success('复制成功');
+    }
+  } catch (err) {
+    // message.error('复制失败');
+  }
+};

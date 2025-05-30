@@ -44,7 +44,7 @@
           >
             <div v-for="(item,index) in fields" v-show="item.checked" :key="index" 
               :class="adaptWidth?'body_info': 'body_info1'" 
-              :style="{'width': adaptWidth?'': widthData[index].value + 'px'}">
+              :style="{'width': adaptWidth?'': widthData[index].value + 'px'}" @click="copyToClipboard(items[item.datainsName])">
               <!-- {{ inde }} -->
               {{ items[item.datainsName] }}
             </div>
@@ -61,6 +61,7 @@ import { hexColorToRGBA } from '../../chart/util'
 import { mapState } from 'vuex'
 import vueSeamlessScroll from 'vue-seamless-scroll'
 import eventBus from '@/components/canvas/utils/eventBus'
+import { copyToClipboard } from '@/utils/index'
 
 export default {
   name: 'TableNormal',
@@ -275,6 +276,9 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    copyToClipboard(text) {
+      copyToClipboard(text)
+    },
     popShow() {
       console.log('show')
       clearInterval(this.timer)
@@ -877,7 +881,7 @@ export default {
   white-space: nowrap;
 	overflow: hidden;
   text-overflow: ellipsis;
-
+  cursor: pointer;
   // .child{
 
 	// }
@@ -886,6 +890,7 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  cursor: pointer;
 }
  .hidden-tbody.el-table {
     height: 34px;
