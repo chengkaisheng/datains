@@ -8,7 +8,7 @@
       <label-normal-text v-else-if="chart.type === 'label'" :chart="chart" class="table-class" />
     </de-main-container>
     <de-main-container v-else>
-      <table-normal :chart="chartTable" :show-summary="false" class="table-class" />
+      <table-normal :hidePage="true" :chart="chartTable" :show-summary="false" class="table-class" />
     </de-main-container>
   </de-container>
 </template>

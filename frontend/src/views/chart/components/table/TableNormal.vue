@@ -38,7 +38,7 @@
         </ux-table-column>
       </ux-grid>
 
-      <el-row v-show="chart.type === 'table-info' && showPage" class="table-page">
+      <el-row v-show="!hidePage && chart.type === 'table-info' && showPage" class="table-page">
         <!-- <span class="total-style">
           {{ $t('chart.total') }}
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
@@ -107,7 +107,11 @@ export default {
     pageChangeFlag: {
       type: Boolean,
       default: false
-    }
+    },
+    hidePage: {
+      type: Boolean,
+      default: false
+    },
   },
   data() {
     return {
@@ -220,7 +224,6 @@ export default {
             })
           }
         }
-        
       }, 1000)
     },
     cellClick(row, column, cell, event) {
