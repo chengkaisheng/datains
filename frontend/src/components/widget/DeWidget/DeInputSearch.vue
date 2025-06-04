@@ -82,6 +82,9 @@ export default {
       if (value === old) return
       this.value = this.fillValueDerfault()
       this.search()
+    },
+    'value': function(value, old) {
+      this.search('save_only')
     }
   },
   created() {
@@ -100,19 +103,23 @@ export default {
     })
   },
   methods: {
-    search() {
+    search(saveType) {
       if (!this.inDraw) {
         this.element.options.value = this.value
       }
-      this.setCondition()
+      this.setCondition(saveType)
     },
-    setCondition() {
+    setCondition(saveType) {
       const param = {
         component: this.element,
         value: !this.value ? [] : Array.isArray(this.value) ? this.value : [this.value],
-        operator: this.operator
+        operator: this.operator,
       }
-      this.inDraw && this.$store.commit('addViewFilter', param)
+      if(saveType === 'save_only') {
+        this.inDraw && this.$store.commit('saveViewFilter', param)
+      } else {
+        this.inDraw && this.$store.commit('addViewFilter', param)
+      }
     },
     setEdit() {
       this.canEdit = true

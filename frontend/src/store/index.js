@@ -54,6 +54,7 @@ const data = {
     componentDataCache: null,
     // 当前展示画布组件数据
     componentData: [],
+    currentFilters_save: [],
     // PC布局画布组件数据
     pcComponentData: [],
     // 移动端布局画布组件数据
@@ -278,6 +279,7 @@ const data = {
         newItem.filters = newItem.filters && newItem.filters.filter(filter => filter.componentId !== componentId) || []
         return newItem
       })
+      state.currentFilters_save = []
     },
     addViewFilter(state, data) {
       console.log('过滤器修改-----------', state, data)
@@ -317,7 +319,8 @@ const data = {
         }
         if (!element.type || element.type !== 'view') continue
         console.log('3---------------点', condition)
-        const currentFilters = element.filters || []
+        // const currentFilters = element.filters || []
+        const currentFilters = JSON.parse(JSON.stringify(state.currentFilters_save[index] || element.filters || []))
         const vidMatch = viewIdMatch(condition.viewIds, element.propValue.viewId)
 
         let j = currentFilters.length
@@ -332,9 +335,54 @@ const data = {
         // !filterExist && vValid && currentFilters.push(condition)
         vidMatch && vValid && currentFilters.push(condition)
         element.filters = currentFilters
+        state.currentFilters_save[index] = JSON.parse(JSON.stringify(currentFilters))
         console.log('5---------------点', element, data)
         state.componentData[index] = {}
         state.componentData[index] = element
+        
+        // this.$set(state.componentData[index], 'newKey', data.value)
+      }
+      console.log('state.componentData', state.componentData)
+    },
+    saveViewFilter(state, data) {
+      console.log('过滤器修改-----------', state, data)
+      const condition = formatCondition(data)
+      const vValid = valueValid(condition)
+      //   1.根据componentId过滤
+      console.log('condition', condition, 'vValid', vValid)
+      const filterComponentId = condition.componentId
+
+      //   2.循环每个Component 得到 三种情况 a增加b删除c无操作
+      const viewIdMatch = (viewIds, viewId) => !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
+
+      for (let index = 0; index < state.componentData.length; index++) {
+        // save_only改造  深拷贝得到element
+        // const element = _.cloneDeep(state.componentData[index])
+        const element = JSON.parse(JSON.stringify(state.componentData[index]))
+        console.log('1---------------点')
+
+        if (!element.type || element.type !== 'view') continue
+        console.log('3---------------点', condition)
+        // const currentFilters = element.filters || []
+        const currentFilters = state.currentFilters_save[index] || element.filters || []
+        
+        const vidMatch = viewIdMatch(condition.viewIds, element.propValue.viewId)
+
+        let j = currentFilters.length
+        while (j--) {
+          const filter = currentFilters[j]
+          if (filter.componentId === filterComponentId) {
+            currentFilters.splice(j, 1)
+          }
+        }
+        console.log('4---------------点', condition, data)
+        // 不存在该条件 且 条件有效 直接保存该条件
+        // !filterExist && vValid && currentFilters.push(condition)
+        vidMatch && vValid && currentFilters.push(condition)
+        
+        console.log('5---------------点', element, data)
+        // save_only改造 通过watch监听的标识 save_only ，只保存currentFilters，不进行更新
+        state.currentFilters_save[index] = currentFilters
 
         // this.$set(state.componentData[index], 'newKey', data.value)
       }
