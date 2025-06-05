@@ -366,6 +366,10 @@ export default {
       param['orders'] = formatOrders(this.orderConditions)
       const { currentPage, pageSize } = this.paginationConfig
       userLists(currentPage, pageSize, param).then(response => {
+        response.data.listObject.map(item => {
+          let roles = item.roles.filter(role => role)
+          item.roles = roles
+        })
         this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
       })
