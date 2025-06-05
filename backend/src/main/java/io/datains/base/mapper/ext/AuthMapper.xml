@@ -61,7 +61,9 @@
     <select id="findUserByName" resultMap="baseMap">
         select user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from` from sys_user where username = #{username}
     </select>
-
+    <select id="getUserByNameOrPhone" resultMap="baseMap">
+        select user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from` from sys_user where username = #{key} or phone = #{key}
+    </select>
     <update id="updateEnabled" >
       update sys_user set enabled = 0 where user_id = #{uid}
     </update>

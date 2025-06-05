@@ -67,6 +67,14 @@ public class SysUserService {
         lists.forEach(item -> {
 
             List<SysUserRole> roles = item.getRoles();
+            if (CollectionUtils.isEmpty(roles)) {
+                return;
+            }
+            for (SysUserRole role : roles) {
+                if (role == null) {
+                    return;
+                }
+            }
             List<Long> roleIds = roles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
             item.setRoleIds(roleIds);
         });
@@ -76,9 +84,9 @@ public class SysUserService {
     @Transactional
     public int save(SysUserCreateRequest request) {
         checkUsername(request);
-        autoEmail(request);
-        checkEmail(request);
-        checkNickName(request);
+//        autoEmail(request);
+//        checkEmail(request);
+//        checkNickName(request);
         SysUser user = BeanUtils.copyBean(new SysUser(), request);
         long now = System.currentTimeMillis();
         user.setCreateTime(now);
@@ -179,8 +187,8 @@ public class SysUserService {
     @Transactional
     public int update(SysUserCreateRequest request) {
         checkUsername(request);
-        checkEmail(request);
-        checkNickName(request);
+//        checkEmail(request);
+//        checkNickName(request);
         if (StringUtils.isEmpty(request.getPassword())) {
             request.setPassword(null);
         }

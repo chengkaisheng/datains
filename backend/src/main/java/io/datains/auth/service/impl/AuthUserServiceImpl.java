@@ -2,17 +2,16 @@ package io.datains.auth.service.impl;
 
 import io.datains.auth.api.dto.CurrentRoleDto;
 import io.datains.auth.entity.SysUserEntity;
+import io.datains.auth.service.AuthUserService;
 import io.datains.base.domain.SysUser;
 import io.datains.base.mapper.SysUserMapper;
 import io.datains.base.mapper.ext.AuthMapper;
-import io.datains.auth.service.AuthUserService;
 import io.datains.commons.constants.AuthConstants;
 import io.datains.commons.utils.LogUtil;
 import io.datains.plugins.common.service.PluginCommonService;
 import io.datains.plugins.config.SpringContextUtil;
 import io.datains.plugins.xpack.ldap.service.LdapXpackService;
 import io.datains.plugins.xpack.oidc.service.OidcXpackService;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -64,7 +63,10 @@ public class AuthUserServiceImpl implements AuthUserService {
         return authMapper.findUserByName(username);
     }
 
-
+    @Override
+    public SysUserEntity getUserByNameOrPhone(String key) {
+        return authMapper.getUserByNameOrPhone(key);
+    }
     @Override
     public SysUserEntity getLdapUserByName(String username) {
         return authMapper.findLdapUserByName(username);

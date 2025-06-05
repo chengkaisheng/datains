@@ -103,6 +103,9 @@
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
+  <delete id="deleteAll">
+    delete from sys_dept
+  </delete>
   <insert id="insert" parameterType="io.datains.base.domain.SysDept">
     insert into sys_dept (dept_id, pid, sub_count,
       `name`, dept_sort, create_by,
@@ -173,6 +176,14 @@
         #{updateTime,jdbcType=BIGINT},
       </if>
     </trim>
+  </insert>
+  <insert id="insertBatch">
+    <foreach collection="records" item="item" separator=";">
+      SET IDENTITY_INSERT sys_dept ON;
+      insert into sys_dept (dept_id, pid, sub_count, `name`)
+      values (#{item.deptId,jdbcType=BIGINT}, #{item.pid,jdbcType=BIGINT}, #{item.subCount,jdbcType=INTEGER},
+      #{item.name,jdbcType=VARCHAR})
+    </foreach>
   </insert>
   <select id="countByExample" parameterType="io.datains.base.domain.SysDeptExample" resultType="java.lang.Long">
     select count(*) from sys_dept

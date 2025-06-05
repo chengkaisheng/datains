@@ -14,16 +14,11 @@ import io.datains.auth.util.RedisService;
 import io.datains.auth.util.RsaUtil;
 import io.datains.auth.util.UserKey;
 import io.datains.commons.utils.*;
-import io.datains.controller.sys.request.LdapAddRequest;
 import io.datains.controller.sys.request.SysUserCreateRequest;
 import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
-import io.datains.plugins.common.entity.XpackLdapUserEntity;
 import io.datains.plugins.config.SpringContextUtil;
 import io.datains.plugins.util.PluginUtils;
-import io.datains.plugins.xpack.ldap.dto.request.LdapValidateRequest;
-import io.datains.plugins.xpack.ldap.dto.response.ValidateResult;
-import io.datains.plugins.xpack.ldap.service.LdapXpackService;
 import io.datains.plugins.xpack.oidc.service.OidcXpackService;
 import io.datains.qyy.service.CertificationService;
 import io.datains.service.sys.SysUserService;
@@ -37,7 +32,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class AuthServer implements AuthApi {
@@ -53,57 +51,21 @@ public class AuthServer implements AuthApi {
 
     @Resource
     private RedisService redisService;
+
     @Resource
     private CertificationService certificationService;
 
-    int i = 0;
-    Integer userId = null;
-
     @Override
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
-        String username = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getUsername());
+        String key = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getUsername());
         String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getPassword());
-
-        // 增加ldap登录方式
         Integer loginType = loginDto.getLoginType();
-        boolean isSupportLdap = authUserService.supportLdap();
-        if (loginType == 1 && isSupportLdap) {
-            LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
-            LdapValidateRequest request = LdapValidateRequest.builder().userName(username).password(pwd).build();
-            ValidateResult<XpackLdapUserEntity> validateResult = ldapXpackService.login(request);
-            if (!validateResult.isSuccess()) {
-                DataInsException.throwException(validateResult.getMsg());
-            }
-            XpackLdapUserEntity ldapUserEntity = validateResult.getData();
-            SysUserEntity user = authUserService.getLdapUserByName(username);
-            if (ObjectUtils.isEmpty(user) || ObjectUtils.isEmpty(user.getUserId())) {
-                LdapAddRequest ldapAddRequest = new LdapAddRequest();
-                ldapAddRequest.setUsers(new ArrayList<XpackLdapUserEntity>() {
-                    {
-                        add(ldapUserEntity);
-                    }
-                });
-                ldapAddRequest.setEnabled(1L);
-                ldapAddRequest.setRoleIds(new ArrayList<Long>() {
-                    {
-                        add(2L);
-                    }
-                });
-                sysUserService.validateExistUser(ldapUserEntity.getUsername(), ldapUserEntity.getNickname(),
-                        ldapUserEntity.getEmail());
-                sysUserService.saveLdapUsers(ldapAddRequest);
-            }
 
-            username = validateResult.getData().getUsername();
-        }
-        // 增加ldap登录方式
-
-        SysUserEntity user = authUserService.getUserByName(username);
+        SysUserEntity user = authUserService.getUserByNameOrPhone(key);
 
         if (ObjectUtils.isEmpty(user)) {
             DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
-
         // 验证登录类型是否与用户类型相同
         if (!sysUserService.validateLoginType(user.getFrom(), loginType)) {
             DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
@@ -114,32 +76,14 @@ public class AuthServer implements AuthApi {
             //DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
         String realPwd = user.getPassword();
-
-        // 普通登录需要验证密码
-        if (loginType == 0 || !isSupportLdap) {
-            // 私钥解密
-
-            // md5加密
-            pwd = CodingUtil.md5(pwd);
-
-            if (!StringUtils.equals(pwd, realPwd)) {
-                if (i == 0) {
-                    userId = user.getUserId().intValue();
-                }
-                if (user.getUserId().intValue() != userId) {
-                    userId = user.getUserId().intValue();
-                    i = 0;
-                }
-                i++;
-                if (i == 5) {
-                    authUserService.updateEnabled(user.getUserId().intValue());
-                }
-                DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
-            }
+        // 私钥解密
+        // md5加密
+        pwd = CodingUtil.md5(pwd);
+        if (!StringUtils.equals(pwd, realPwd)) {
+            DataInsException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
-        i = 0;
         Map<String, Object> result = new HashMap<>();
-        TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
+        TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(user.getUsername()).build();
         String token = JWTUtils.sign(tokenInfo, realPwd);
         // 记录token操作时间
         result.put("token", token);
@@ -196,7 +140,7 @@ public class AuthServer implements AuthApi {
             SysUserCreateRequest request = new SysUserCreateRequest();
             BeanUtil.copyProperties(user, request);
             request.setRoleIds(Collections.singletonList(Long.valueOf(qyyUser.getSysRoleScenarios().getKey())));
-//            request.setNickName(qyyUser.getName());
+            request.setNickName(qyyUser.getName());
             sysUserService.update(request);
             return;
         }

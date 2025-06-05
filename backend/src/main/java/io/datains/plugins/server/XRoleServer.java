@@ -4,10 +4,13 @@ package io.datains.plugins.server;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.datains.auth.service.ExtAuthService;
+import io.datains.base.domain.SysUsersRolesKey;
 import io.datains.base.domain.XpackRoleItemDto;
 import io.datains.base.domain.XpackSysRole;
+import io.datains.base.mapper.SysUsersRolesMapper;
 import io.datains.commons.utils.PageUtils;
 import io.datains.commons.utils.Pager;
+import io.datains.controller.ResultHolder;
 import io.datains.qyy.service.AddRoleService;
 import io.datains.qyy.utils.QyyCommon;
 import io.datains.service.sys.RoleXpackService;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +40,8 @@ public class XRoleServer {
     private AddRoleService addRoleService;
     @Resource
     private QyyCommon qyyCommon;
+    @Resource
+    private SysUsersRolesMapper sysUsersRolesMapper;
 
     @RequiresPermissions("role:add")
     @ApiOperation("新增角色")
@@ -57,6 +63,11 @@ public class XRoleServer {
     @ApiOperation("删除角色")
     @PostMapping("/delete/{roleId}")
     public void delete(@PathVariable("roleId") Long roleId) {
+        //删除之前判断一下是否已经关联了用户
+        List<SysUsersRolesKey> sysUsersRoles = sysUsersRolesMapper.selectByRoleIds(Collections.singletonList(roleId));
+        if (!sysUsersRoles.isEmpty()) {
+            throw new RuntimeException("角色已经关联了用户");
+        }
         extAuthService.clearRoleResource(roleId);
         roleXpackService.delete(roleId);
     }
@@ -86,7 +97,7 @@ public class XRoleServer {
 
     @ApiOperation("同步角色到轻应用")
     @GetMapping("/syncRoleToQyy")
-    public void syncRoleToQyy() {
+    public ResultHolder syncRoleToQyy() {
         List<XpackRoleItemDto> all = roleXpackService.allRoles();
         if (all == null || all.isEmpty()) {
             throw new RuntimeException("角色为空");
@@ -99,5 +110,6 @@ public class XRoleServer {
         ).collect(Collectors.toList());
         addRoleService.addRoles(qyyRoles, qyyCommon.getSecretKey(), qyyCommon.getScenId(), qyyCommon.getHost() + "/function/add");
         addRoleService.addRoles(qyyRoles, qyyCommon.getSecretKey2(), qyyCommon.getScenId2(), qyyCommon.getHost() + "/function/add");
+        return ResultHolder.success("同步成功");
     }
 }

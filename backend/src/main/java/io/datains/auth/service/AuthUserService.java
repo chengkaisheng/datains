@@ -2,7 +2,6 @@ package io.datains.auth.service;
 
 import io.datains.auth.api.dto.CurrentRoleDto;
 import io.datains.auth.entity.SysUserEntity;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -14,6 +13,8 @@ public interface AuthUserService {
     SysUserEntity findUserById(Long userId);
 
     SysUserEntity getUserByName(String username);
+
+    SysUserEntity getUserByNameOrPhone(String key);
 
     SysUserEntity getLdapUserByName(String username);
 

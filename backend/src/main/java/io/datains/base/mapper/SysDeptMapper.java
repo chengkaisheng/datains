@@ -2,13 +2,18 @@ package io.datains.base.mapper;
 
 import io.datains.base.domain.SysDept;
 import io.datains.base.domain.SysDeptExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface SysDeptMapper {
     long countByExample(SysDeptExample example);
 
     int deleteByExample(SysDeptExample example);
+
+    int deleteAll();
+
+    int insertBatch(List<SysDept> records);
 
     int deleteByPrimaryKey(Long deptId);
 

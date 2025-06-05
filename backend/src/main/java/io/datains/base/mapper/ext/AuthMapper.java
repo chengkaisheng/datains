@@ -1,14 +1,13 @@
 package io.datains.base.mapper.ext;
 
 
-
 import io.datains.auth.api.dto.CurrentRoleDto;
 import io.datains.auth.entity.SysUserEntity;
 import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 public interface AuthMapper {
-
 
 
     List<String> roleCodes(@Param("userId") Long userId);
@@ -26,6 +25,8 @@ public interface AuthMapper {
     SysUserEntity findUserById(@Param("userId") Long userId);
 
     SysUserEntity findUserByName(@Param("username") String username);
+
+    SysUserEntity getUserByNameOrPhone(@Param("key") String key);
 
     int updateEnabled(@Param("uid") Integer uid);
 

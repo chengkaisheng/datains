@@ -54,7 +54,17 @@ public class AuthXpackDefaultService implements AuthXpackService {
             //判断用户是否为超级管理员
             List<CurrentRoleDto> currentRoleDtos = AuthUtils.getUser().getRoles();
             if (ObjectUtil.isNotEmpty(currentRoleDtos)) {
-                List<XpackVAuthModelDTO> src = this.g.searchTree(xpackBaseTreeRequest);
+                List<XpackVAuthModelDTO> all = this.g.searchTree(xpackBaseTreeRequest);
+                List<XpackVAuthModelDTO> src = new ArrayList<>();
+                for (XpackVAuthModelDTO dto : all) {
+                    if ("menu".equals(xpackBaseTreeRequest.getModelType()) &&
+                            (dto.getId().equals("2") || dto.getId().equals("4"))) {
+                        continue;
+                    } else {
+                        src.add(dto);
+                    }
+                }
+
                 for (CurrentRoleDto currentRoleDto : currentRoleDtos) {
                     if (currentRoleDto.getId().equals(1L)) {
                         isAdmin = true;
