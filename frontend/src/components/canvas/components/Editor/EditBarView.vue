@@ -8,9 +8,11 @@
         <span v-if="isEdit" :title="$t('panel.edit')">
           <i class="icon iconfont icon-edit" @click.stop="edit" />
         </span>
-        <span :title="$t('panel.details')">
+        <!-- 问题168 隐藏明细弹出框 start -->
+        <!-- <span :title="$t('panel.details')">
           <i class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
-        </span>
+        </span> -->
+        <!-- 问题168 隐藏明细弹出框 end -->
       </div>
 
     </div>

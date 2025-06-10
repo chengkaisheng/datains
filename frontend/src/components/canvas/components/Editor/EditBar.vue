@@ -9,7 +9,7 @@
         <el-checkbox v-model="linkageInfo.linkageActive" />
         <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
       </div>
-      <div v-if="checkboxShow" style="margin-right: -1px;widht: 18px" :title="element.isLock? '此组件已锁定': ''">
+      <div v-if="checkboxShow" style="margin-right: -1px;width: 18px" :title="element.isLock? '此组件已锁定': ''">
         <el-checkbox v-model="element.isCheck" @change="checkChange" />
       </div>
       <div v-if="normalAreaShow">
@@ -27,9 +27,11 @@
         <!-- <span :title="$t('panel.suspension')">
           <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
         </span> -->
-        <span v-if="screenStatus" :title="$t('panel.details')">
+        <!-- 问题168 隐藏明细弹出框 start -->
+        <!-- <span v-if="screenStatus" :title="$t('panel.details')">
           <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails" />
-        </span>
+        </span> -->
+        <!-- 问题168 隐藏明细弹出框 end -->
         <span :title="$t('panel.cancel_linkage')">
           <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
         </span>
