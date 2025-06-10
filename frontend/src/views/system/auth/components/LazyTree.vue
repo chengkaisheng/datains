@@ -1043,19 +1043,129 @@ export default {
       return roots
     },
     // 权限修改
+    // async clickAuth(node, data, auth) {
+    //   const authChangeCondition = this.getAuthChangeCondition(data, auth)
+    //   this.loading = true
+    //   this.executeAxios(
+    //     '/plugin/auth/authChange',
+    //     'post',
+    //     authChangeCondition,
+    //     (res) => {
+    //       // 重新加载权限
+    //       this.loadAuth()
+    //       this.loading = false
+    //     }
+    //   )
+    // },
+    // 授权时有子节点需要获取并进行授权
     async clickAuth(node, data, auth) {
-      const authChangeCondition = this.getAuthChangeCondition(data, auth)
-      this.loading = true
-      this.executeAxios(
-        '/plugin/auth/authChange',
-        'post',
-        authChangeCondition,
-        (res) => {
-          // 重新加载权限
-          this.loadAuth()
-          this.loading = false
+      let authChangeCondition = this.getAuthChangeCondition(data, auth);
+
+      if (!node.isLeaf) {
+        this.loading = true;
+        try {
+          // 获取所有子节点
+          const allChildren = await this.getChildrenNodes(node);
+
+          const list = [authChangeCondition];
+          allChildren.forEach((item) => {
+            let auth1 = null;
+            if (this.authDetails[item.id]) {
+              auth1 = this.authDetails[item.id].find((authDetail) => {
+                if (authDetail.privilegeExtend && auth.privilegeExtend) {
+                  return authDetail.privilegeExtend === auth.privilegeExtend;
+                } else {
+                  return authDetail.privilegeName === auth.privilegeName;
+                }
+              });
+            } else {
+              auth1 = this.defaultAuthDetails.find((authDetail) => {
+                if (authDetail.privilegeExtend && auth.privilegeExtend) {
+                  return authDetail.privilegeExtend === auth.privilegeExtend;
+                } else {
+                  return auth.privilegeName.includes(
+                    authDetail.privilegeExtend
+                  );
+                }
+              });
+            }
+            auth1.privilegeValue = auth.privilegeValue;
+            list.push(this.getAuthChangeCondition(item, auth1));
+          });
+
+          // 批量更新权限
+          this.executeAxios(
+            "/plugin/auth/authChangeBatch",
+            "post",
+            { auths: list },
+            (res) => {
+              this.loadAuth();
+              this.loading = false;
+            }
+          );
+        } catch (error) {
+          console.error("获取子节点失败:", error);
+          this.loading = false;
         }
-      )
+      } else {
+        this.loading = true;
+        this.executeAxios(
+          "/plugin/auth/authChange",
+          "post",
+          authChangeCondition,
+          (res) => {
+            // 重新加载权限
+            this.loadAuth();
+            this.loading = false;
+          }
+        );
+      }
+    },
+    // 需要层层获取子节点
+    async getChildrenNodes(node) {
+      if (node.isLeaf) return [];
+
+      const queryCondition = {
+        modelType: this.dataInfo.authType,
+      };
+      queryCondition[this.defaultProps.parentId] =
+        node.data[this.defaultProps.id];
+
+      // 使用Promise包装axios调用
+      const getNodes = () => {
+        return new Promise((resolve) => {
+          this.executeAxios(
+            "/plugin/auth/authModels",
+            "post",
+            queryCondition,
+            (res) => {
+              resolve(res.data || []);
+            }
+          );
+        });
+      };
+
+      // 获取当前节点的直接子节点
+      const children = await getNodes();
+
+      // 递归获取每个子节点的子节点
+      const childrenPromises = children.map(async (child) => {
+        if (!child[this.defaultProps.isLeaf]) {
+          // 为每个非叶子节点递归调用
+          const grandChildren = await this.getChildrenNodes({
+            isLeaf: child[this.defaultProps.isLeaf],
+            data: child,
+          });
+          return [...grandChildren];
+        }
+        return [];
+      });
+
+      // 等待所有子节点的递归调用完成
+      const allChildren = await Promise.all(childrenPromises);
+
+      // 合并所有结果
+      return [...children, ...allChildren.flat()];
     },
     getAuthChangeCondition(data, auth) {
       let authChangeCondition = {}
