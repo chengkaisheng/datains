@@ -28,11 +28,7 @@ import org.stringtemplate.v4.STGroupFile;
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -173,6 +169,8 @@ public class OracleQueryProvider extends QueryProvider {
                         fieldName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
                     } else if (f.getDeType() == 2) {
                         fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT);
+                    } else if (f.getDeType() == 3) {
+                        fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_FLOAT_FORMAT);
                     } else {
                         fieldName = originField;
                     }

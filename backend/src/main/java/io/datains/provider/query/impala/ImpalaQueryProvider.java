@@ -115,6 +115,8 @@ public class ImpalaQueryProvider extends QueryProvider {
                         fieldName = String.format(ImpalaConstants.FROM_UNIXTIME, cast, ImpalaConstants.DEFAULT_DATE_FORMAT);
                     } else if (f.getDeType() == 2) {
                         fieldName = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_INT_FORMAT);
+                    } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
+                        fieldName = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_FLOAT_FORMAT);
                     } else {
                         fieldName = originField;
                     }

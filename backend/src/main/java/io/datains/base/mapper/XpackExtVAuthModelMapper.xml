@@ -110,7 +110,7 @@
             (select GET_V_AUTH_MODEL_WITH_CHILDREN(#{id},#{modelType}) c_model_children_ids) tmc,
         </if>
         <if test="name != null and name !='' and withExtend == 'parent'">
-            (select GET_V_AUTH_MODEL_WITH_PARENT ( (select WM_CONCAT(id) from
+            (select GET_V_AUTH_MODEL_WITH_PARENT ( (select GROUP_CONCAT(id) from
             v_auth_model where model_type = #{modelType} and `name` like CONCAT('%', #{name},'%')) ,#{modelType}) c_model_parent_seartch_ids) tmsc,
         </if>
         v_auth_model

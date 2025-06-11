@@ -126,6 +126,8 @@ public class MysqlQueryProvider extends QueryProvider {
                         fieldName = String.format(MySQLConstants.FROM_UNIXTIME, cast, MySQLConstants.DEFAULT_DATE_FORMAT);
                     } else if (f.getDeType() == 2) {
                         fieldName = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_INT_FORMAT);
+                    } else if (f.getDeType() == 3) {
+                        fieldName = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_FLOAT_FORMAT);
                     } else {
                         fieldName = originField;
                     }
