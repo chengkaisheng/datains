@@ -39,7 +39,14 @@ public class AuthXpackDefaultService implements AuthXpackService {
 
     public List<XpackVAuthModelDTO> searchAuthModelTree(XpackBaseTreeRequest xpackBaseTreeRequest, Long long_, Boolean bool) {
         xpackBaseTreeRequest.setCreateBy(String.valueOf(long_));
-        return this.g.searchTree(xpackBaseTreeRequest);
+        xpackBaseTreeRequest.setCreateBy(String.valueOf(long_));
+        if ("dept".equals(xpackBaseTreeRequest.getModelType())
+                || "user".equals(xpackBaseTreeRequest.getModelType())
+                || "role".equals(xpackBaseTreeRequest.getModelType())
+                || ("menu".equals(xpackBaseTreeRequest.getModelType()) && 1L == long_)) {
+            return this.g.searchTree(xpackBaseTreeRequest);
+        }
+        return this.g.searchTree2(xpackBaseTreeRequest);
     }
 
     public Map<String, List<XpackSysAuthDetailDTO>> searchAuthDetails(XpackSysAuthRequest xpackSysAuthRequest) {

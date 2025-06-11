@@ -122,10 +122,12 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
 
         //同步将权限添加到组织负责人身上
         List<Long> leaderIds = this.sysDeptLeaderMapper.selectUserIdsByDeptId(sysUser.getDeptId());
-        for (Long leaderId : leaderIds) {
-            List<Integer> privilegeTypes = Arrays.stream(auth.getPrivilegeType().split(",")).map(Integer::parseInt).collect(Collectors.toList());
-            for (Integer privilegeType1 : privilegeTypes) {
-                this.changeAuthForUser(leaderId, authSource, authSourceType, privilegeType1, 1);
+        if (leaderIds != null && !leaderIds.isEmpty() && auth.getPrivilegeType() != null) {
+            for (Long leaderId : leaderIds) {
+                List<Integer> privilegeTypes = Arrays.stream(auth.getPrivilegeType().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+                for (Integer privilegeType1 : privilegeTypes) {
+                    this.changeAuthForUser(leaderId, authSource, authSourceType, privilegeType1, 1);
+                }
             }
         }
     }
