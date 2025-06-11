@@ -226,7 +226,8 @@ export default {
       },
       extraFilterComponents: [
         { field: 'd.name', label: this.$t('commons.organization'), component: 'DeComplexInput' },
-        { field: 'r.name', label: this.$t('commons.role'), component: 'DeComplexInput' }
+        { field: 'r.name', label: this.$t('commons.role'), component: 'DeComplexInput' },
+        { field: 'username', label: this.$t('commons.id'), component: 'DeComplexInput' }
       ],
       paginationConfig: {
         currentPage: 1,
