@@ -1,23 +1,34 @@
 <template>
-  <el-date-picker
-    v-if="element.options!== null && element.options.attrs!==null"
-    ref="dateRef"
-    v-model="values"
-    class="deDate"
-    :type="element.options.attrs.type"
-    :range-separator="$t(element.options.attrs.rangeSeparator)"
-    :start-placeholder="$t(element.options.attrs.startPlaceholder)"
-    :end-placeholder="$t(element.options.attrs.endPlaceholder)"
-    :placeholder="$t(element.options.attrs.placeholder)"
-    :append-to-body="inScreen"
-    value-format="timestamp"
-    :size="size"
-    :editable="true"
-    :style="dateStyle"
-    @change="dateChange"
-    @focus="toFocus"
-    @blur="onBlur"
-  />
+  <div class="de-select-container" style="display: flex; align-items: center;">
+    <el-date-picker
+      v-if="element.options!== null && element.options.attrs!==null"
+      ref="dateRef"
+      v-model="values"
+      class="deDate"
+      :type="element.options.attrs.type"
+      :range-separator="$t(element.options.attrs.rangeSeparator)"
+      :start-placeholder="$t(element.options.attrs.startPlaceholder)"
+      :end-placeholder="$t(element.options.attrs.endPlaceholder)"
+      :placeholder="$t(element.options.attrs.placeholder)"
+      :append-to-body="inScreen"
+      value-format="timestamp"
+      :size="size"
+      :editable="true"
+      :style="dateStyle"
+      @focus="toFocus"
+      @blur="onBlur"
+    />
+    <!-- @change="dateChange" -->
+    <el-button
+      class="search-button"
+      type="primary"
+      icon="el-icon-search"
+      size="mini"
+      style="margin-left: 5px;"
+      @click="dateChange"
+    />
+  </div>
+
 </template>
 
 <script>
@@ -102,6 +113,9 @@ export default {
       const widget = ApplicationContext.getService(this.element.serviceName)
       this.values = widget.dynamicDateFormNow(this.element)
       this.dateChange(this.values)
+    },
+    'values': function(val, old) {
+      this.dateChange(val, 'save_only')
     }
   },
   created() {
@@ -138,6 +152,15 @@ export default {
     })
   },
   methods: {
+    fillValueDerfault() {
+      if (!this.element.options.attrs.default) return ''
+      const defaultVal = this.element.options.attrs.default
+      if (defaultVal.isDynamic) {
+        return
+      }
+    }
+  },
+  methods: {
     onBlur() {
       this.onFocus = false
     },
@@ -147,16 +170,20 @@ export default {
     search() {
       this.setCondition()
     },
-    setCondition() {
+    setCondition(saveType) {
       const param = {
         component: this.element,
         value: this.formatFilterValue(),
         operator: this.operator
       }
       param.value = this.formatValues(param.value)
-      this.inDraw && this.$store.commit('addViewFilter', param)
+      if (saveType === 'save_only') {
+        this.inDraw && this.$store.commit('saveViewFilter', param)
+      } else {
+        this.inDraw && this.$store.commit('addViewFilter', param)
+      }
     },
-    dateChange(value) {
+    dateChange(value, val) {
       if (!this.inDraw) {
         if (value === null) {
           this.element.options.value = ''
@@ -167,7 +194,7 @@ export default {
       } else {
         this.element.options.manualModify = true
       }
-      this.setCondition()
+      this.setCondition(val)
     },
     formatFilterValue() {
       if (this.values === null) return []

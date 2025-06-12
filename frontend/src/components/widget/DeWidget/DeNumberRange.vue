@@ -1,14 +1,34 @@
 <template>
 
-  <el-form v-if="element.options!== null && element.options.attrs!==null" ref="form" :model="form" :rules="rules">
+  <el-form v-if="element.options !== null && element.options.attrs !== null" ref="form" :model="form" :rules="rules">
     <div class="de-number-range-container">
       <el-form-item prop="min">
-        <el-input v-model="form.min" :placeholder="$t(element.options.attrs.placeholder_min)" :size="size" @input="inputChange" @change="handleMinChange" />
+        <el-input
+          v-model="form.min"
+          :placeholder="$t(element.options.attrs.placeholder_min)"
+          :size="size"
+          @change="handleMinChange"
+        />
+        <!-- @input="inputChange" -->
       </el-form-item>
       <span>{{ $t('denumberrange.split_placeholder') }}</span>
       <el-form-item prop="max">
-        <el-input v-model="form.max" :placeholder="$t(element.options.attrs.placeholder_max)" :size="size" @input="inputChange" @change="handleMaxChange" />
+        <el-input
+          v-model="form.max"
+          :placeholder="$t(element.options.attrs.placeholder_max)"
+          :size="size"
+          @change="handleMaxChange"
+        />
+        <!-- @input="inputChange" -->
       </el-form-item>
+      <el-button
+        class="search-button"
+        type="primary"
+        icon="el-icon-search"
+        size="mini"
+        style="margin-left: 5px;"
+        @click="inputChange"
+      />
     </div>
   </el-form>
 
@@ -41,12 +61,12 @@ export default {
       form: { min: '', max: '' },
       rules: {
         min: [
-        //   { required: true, message: this.$t('denumberrange.please_key_min'), trigger: 'blur' },
+          //   { required: true, message: this.$t('denumberrange.please_key_min'), trigger: 'blur' },
           { validator: this.validateCom, trigger: 'blur' },
           { validator: this.validateMin, trigger: 'blur' }
         ],
         max: [
-        //   { required: true, message: this.$t('denumberrange.please_key_max'), trigger: 'blur' },
+          //   { required: true, message: this.$t('denumberrange.please_key_max'), trigger: 'blur' },
           { validator: this.validateCom, trigger: 'blur' },
           { validator: this.validateMax, trigger: 'blur' }
         ]
@@ -82,13 +102,10 @@ export default {
       if (values.length > 1) {
         this.form.max = values[1]
       }
-      this.search()
     },
     form: {
       handler(value) {
-        this.destryTimeMachine()
-        this.changeIndex++
-        this.searchWithKey(this.changeIndex)
+        this.inputChange('save_only')
       },
       deep: true
     }
@@ -116,18 +133,18 @@ export default {
     })
   },
   methods: {
-    searchWithKey(index) {
-      this.timeMachine = setTimeout(() => {
-        if (index === this.changeIndex) {
-          this.search()
-        }
-        this.destryTimeMachine()
-      }, 1000)
-    },
-    destryTimeMachine() {
-      this.timeMachine && clearTimeout(this.timeMachine)
-      this.timeMachine = null
-    },
+    // searchWithKey(index) {
+    //   this.timeMachine = setTimeout(() => {
+    //     if (index === this.changeIndex) {
+    //       this.search()
+    //     }
+    //     this.destryTimeMachine()
+    //   }, 1000)
+    // },
+    // destryTimeMachine() {
+    //   this.timeMachine && clearTimeout(this.timeMachine)
+    //   this.timeMachine = null
+    // },
     getFormData() {
       const ret = {}
       this.$refs.form.validate((valid) => {
@@ -183,12 +200,11 @@ export default {
           if (!valid) {
             return false
           }
-
           this.setCondition()
         })
       })
     },
-    setCondition() {
+    setCondition(val) {
       const param = {
         component: this.element,
         // value: !this.values ? [] : Array.isArray(this.values) ? this.values : [this.values],
@@ -197,24 +213,40 @@ export default {
       }
 
       if (this.form.min && this.form.max) {
-        this.inDraw && this.$store.commit('addViewFilter', param)
+        if (val === 'save_only') {
+          this.inDraw && this.$store.commit('saveViewFilter', param)
+        } else {
+          this.inDraw && this.$store.commit('addViewFilter', param)
+        }
         return
       }
       if (!this.form.min && !this.form.max) {
         param.value = []
-        this.inDraw && this.$store.commit('addViewFilter', param)
+        if (val === 'save_only') {
+          this.inDraw && this.$store.commit('saveViewFilter', param)
+        } else {
+          this.inDraw && this.$store.commit('addViewFilter', param)
+        }
         return
       }
       if (this.form.min) {
         param.value = [this.form.min]
         param.operator = 'ge'
-        this.inDraw && this.$store.commit('addViewFilter', param)
+        if (val === 'save_only') {
+          this.inDraw && this.$store.commit('saveViewFilter', param)
+        } else {
+          this.inDraw && this.$store.commit('addViewFilter', param)
+        }
         return
       }
       if (this.form.max) {
         param.value = [this.form.max]
         param.operator = 'le'
-        this.inDraw && this.$store.commit('addViewFilter', param)
+        if (val === 'save_only') {
+          this.inDraw && this.$store.commit('saveViewFilter', param)
+        } else {
+          this.inDraw && this.$store.commit('addViewFilter', param)
+        }
         return
       }
     },
@@ -227,6 +259,11 @@ export default {
       } else {
         this.element.options.manualModify = true
       }
+      if (val !== 'save_only') {
+        this.search()
+      } else {
+        this.setCondition(val)
+      }
     }
   }
 }
@@ -236,6 +273,7 @@ export default {
 .de-number-range-container {
   display: inline;
   max-height: 40px;
+
   >>>div.el-form-item {
     width: calc(50% - 10px) !important;
     display: inline-block;
