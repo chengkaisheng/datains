@@ -326,7 +326,8 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
+    public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> orgXAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
+        List<ChartViewFieldDTO> xAxis = new ArrayList<>(orgXAxis);
         ChartViewFieldDTO chartViewFieldDTO = new ChartViewFieldDTO();
         chartViewFieldDTO.setOriginName("ROWNUM");
         xAxis.add(chartViewFieldDTO);
@@ -373,11 +374,16 @@ public class OracleQueryProvider extends QueryProvider {
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
                 .build();
         setSchema(tableObj, ds);
+        boolean isPage = false;
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
+                if (x.getOriginName().equalsIgnoreCase("ROWNUM")) {
+                    isPage = true;
+                    continue;
+                }
                 String originField;
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
@@ -426,25 +432,37 @@ public class OracleQueryProvider extends QueryProvider {
         orders.addAll(xOrders);
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
-        ST st_sql = stg.getInstanceOf("previewSql");
+        ST st_sql = stg.getInstanceOf("previewSql2");
         st_sql.add("isGroup", false);
         if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
+        if (CollectionUtils.isNotEmpty(orders)) st_sql.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String sql = st_sql.render();
 
-        ST st = stg.getInstanceOf("previewSql");
+        ST st = stg.getInstanceOf("previewSql2");
         st.add("isGroup", false);
+        st.add("notUseAs", true);
         SQLObj tableSQL = SQLObj.builder()
                 .tableName(String.format(OracleConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
-        if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
-        if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
+        List<SQLObj> xFields2 = new ArrayList<>();
+        xFields2.add(SQLObj.builder()
+                .fieldName(tableSQL.getTableAlias() + ".*")
+                .build());
+        if (isPage) {
+            xFields2.add(SQLObj.builder()
+                    .fieldName("ROWNUM AS DE_ROWNUM")
+                    .fieldAlias("DE_ROWNUM")
+                    .build());
+        }
 
+        if (CollectionUtils.isNotEmpty(xFields)) st.add("groups", xFields2);
+        if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
         sql = st.render();
 
-        ST st2 = stg.getInstanceOf("previewSql");
+        ST st2 = stg.getInstanceOf("previewSql2");
         st2.add("isGroup", false);
         SQLObj tableSQL2 = SQLObj.builder()
                 .tableName(String.format(OracleConstants.BRACKETS, sql))
@@ -865,7 +883,11 @@ public class OracleQueryProvider extends QueryProvider {
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
                 originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             } else {
-                originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                if ("ROWNUM".equals(field.getOriginName())){
+                    originName = "\"DE_ROWNUM\"";
+                }else {
+                    originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+                }
             }
 
             if (field.getDeType() == 1) {

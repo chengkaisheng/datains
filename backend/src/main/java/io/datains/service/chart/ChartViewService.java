@@ -265,7 +265,7 @@ public class ChartViewService {
                 result = extChartViewMapper.searchOne(id);
                 if (result == null) {
                     DataInsException.throwException(Translator.get("i18n_chart_delete"));
-                }else {
+                } else {
                     result.setIsEdit(false);
                 }
             }
@@ -291,7 +291,7 @@ public class ChartViewService {
     public ChartViewDTO getData(String id, ChartExtRequest request) throws Exception {
         try {
             ChartViewDTO view = this.getOne(id, request.getQueryFrom());
-            if(request.getExcelExportFlag()){
+            if (request.getExcelExportFlag()) {
                 view.setResultMode(request.getResultMode());
                 view.setResultCount(request.getResultCount());
             }
@@ -333,12 +333,31 @@ public class ChartViewService {
         return null;
     }
 
+    private void fieldOrder(ChartExtRequest request, List<ChartViewFieldDTO> fields) {
+        if (fields == null || fields.isEmpty()) {
+            return;
+        }
+        List<FieldOrder> fieldOrders = request.getFieldOrder();
+        if (fieldOrders == null || fieldOrders.isEmpty()) {
+            return;
+        }
+        for (FieldOrder fieldOrder : fieldOrders) {
+            for (ChartViewFieldDTO chartViewFieldDTO : fields) {
+                if (fieldOrder.getId().equals(chartViewFieldDTO.getId())) {
+                    chartViewFieldDTO.setSort(fieldOrder.getSort());
+                }
+            }
+        }
+
+    }
+
     public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest requestList, boolean cache) throws Exception {
         if (ObjectUtils.isEmpty(view)) {
             throw new RuntimeException(Translator.get("i18n_chart_delete"));
         }
         List<ChartViewFieldDTO> xAxis = new Gson().fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
+        fieldOrder(requestList, xAxis);
         if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot")) {
             List<ChartViewFieldDTO> xAxisExt = new Gson().fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
             }.getType());
@@ -346,42 +365,24 @@ public class ChartViewService {
         }
         List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
+        fieldOrder(requestList, yAxis);
         if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")) {
             List<ChartViewFieldDTO> yAxisExt = new Gson().fromJson(view.getYAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
             }.getType());
             yAxis.addAll(yAxisExt);
         }
-        if (requestList.getFieldOrder() != null && !requestList.getFieldOrder().isEmpty()){
-            List<FieldOrder> fieldOrders = requestList.getFieldOrder();
-            for (FieldOrder fieldOrder : fieldOrders){
-                for (ChartViewFieldDTO chartViewFieldDTO : xAxis){
-                    if (fieldOrder.getId().equals(chartViewFieldDTO.getId())){
-                        if ("desc".equals(fieldOrder.getSort()) || "asc".equals(fieldOrder.getSort())){
-                            chartViewFieldDTO.setSort(fieldOrder.getSort());
-                        }
-                        break;
-                    }
-                }
-                for (ChartViewFieldDTO chartViewFieldDTO : yAxis){
-                    if (fieldOrder.getId().equals(chartViewFieldDTO.getId())){
-                        if ("desc".equals(fieldOrder.getSort()) || "asc".equals(fieldOrder.getSort())){
-                            chartViewFieldDTO.setSort(fieldOrder.getSort());
-                        }
-                        break;
-                    }
-                }
-            }
-        }
 
         List<ChartViewFieldDTO> extStack = new Gson().fromJson(view.getExtStack(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
+        fieldOrder(requestList, extStack);
         List<ChartViewFieldDTO> extBubble = new Gson().fromJson(view.getExtBubble(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
+        fieldOrder(requestList, extBubble);
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new Gson().fromJson(view.getCustomFilter(), new TypeToken<List<ChartFieldCustomFilterDTO>>() {
         }.getType());
         List<ChartViewFieldDTO> drill = new Gson().fromJson(view.getDrillFields(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
-
+        fieldOrder(requestList, drill);
 
         DatasetTableField datasetTableFieldObj = DatasetTableField.builder().tableId(view.getTableId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableFieldObj);
