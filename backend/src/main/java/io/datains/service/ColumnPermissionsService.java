@@ -1,13 +1,10 @@
 package io.datains.service;
 
 import io.datains.base.domain.*;
-
 import io.datains.base.mapper.ExtColumnPermissionMapper;
 import io.datains.base.mapper.SysDeptMapper;
 import io.datains.dto.DataSetColumnPermissionsDTO;
 import io.datains.dto.DatasetColumnPermissions;
-import io.datains.dto.DatasetRowPermissions;
-import io.datains.dto.XpackGridRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +30,8 @@ public class ColumnPermissionsService extends ColumnPermissionService{
     }
 
     @Override
-    public List<DataSetColumnPermissionsDTO> queryPermissions(XpackGridRequest var1) {
-        return this.ALLATORIxDEMO.queryPermissions(var1.convertExample());
+    public List<DataSetColumnPermissionsDTO> queryPermissions(String datasetId) {
+        return this.ALLATORIxDEMO.queryPermissions(datasetId);
     }
 
     @Override

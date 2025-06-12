@@ -2,7 +2,6 @@ package io.datains.service;
 
 import io.datains.dto.DataSetRowPermissionsDTO;
 import io.datains.dto.DatasetRowPermissions;
-import io.datains.dto.XpackGridRequest;
 
 import java.util.List;
 
@@ -17,7 +16,7 @@ public abstract class RowPermissionService{
 
     public abstract List<DataSetRowPermissionsDTO> searchRowPermissions(DataSetRowPermissionsDTO var1);
 
-    public abstract List<DataSetRowPermissionsDTO> queryRowPermissions(XpackGridRequest var1);
+    public abstract List<DataSetRowPermissionsDTO> queryRowPermissions(String datasetId);
 
     public abstract void save(DatasetRowPermissions var1);
 

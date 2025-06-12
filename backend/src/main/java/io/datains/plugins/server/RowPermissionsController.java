@@ -9,7 +9,6 @@ import io.datains.commons.utils.PageUtils;
 import io.datains.commons.utils.Pager;
 import io.datains.dto.DataSetRowPermissionsDTO;
 import io.datains.dto.DatasetRowPermissions;
-import io.datains.dto.XpackConditionEntity;
 import io.datains.dto.XpackGridRequest;
 import io.datains.i18n.Translator;
 import io.datains.plugins.config.SpringContextUtil;
@@ -20,7 +19,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.ArrayList;
 import java.util.List;
 /*行权限*/
 @ApiIgnore
@@ -83,14 +81,8 @@ public class RowPermissionsController {
     public Pager<List<DataSetRowPermissionsDTO>> rowPermissions(@PathVariable String datasetId, @PathVariable int goPage, @PathVariable int pageSize, @RequestBody XpackGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         RowPermissionService rowPermissionService = SpringContextUtil.getBean(RowPermissionService.class);
-        List<XpackConditionEntity> conditionEntities = request.getConditions() == null ? new ArrayList<>() : request.getConditions();
-        XpackConditionEntity entity = new XpackConditionEntity();
-        entity.setField("dataset_row_permissions.dataset_id");
-        entity.setOperator("eq");
-        entity.setValue(datasetId);
-        conditionEntities.add(entity);
-        request.setConditions(conditionEntities);
-        return PageUtils.setPageInfo(page, rowPermissionService.queryRowPermissions(request));
+
+        return PageUtils.setPageInfo(page, rowPermissionService.queryRowPermissions(datasetId));
     }
 
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)

@@ -9,15 +9,9 @@ import io.datains.commons.utils.PageUtils;
 import io.datains.commons.utils.Pager;
 import io.datains.dto.DataSetColumnPermissionsDTO;
 import io.datains.dto.DatasetColumnPermissions;
-import io.datains.dto.XpackConditionEntity;
 import io.datains.dto.XpackGridRequest;
 import io.datains.i18n.Translator;
-/*import io.datains.plugins.common.entity.XpackConditionEntity;
-import io.datains.plugins.common.entity.XpackGridRequest;*/
 import io.datains.plugins.config.SpringContextUtil;
-/*import io.datains.plugins.xpack.auth.dto.request.DataSetColumnPermissionsDTO;
-import io.datains.plugins.xpack.auth.dto.request.DatasetColumnPermissions;
-import io.datains.plugins.xpack.auth.service.ColumnPermissionService;*/
 import io.datains.service.ColumnPermissionService;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +19,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @ApiIgnore
@@ -88,14 +81,7 @@ public class ColumnPermissionsController {
     public Pager<List<DataSetColumnPermissionsDTO>> rowPermissions(@PathVariable String datasetId, @PathVariable int goPage, @PathVariable int pageSize, @RequestBody XpackGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         ColumnPermissionService columnPermissionService = SpringContextUtil.getBean(ColumnPermissionService.class);
-        List<XpackConditionEntity> conditionEntities = request.getConditions() == null ? new ArrayList<>() : request.getConditions();
-        XpackConditionEntity entity = new XpackConditionEntity();
-        entity.setField("dataset_column_permissions.dataset_id");
-        entity.setOperator("eq");
-        entity.setValue(datasetId);
-        conditionEntities.add(entity);
-        request.setConditions(conditionEntities);
-        return PageUtils.setPageInfo(page, columnPermissionService.queryPermissions(request));
+        return PageUtils.setPageInfo(page, columnPermissionService.queryPermissions(datasetId));
     }
 
     @DePermission(type = DePermissionType.DATASET, value = "datasetId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)

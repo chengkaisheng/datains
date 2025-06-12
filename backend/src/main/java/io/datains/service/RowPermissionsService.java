@@ -5,7 +5,10 @@ import io.datains.base.domain.Item;
 import io.datains.base.domain.SysDept;
 import io.datains.base.mapper.ExtRowPermissionMapper;
 import io.datains.base.mapper.SysDeptMapper;
-import io.datains.dto.*;
+import io.datains.dto.DataSetRowPermissionsDTO;
+import io.datains.dto.DatasetRowPermissions;
+import io.datains.dto.XpackSysAuthDetailExample;
+import io.datains.dto.XpackSysDeptExample;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,8 +34,8 @@ public class RowPermissionsService extends RowPermissionService {
     }
 
     @Override
-    public List<DataSetRowPermissionsDTO> queryRowPermissions(XpackGridRequest var1) {
-        return this.ALLATORIxDEMO.queryRowPermissions(var1.convertExample());
+    public List<DataSetRowPermissionsDTO> queryRowPermissions(String datasetId) {
+        return this.ALLATORIxDEMO.queryRowPermissions(datasetId);
     }
 
     @Override

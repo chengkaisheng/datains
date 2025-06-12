@@ -3,7 +3,6 @@ package io.datains.base.mapper;
 import io.datains.base.domain.Item;
 import io.datains.dto.DataSetColumnPermissionsDTO;
 import io.datains.dto.DatasetColumnPermissions;
-import io.datains.dto.XpackGridExample;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public interface ExtColumnPermissionMapper
 {
     List<Item> searchAuthUsers(final DataSetColumnPermissionsDTO p0);
 
-    List<DataSetColumnPermissionsDTO> queryPermissions(final XpackGridExample p0);
+    List<DataSetColumnPermissionsDTO> queryPermissions(String datasetId);
 
     Item searchRole(final Long p0);
 

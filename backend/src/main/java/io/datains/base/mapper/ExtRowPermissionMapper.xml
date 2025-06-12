@@ -45,8 +45,9 @@
     FROM dataset_row_permissions
     left join dataset_table on dataset_table.id=dataset_row_permissions.dataset_id
     left join dataset_table_field on dataset_table_field.id=dataset_row_permissions.dataset_field_id
-    <if test="_parameter != null">
-      <include refid="gridCondition" />
+    where 1=1
+    <if test="datasetId != null and datasetId != ''">
+      and dataset_row_permissions.dataset_id = #{datasetId}
     </if>
     order by dataset_row_permissions.update_time desc
   </select>
