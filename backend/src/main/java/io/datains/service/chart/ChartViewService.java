@@ -291,6 +291,10 @@ public class ChartViewService {
     public ChartViewDTO getData(String id, ChartExtRequest request) throws Exception {
         try {
             ChartViewDTO view = this.getOne(id, request.getQueryFrom());
+            if(request.getExcelExportFlag()){
+                view.setResultMode(request.getResultMode());
+                view.setResultCount(request.getResultCount());
+            }
             // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
             if (CommonConstants.VIEW_QUERY_FROM.PANEL.equals(request.getQueryFrom()) && CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
                 view.setResultMode(request.getResultMode());
@@ -347,6 +351,28 @@ public class ChartViewService {
             }.getType());
             yAxis.addAll(yAxisExt);
         }
+        if (requestList.getFieldOrder() != null && !requestList.getFieldOrder().isEmpty()){
+            List<FieldOrder> fieldOrders = requestList.getFieldOrder();
+            for (FieldOrder fieldOrder : fieldOrders){
+                for (ChartViewFieldDTO chartViewFieldDTO : xAxis){
+                    if (fieldOrder.getId().equals(chartViewFieldDTO.getId())){
+                        if ("desc".equals(fieldOrder.getSort()) || "asc".equals(fieldOrder.getSort())){
+                            chartViewFieldDTO.setSort(fieldOrder.getSort());
+                        }
+                        break;
+                    }
+                }
+                for (ChartViewFieldDTO chartViewFieldDTO : yAxis){
+                    if (fieldOrder.getId().equals(chartViewFieldDTO.getId())){
+                        if ("desc".equals(fieldOrder.getSort()) || "asc".equals(fieldOrder.getSort())){
+                            chartViewFieldDTO.setSort(fieldOrder.getSort());
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
         List<ChartViewFieldDTO> extStack = new Gson().fromJson(view.getExtStack(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
         List<ChartViewFieldDTO> extBubble = new Gson().fromJson(view.getExtBubble(), new TypeToken<List<ChartViewFieldDTO>>() {

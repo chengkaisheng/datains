@@ -49,5 +49,5 @@ public class ChartExtRequest {
     private Long pageSize;
 
     private Boolean excelExportFlag = false;
-
+    private List<FieldOrder> fieldOrder;
 }
