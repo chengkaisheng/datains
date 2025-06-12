@@ -1,6 +1,7 @@
 <template>
-
-  <el-select
+  <!-- :size="size" -->
+  <!-- popper-class -->
+  <!-- <el-select
     v-if="element.options!== null && element.options.attrs!==null && show"
     ref="deSelect"
     class="deSelect"
@@ -15,10 +16,9 @@
     @focus="setOptionWidth"
     @blur="onBlur"
     :style="selectStyle"
-    filterable 
+    filterable
   >
-  <!-- :size="size" -->
-    <!-- popper-class -->
+
     <el-option
       v-for="item in datas"
       :key="item[element.options.attrs.key]"
@@ -28,7 +28,45 @@
     >
       <span :title="item[element.options.attrs.label]" style="display:inline-block;width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{ item[element.options.attrs.label] }}</span>
     </el-option>
-  </el-select>
+  </el-select> -->
+  <!-- @change="changeValue" -->
+
+  <div class="de-select-container" style="display: flex; align-items: center;">
+    <el-select
+      v-if="element.options!== null && element.options.attrs!==null && show"
+      ref="deSelect"
+      v-model="value"
+      class="deSelect"
+      :collapse-tags="showNumber"
+      :clearable="!element.options.attrs.multiple"
+      :multiple="element.options.attrs.multiple"
+      :placeholder="$t(element.options.attrs.placeholder)"
+      :popper-append-to-body="inScreen"
+      size="mini"
+      :style="selectStyle"
+      filterable
+      @focus="setOptionWidth"
+      @blur="onBlur"
+    >
+      <el-option
+        v-for="item in datas"
+        :key="item[element.options.attrs.key]"
+        :style="optionStyle"
+        :label="item[element.options.attrs.label]"
+        :value="item[element.options.attrs.value]"
+      >
+        <span :title="item[element.options.attrs.label]" style="display:inline-block;width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{ item[element.options.attrs.label] }}</span>
+      </el-option>
+    </el-select>
+    <el-button
+      class="search-button"
+      type="primary"
+      icon="el-icon-search"
+      size="mini"
+      style="margin-left: 5px;"
+      @click="changeValue"
+    />
+  </div>
 
 </template>
 
@@ -84,15 +122,15 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     selectStyle() {
-      let style =  {}
-      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
-        if(this.element.commonSelectFrame.backType === 'Image') {
-          if(this.element.commonSelectFrame.backImg !== '') {
+      const style = {}
+      if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        if (this.element.commonSelectFrame.backType === 'Image') {
+          if (this.element.commonSelectFrame.backImg !== '') {
             style.backgroundImage = `url(${this.element.commonSelectFrame.backImg})`
           }
           style.backgroundRepeat = 'no-repeat'
           style.backgroundSize = '100% 100%'
-        } else  {
+        } else {
           style.backgroundColor = this.element.commonSelectFrame.color
         }
         style.color = this.element.commonSelectFrame.fontColor
@@ -102,9 +140,9 @@ export default {
     },
     optionStyle() {
       const style = {}
-      if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable){
-        if(this.element.commonSelectFrame.checkBgType === 'Image') {
-          if(this.element.commonSelectFrame.checkBgImg !== '' && this.element.commonSelectFrame.checkBgImg !== null) {
+      if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        if (this.element.commonSelectFrame.checkBgType === 'Image') {
+          if (this.element.commonSelectFrame.checkBgImg !== '' && this.element.commonSelectFrame.checkBgImg !== null) {
             style.backgroundImage = `url(${this.element.commonSelectFrame.checkBgImg})`
           }
           style.backgroundRepeat = 'no-repeat'
@@ -114,7 +152,7 @@ export default {
         }
         style.color = this.element.commonSelectFrame.checkColor
       }
-      console.log('optionstyle,,,',style)
+      console.log('optionstyle,,,', style)
       return style
     }
   },
@@ -160,6 +198,9 @@ export default {
       this.$nextTick(() => {
         this.show = true
       })
+    },
+    'value': function(value, old) {
+      this.changeValue(value, 'save_only')
     }
 
   },
@@ -178,7 +219,7 @@ export default {
         this.changeValue(this.value)
       }
     })
-    console.log('Deselect',this.element) // background/index.vue
+    console.log('Deselect', this.element) // background/index.vue
   },
 
   methods: {
@@ -204,7 +245,7 @@ export default {
         this.changeValue(this.value)
       }
     },
-    changeValue(value) {
+    changeValue(value, val) {
       console.log('下拉框的值', value)
       if (!this.inDraw) {
         if (value === null) {
@@ -216,7 +257,7 @@ export default {
       } else {
         this.element.options.manualModify = true
       }
-      this.setCondition()
+      this.setCondition(val)
       this.showNumber = false
 
       this.$nextTick(() => {
@@ -232,14 +273,19 @@ export default {
       })
     },
 
-    setCondition() {
+    setCondition(saveType) {
       const param = {
         component: this.element,
         value: this.formatFilterValue(),
         operator: this.operator
       }
       console.log('param触发---', param)
-      this.inDraw && this.$store.commit('addViewFilter', param)
+      if (saveType === 'save_only') {
+        this.inDraw && this.$store.commit('saveViewFilter', param)
+      } else {
+        this.inDraw && this.$store.commit('addViewFilter', param)
+      }
+      // this.inDraw && this.$store.commit('addViewFilter', param)
     },
     formatFilterValue() {
       if (this.value === null) return []

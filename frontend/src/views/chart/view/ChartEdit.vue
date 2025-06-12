@@ -314,6 +314,8 @@
                     </el-row> -->
 
                     <!--xAxisExt-->
+                    <el-button @click="calcData(true)">数据加载</el-button>
+
                     <el-row
                       v-if="view.type === 'table-pivot'"
                       class="padding-lr"
@@ -330,8 +332,8 @@
                         :move="onMove"
                         class="drag-block-style"
                         @add="addXaxisExt"
-                        @update="calcData(true)"
                       >
+                        <!-- @update="calcData(true)" -->
                         <transition-group class="draggable-group">
                           <dimension-ext-item
                             v-for="(item,index) in view.xaxisExt"
@@ -395,8 +397,9 @@
                         :move="onMove"
                         class="drag-block-style"
                         @add="addXaxis"
-                        @update="calcData(true)"
                       >
+                        <!-- @update="calcData(true)" -->
+
                         <transition-group class="draggable-group">
                           <dimension-item
                             v-for="(item,index) in view.xaxis"
@@ -469,8 +472,8 @@
                         :move="onMove"
                         class="drag-block-style"
                         @add="addYaxis"
-                        @update="calcData(true)"
                       >
+                        <!-- @update="calcData(true)" -->
                         <transition-group class="draggable-group">
                           <quota-item
                             v-for="(item,index) in view.yaxis"
@@ -510,8 +513,8 @@
                         :move="onMove"
                         class="drag-block-style"
                         @add="addYaxisExt"
-                        @update="calcData(true)"
                       >
+                        <!-- @update="calcData(true)" -->
                         <transition-group class="draggable-group">
                           <quota-ext-item
                             v-for="(item,index) in view.yaxisExt"
@@ -1299,7 +1302,7 @@
           <el-form ref="proportionForm" :model="proportionForm" :rules="proportionFormRules">
             <el-form-item :label="$t('chart.percent')" prop="singleColpercent">
               <el-checkbox-group v-model="proportionForm.singleColpercent">
-                <el-checkbox label="%" name="singleColpercent"></el-checkbox>
+                <el-checkbox label="%" name="singleColpercent" />
               </el-checkbox-group>
             </el-form-item>
           </el-form>
@@ -1312,8 +1315,8 @@
                   v-for="item in proportionList"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value">
-                </el-option>
+                  :value="item.value"
+                />
               </el-select>
             </el-form-item>
             <el-form-item style="margin-bottom: 22px;" :label="$t('chart.proportionTwo')" prop="proportionTwo">
@@ -1322,8 +1325,8 @@
                   v-for="item in proportionList"
                   :key="item.value"
                   :label="item.label"
-                  :value="item.value">
-                </el-option>
+                  :value="item.value"
+                />
               </el-select>
             </el-form-item>
             <!-- <el-form-item :label="$t('chart.percent')" prop="doubleColPercent">
@@ -1683,7 +1686,7 @@ export default {
       proportionForm: {
         singleColpercent: [],
         proportionOne: '',
-        proportionTwo: '',
+        proportionTwo: ''
         // doubleColPercent: []
       },
       proportionFormRules: {
@@ -1769,22 +1772,22 @@ export default {
     },
     'view.yaxis': function(newVal, oldVal) {
       // antv 透视表 newVal.length > oldVal.length 代表新增了
-      if ((this.view.type === "table-pivot" || this.view.type === "table-normal") && newVal.length > oldVal.length) {
+      if ((this.view.type === 'table-pivot' || this.view.type === 'table-normal') && newVal.length > oldVal.length) {
         // console.log('1123newVal:' , newVal);
         // console.log('1123oldVal:' , oldVal);
         // 新旧数组进行对比，找出新数组哪一项是新增的，修改新增项的datainsName
-        let arr = newVal.filter(item => {
+        const arr = newVal.filter(item => {
           return !oldVal.find(oitem => item.datainsName === oitem.datainsName)
-        });
-        let flag = arr.length == 1 ? true : false; // length > 1 时不对datainsName进行修改
-        arr.forEach(item => {
-          item.datainsName = flag ? 'Z_' + uuid.v1().replace(/-/g, '') : item.datainsName;
         })
-        this.fieldFilter(this.searchField); // 对左侧指标重新赋值，解决datainsName被修改导致表格不新增列的问题
+        const flag = arr.length == 1 // length > 1 时不对datainsName进行修改
+        arr.forEach(item => {
+          item.datainsName = flag ? 'Z_' + uuid.v1().replace(/-/g, '') : item.datainsName
+        })
+        this.fieldFilter(this.searchField) // 对左侧指标重新赋值，解决datainsName被修改导致表格不新增列的问题
       }
     },
     'view.resultMode': function(newVal, oldVal) {
-      if (newVal === 'custom' ) {
+      if (newVal === 'custom') {
         this.$message({
           showClose: true,
           message: '请注意修改，视图未选择使用全部数据',
@@ -2365,7 +2368,7 @@ export default {
       } else if (item.removeType === 'dimensionExt') {
         this.view.xaxisExt.splice(item.index, 1)
       }
-      this.calcData(true)
+      // this.calcData(true)
     },
 
     quotaItemChange(item) {
@@ -2378,7 +2381,7 @@ export default {
       } else if (item.removeType === 'quotaExt') {
         this.view.yaxisExt.splice(item.index, 1)
       }
-      this.calcData(true)
+      // this.calcData(true)
     },
 
     onColorChange(val) {
@@ -2600,12 +2603,12 @@ export default {
       // 供选择的列需要去掉当前列、计算过单列占比的列
       this.proportionList = []
       this.view.yaxis.map((item) => {
-        if((item.isPercentage !== '%') && (item.datainsName !== this.itemForm.datainsName)) {
-          let obj = {
+        if ((item.isPercentage !== '%') && (item.datainsName !== this.itemForm.datainsName)) {
+          const obj = {
             value: item.datainsName,
             label: item.name
-          };
-          this.proportionList.push(obj);
+          }
+          this.proportionList.push(obj)
         }
       })
       // 设置表单默认值
@@ -2663,20 +2666,20 @@ export default {
       this.$refs['proportionForm'].validate((valid) => {
         if (valid) {
           if (this.itemForm.renameType === 'quota') {
-            if(this.proportionActiveName === 'singleCol') {
+            if (this.proportionActiveName === 'singleCol') {
               this.view.yaxis[this.itemForm.index].isPercentage = this.proportionForm.singleColpercent[0]
               this.view.yaxis[this.itemForm.index].proportionOne = ''
               this.view.yaxis[this.itemForm.index].proportionTwo = ''
-            } else if(this.proportionActiveName === 'doubleCol') {
+            } else if (this.proportionActiveName === 'doubleCol') {
               this.view.yaxis[this.itemForm.index].proportionOne = this.proportionForm.proportionOne
               this.view.yaxis[this.itemForm.index].proportionTwo = this.proportionForm.proportionTwo
               this.view.yaxis[this.itemForm.index].isPercentage = ''
             }
-          } 
+          }
           this.calcData(true)
           this.closeProportion()
         } else {
-          return false;
+          return false
         }
       })
     },
@@ -2818,7 +2821,7 @@ export default {
           return m.id === that.moveId
         })
         // antv 透视表  指标->数据列/指标   不做去重
-        if(this.view.type === "table-pivot" || this.view.type === "table-normal") {
+        if (this.view.type === 'table-pivot' || this.view.type === 'table-normal') {
         } else {
           if (dup && dup.length > 1) {
             list.splice(e.newDraggableIndex, 1)
@@ -2827,6 +2830,7 @@ export default {
       }
     },
     addXaxis(e) {
+      console.log('维度添加：是初始值吗？', e, this.view)
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxis, 'd')
       }
@@ -2834,7 +2838,7 @@ export default {
       if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'label') && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
       }
-      this.calcData(true)
+      // this.calcData(true)
     },
     addXaxisExt(e) {
       console.log('维度添加：', e, this.view)
@@ -2845,7 +2849,7 @@ export default {
       if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
       }
-      this.calcData(true)
+      // this.calcData(true)
     },
     addYaxis(e) {
       this.dragCheckType(this.view.yaxis, 'q')
@@ -2853,7 +2857,7 @@ export default {
       if ((this.view.type === 'map' || this.view.type === 'waterfall' || this.view.type === 'word-cloud') && this.view.yaxis.length > 1) {
         this.view.yaxis = [this.view.yaxis[0]]
       }
-      this.calcData(true)
+      // this.calcData(true)
     },
     addYaxisExt(e) {
       this.dragCheckType(this.view.yaxisExt, 'q')
@@ -2861,7 +2865,7 @@ export default {
       if (this.view.type === 'map' && this.view.yaxisExt.length > 1) {
         this.view.yaxisExt = [this.view.yaxisExt[0]]
       }
-      this.calcData(true)
+      // this.calcData(true)
     },
     addZaxis(e) {
       this.dragMoveDuplicate(this.view.zaxis, e)
