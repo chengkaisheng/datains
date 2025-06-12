@@ -21,6 +21,8 @@
         :show-summary="showSummary"
         :summary-method="summaryMethod"
         @cell-click="(row, column, cell, event) => cellClick(row, column, cell, event)"
+        @sort-change="(column) => sortChange(column)"
+        :sortConfig="{trigger: 'cell', orders: ['asc', 'desc', 'null']}"
       >
         <ux-table-column
           v-for="field in fields"
@@ -28,6 +30,7 @@
           :field="field.datainsName"
           :resizable="true"
           sortable
+          :remote-sort="true"
           :title="field.name"
           :min-width="tableHeaderMinWidth"
           show-header-overflow="tooltip"
@@ -180,7 +183,12 @@ export default {
         }
       ],
       paginstionStyle: {},
-      tableHeaderMinWidth: 200
+      tableHeaderMinWidth: 200,
+      sortFlag: false,
+      sortList: [],
+      sortConfig: {
+        trigger: 'cel'
+      }
     }
   },
   computed: {
@@ -331,7 +339,14 @@ export default {
         datas = []
         this.resetPage()
       }
-      this.$refs.plxTable.reloadData(datas)
+      if(this.sortFlag) {
+        this.$refs.plxTable.reloadData(datas)
+        setTimeout(() => {
+          this.$refs.plxTable.sort(this.sortList[0].field, this.sortList[0].order)
+        }, 500)
+      } else {
+        this.$refs.plxTable.reloadData(datas)
+      }
       this.$nextTick(() => {
         this.initStyle()
       })
@@ -546,6 +561,28 @@ export default {
       }
       // 返回一个二维数组的表尾合计(不要平均值，就不要在数组中添加)
       return [means]
+    },
+    // 问题179 明细表 表头实现接口排序
+    sortChange(column) {
+      // console.log('column', column);
+      // console.log('123', this.chart);
+      let field = this.chart.data.fields.find(item => item.datainsName === column.prop)
+      if(column.order === 'null') {
+        this.sortFlag = false
+        this.sortList = []
+        this.$emit('onSortChange', [])
+      } else {
+        this.sortFlag = true
+        this.sortList = [{
+          field: column.prop,
+          order: column.order
+        }]
+        this.$emit('onSortChange', [{
+          id: field.id,
+          sort: column.order
+        }])
+      }
+      
     },
 
     chartResize() {

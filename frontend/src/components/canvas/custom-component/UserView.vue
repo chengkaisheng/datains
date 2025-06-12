@@ -115,6 +115,7 @@
       class="table-class"
       @onPageChange="pageClick"
       :pageChangeFlag="pageChangeFlag"
+      @onSortChange="sortChange"
     />
     <TableRoll
       v-else-if="rollShowFlag"
@@ -305,7 +306,8 @@ export default {
         pageSize: 20,
         show: 0
       },
-      pageChangeFlag: false
+      pageChangeFlag: false,
+      fieldOrder: []
     }
   },
 
@@ -795,6 +797,10 @@ export default {
       this.pageChangeFlag = true
       this.getData(this.element.propValue.viewId, false)
     },
+    sortChange(fieldOrder) {
+      this.fieldOrder = fieldOrder || []
+      this.getData(this.element.propValue.viewId, false)
+    },
     getData(id, cache = true) {
       console.log('getData...,走的获取数据的通道', this.templateStatus, this.isStylePriority, this.canvasStyleData)
       console.log('getLocal', localStorage.getItem('permissionId'))
@@ -812,7 +818,8 @@ export default {
         const requestInfo = {
           ...this.filter,
           cache: cache,
-          queryFrom: this.isEdit ? 'panel_edit' : 'panel'
+          queryFrom: this.isEdit ? 'panel_edit' : 'panel',
+          fieldOrder: this.fieldOrder
         }
         if (JSON.stringify(requestInfo.filter) === '[]') {
         // requestInfo.filter.value = ['公司1']
