@@ -60,6 +60,25 @@
         >
           <UserViewMobileDialog :chart="showChartInfo" :chart-table="showChartTableInfo" />
         </el-dialog>
+
+        <!-- 添加打印数据数量设置弹窗 -->
+        <el-dialog
+          title="打印数据数量"
+          :visible.sync="printCountDialogVisible"
+          width="30%"
+          :close-on-click-modal="false"
+          @confirm="handlePrintConfirm"
+        >
+          <el-form :model="printForm" label-width="120px">
+            <el-form-item label="数量：">
+              <el-input-number v-model="printForm.count" :min="1" controls-position="right" />
+            </el-form-item>
+          </el-form>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="printCountDialogVisible = false">{{ $t('commons.cancel') }}</el-button>
+            <el-button type="primary" @click="handlePrintConfirm">{{ $t('commons.confirm') }}</el-button>
+          </span>
+        </el-dialog>
       </div>
     </div>
   </div>
@@ -150,7 +169,11 @@ export default {
       scaleSize: 1,
       onsizeKey: false,
       comShow: true,
-      timerDownLoad: null
+      timerDownLoad: null,
+      printCountDialogVisible: false,
+      printForm: {
+        count: 10
+      }
     }
   },
   created() {
@@ -229,7 +252,7 @@ export default {
       //   height = this.canvasStyleData.height
       // }
       console.log('修改高度====')
-      if(!this.inScreen) {
+      if (!this.inScreen) {
         height = '100%'
       } else {
         height = this.canvasStyleData.height * (this.offsetWidth / this.canvasStyleData.width)
@@ -332,7 +355,7 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
-    },
+    }
   },
   watch: {
     componentData: {
@@ -363,10 +386,10 @@ export default {
     // })
     // console.log('token有没有',this.$store.getters.token,this.inScreen)
     // 用于判断全屏预览状态下组件不需要展示详情图标
-    if(!this.$store.getters.token) {
-      this.$store.commit('setScreenStatus',false)
+    if (!this.$store.getters.token) {
+      this.$store.commit('setScreenStatus', false)
     } else {
-      this.$store.commit('setScreenStatus',this.inScreen)
+      this.$store.commit('setScreenStatus', this.inScreen)
     }
 
     setTimeout(() => {
@@ -549,35 +572,35 @@ export default {
       this.exportExcel()
     },
     async exportExcel() {
-      let flag = localStorage.getItem('exportDataFlag')
-      if(flag === 'true') {
+      const flag = localStorage.getItem('exportDataFlag')
+      if (flag === 'true') {
         return
-      } 
+      }
       localStorage.setItem('exportDataFlag', 'true')
       const excelHeader = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.name)
       const excelHeaderKeys = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.datainsName)
       let excelData = JSON.parse(JSON.stringify(this.showChartInfo.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       const excelName = this.showChartInfo.name
-      let data = {
-        "filter": [],
-        "linkageFilters": [],
-        "drill": [],
-        "resultCount": 1000,
-        "resultMode": "all",
-        "queryFrom": "panel",
-        "cache": false,
+      const data = {
+        'filter': [],
+        'linkageFilters': [],
+        'drill': [],
+        'resultCount': 1000,
+        'resultMode': 'all',
+        'queryFrom': 'panel',
+        'cache': false,
         excelExportFlag: true
       }
       try {
-        let res = await viewData(this.showChartInfo.id, this.panelInfo.id, data)
-        if(res.success) {
+        const res = await viewData(this.showChartInfo.id, this.panelInfo.id, data)
+        if (res.success) {
           excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
           export_json_to_excel(excelHeader, excelData, excelName)
         }
         setTimeout(() => {
           localStorage.setItem('exportDataFlag', 'false')
         }, 2000)
-      } catch(err) {
+      } catch (err) {
         setTimeout(() => {
           localStorage.setItem('exportDataFlag', 'false')
         }, 2000)
@@ -588,39 +611,77 @@ export default {
     // },
     printDetailData(chartInfo) {
       this.showChartInfo = chartInfo.chart
+      this.printCountDialogVisible = true
+    },
+    handlePrintConfirm() {
+      this.printCountDialogVisible = false
       this.print()
     },
     async print() {
-      console.log('123print');
-      let flag = localStorage.getItem('printDataFlag')
-      if(flag === 'true') {
+      console.log('123print')
+      const flag = localStorage.getItem('printDataFlag')
+      if (flag === 'true') {
         return
-      } 
+      }
       localStorage.setItem('printDataFlag', 'true')
       // const excelHeader = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.name)
       // const excelHeaderKeys = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.datainsName)
       // let excelData = JSON.parse(JSON.stringify(this.showChartInfo.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       // const excelName = this.showChartInfo.name
-      let data = {
-        "filter": [],
-        "linkageFilters": [],
-        "drill": [],
-        "resultCount": 10,
-        "resultMode": "custom",
-        "queryFrom": "panel",
-        "cache": false,
+      const data = {
+        'filter': [],
+        'linkageFilters': [],
+        'drill': [],
+        'resultCount': this.printForm.count,
+        'resultMode': 'custom',
+        'queryFrom': 'panel',
+        'cache': false,
         excelExportFlag: true
       }
       try {
-        let res = await viewData(this.showChartInfo.id, this.panelInfo.id, data)
-        if(res.success) {
-          excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
+        const res = await viewData(this.showChartInfo.id, this.panelInfo.id, data)
+        if (res.success) {
+          console.log('打印数据', res.data.data)
+          // const excelHeaderKeys = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.datainsName)
+          // const excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
+          const excelData1 = JSON.parse(JSON.stringify(res.data.data.tableRow))
+          const columns = JSON.parse(JSON.stringify(res.data.data.fields)).map((item, i) => ({
+            header: item.name,
+            dataKey: item.datainsName
+          }))
+          const tableData = excelData1.map(row => {
+            const newRow = {}
+            // Object.keys(row).forEach((key, i) => {
+            //   newRow[`col${i + 1}`] = String(row[key])
+            // })
+            columns.forEach(column => {
+              newRow[column.dataKey] = String(row[column.dataKey])
+            })
+            return newRow
+          })
+          // // 构造 20 个字段
+          // const columns1 = Array.from({ length: 10 }, (_, i) => ({
+          //   header: `字段${i + 1}`,
+          //   dataKey: `col${i + 1}`
+          // }))
+
+          // // 模拟 2000 条数据，20 列
+          // const tableData1 = Array.from({ length: 10 }, (_, rowIdx) => {
+          //   const row = {}
+          //   for (let i = 1; i <= 10; i++) {
+          //     row[`col${i}`] = `R${rowIdx + 1}C${i}`
+          //   }
+          //   return row
+          // })
+          console.log('打印数据111', columns, tableData)
+
+          printA4(columns, tableData)
           // export_json_to_excel(excelHeader, excelData, excelName)
         }
         setTimeout(() => {
           localStorage.setItem('printDataFlag', 'false')
         }, 2000)
-      } catch(err) {
+      } catch (err) {
         setTimeout(() => {
           localStorage.setItem('printDataFlag', 'false')
         }, 2000)
