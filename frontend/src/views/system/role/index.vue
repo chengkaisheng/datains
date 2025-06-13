@@ -43,11 +43,11 @@
         :label="$t('commons.name')"
       />
 
-      <el-table-column
+      <!-- <el-table-column
         prop="roleGroup"
         :label="$t('role.roleGroup')"
         show-overflow-tooltip
-      />
+      /> -->
 
       <el-table-column
         prop="description"
