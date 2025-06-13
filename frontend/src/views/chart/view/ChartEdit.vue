@@ -314,7 +314,20 @@
                     </el-row> -->
 
                     <!--xAxisExt-->
-                    <el-button @click="calcData(true)">数据加载</el-button>
+                    <!-- <el-button size="mini" @click="calcData(true)">数据加载</el-button> -->
+                     <div style="display: flex;justify-content: end;width: 100%;">
+                      <div @click="calcData(true)" style="width: 70px;
+                        height: 25px;
+                        line-height: 25px;
+                        background-color: rgba(64, 158, 255, 1);
+                        cursor: pointer;
+                        border-radius: 20px;
+                        font-size: 12px;
+                        text-align: center;
+                        color: #fff;
+                        margin-right: 10px;">数据加载</div>
+                     </div>
+                    
 
                     <el-row
                       v-if="view.type === 'table-pivot'"
