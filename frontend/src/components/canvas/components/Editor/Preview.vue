@@ -79,6 +79,7 @@ import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
 import bus from '@/utils/bus'
 import { buildFilterMap } from '@/utils/conditionUtil'
+import { printA4 } from '@/utils/print'
 import { viewDataExport, viewData } from '@/api/panel/panel'
 import { export_json_to_excel } from '@/plugins/Export2Excel'
 export default {
@@ -387,6 +388,7 @@ export default {
     })
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     eventBus.$on('exportDetailData', this.exportDetailData)
+    eventBus.$on('printDetailData', this.printDetailData)
     _this.$store.commit('clearLinkageSettingInfo', false)
     _this.canvasStyleDataInit()
     // 如果当前终端设备是移动端，则进行移动端的布局设计
@@ -584,6 +586,46 @@ export default {
     // exportExcel() {
     //   this.$refs['userViewDialog'].exportExcel()
     // },
+    printDetailData(chartInfo) {
+      this.showChartInfo = chartInfo.chart
+      this.print()
+    },
+    async print() {
+      console.log('123print');
+      let flag = localStorage.getItem('printDataFlag')
+      if(flag === 'true') {
+        return
+      } 
+      localStorage.setItem('printDataFlag', 'true')
+      // const excelHeader = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.name)
+      // const excelHeaderKeys = JSON.parse(JSON.stringify(this.showChartInfo.data.fields)).map(item => item.datainsName)
+      // let excelData = JSON.parse(JSON.stringify(this.showChartInfo.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
+      // const excelName = this.showChartInfo.name
+      let data = {
+        "filter": [],
+        "linkageFilters": [],
+        "drill": [],
+        "resultCount": 10,
+        "resultMode": "custom",
+        "queryFrom": "panel",
+        "cache": false,
+        excelExportFlag: true
+      }
+      try {
+        let res = await viewData(this.showChartInfo.id, this.panelInfo.id, data)
+        if(res.success) {
+          excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
+          // export_json_to_excel(excelHeader, excelData, excelName)
+        }
+        setTimeout(() => {
+          localStorage.setItem('printDataFlag', 'false')
+        }, 2000)
+      } catch(err) {
+        setTimeout(() => {
+          localStorage.setItem('printDataFlag', 'false')
+        }, 2000)
+      }
+    },
     deselectCurComponent(e) {
       if (!this.isClickComponent) {
         this.$store.commit('setCurComponent', { component: null, index: null })

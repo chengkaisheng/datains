@@ -3,6 +3,9 @@
     <div v-if="hasDataPermission('export',panelInfo.privileges) && downloadFlag" class="download" @click.stop="exportDetailData">
       <i class="el-icon-download" ></i>
     </div>
+    <div v-if="hasDataPermission('export',panelInfo.privileges) && downloadFlag" class="download print" @click.stop="printDetailData">
+      <i class="el-icon-printer" ></i>
+    </div>
     <div v-if="show" :class="['bar-main', hasDataPermission('export',panelInfo.privileges) && downloadFlag ? 'bar-main-right' : '']" :style="setNewValue">
       <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
       <div v-if="linkageAreaShow" style="margin-right: -1px;">
@@ -95,6 +98,7 @@ import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 import LinkageField from '@/components/canvas/components/Editor/LinkageField'
 import toast from '@/components/canvas/utils/toast'
 import { deepCopy } from '../../utils/utils'
+
 
 export default {
   components: { SettingMenu, LinkageField },
@@ -225,10 +229,13 @@ export default {
   },
   methods: {
     exportDetailData() {
-      console.log('exportDetailData1');
-      
       this.$emit('exportDetailData')
     },
+    printDetailData() {
+      // console.log('printDetailData');
+      this.$emit('printDetailData')
+    },
+    
     checkChange(boo) {
       console.log('isCheck', boo, this.element.id,)
       const componentData = deepCopy(this.componentData)
@@ -444,6 +451,9 @@ export default {
     cursor:pointer!important;
     background-color: #0a7be0;
   }
+  .print {
+    right: 24px;
+  }
   .download i {
     width: 24px;
     height: 24px;
@@ -465,7 +475,7 @@ export default {
     // bottom:-25px;
   }
   .bar-main-right {
-    right: 24px;
+    right: 48px;
   }
   .bar-main i{
     color: white;

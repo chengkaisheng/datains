@@ -3,6 +3,9 @@
     <div v-if="hasDataPermission('export',panelInfo.privileges) && show && type.includes('table')" class="download" @click.stop="exportDetailData">
       <i class="el-icon-download" ></i>
     </div>
+    <div v-if="hasDataPermission('export',panelInfo.privileges) && show && type.includes('table')" class="download print" @click.stop="printDetailData">
+      <i class="el-icon-printer" ></i>
+    </div>
     <div v-if="show" :class="['bar-main', hasDataPermission('export',panelInfo.privileges) && type.includes('table') ? 'bar-main-right' : '']">
       <div>
         <span v-if="isEdit" :title="$t('panel.edit')">
@@ -85,6 +88,9 @@ export default {
     },
     exportDetailData() {
       this.$emit('exportDetailData')
+    },
+    printDetailData() {
+      this.$emit('printDetailData')
     },
   }
 }

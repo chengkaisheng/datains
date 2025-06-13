@@ -7,7 +7,7 @@
     @mousedown="elementMouseDown"
   >
     <div :style="commonStyle" class="main_view">
-      <edit-bar :show="componentActiveFlag" :currentComponentType="currentComponentType" :element="config" @exportDetailData="exportDetailData" @showViewDetails="showViewDetails" />
+      <edit-bar :show="componentActiveFlag" :currentComponentType="currentComponentType" :element="config" @exportDetailData="exportDetailData" @printDetailData="printDetailData" @showViewDetails="showViewDetails" />
       <close-bar v-if="previewVisible" @closePreview="closePreview" />
       <de-out-widget
         v-if="config.type==='custom'"
@@ -35,6 +35,7 @@
         :h="config.style.height"
       />
       <component
+      class='qwer'
         :is="config.component"
         v-else
         ref="wrapperChild"
@@ -297,6 +298,9 @@ export default {
     },
     exportDetailData() {
       this.$refs.wrapperChild.exportDetailData()
+    },
+    printDetailData() {
+      this.$refs.wrapperChild.printDetailData()
     },
     closePreview() {
       this.previewVisible = false

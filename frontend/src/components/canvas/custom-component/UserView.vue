@@ -15,6 +15,7 @@
       :view-id="element.propValue.viewId"
       @showViewDetails="openChartDetailsDialog"
       @exportDetailData="exportDetailData"
+      @printDetailData="printDetailData"
     />
     <div v-if="requestStatus === 'error'" class="chart-error-class">
       <div class="chart-error-message-class">
@@ -2054,6 +2055,11 @@ export default {
     },
     exportDetailData() {
       eventBus.$emit('exportDetailData', {
+        chart: this.chart
+      })
+    },
+    printDetailData() {
+      eventBus.$emit('printDetailData', {
         chart: this.chart
       })
     },

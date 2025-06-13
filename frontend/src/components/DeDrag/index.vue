@@ -40,6 +40,7 @@
         :element="element"
         @showViewDetails="showViewDetails"
         @exportDetailData="exportDetailData"
+        @printDetailData="printDetailData"
         @amRemoveItem="amRemoveItem"
         @amAddItem="amAddItem"
         @resizeView="resizeView"
@@ -1958,6 +1959,9 @@ export default {
     },
     exportDetailData() {
       this.$emit('exportDetailData')
+    },
+    printDetailData() {
+      this.$emit('printDetailData')
     },
     amAddItem() {
       this.$emit('amAddItem')
