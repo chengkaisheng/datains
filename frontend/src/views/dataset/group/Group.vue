@@ -91,6 +91,10 @@
                               <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
                               {{ $t('dataset.excel_data') }}
                             </el-dropdown-item>
+                            <el-dropdown-item :command="beforeClickAddData('online',data)" :disabled="!kettleRunning && engineMode!=='simple'">
+                              <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
+                              {{ $t('dataset.online_data') }}
+                            </el-dropdown-item>
                             <el-dropdown-item v-show="!hideCustomDs" :command="beforeClickAddData('custom',data)">
                               <svg-icon icon-class="ds-custom" class="ds-icon-custom" />
                               {{ $t('dataset.custom_data') }}
@@ -139,6 +143,7 @@
                   <svg-icon v-if="data.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
                   <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
                   <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+                  <svg-icon v-if="data.modelInnerType === 'onLineExcel'" icon-class="ds-excel" class="ds-icon-excel" />
                   <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
                   <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
                   <svg-icon v-if="data.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
@@ -544,7 +549,11 @@ export default {
 
     nodeClick(data, node) {
       if (data.modelInnerType !== 'group') {
-        this.$emit('switchComponent', { name: 'ViewTable', param: data })
+        if(data.modelInnerType === "onLineExcel") {
+          this.$emit('switchComponent', { name: 'viewOnlineExcel', param: data })
+        } else {
+          this.$emit('switchComponent', { name: 'ViewTable', param: data })
+        }
       }
     },
 
@@ -565,6 +574,9 @@ export default {
           break
         case 'excel':
           this.addData('AddExcel')
+          break
+        case 'online':
+          this.addData('AddOnlineExcel')
           break
         case 'custom':
           this.addData('AddCustom')

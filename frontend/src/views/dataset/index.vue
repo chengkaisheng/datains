@@ -19,10 +19,12 @@ import Group from './group/Group'
 
 import DataHome from './data/DataHome'
 import ViewTable from './data/ViewTable'
+import ViewOnlineExcel from './data/ViewOnlineExcel'
 import AddDB from './add/AddDB'
 import AddApi from './add/AddApi'
 import AddSQL from './add/AddSQL'
 import AddExcel from './add/AddExcel'
+import AddOnlineExcel from './add/AddOnlineExcel'
 import AddCustom from './add/AddCustom'
 import AddUnion from '@/views/dataset/add/AddUnion'
 import FieldEdit from './data/FieldEdit'
@@ -30,7 +32,7 @@ import { removeClass } from '@/utils'
 import { checkCustomDs } from '@/api/dataset/dataset'
 export default {
   name: 'DataSet',
-  components: { DeMainContainer, DeContainer, DeAsideContainer, Group, DataHome, ViewTable, AddDB, AddSQL, AddExcel, AddCustom, AddApi },
+  components: { DeMainContainer, DeContainer, DeAsideContainer, Group, DataHome, ViewTable, ViewOnlineExcel, AddDB, AddSQL, AddExcel, AddOnlineExcel, AddCustom, AddApi },
   data() {
     return {
       component: DataHome,
@@ -67,6 +69,12 @@ export default {
           break
         case 'AddExcel':
           this.component = AddExcel
+          break
+        case 'AddOnlineExcel':
+          this.component = AddOnlineExcel
+          break
+        case 'viewOnlineExcel':
+          this.component = ViewOnlineExcel
           break
         case 'AddCustom':
           this.component = AddCustom

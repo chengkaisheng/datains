@@ -77,6 +77,15 @@ export function listDatasource() {
   })
 }
 
+export function getOnlineExcelFile(id) {
+  return request({
+    url: `/dataset/table/getOnLineExcelData?fileId=${id}`,
+    loading: true,
+    method: 'get',
+    responseType: 'blob'
+  })
+}
+
 export function listApiDatasource() {
   return request({
     url: '/datasource/list/api',

@@ -1,0 +1,408 @@
+<template>
+  <el-col style="height: 100%;">
+    <el-row style="height: 100%;">
+      <el-row style="height: 26px" class="title-text">
+        <span style="line-height: 26px">
+          添加在线数据集
+          <!-- {{ param.tableId?$t('dataset.edit_excel_table'):$t('dataset.add_excel_table') }} -->
+        </span>
+        <!-- <span style="line-height: 26px;">
+          <el-tooltip class="item" effect="dark" content="Right Bottom 提示文字" placement="bottom">
+            <div slot="content">
+              {{ $t('dataset.excel_info_1') }}<br>
+              {{ $t('dataset.excel_info_2') }}<br>
+              {{ $t('dataset.excel_info_3') }}
+            </div>
+            <i class="el-icon-info" style="cursor: pointer;" />
+          </el-tooltip>
+        </span> -->
+        <el-row style="float: right">
+          <el-button size="mini" @click="cancel">
+            {{ $t("dataset.cancel") }}
+          </el-button>
+          <el-button size="mini" type="primary" @click="save">
+            {{ $t("dataset.confirm") }}
+          </el-button>
+        </el-row>
+      </el-row>
+      <el-divider />
+
+      <div style="margin-top: 10px;height: 100%;">
+          <el-row>
+              <el-col style="width: 200px">
+                <el-button size="mini" type="primary" @click="uploadFile">
+                  上传文件
+                </el-button>
+                
+              </el-col>
+              <el-col style="width: 400px;display: flex;align-items: center;">
+                <div style="width: 95px;">数据集名称：</div>
+                <el-input v-model="name"></el-input>
+              </el-col>
+            </el-row>
+
+          <div class="excel">
+            <div id="luckysheet" class="luckysheet-container" />
+
+            <div v-show="isMaskShow" class="download-mask">
+              <div class="download-content">
+                <i class="el-icon-loading" />
+                <div class="download-text">正在加载数据...</div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </el-row>
+  </el-col>
+</template>
+
+<script>
+import { post } from "@/api/dataset/dataset";
+import { getToken } from "@/utils/auth";
+import i18n from "@/lang";
+import { $alert } from "@/utils/message";
+import store from "@/store";
+import { exportExcel } from '../data/export'
+
+const token = getToken();
+
+export default {
+  name: "AddExcel",
+  props: {
+    param: {
+      type: Object,
+      default: null,
+    },
+    tableId: {
+      type: String,
+      default: "",
+    },
+    editType: {
+      type: Number,
+      default: 0,
+    },
+  },
+  data() {
+    return {
+      // sheetObj: { datasetName: ' ', fields: [] },
+      // sheets: [],
+      // data: [],
+      mode: '1',
+      // height: 600,
+      fileList: [],
+      headers: {
+        Authorization: token,
+        "Accept-Language": i18n.locale.replace("_", "-"),
+      },
+      baseUrl: process.env.VUE_APP_BASE_API,
+      // path: '',
+      uploading: false,
+      // fieldOptions: [
+      //   { label: this.$t('dataset.text'), value: 'TEXT' },
+      //   { label: this.$t('dataset.time'), value: 'DATETIME' },
+      //   { label: this.$t('dataset.value'), value: 'LONG' },
+      //   { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 'DOUBLE' }
+      // ],
+      // props: {
+      //   label: 'excelLable',
+      //   children: 'sheets'
+      // },
+      // count: 1,
+      // excelData: [],
+      // defaultExpandedKeys: [],
+      // defaultCheckedKeys: [],
+      isMaskShow: false,
+      name: '',
+      file: null
+    };
+  },
+  watch: {},
+  mounted() {
+    // window.onresize = () => {
+    //   this.calHeight()
+    // }
+    // this.calHeight()
+  },
+  created() {
+    if (!this.param.tableId) {
+      this.param.tableId = "";
+    }
+    if (!this.param.editType) {
+      this.param.editType = 0;
+    }
+  },
+  methods: {
+    init(data) {
+      this.isMaskShow = true;
+      this.$nextTick(() => {
+        this.isMaskShow = false;
+        luckysheet.destroy();
+        luckysheet.create({
+          container: "luckysheet", // 设定DOM容器的id
+          title: this.name, // 设定表格名称
+          lang: "zh", // 设定表格语言
+          plugins: ["chart"],
+          data: data || [],
+          // 添加只读模式配置
+          showtoolbar: !this.isReadOnly, // 是否显示工具栏
+          showinfobar: !this.isReadOnly, // 是否显示信息栏
+          allowEdit: !this.isReadOnly, // 是否允许编辑
+          enableAddRow: !this.isReadOnly, // 是否允许添加行
+          enableAddCol: !this.isReadOnly, // 是否允许添加列
+        });
+      });
+    },
+    uploadFile() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".xlsx"; // 可指定类型，如 ',.csv,.txt'
+
+      input.onchange = () => {
+        const file = input.files[0];
+        if (file) {
+          console.log("用户选择的文件:", file);
+          // 可上传或读取内容
+          this.file = file;
+          this.uploadExcel(file);
+        }
+      };
+
+      input.click(); // 打开文件选择对话框
+    },
+    uploadExcel(file) {
+      const name = file.name;
+      const suffixArr = name.split(".");
+      this.name = suffixArr[0];
+      const suffix = suffixArr[suffixArr.length - 1];
+      if (suffix != "xlsx") {
+        this.$message.error("目前只支持xlsx文件");
+        return;
+      }
+      const _this = this;
+
+      try {
+        LuckyExcel.transformExcelToLucky(
+          file,
+          function (exportJson, luckysheetfile) {
+            try {
+              if (
+                !exportJson ||
+                !exportJson.sheets ||
+                exportJson.sheets.length === 0
+              ) {
+                _this.$message.error(
+                  "无法读取Excel文件的内容，目前不支持xls文件！"
+                );
+                return;
+              }
+              _this.init(exportJson.sheets);
+              // _this.excelJson = exportJson
+            } catch (err) {
+              // console.error('处理Excel数据错误:', err)
+              _this.$message.error("无法读取文件内容，请检查文件是否损坏1");
+            }
+          },
+          function (err) {
+            console.error("Excel解析错误:", err);
+            _this.$message.error("无法读取文件内容，请检查文件是否损坏2");
+          }
+        );
+      } catch (err) {
+        // console.error('Excel转换错误:', err)
+        _this.$message.error("无法读取文件内容，请检查文件是否损坏3");
+      }
+    },
+    beforeUpload(file) {
+      this.uploading = true;
+    },
+    uploadFail(response, file, fileList) {
+      let myError = response.toString();
+      myError = myError.replace("Error: ", "");
+
+      if (myError.indexOf("AuthenticationException") >= 0) {
+        const message = i18n.t("login.tokenError");
+        $alert(
+          message,
+          () => {
+            store.dispatch("user/logout").then(() => {
+              location.reload();
+            });
+          },
+          {
+            confirmButtonText: i18n.t("login.re_login"),
+            showClose: false,
+          }
+        );
+        return;
+      }
+
+      const errorMessage =
+        JSON.parse(myError).message + ", " + this.$t("dataset.parse_error");
+
+      this.path = "";
+      this.fields = [];
+      this.sheets = [];
+      this.data = [];
+      const datas = this.data;
+      this.$refs.plxTable.reloadData(datas);
+      this.fileList = [];
+      this.uploading = false;
+      this.$message({
+        type: "error",
+        message: errorMessage,
+        showClose: true,
+      });
+    },
+    uploadSuccess(response, file, fileList) {
+      this.uploading = false;
+      this.excelData.push(response.data);
+      this.defaultExpandedKeys.push(response.data.id);
+      this.defaultCheckedKeys.push(response.data.sheets[0].id);
+      this.$nextTick(() => {
+        this.$refs.tree.setCheckedKeys(this.defaultCheckedKeys);
+      });
+      this.fileList = fileList;
+    },
+
+    async save() {
+      let blob = await exportExcel(luckysheet.getAllSheets(), this.name, true)
+      const formData = new FormData();
+      formData.append('file', blob)
+      formData.append('id', this.param.tableId || '')
+      formData.append('name', this.name || '')
+      formData.append('sceneId', this.param.id || '')
+      formData.append('type', 'onLineExcel')
+      post('/dataset/table/save/onLineExcel', formData).then(response => {
+        this.$emit('saveSuccess', {})
+        this.cancel()
+      })
+    },
+    cancel() {
+      this.dataReset();
+      if (this.param.tableId) {
+        this.$emit("switchComponent", {
+          name: "ViewTable",
+          param: this.param.table,
+        });
+      } else {
+        this.$emit("switchComponent", { name: "" });
+      }
+    },
+    dataReset() {
+      this.name = ''
+    }
+  },
+};
+</script>
+
+<style scoped>
+.el-divider--horizontal {
+  margin: 12px 0;
+}
+
+.form-item {
+  margin-bottom: 6px !important;
+}
+
+.el-checkbox {
+  margin-bottom: 14px;
+  margin-left: 0;
+  margin-right: 14px;
+}
+
+.el-checkbox.is-bordered + .el-checkbox.is-bordered {
+  margin-left: 0;
+}
+
+span {
+  font-size: 14px;
+}
+
+.row-style >>> .el-form-item__label {
+  font-size: 12px;
+}
+
+.dataPreview >>> .el-card__header {
+  padding: 6px 8px;
+}
+
+.dataPreview >>> .el-card__body {
+  padding: 10px;
+}
+
+.el-header {
+  background-color: var(--ContentBG, rgb(241, 243, 248));
+  color: var(--TextActive, #333);
+  line-height: 30px;
+}
+
+.el-main {
+  padding: 0px;
+}
+
+.limit-length-data {
+  font-size: 12px;
+  color: var(--TableColor, #3d4d66);
+}
+
+.excel {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 92px);
+}
+
+.luckysheet-container {
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 12px;
+  bottom: 0;
+}
+
+.download-mask {
+  position: absolute;
+  z-index: 1000000;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.download-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.download-content i {
+  font-size: 42px;
+  color: #409eff;
+  margin-bottom: 20px;
+}
+
+.download-text {
+  font-size: 20px;
+  color: #303133;
+}
+</style>
+
+<style>
+.luckysheet_info_detail {
+  display: none !important;
+}
+.luckysheet-input-box {
+  z-index: 1000000 !important;
+}
+.luckysheet-cols-menu {
+  z-index: 1000000 !important;
+}
+.luckysheet-rows-menu {
+  z-index: 1000000 !important;
+}
+</style>
