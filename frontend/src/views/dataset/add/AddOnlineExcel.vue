@@ -63,6 +63,7 @@ import i18n from "@/lang";
 import { $alert } from "@/utils/message";
 import store from "@/store";
 import { exportExcel } from '../data/export'
+import LuckyExcel from 'luckyexcel'
 
 const token = getToken();
 

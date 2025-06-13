@@ -50,6 +50,7 @@ import { getOnlineExcelFile, post } from "@/api/dataset/dataset";
 // import { $alert } from "@/utils/message";
 // import store from "@/store";
 import { exportExcel } from './export'
+import LuckyExcel from 'luckyexcel'
 
 // const token = getToken();
 
