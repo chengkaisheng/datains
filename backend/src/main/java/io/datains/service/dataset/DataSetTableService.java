@@ -1,5 +1,6 @@
 package io.datains.service.dataset;
 
+import cn.hutool.core.io.IoUtil;
 import com.google.gson.Gson;
 import io.datains.auth.annotation.DeCleaner;
 import io.datains.auth.api.dto.CurrentUserDto;
@@ -12,6 +13,7 @@ import io.datains.commons.constants.*;
 import io.datains.commons.exception.DEException;
 import io.datains.commons.utils.*;
 import io.datains.controller.request.dataset.DataSetGroupRequest;
+import io.datains.controller.request.dataset.DataSetOnLineExcelRequest;
 import io.datains.controller.request.dataset.DataSetTableRequest;
 import io.datains.controller.request.dataset.DataSetTaskRequest;
 import io.datains.controller.request.datasource.DatasourceRequest;
@@ -23,17 +25,19 @@ import io.datains.dto.dataset.union.UnionItemDTO;
 import io.datains.dto.dataset.union.UnionParamDTO;
 import io.datains.dto.datasource.TableField;
 import io.datains.exception.DataInsException;
+import io.datains.file.utils.MinIOUtils;
 import io.datains.i18n.Translator;
 import io.datains.listener.util.CacheUtils;
 import io.datains.plugins.common.constants.DatasourceTypes;
 import io.datains.plugins.loader.ClassloaderResponsity;
+import io.datains.provider.DDLProvider;
 import io.datains.provider.ProviderFactory;
+import io.datains.provider.QueryProvider;
 import io.datains.provider.datasource.DatasourceProvider;
 import io.datains.provider.datasource.JdbcProvider;
-import io.datains.provider.DDLProvider;
-import io.datains.provider.QueryProvider;
 import io.datains.service.engine.EngineService;
 import io.datains.service.sys.SysAuthService;
+import io.minio.ObjectWriteResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +50,7 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.pentaho.di.core.util.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,10 +59,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -105,6 +112,8 @@ public class DataSetTableService {
     private EngineService engineService;
     @Resource
     private SysAuthService sysAuthService;
+    @Resource
+    private MinIOUtils minIOUtils;
 
     private static boolean isUpdatingDatasetTableStatus = false;
     private static final String lastUpdateTime = "${__last_update_time__}";
@@ -253,6 +262,52 @@ public class DataSetTableService {
         }
     }
 
+    public void getOnLineExcelData(String fileId, HttpServletResponse response) {
+        try (InputStream inputStream = minIOUtils.getObject(fileId)) {
+            byte[] content = IoUtil.readBytes(inputStream);
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码
+            String fileName = URLEncoder.encode("数据", "UTF-8").replaceAll("\\+", "%20");
+            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+            // 输出附件
+            IoUtil.write(response.getOutputStream(), false, content);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.reset();
+            throw new RuntimeException("获取文件失败");
+        }
+    }
+
+    @DeCleaner(value = DePermissionType.DATASET)
+    public void saveOnLineExcel(DataSetOnLineExcelRequest datasetTable) {
+        checkName(datasetTable);
+        //将文件传入minio
+        try (InputStream inputStream = datasetTable.getFile().getInputStream()) {
+            //删除老文件
+            if (datasetTable.getInfo() != null) {
+                minIOUtils.removeFile(datasetTable.getInfo());
+            }
+            ObjectWriteResponse response = minIOUtils.uploadFile(UUIDUtil.getUUID().toString(), inputStream);
+            datasetTable.setInfo(response.object());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("上传文件失败");
+        }
+        if (StringUtils.isEmpty(datasetTable.getId())) {
+            datasetTable.setId(UUID.randomUUID().toString());
+            datasetTable.setCreateBy(AuthUtils.getUser().getUsername());
+            datasetTable.setCreateTime(System.currentTimeMillis());
+            datasetTableMapper.insert(datasetTable);
+            // 清理权限缓存
+            CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
+            sysAuthService.copyAuth(datasetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
+        } else {
+            //更新文件
+            datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
+        }
+    }
+
     @DeCleaner(value = DePermissionType.DATASET)
     public DatasetTable save(DataSetTableRequest datasetTable) throws Exception {
         checkName(datasetTable);
@@ -298,6 +353,9 @@ public class DataSetTableService {
 
     public void delete(String id) throws Exception {
         DatasetTable table = datasetTableMapper.selectByPrimaryKey(id);
+        if (table.getType().equals("onLineExcel")) {
+            minIOUtils.removeFile(table.getInfo());
+        }
         datasetTableMapper.deleteByPrimaryKey(id);
         dataSetTableFieldsService.deleteByTableId(id);
         // 删除同步任务

@@ -1,9 +1,9 @@
 package io.datains.base.domain;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Objects;
-
-import lombok.Data;
 
 @Data
 public class SysMenu implements Serializable {
@@ -42,6 +42,8 @@ public class SysMenu implements Serializable {
     private Long createTime;
 
     private Long updateTime;
+
+    private Boolean isPlugin;
 
     private static final long serialVersionUID = 1L;
 

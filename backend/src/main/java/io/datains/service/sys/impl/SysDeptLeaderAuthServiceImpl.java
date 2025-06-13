@@ -3,11 +3,14 @@ package io.datains.service.sys.impl;
 import io.datains.base.domain.SysDeptLeader;
 import io.datains.base.domain.SysDeptLeaderAuth;
 import io.datains.base.domain.SysUser;
+import io.datains.base.domain.XpackSysDept;
 import io.datains.base.mapper.SysDeptLeaderAuthMapper;
 import io.datains.base.mapper.SysDeptLeaderMapper;
 import io.datains.base.mapper.SysUserMapper;
+import io.datains.base.mapper.XpackSysDeptMapper;
 import io.datains.service.sys.AuthXpackService;
 import io.datains.service.sys.SysDeptLeaderAuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,8 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
     private SysUserMapper sysUserMapper;
     @Resource
     private AuthXpackService authXpackService;
+    @Autowired(required = false)
+    private XpackSysDeptMapper sysDeptMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -102,33 +107,40 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
         if (sysUser == null || sysUser.getDeptId() == null) {
             return;
         }
-        SysDeptLeaderAuth auth = new SysDeptLeaderAuth();
-        auth.setDeptId(sysUser.getDeptId());
-        auth.setUserId(userId);
-        auth.setAuthSource(authSource);
-        auth.setAuthSourceType(authSourceType);
-        String privilegeType = null;
-        if ("dataset".equals(authSourceType)) {
-            privilegeType = "15,3,1,20";
-        } else if ("link".equals(authSourceType)) {
-            privilegeType = "15,3,1";
-        } else if ("panel".equals(authSourceType)) {
-            privilegeType = "15,3,1,5";
-        }
-        auth.setPrivilegeType(privilegeType);
-        auth.setCreateTime(System.currentTimeMillis());
-        auth.setUpdateTime(auth.getCreateTime());
-        this.sysDeptLeaderAuthMapper.insertBatch(Collections.singletonList(auth));
+        //开始进行权限处理
+        Long deptId = sysUser.getDeptId();
+        while (deptId != null && deptId > 0) {
+            XpackSysDept dept = sysDeptMapper.selectByPrimaryKey(deptId);
+            SysDeptLeaderAuth auth = new SysDeptLeaderAuth();
+            auth.setDeptId(deptId);
+            auth.setUserId(userId);
+            auth.setAuthSource(authSource);
+            auth.setAuthSourceType(authSourceType);
+            String privilegeType = null;
+            if ("dataset".equals(authSourceType)) {
+                privilegeType = "15,3,1,20";
+            } else if ("link".equals(authSourceType)) {
+                privilegeType = "15,3,1";
+            } else if ("panel".equals(authSourceType)) {
+                privilegeType = "15,3,1,5";
+            }
+            auth.setPrivilegeType(privilegeType);
+            auth.setCreateTime(System.currentTimeMillis());
+            auth.setUpdateTime(auth.getCreateTime());
+            this.sysDeptLeaderAuthMapper.insertBatch(Collections.singletonList(auth));
 
-        //同步将权限添加到组织负责人身上
-        List<Long> leaderIds = this.sysDeptLeaderMapper.selectUserIdsByDeptId(sysUser.getDeptId());
-        if (leaderIds != null && !leaderIds.isEmpty() && auth.getPrivilegeType() != null) {
-            for (Long leaderId : leaderIds) {
-                List<Integer> privilegeTypes = Arrays.stream(auth.getPrivilegeType().split(",")).map(Integer::parseInt).collect(Collectors.toList());
-                for (Integer privilegeType1 : privilegeTypes) {
-                    this.changeAuthForUser(leaderId, authSource, authSourceType, privilegeType1, 1);
+            //同步将权限添加到组织负责人身上
+            List<Long> leaderIds = this.sysDeptLeaderMapper.selectUserIdsByDeptId(deptId);
+            if (leaderIds != null && !leaderIds.isEmpty() && auth.getPrivilegeType() != null) {
+                for (Long leaderId : leaderIds) {
+                    List<Integer> privilegeTypes = Arrays.stream(auth.getPrivilegeType().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+                    for (Integer privilegeType1 : privilegeTypes) {
+                        this.changeAuthForUser(leaderId, authSource, authSourceType, privilegeType1, 1);
+                    }
                 }
             }
+            //获取上级组织id，循环添加权限信息
+            deptId = dept.getPid();
         }
     }
 

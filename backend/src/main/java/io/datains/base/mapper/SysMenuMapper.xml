@@ -80,8 +80,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    menu_id, pid, sub_count, `type`, title, `name`, component, menu_sort, icon, `path`, 
-    i_frame, `cache`, hidden, permission, create_by, update_by, create_time, update_time
+    menu_id, pid, sub_count, `type`, title, `name`, component, menu_sort, icon, `path`,
+    i_frame, `cache`, hidden, permission, create_by, update_by, create_time, update_time, is_plugin
   </sql>
   <select id="selectByExample" parameterType="io.datains.base.domain.SysMenuExample" resultMap="BaseResultMap">
     select
@@ -98,7 +98,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from sys_menu
     where menu_id = #{menuId,jdbcType=BIGINT}
@@ -114,17 +114,17 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.datains.base.domain.SysMenu">
-    insert into sys_menu (menu_id, pid, sub_count, 
-      `type`, title, `name`, 
-      component, menu_sort, icon, 
-      `path`, i_frame, `cache`, hidden, 
-      permission, create_by, update_by, 
+    insert into sys_menu (menu_id, pid, sub_count,
+      `type`, title, `name`,
+      component, menu_sort, icon,
+      `path`, i_frame, `cache`, hidden,
+      permission, create_by, update_by,
       create_time, update_time)
-    values (#{menuId,jdbcType=BIGINT}, #{pid,jdbcType=BIGINT}, #{subCount,jdbcType=INTEGER}, 
-      #{type,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
-      #{component,jdbcType=VARCHAR}, #{menuSort,jdbcType=INTEGER}, #{icon,jdbcType=VARCHAR}, 
-      #{path,jdbcType=VARCHAR}, #{iFrame,jdbcType=BIT}, #{cache,jdbcType=BIT}, #{hidden,jdbcType=BIT}, 
-      #{permission,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}, 
+    values (#{menuId,jdbcType=BIGINT}, #{pid,jdbcType=BIGINT}, #{subCount,jdbcType=INTEGER},
+      #{type,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+      #{component,jdbcType=VARCHAR}, #{menuSort,jdbcType=INTEGER}, #{icon,jdbcType=VARCHAR},
+      #{path,jdbcType=VARCHAR}, #{iFrame,jdbcType=BIT}, #{cache,jdbcType=BIT}, #{hidden,jdbcType=BIT},
+      #{permission,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR},
       #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="io.datains.base.domain.SysMenu">

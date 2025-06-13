@@ -8,6 +8,7 @@ import io.datains.base.domain.DatasetTableField;
 import io.datains.base.domain.DatasetTableIncrementalConfig;
 import io.datains.commons.constants.DePermissionType;
 import io.datains.commons.constants.ResourceAuthLevel;
+import io.datains.controller.request.dataset.DataSetOnLineExcelRequest;
 import io.datains.controller.request.dataset.DataSetTableRequest;
 import io.datains.controller.response.DataSetDetail;
 import io.datains.dto.dataset.DataSetTableDTO;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +59,26 @@ public class DataSetTableController {
         } else {
             dataSetTableService.save(datasetTable);
         }
+    }
+
+    @DePermissions(value = {
+            @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
+            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    }, logical = Logical.AND)
+    @ApiOperation("新增在线表格")
+    @PostMapping("save/onLineExcel")
+    public void saveOnLineExcel(DataSetOnLineExcelRequest datasetTable) {
+        if (!datasetTable.getType().equalsIgnoreCase("onLineExcel")) {
+            throw new RuntimeException("数据集类型错误");
+        }
+        if (datasetTable.getFile() == null) {
+            throw new RuntimeException("文件为空");
+        }
+        dataSetTableService.saveOnLineExcel(datasetTable);
+    }
+    @GetMapping("getOnLineExcelData")
+    public void getOnLineExcelData(String fileId, HttpServletResponse response) {
+        dataSetTableService.getOnLineExcelData(fileId, response);
     }
 
     @DePermissions(value = {

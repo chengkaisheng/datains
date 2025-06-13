@@ -71,7 +71,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         dynamicMenuDto.setPermission(sysMenu.getPermission());
         dynamicMenuDto.setMenuSort(sysMenu.getMenuSort());
         dynamicMenuDto.setHidden(sysMenu.getHidden());
-        dynamicMenuDto.setIsPlugin(false);
+        dynamicMenuDto.setIsPlugin(sysMenu.getIsPlugin() != null && sysMenu.getIsPlugin());
         return dynamicMenuDto;
     }
 
@@ -106,7 +106,11 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
                 if (tNode.getPid().equals(node.getId())) {
                     if (node.getChildren() == null) {
                         node.setChildren(new ArrayList<DynamicMenuDto>());
-                        node.setRedirect(node.getPath() + "/" + tNode.getPath());//第一个子节点的path
+                        if (tNode.getPath() == null){
+                            node.setRedirect(node.getPath());
+                        }else {
+                            node.setRedirect(node.getPath() + "/" + tNode.getPath());//第一个子节点的path
+                        }
                     }
                     node.getChildren().add(tNode);
                 }

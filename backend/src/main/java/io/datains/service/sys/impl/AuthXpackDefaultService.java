@@ -40,10 +40,11 @@ public class AuthXpackDefaultService implements AuthXpackService {
     public List<XpackVAuthModelDTO> searchAuthModelTree(XpackBaseTreeRequest xpackBaseTreeRequest, Long long_, Boolean bool) {
         xpackBaseTreeRequest.setCreateBy(String.valueOf(long_));
         xpackBaseTreeRequest.setCreateBy(String.valueOf(long_));
-        if ("dept".equals(xpackBaseTreeRequest.getModelType())
+        if (1L == long_
+                || "dept".equals(xpackBaseTreeRequest.getModelType())
                 || "user".equals(xpackBaseTreeRequest.getModelType())
                 || "role".equals(xpackBaseTreeRequest.getModelType())
-                || ("menu".equals(xpackBaseTreeRequest.getModelType()) && 1L == long_)) {
+                || "menu".equals(xpackBaseTreeRequest.getModelType())) {
             return this.g.searchTree(xpackBaseTreeRequest);
         }
         return this.g.searchTree2(xpackBaseTreeRequest);
@@ -118,7 +119,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
         List<String> arrayList = new ArrayList<>();
         List<XpackSysAuthDetailDTO> sysAuthByAuthSource = B.getSysAuthByAuthSource(authSource, authTarget, authSourceType, authTargetType);
         //取消权限之前，先判断此权限是不是通过组织负责人授予的
-        if (privilegeValue == 0 && sysAuthByAuthSource != null) {
+        if (privilegeValue == 0 && sysAuthByAuthSource != null && !sysAuthByAuthSource.isEmpty()) {
             XpackSysAuthDetail authDetail = xpackSysAuthDetailMapper.selectByAuthIdAndPrivilegeType(sysAuthByAuthSource.get(0).getId(), privilegeType);
             if (authDetail != null && !"dept".equals(authDetail.getCreateUser())) {
                 //如果不是则不取消此权限
