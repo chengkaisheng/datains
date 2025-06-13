@@ -1,5 +1,8 @@
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
+// 导入中文字体
+import './YouSheBiaoTiHei-2-normal.js'
+// import './No.js'
 
 export const printA4 = (columns, tableData) => {
   const doc = new jsPDF({
@@ -7,6 +10,10 @@ export const printA4 = (columns, tableData) => {
     unit: 'mm',
     format: 'a4'
   })
+
+  // 设置中文字体
+  doc.setFont('YouSheBiaoTiHei-2')
+  // doc.setFont("NotoSansCJKsc", "normal");
 
   // 生成表格
   doc.autoTable({
@@ -16,15 +23,21 @@ export const printA4 = (columns, tableData) => {
     styles: {
       fontSize: 6,
       cellWidth: 'wrap',
-      overflow: 'linebreak'
+      overflow: 'linebreak',
+      font: 'YouSheBiaoTiHei-2',
+      fontStyle: 'normal'
     },
     headStyles: {
       fillColor: [0, 122, 204],
       textColor: 255,
-      fontSize: 7
+      fontSize: 7,
+      fontStyle: 'normal',
+      font: 'YouSheBiaoTiHei-2' // 设置表头字体
     },
     bodyStyles: {
-      fontSize: 6
+      fontSize: 6,
+      fontStyle: 'normal',
+      font: 'YouSheBiaoTiHei-2' // 设置表格内容字体
     },
     didDrawPage(data) {
       doc.setFontSize(10)
