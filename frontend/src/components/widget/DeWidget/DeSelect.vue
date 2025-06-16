@@ -42,7 +42,7 @@
       :multiple="element.options.attrs.multiple"
       :placeholder="$t(element.options.attrs.placeholder)"
       :popper-append-to-body="inScreen"
-      size="mini"
+      :size="size"
       :style="selectStyle"
       filterable
       @focus="setOptionWidth"
@@ -60,12 +60,13 @@
     </el-select>
     <el-button
       class="search-button"
-      type="primary"
-      icon="el-icon-search"
-      size="mini"
+      :size="size"
       style="margin-left: 5px;"
+      :style="selectStyle"
       @click="changeValue"
-    />
+    >
+      <i class="el-icon-search" :style="{'color': selectStyle.color}" />
+    </el-button>
   </div>
 
 </template>
@@ -136,6 +137,7 @@ export default {
         style.color = this.element.commonSelectFrame.fontColor
       }
       style.borderRadius = '4px'
+      console.log('selectstyle,,,', style)
       return style
     },
     optionStyle() {
@@ -327,7 +329,8 @@ export default {
 <style lang="scss" scoped>
 .deSelect ::v-deep .el-select-dropdown {
   background-color: transparent;
-  border-color: transparent;
+  // border-color: transparent;
+  color: inherit;
 }
 // .deSelect ::v-deep .el-select-dropdown__list {
 //   padding: 0px;
@@ -335,7 +338,7 @@ export default {
 .deSelect ::v-deep .el-input__inner {
   background-color: transparent;
   color: inherit;
-  border: none;
+  // border: none;
 }
 .deSelect ::v-deep .el-input__inner::placeholder {
   color: inherit;
