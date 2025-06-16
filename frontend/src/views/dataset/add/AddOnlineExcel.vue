@@ -266,9 +266,11 @@ export default {
     },
 
     async save() {
-      let blob = await exportExcel(luckysheet.getAllSheets(), this.name, true)
+      // let blob = await exportExcel(luckysheet.getAllSheets(), this.name, true)
+      // console.log('blob', blob)
       const formData = new FormData();
-      formData.append('file', blob)
+      // formData.append('file', blob)
+      formData.append('info', this.toBase64(JSON.stringify(luckysheet.getAllSheets())))
       formData.append('id', this.param.tableId || '')
       formData.append('name', this.name || '')
       formData.append('sceneId', this.param.id || '')
@@ -277,6 +279,11 @@ export default {
         this.$emit('saveSuccess', {})
         this.cancel()
       })
+    },
+    toBase64(str) {
+      const bytes = new TextEncoder().encode(str); // UTF-8 编码
+      const binary = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
+      return btoa(binary);
     },
     cancel() {
       this.dataReset();
@@ -349,7 +356,7 @@ span {
 .excel {
   position: relative;
   width: 100%;
-  height: calc(100% - 92px);
+  height: calc(100% - 55px);
 }
 
 .luckysheet-container {

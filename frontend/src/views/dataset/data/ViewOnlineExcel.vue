@@ -94,12 +94,23 @@ export default {
     getFileId() {
       if(this.param.id !== null) {
         post('/dataset/table/getWithPermission/' + this.param.id, null).then(response => {
-          this.getFile(response.data.info)
+          // this.getFile(response.data.info)
+          this.init(JSON.parse(this.fromBase64(response.data.info)))
         }).catch(res => {
           this.$emit('switchComponent', {name: ''})
         })
       }
       
+    },
+    toBase64(str) {
+      const bytes = new TextEncoder().encode(str); // UTF-8 编码
+      const binary = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
+      return btoa(binary);
+    },
+    fromBase64(base64) {
+      const binary = atob(base64);
+      const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+      return new TextDecoder().decode(bytes);
     },
     getFile(id) {
       getOnlineExcelFile(id).then(response => {
@@ -175,8 +186,10 @@ export default {
 
     async save() {
       const formData = new FormData();
-      let blob = await exportExcel(luckysheet.getAllSheets(), this.param.name, true)
-      formData.append('file', blob)
+      // let blob = await exportExcel(luckysheet.getAllSheets(), this.param.name, true)
+      // formData.append('file', blob)
+      // formData.append('info', JSON.stringify(luckysheet.getAllSheets()))
+      formData.append('info', this.toBase64(JSON.stringify(luckysheet.getAllSheets())))
       formData.append('id', this.param.id || '')
       formData.append('name', this.param.name || '')
       formData.append('sceneId', this.param.pid || '')
@@ -257,7 +270,7 @@ span {
 .excel {
   position: relative;
   width: 100%;
-  height: calc(100% - 92px);
+  height: calc(100% - 55px);
 }
 
 .luckysheet-container {
