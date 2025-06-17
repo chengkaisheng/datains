@@ -63,15 +63,15 @@
           <el-input style="width: 200px" size="mini" v-model="name"></el-input>
         </div>
 
-        <div class="excel">
-          <div id="luckysheet" class="luckysheet-container" />
+        <div class="excel" >
+          <div v-if="showLuckysheet" id="luckysheet" class="luckysheet-container" />
 
-          <div v-show="isMaskShow" class="download-mask">
+          <!-- <div v-show="isMaskShow" class="download-mask">
             <div class="download-content">
               <i class="el-icon-loading" />
               <div class="download-text">正在加载数据...</div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </el-row>
@@ -82,62 +82,64 @@
       title="数据集"
       width="50%"
     >
-      <el-tree
-        ref="datasetTreeRef"
-        :default-expanded-keys="expandedArray"
-        :data="tData"
-        node-key="id"
-        highlight-current
-        :expand-on-click-node="true"
-        @node-expand="nodeExpand"
-        @node-collapse="nodeCollapse"
-        @node-click="nodeClick"
-      >
-        <span
-          v-if="data.modelInnerType === 'group'"
-          slot-scope="{ node, data }"
-          class="custom-tree-node father"
+      <div style="height: 400px;overflow: scroll;">
+        <el-tree
+          ref="datasetTreeRef"
+          :default-expanded-keys="expandedArray"
+          :data="tData"
+          node-key="id"
+          highlight-current
+          :expand-on-click-node="true"
+          @node-expand="nodeExpand"
+          @node-collapse="nodeCollapse"
+          @node-click="nodeClick"
         >
-          <span style="display: flex; flex: 1; width: 0">
-            <span>
-              <i class="el-icon-folder" />
+          <span
+            v-if="data.modelInnerType === 'group'"
+            slot-scope="{ node, data }"
+            class="custom-tree-node father"
+          >
+            <span style="display: flex; flex: 1; width: 0">
+              <span>
+                <i class="el-icon-folder" />
+              </span>
+              <span
+                style="
+                  margin-left: 6px;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                "
+                :title="data.name"
+                >{{ data.name }}</span
+              >
             </span>
-            <span
-              style="
-                margin-left: 6px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-              "
-              :title="data.name"
-              >{{ data.name }}</span
-            >
           </span>
-        </span>
-        <span
-          v-else
-          slot-scope="{ node, data }"
-          class="custom-tree-node-list father"
-        >
-          <span style="display: flex; flex: 1; width: 0">
-            <span>
-              <svg-icon v-if="data.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
-              <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
-              <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
-              <!-- <svg-icon v-if="data.modelInnerType === 'onLineExcel'" icon-class="ds-excel" class="ds-icon-excel" /> -->
-              <i v-if="data.modelInnerType === 'onLineExcel'"  class="el-icon-edit-outline ds-icon-excel"></i>
-              <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
-              <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
-              <svg-icon v-if="data.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
+          <span
+            v-else
+            slot-scope="{ node, data }"
+            class="custom-tree-node-list father"
+          >
+            <span style="display: flex; flex: 1; width: 0">
+              <span>
+                <svg-icon v-if="data.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
+                <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+                <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+                <!-- <svg-icon v-if="data.modelInnerType === 'onLineExcel'" icon-class="ds-excel" class="ds-icon-excel" /> -->
+                <i v-if="data.modelInnerType === 'onLineExcel'"  class="el-icon-edit-outline ds-icon-excel"></i>
+                <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
+                <svg-icon v-if="data.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
+              </span>
+              <span v-if="data.modelInnerType === 'db' || data.modelInnerType === 'sql'">
+                <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
+                <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
+              </span>
+              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
             </span>
-            <span v-if="data.modelInnerType === 'db' || data.modelInnerType === 'sql'">
-              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
-              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
-            </span>
-            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
           </span>
-        </span>
-      </el-tree>
+        </el-tree>
+      </div>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="close()">{{
           $t("dataset.cancel")
@@ -209,6 +211,7 @@ export default {
       // defaultExpandedKeys: [],
       // defaultCheckedKeys: [],
       isMaskShow: false,
+      showLuckysheet: false,
       name: "",
       file: null,
       visible: false,
@@ -226,6 +229,7 @@ export default {
       tableViewRowForm: {
         row: 65535
       },
+      _unhandledRejectionHandler: null
     };
   },
   watch: {},
@@ -242,9 +246,24 @@ export default {
     if (!this.param.editType) {
       this.param.editType = 0;
     }
+    let _this = this
+    this._unhandledRejectionHandler = function (event) {
+      if(event.reason.stack.includes('luckysheet.umd.js')) {
+        _this.$message.error('导入失败，此表格可能引用其他表格数据，请断开表格链接后再尝试导入。')
+        _this.refresh()
+      }
+    }
+    window.addEventListener("unhandledrejection", this._unhandledRejectionHandler);
+  },
+  beforeDestroy() {
+    window.removeEventListener("unhandledrejection", this._unhandledRejectionHandler)
   },
   methods: {
+    refresh() {
+      this.showLuckysheet = false
+    },
     init(data) {
+      this.showLuckysheet = true
       this.isMaskShow = true;
       this.$nextTick(() => {
         this.isMaskShow = false;
@@ -543,7 +562,7 @@ span {
 .excel {
   position: relative;
   width: 100%;
-  height: calc(100% - 55px);
+  height: calc(100% - 100px);
 }
 
 .luckysheet-container {

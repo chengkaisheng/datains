@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar">
+  <div class="toolbar1">
     <!-- 地图切换按钮 -->
     <el-dropdown @command="baseMapChange">
       <el-button type="primary" class="el-dropdown-link">
@@ -80,7 +80,7 @@ export default {
 </script>
 
 <style lang="less">
-.toolbar {
+.toolbar1 {
   position: absolute;
   right: 40px;
   height: 40px;
