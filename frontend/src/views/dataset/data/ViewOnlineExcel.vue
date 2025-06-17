@@ -1,6 +1,6 @@
 <template>
-  <el-col style="height: 100%;">
-    <el-row style="height: 100%;">
+  <el-col style="height: 100%">
+    <el-row style="height: 100%">
       <el-row style="height: 26px" class="title-text">
         <span style="line-height: 26px">
           在线数据集
@@ -27,17 +27,17 @@
       </el-row>
       <el-divider />
 
-      <div style="margin-top: 10px;height: 100%;">
-          <div class="excel">
-            <div id="luckysheet" class="luckysheet-container" />
+      <div style="margin-top: 10px; height: 100%">
+        <div class="excel">
+          <div id="luckysheet" class="luckysheet-container" />
 
-            <div v-show="isMaskShow" class="download-mask">
-              <div class="download-content">
-                <i class="el-icon-loading" />
-                <div class="download-text">正在加载数据...</div>
-              </div>
+          <div v-show="isMaskShow" class="download-mask">
+            <div class="download-content">
+              <i class="el-icon-loading" />
+              <div class="download-text">正在加载数据...</div>
             </div>
           </div>
+        </div>
       </div>
     </el-row>
   </el-col>
@@ -49,8 +49,8 @@ import { getOnlineExcelFile, post } from "@/api/dataset/dataset";
 // import i18n from "@/lang";
 // import { $alert } from "@/utils/message";
 // import store from "@/store";
-import { exportExcel } from './export'
-import LuckyExcel from 'luckyexcel'
+import { exportExcel } from "./export";
+import LuckyExcel from "luckyexcel";
 
 // const token = getToken();
 
@@ -74,52 +74,58 @@ export default {
     return {
       isReadOnly: false,
       isMaskShow: false,
-      name: '',
-      file: null
+      name: "",
+      file: null,
     };
   },
   watch: {
-    'param': function () {
+    param: function () {
       // this.tabActive = 'dataPreview'
       // this.initTable(this.param.id)
-      this.getFileId()
-    }
+      this.getFileId();
+    },
   },
   created() {
     // console.log('this.param', this.param);
-    
-    this.getFileId()
+
+    this.getFileId();
   },
   methods: {
     getFileId() {
-      if(this.param.id !== null) {
-        post('/dataset/table/getWithPermission/' + this.param.id, null).then(response => {
-          // this.getFile(response.data.info)
-          this.init(JSON.parse(this.fromBase64(response.data.info)))
-        }).catch(res => {
-          this.$emit('switchComponent', {name: ''})
-        })
+      if (this.param.id !== null) {
+        post("/dataset/table/getWithPermission/" + this.param.id, null)
+          .then((response) => {
+            this.getFile(response.data.info)
+            // this.init(JSON.parse(this.fromBase64(response.data.info)));
+          })
+          .catch((res) => {
+            this.$emit("switchComponent", { name: "" });
+          });
       }
-      
     },
     toBase64(str) {
       const bytes = new TextEncoder().encode(str); // UTF-8 编码
-      const binary = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
+      const binary = Array.from(bytes)
+        .map((b) => String.fromCharCode(b))
+        .join("");
       return btoa(binary);
     },
     fromBase64(base64) {
       const binary = atob(base64);
-      const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+      const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
       return new TextDecoder().decode(bytes);
     },
     getFile(id) {
-      getOnlineExcelFile(id).then(response => {
-        const file = new File([response], `${this.param.name}.xlsx`, {
-          type: response.type,
-          lastModified: Date.now()
-        })
-        this.uploadExcel(file)
-      })
+      getOnlineExcelFile(id).then((response) => {
+        response.text().then(text => {
+          this.init(JSON.parse(text));
+        });
+        // const file = new File([response], `${this.param.name}.xlsx`, {
+        //   type: response.type,
+        //   lastModified: Date.now(),
+        // });
+        // this.uploadExcel(file);
+      });
     },
     init(data) {
       this.isMaskShow = true;
@@ -188,16 +194,19 @@ export default {
       const formData = new FormData();
       // let blob = await exportExcel(luckysheet.getAllSheets(), this.param.name, true)
       // formData.append('file', blob)
-      // formData.append('info', JSON.stringify(luckysheet.getAllSheets()))
-      formData.append('info', this.toBase64(JSON.stringify(luckysheet.getAllSheets())))
-      formData.append('id', this.param.id || '')
-      formData.append('name', this.param.name || '')
-      formData.append('sceneId', this.param.pid || '')
-      formData.append('type', 'onLineExcel')
-      post('/dataset/table/save/onLineExcel', formData).then(response => {
-        this.$emit('saveSuccess', {})
+      formData.append('file', new Blob([JSON.stringify(luckysheet.getAllSheets())], { type: "text/plain" }))
+      // formData.append(
+      //   "info",
+      //   this.toBase64(JSON.stringify(luckysheet.getAllSheets()))
+      // );
+      formData.append("id", this.param.id || "");
+      formData.append("name", this.param.name || "");
+      formData.append("sceneId", this.param.pid || "");
+      formData.append("type", "onLineExcel");
+      post("/dataset/table/save/onLineExcel", formData).then((response) => {
+        this.$emit("saveSuccess", {});
         // this.cancel()
-      })
+      });
     },
     cancel() {
       this.dataReset();
@@ -211,8 +220,8 @@ export default {
       }
     },
     dataReset() {
-      this.name = ''
-    }
+      this.name = "";
+    },
   },
 };
 </script>

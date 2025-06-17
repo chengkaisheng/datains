@@ -1,6 +1,6 @@
 <template>
-  <el-col style="height: 100%;">
-    <el-row style="height: 100%;">
+  <el-col style="height: 100%">
+    <el-row style="height: 100%">
       <el-row style="height: 26px" class="title-text">
         <span style="line-height: 26px">
           添加在线数据集
@@ -27,43 +27,124 @@
       </el-row>
       <el-divider />
 
-      <div style="margin-top: 10px;height: 100%;">
-          <el-row>
-              <el-col style="width: 200px">
-                <el-button size="mini" type="primary" @click="uploadFile">
-                  上传文件
-                </el-button>
-                
-              </el-col>
-              <el-col style="width: 400px;display: flex;align-items: center;">
-                <div style="width: 95px;">数据集名称：</div>
-                <el-input v-model="name"></el-input>
-              </el-col>
-            </el-row>
+      <div style="margin-top: 10px; height: 100%">
+        <el-row>
+          <el-col style="width: 300px">
+            <el-button
+              style="margin-right: 20px"
+              size="mini"
+              type="primary"
+              @click="uploadFile"
+            >
+              上传文件
+            </el-button>
+            <el-button size="mini" type="primary" @click="openDialog">
+              选择数据集
+            </el-button>
+          </el-col>
+          <el-col style="width: 400px; display: flex; align-items: center">
+            <div style="width: 95px">数据集名称：</div>
+            <el-input v-model="name"></el-input>
+          </el-col>
+        </el-row>
 
-          <div class="excel">
-            <div id="luckysheet" class="luckysheet-container" />
+        <div class="excel">
+          <div id="luckysheet" class="luckysheet-container" />
 
-            <div v-show="isMaskShow" class="download-mask">
-              <div class="download-content">
-                <i class="el-icon-loading" />
-                <div class="download-text">正在加载数据...</div>
-              </div>
+          <div v-show="isMaskShow" class="download-mask">
+            <div class="download-content">
+              <i class="el-icon-loading" />
+              <div class="download-text">正在加载数据...</div>
             </div>
           </div>
+        </div>
       </div>
     </el-row>
+
+    <el-dialog
+      v-dialogDrag
+      :visible="visible"
+      title="数据集"
+      width="50%"
+    >
+      <el-tree
+        ref="datasetTreeRef"
+        :default-expanded-keys="expandedArray"
+        :data="tData"
+        node-key="id"
+        highlight-current
+        :expand-on-click-node="true"
+        @node-expand="nodeExpand"
+        @node-collapse="nodeCollapse"
+        @node-click="nodeClick"
+      >
+        <span
+          v-if="data.modelInnerType === 'group'"
+          slot-scope="{ node, data }"
+          class="custom-tree-node father"
+        >
+          <span style="display: flex; flex: 1; width: 0">
+            <span>
+              <i class="el-icon-folder" />
+            </span>
+            <span
+              style="
+                margin-left: 6px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              "
+              :title="data.name"
+              >{{ data.name }}</span
+            >
+          </span>
+        </span>
+        <span
+          v-else
+          slot-scope="{ node, data }"
+          class="custom-tree-node-list father"
+        >
+          <span style="display: flex; flex: 1; width: 0">
+            <span>
+              <svg-icon v-if="data.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
+              <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+              <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+              <!-- <svg-icon v-if="data.modelInnerType === 'onLineExcel'" icon-class="ds-excel" class="ds-icon-excel" /> -->
+              <i v-if="data.modelInnerType === 'onLineExcel'"  class="el-icon-edit-outline ds-icon-excel"></i>
+              <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+              <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
+              <svg-icon v-if="data.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
+            </span>
+            <span v-if="data.modelInnerType === 'db' || data.modelInnerType === 'sql'">
+              <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
+              <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
+            </span>
+            <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+          </span>
+        </span>
+      </el-tree>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="close()">{{
+          $t("dataset.cancel")
+        }}</el-button>
+        <el-button type="primary" size="mini" @click="confirm"
+          >{{ $t("dataset.confirm") }}
+        </el-button>
+      </div>
+    </el-dialog>
   </el-col>
 </template>
 
 <script>
-import { post } from "@/api/dataset/dataset";
+import { post, getOnlineExcelFile } from "@/api/dataset/dataset";
 import { getToken } from "@/utils/auth";
 import i18n from "@/lang";
 import { $alert } from "@/utils/message";
 import store from "@/store";
-import { exportExcel } from '../data/export'
-import LuckyExcel from 'luckyexcel'
+import { queryAuthModel } from '@/api/authModel/authModel'
+// import { exportExcel } from "../data/export";
+import { dataToExcelBlob } from '@/utils/dataToExcelBlob'
+import LuckyExcel from "luckyexcel";
 
 const token = getToken();
 
@@ -88,7 +169,7 @@ export default {
       // sheetObj: { datasetName: ' ', fields: [] },
       // sheets: [],
       // data: [],
-      mode: '1',
+      mode: "1",
       // height: 600,
       fileList: [],
       headers: {
@@ -113,8 +194,23 @@ export default {
       // defaultExpandedKeys: [],
       // defaultCheckedKeys: [],
       isMaskShow: false,
-      name: '',
-      file: null
+      name: "",
+      file: null,
+      visible: false,
+      tData: [],
+      expandedArray: [],
+      selectedData: null,
+      table: {
+        name: ''
+      },
+      page: {
+        page: 1,
+        pageSize: 1000,
+        show: 1000
+      },
+      tableViewRowForm: {
+        row: 1000
+      },
     };
   },
   watch: {},
@@ -213,76 +309,31 @@ export default {
         _this.$message.error("无法读取文件内容，请检查文件是否损坏3");
       }
     },
-    beforeUpload(file) {
-      this.uploading = true;
-    },
-    uploadFail(response, file, fileList) {
-      let myError = response.toString();
-      myError = myError.replace("Error: ", "");
-
-      if (myError.indexOf("AuthenticationException") >= 0) {
-        const message = i18n.t("login.tokenError");
-        $alert(
-          message,
-          () => {
-            store.dispatch("user/logout").then(() => {
-              location.reload();
-            });
-          },
-          {
-            confirmButtonText: i18n.t("login.re_login"),
-            showClose: false,
-          }
-        );
-        return;
-      }
-
-      const errorMessage =
-        JSON.parse(myError).message + ", " + this.$t("dataset.parse_error");
-
-      this.path = "";
-      this.fields = [];
-      this.sheets = [];
-      this.data = [];
-      const datas = this.data;
-      this.$refs.plxTable.reloadData(datas);
-      this.fileList = [];
-      this.uploading = false;
-      this.$message({
-        type: "error",
-        message: errorMessage,
-        showClose: true,
-      });
-    },
-    uploadSuccess(response, file, fileList) {
-      this.uploading = false;
-      this.excelData.push(response.data);
-      this.defaultExpandedKeys.push(response.data.id);
-      this.defaultCheckedKeys.push(response.data.sheets[0].id);
-      this.$nextTick(() => {
-        this.$refs.tree.setCheckedKeys(this.defaultCheckedKeys);
-      });
-      this.fileList = fileList;
-    },
 
     async save() {
       // let blob = await exportExcel(luckysheet.getAllSheets(), this.name, true)
       // console.log('blob', blob)
       const formData = new FormData();
       // formData.append('file', blob)
-      formData.append('info', this.toBase64(JSON.stringify(luckysheet.getAllSheets())))
-      formData.append('id', this.param.tableId || '')
-      formData.append('name', this.name || '')
-      formData.append('sceneId', this.param.id || '')
-      formData.append('type', 'onLineExcel')
-      post('/dataset/table/save/onLineExcel', formData).then(response => {
-        this.$emit('saveSuccess', {})
-        this.cancel()
-      })
+      formData.append('file', new Blob([JSON.stringify(luckysheet.getAllSheets())], { type: "text/plain" }))
+      // formData.append(
+      //   "info",
+      //   this.toBase64(JSON.stringify(luckysheet.getAllSheets()))
+      // );
+      formData.append("id", this.param.tableId || "");
+      formData.append("name", this.name || "");
+      formData.append("sceneId", this.param.id || "");
+      formData.append("type", "onLineExcel");
+      post("/dataset/table/save/onLineExcel", formData).then((response) => {
+        this.$emit("saveSuccess", {});
+        this.cancel();
+      });
     },
     toBase64(str) {
       const bytes = new TextEncoder().encode(str); // UTF-8 编码
-      const binary = Array.from(bytes).map(b => String.fromCharCode(b)).join('');
+      const binary = Array.from(bytes)
+        .map((b) => String.fromCharCode(b))
+        .join("");
       return btoa(binary);
     },
     cancel() {
@@ -297,8 +348,128 @@ export default {
       }
     },
     dataReset() {
-      this.name = ''
-    }
+      this.name = "";
+    },
+    close() {
+      this.visible = false
+      this.tData = []
+      this.selectedData = null
+    },
+    confirm() {
+      if(!this.selectedData) {
+        this.$message.warning('请选择数据集！')
+        return
+      }
+
+      this.visible = false
+      // 获取 数据集 数据
+      this.initTable(this.selectedData.id)
+      
+    },
+    initTable(id) {
+      this.tableViewRowForm.row = 1000
+      if (id !== null) {
+        post('/dataset/table/getWithPermission/' + id, null).then(response => {
+          if(this.selectedData.modelInnerType === 'onLineExcel') {
+            getOnlineExcelFile(response.data.info).then((res) => {
+              res.text().then(text => {
+                this.name = response.data.name
+                this.init(JSON.parse(text));
+              });
+            });
+          } else {
+            this.table = response.data
+            this.initPreviewData(this.page)
+          }
+        })
+      }
+    },
+
+    initPreviewData(page) {
+      if (this.table.id) {
+        this.table.row = this.tableViewRowForm.row
+        post('/dataset/table/getPreviewData/' + page.page + '/' + page.pageSize, this.table, true, 30000).then(response => {
+          if(response.success) {
+            this.page = response.data.page
+            // 需要将 fields 与 data 结合
+            const data = this.formatterData(response.data.fields, response.data.data)
+            const blob = dataToExcelBlob(data)
+            blob.name = this.selectedData.name + '.xlsx'
+            this.uploadExcel(blob)
+          }
+          if (response.data.status === 'warnning') {
+            this.$warning(response.data.msg, 3000)
+          }
+          if (response.data.status === 'error') {
+            this.$error(response.data.msg, 3000)
+          }
+        }).catch(response => {
+          this.page = {
+            page: 1,
+            pageSize: 1000,
+            show: 0
+          }
+        })
+      }
+    },
+    // 构造出excel可用的数据结构
+    formatterData(fields, data) {
+      // 提取字段标题和字段映射顺序（按 columnIndex 排序）
+      const visibleFields = fields
+        .filter(f => f.checked)
+        .sort((a, b) => a.columnIndex - b.columnIndex);
+      const headerRow = visibleFields.map(f => f.name); // 表头
+      const keys = visibleFields.map(f => f.name);     // 用于读取 data 的 key
+      const tableData = data.map(item => keys.map(k => item[k]));
+      return [headerRow, ...tableData];
+    },
+    openDialog() {
+      this.visible = true
+      this.treeNode()
+    },
+    treeNode(cache) {
+      const modelInfo = localStorage.getItem('dataset-tree')
+      const userCache = (modelInfo && cache)
+      if (userCache) {
+        // this.tData = this.filterData(JSON.parse(modelInfo))
+        this.tData = JSON.parse(modelInfo)
+      }
+      queryAuthModel({ modelType: 'dataset' }, !userCache).then(res => {
+        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+        if (!userCache) {
+          this.tData = res.data
+        }
+      })
+    },
+    // 过滤出 文件夹 以及 数据库数据集
+    // filterData(data) {
+    //   let arr = []
+    //   data.map(item => {
+    //     if(item.children && item.children.length > 0) {
+    //       item.children = this.filterData(item.children)
+    //     }
+    //     if(item.modelInnerType === 'group' || item.modelInnerType === 'db') {
+    //       arr.push(item)
+    //     }
+    //   })
+    //   return arr
+    // },
+    nodeExpand(data) {
+      if (data.id) {
+        this.expandedArray.push(data.id)
+      }
+    },
+    nodeCollapse(data) {
+      if (data.id) {
+        this.expandedArray.splice(this.expandedArray.indexOf(data.id), 1)
+      }
+    },
+    nodeClick(data, node) {
+      if (data.modelInnerType !== 'group') {
+        this.selectedData = data
+      }
+    },
+    
   },
 };
 </script>
@@ -398,6 +569,96 @@ span {
   font-size: 20px;
   color: #303133;
 }
+</style>
+
+<style scoped>
+  .el-divider--horizontal {
+    margin: 12px 0
+  }
+
+  .search-input {
+    padding: 12px 0;
+  }
+
+  .custom-tree-container{
+    margin-top: 10px;
+  }
+
+  .tree-list>>>.el-tree-node__expand-icon.is-leaf{
+    display: none;
+  }
+
+  .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right:8px;
+  }
+
+  .custom-tree-node-list {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding:0 8px;
+  }
+
+  .custom-position {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    flex-flow: row nowrap;
+  }
+
+  .form-item {
+    margin-bottom: 0;
+  }
+
+  .title-css {
+    height: 26px;
+  }
+
+  .title-text {
+    line-height: 26px;
+  }
+
+  .scene-title{
+    width: 100%;
+    display: flex;
+  }
+  .scene-title-name{
+    width: 100%;
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .father .child {
+    visibility: hidden;
+  }
+  .father:hover .child {
+    visibility: visible;
+  }
+
+  .dialog-css >>> .el-dialog__body {
+    padding: 10px 20px 20px;
+  }
+
+  .inner-dropdown-menu{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%
+  }
+  .tree-style {
+    padding: 10px 15px;
+    height: 100%;
+    overflow-y: auto;
+  }
 </style>
 
 <style>
