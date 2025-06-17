@@ -44,6 +44,11 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/board/**", ANON);
         // arcgis api, added by shengchengkai on 2022-06-04
         filterChainDefinitionMap.put("/arcgisapi/**", ANON);
+        filterChainDefinitionMap.put("/excel/**", ANON);
+        filterChainDefinitionMap.put("/plugins/**", ANON);
+        filterChainDefinitionMap.put("/expendPlugins/**", ANON);
+        filterChainDefinitionMap.put("/excel/waffle_sprite.png", ANON);
+        filterChainDefinitionMap.put("/excel/loading.gif", ANON);
 
         // 获取主题信息
         filterChainDefinitionMap.put("/plugin/theme/themes", ANON);
@@ -117,7 +122,7 @@ public class ShiroServiceImpl implements ShiroService {
 
     @Override
     public void updatePermission(ShiroFilterFactoryBean shiroFilterFactoryBean, Integer roleId,
-            Boolean isRemoveSession) {
+                                 Boolean isRemoveSession) {
 
     }
 

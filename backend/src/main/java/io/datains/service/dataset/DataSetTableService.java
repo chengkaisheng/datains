@@ -265,11 +265,11 @@ public class DataSetTableService {
     public void getOnLineExcelData(String fileId, HttpServletResponse response) {
         try (InputStream inputStream = minIOUtils.getObject(fileId)) {
             byte[] content = IoUtil.readBytes(inputStream);
-            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setContentType("application/octet-stream");
             response.setCharacterEncoding("utf-8");
             // 这里URLEncoder.encode可以防止中文乱码
             String fileName = URLEncoder.encode("数据", "UTF-8").replaceAll("\\+", "%20");
-            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName);
             // 输出附件
             IoUtil.write(response.getOutputStream(), false, content);
         } catch (Exception e) {
@@ -282,17 +282,19 @@ public class DataSetTableService {
     @DeCleaner(value = DePermissionType.DATASET)
     public void saveOnLineExcel(DataSetOnLineExcelRequest datasetTable) {
         checkName(datasetTable);
-        //将文件传入minio
-        try (InputStream inputStream = datasetTable.getFile().getInputStream()) {
-            //删除老文件
-            if (datasetTable.getInfo() != null) {
-                minIOUtils.removeFile(datasetTable.getInfo());
+        if(datasetTable.getFile() != null){
+            //将文件传入minio
+            try (InputStream inputStream = datasetTable.getFile().getInputStream()) {
+                //删除老文件
+                if (datasetTable.getInfo() != null) {
+                    minIOUtils.removeFile(datasetTable.getInfo());
+                }
+                ObjectWriteResponse response = minIOUtils.uploadFile(UUIDUtil.getUUID().toString(), inputStream);
+                datasetTable.setInfo(response.object());
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("上传文件失败");
             }
-            ObjectWriteResponse response = minIOUtils.uploadFile(UUIDUtil.getUUID().toString(), inputStream);
-            datasetTable.setInfo(response.object());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("上传文件失败");
         }
         if (StringUtils.isEmpty(datasetTable.getId())) {
             datasetTable.setId(UUID.randomUUID().toString());
@@ -353,9 +355,9 @@ public class DataSetTableService {
 
     public void delete(String id) throws Exception {
         DatasetTable table = datasetTableMapper.selectByPrimaryKey(id);
-        if (table.getType().equals("onLineExcel")) {
-            minIOUtils.removeFile(table.getInfo());
-        }
+//        if (table.getType().equals("onLineExcel")) {
+//            minIOUtils.removeFile(table.getInfo());
+//        }
         datasetTableMapper.deleteByPrimaryKey(id);
         dataSetTableFieldsService.deleteByTableId(id);
         // 删除同步任务

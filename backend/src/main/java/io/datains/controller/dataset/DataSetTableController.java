@@ -71,9 +71,6 @@ public class DataSetTableController {
         if (!datasetTable.getType().equalsIgnoreCase("onLineExcel")) {
             throw new RuntimeException("数据集类型错误");
         }
-        if (datasetTable.getFile() == null) {
-            throw new RuntimeException("文件为空");
-        }
         dataSetTableService.saveOnLineExcel(datasetTable);
     }
     @GetMapping("getOnLineExcelData")
