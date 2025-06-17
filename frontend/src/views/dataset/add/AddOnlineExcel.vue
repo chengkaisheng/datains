@@ -28,7 +28,7 @@
       <el-divider />
 
       <div style="margin-top: 10px; height: 100%">
-        <el-row>
+        <!-- <el-row>
           <el-col style="width: 300px">
             <el-button
               style="margin-right: 20px"
@@ -46,7 +46,22 @@
             <div style="width: 95px">数据集名称：</div>
             <el-input v-model="name"></el-input>
           </el-col>
-        </el-row>
+        </el-row> -->
+        <div class="btn" style="display: flex;align-items: center;">
+          <el-button
+            style="margin-right: 20px;"
+            size="mini"
+            type="primary"
+            @click="uploadFile"
+          >
+            上传文件
+          </el-button>
+          <el-button size="mini" type="primary" @click="openDialog">
+            选择数据集
+          </el-button>
+          <div style="width: 95px;margin-left: 30px;font-size: 12px;">数据集名称：</div>
+          <el-input style="width: 200px" size="mini" v-model="name"></el-input>
+        </div>
 
         <div class="excel">
           <div id="luckysheet" class="luckysheet-container" />
@@ -246,6 +261,7 @@ export default {
           allowEdit: !this.isReadOnly, // 是否允许编辑
           enableAddRow: !this.isReadOnly, // 是否允许添加行
           enableAddCol: !this.isReadOnly, // 是否允许添加列
+          allowCopy: false
         });
       });
     },
@@ -419,7 +435,7 @@ export default {
         .filter(f => f.checked)
         .sort((a, b) => a.columnIndex - b.columnIndex);
       const headerRow = visibleFields.map(f => f.name); // 表头
-      const keys = visibleFields.map(f => f.name);     // 用于读取 data 的 key
+      const keys = visibleFields.map(f => f.datainsName);     // 用于读取 data 的 key
       const tableData = data.map(item => keys.map(k => item[k]));
       return [headerRow, ...tableData];
     },

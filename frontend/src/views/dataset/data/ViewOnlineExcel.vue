@@ -49,7 +49,7 @@ import { getOnlineExcelFile, post } from "@/api/dataset/dataset";
 // import i18n from "@/lang";
 // import { $alert } from "@/utils/message";
 // import store from "@/store";
-import { exportExcel } from "./export";
+// import { exportExcel } from "./export";
 import LuckyExcel from "luckyexcel";
 
 // const token = getToken();
@@ -144,6 +144,7 @@ export default {
           allowEdit: !this.isReadOnly, // 是否允许编辑
           enableAddRow: !this.isReadOnly, // 是否允许添加行
           enableAddCol: !this.isReadOnly, // 是否允许添加列
+          allowCopy: 0
         });
       });
     },
