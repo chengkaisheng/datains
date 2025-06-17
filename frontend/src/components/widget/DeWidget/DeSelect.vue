@@ -75,7 +75,6 @@
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { getLinkToken, getToken } from '@/utils/auth'
-import { hexColorToRGBA } from '@/views/chart/chart/util'
 export default {
 
   props: {
@@ -352,6 +351,13 @@ export default {
 }
 .deSelect ::v-deep .el-input__suffix-inner {
   color: inherit;
+}
+
+.search-button {
+  background: transparent;
+}
+.search-button:hover {
+  background: transparent;
 }
 
 </style>

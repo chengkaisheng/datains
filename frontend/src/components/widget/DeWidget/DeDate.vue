@@ -21,12 +21,13 @@
     <!-- @change="dateChange" -->
     <el-button
       class="search-button"
-      type="primary"
-      icon="el-icon-search"
-      size="mini"
+      :size="size"
+      :style="dateStyle"
       style="margin-left: 5px;"
       @click="dateChange"
-    />
+    >
+      <i class="el-icon-search" :style="{'color': dateStyle.color}" />
+    </el-button>
   </div>
 
 </template>
@@ -151,15 +152,15 @@ export default {
       }
     })
   },
-  methods: {
-    fillValueDerfault() {
-      if (!this.element.options.attrs.default) return ''
-      const defaultVal = this.element.options.attrs.default
-      if (defaultVal.isDynamic) {
-        return
-      }
-    }
-  },
+  // methods: {
+  //   fillValueDerfault() {
+  //     if (!this.element.options.attrs.default) return ''
+  //     const defaultVal = this.element.options.attrs.default
+  //     if (defaultVal.isDynamic) {
+  //       return
+  //     }
+  //   }
+  // },
   methods: {
     onBlur() {
       this.onFocus = false
@@ -266,5 +267,11 @@ export default {
   }
   .deDate ::v-deep .el-range__icon {
     color: inherit;
+  }
+  .search-button {
+    background: transparent;
+  }
+  .search-button:hover {
+    background: transparent;
   }
 </style>

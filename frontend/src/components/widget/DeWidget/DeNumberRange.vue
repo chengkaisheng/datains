@@ -27,12 +27,13 @@
       </el-form-item>
       <el-button
         class="search-button"
-        icon="el-icon-search"
         :size="size"
         style="margin-left: 2px;"
         :style="Style"
         @click="inputChange"
-      />
+      >
+        <i class="el-icon-search" :style="{'color': Style.color}" />
+      </el-button>
     </div>
   </el-form>
 
@@ -308,6 +309,13 @@ export default {
 
   .search-button {
     margin-bottom: 22px;
+  }
+
+  .search-button {
+    background: transparent;
+  }
+  .search-button:hover {
+    background: transparent;
   }
 
   >>>div.el-form-item {
