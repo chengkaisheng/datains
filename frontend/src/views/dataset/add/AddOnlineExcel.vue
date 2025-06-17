@@ -205,11 +205,11 @@ export default {
       },
       page: {
         page: 1,
-        pageSize: 1000,
-        show: 1000
+        pageSize: 65535,
+        show: 65535
       },
       tableViewRowForm: {
-        row: 1000
+        row: 65535
       },
     };
   },
@@ -367,7 +367,7 @@ export default {
       
     },
     initTable(id) {
-      this.tableViewRowForm.row = 1000
+      this.tableViewRowForm.row = 65535
       if (id !== null) {
         post('/dataset/table/getWithPermission/' + id, null).then(response => {
           if(this.selectedData.modelInnerType === 'onLineExcel') {
@@ -390,7 +390,7 @@ export default {
         this.table.row = this.tableViewRowForm.row
         post('/dataset/table/getPreviewData/' + page.page + '/' + page.pageSize, this.table, true, 30000).then(response => {
           if(response.success) {
-            this.page = response.data.page
+            // this.page = response.data.page
             // 需要将 fields 与 data 结合
             const data = this.formatterData(response.data.fields, response.data.data)
             const blob = dataToExcelBlob(data)
@@ -406,7 +406,7 @@ export default {
         }).catch(response => {
           this.page = {
             page: 1,
-            pageSize: 1000,
+            pageSize: 65535,
             show: 0
           }
         })
