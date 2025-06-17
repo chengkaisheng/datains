@@ -132,7 +132,7 @@
         </el-row>
       </el-row>
 
-      <el-row v-if="(curComponent.component === 'de-select' || curComponent.component === 'de-input-search' || curComponent.component === 'de-select-grid') 
+      <el-row v-if="(curComponent.component === 'de-select' || curComponent.component === 'de-input-search' || curComponent.component === 'de-select-grid' || curComponent.component === 'de-number-range') 
         && curComponent.type === 'custom'">
         <el-row >
           <el-col :span="4" style="padding-left: 10px;padding-top: 5px">

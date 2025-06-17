@@ -75,9 +75,11 @@ export default {
   data() {
     return {
       inputMaxSize: 46,
-      inputLargeSize: 42,
-      inputSmallSize: 38,
-      inputMiniSize: 32,
+      // inputLargeSize: 42,
+      inputLargeSize: 52,
+      // inputSmallSize: 38,
+      inputSmallSize: 48,
+      inputMiniSize: 28,
       options: null,
       showNumber: false,
       mainClass: '',
@@ -155,7 +157,9 @@ export default {
               deContentContainer.style.marginLeft = (titleWidth + 15) + 'px'
             }
           } else {
-            this.duHeight = height - titleWidth + numRange
+            // this.duHeight = height - titleWidth + numRange
+            const titleHeight = this.$refs.deTitle.offsetHeight
+            this.duHeight = height - titleHeight + numRange
             this.mainClass = ''
             if (deContentContainer) {
               deContentContainer.style.top = '2em'

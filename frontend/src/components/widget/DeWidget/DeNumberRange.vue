@@ -5,28 +5,32 @@
       <el-form-item prop="min">
         <el-input
           v-model="form.min"
+          class="input-search"
           :placeholder="$t(element.options.attrs.placeholder_min)"
           :size="size"
+          :style="Style"
           @change="handleMinChange"
         />
         <!-- @input="inputChange" -->
       </el-form-item>
-      <span>{{ $t('denumberrange.split_placeholder') }}</span>
+      <span :style="{ color: Style.color }">{{ $t('denumberrange.split_placeholder') }}</span>
       <el-form-item prop="max">
         <el-input
           v-model="form.max"
+          class="input-search"
           :placeholder="$t(element.options.attrs.placeholder_max)"
           :size="size"
+          :style="Style"
           @change="handleMaxChange"
         />
         <!-- @input="inputChange" -->
       </el-form-item>
       <el-button
         class="search-button"
-        type="primary"
         icon="el-icon-search"
-        size="mini"
-        style="margin-left: 5px;"
+        :size="size"
+        style="margin-left: 2px;"
+        :style="Style"
         @click="inputChange"
       />
     </div>
@@ -88,6 +92,23 @@ export default {
     },
     manualModify() {
       return !!this.element.options.manualModify
+    },
+    Style() {
+      const style = {}
+      if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
+        if (this.element.commonSelectFrame.backType === 'Image') {
+          if (this.element.commonSelectFrame.backImg !== '') {
+            style.backgroundImage = `url(${this.element.commonSelectFrame.backImg})`
+          }
+          style.backgroundRepeat = 'no-repeat'
+          style.backgroundSize = '100% 100%'
+        } else {
+          style.backgroundColor = this.element.commonSelectFrame.color
+          // style.backgroundColor = this.hexColorToRGBA(this.element.commonSelectFrame.color,this.element.commonSelectFrame.alpha)
+        }
+        style.color = this.element.commonSelectFrame.fontColor
+      }
+      return style
     }
   },
   watch: {
@@ -271,13 +292,40 @@ export default {
 
 <style lang="scss" scoped>
 .de-number-range-container {
-  display: inline;
+  // display: inline;
+  display: flex;
+  align-items: center;
   max-height: 40px;
+
+  span {
+    height: 38px;
+    line-height: 38px;
+    padding: 0 5px;
+    font-size: 14px;
+    color: inherit;
+    margin-bottom: 22px;
+  }
+
+  .search-button {
+    margin-bottom: 22px;
+  }
 
   >>>div.el-form-item {
     width: calc(50% - 10px) !important;
     display: inline-block;
     padding: 0 5px;
   }
+}
+
+.input-search ::v-deep .el-input__inner {
+  background-color: transparent;
+  color: inherit;
+}
+.input-search ::v-deep .el-input__inner::placeholder {
+  color: inherit;
+}
+.input-search ::v-deep .el-input-group__append, .el-input-group__prepend {
+  background-color: transparent;
+  color: inherit;
 }
 </style>
