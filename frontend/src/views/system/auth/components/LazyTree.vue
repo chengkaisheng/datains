@@ -867,6 +867,7 @@ export default {
             authSourceType: this.authCondition.type,
           };
         }
+        let _this = this
         this.executeAxios(
           "/plugin/auth/authDetails",
           "post",
@@ -874,10 +875,10 @@ export default {
           (res) => {
             // this.dataInfo.authType 仪表板  非管理员角色 需要隐藏导出
             let index = store.getters.roles.findIndex(item => item.id == 1)
-            if(this.dataInfo.authType === 'panel' && index === -1) {
-              this.authDetails = this.filterExport(res.data);
+            if(_this.dataInfo.authType === 'panel' && index === -1) {
+              _this.authDetails = _this.filterExport(res.data);
             } else {
-              this.authDetails = res.data;
+              _this.authDetails = res.data;
             }
             
           }
@@ -889,9 +890,10 @@ export default {
     },
     // 将 export 过滤掉
     filterExport(data) {
-      Object.values(data).map(value => {
-        value = value.filter(item => item.privilegeExtend !== 'export')
+      Object.keys(data).map(key => {
+        data[key] = data[key].filter(item => item.privilegeExtend !== 'export')
       })
+      return data
     },
     loadNodes(node, resolve) {
       if (!this.searchStatus) {
