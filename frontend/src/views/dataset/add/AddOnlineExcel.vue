@@ -28,25 +28,6 @@
       <el-divider />
 
       <div style="margin-top: 10px; height: 100%">
-        <!-- <el-row>
-          <el-col style="width: 300px">
-            <el-button
-              style="margin-right: 20px"
-              size="mini"
-              type="primary"
-              @click="uploadFile"
-            >
-              上传文件
-            </el-button>
-            <el-button size="mini" type="primary" @click="openDialog">
-              选择数据集
-            </el-button>
-          </el-col>
-          <el-col style="width: 400px; display: flex; align-items: center">
-            <div style="width: 95px">数据集名称：</div>
-            <el-input v-model="name"></el-input>
-          </el-col>
-        </el-row> -->
         <div class="btn" style="display: flex;align-items: center;">
           <el-button
             style="margin-right: 20px;"
@@ -82,64 +63,93 @@
       title="数据集"
       width="50%"
     >
-      <div style="height: 400px;overflow: scroll;">
-        <el-tree
-          ref="datasetTreeRef"
-          :default-expanded-keys="expandedArray"
-          :data="tData"
-          node-key="id"
-          highlight-current
-          :expand-on-click-node="true"
-          @node-expand="nodeExpand"
-          @node-collapse="nodeCollapse"
-          @node-click="nodeClick"
-        >
-          <span
-            v-if="data.modelInnerType === 'group'"
-            slot-scope="{ node, data }"
-            class="custom-tree-node father"
+      <el-col>
+        <el-row style="margin-bottom: 10px">
+          <el-col :span="8">
+            <el-input
+              v-model="filterText"
+              size="mini"
+              :placeholder="$t('commons.search')"
+              prefix-icon="el-icon-search"
+              clearable
+              class="main-area-input"
+            />
+          </el-col>
+          <el-col :span="8">
+            <el-dropdown style="margin-left: 20px;">
+              <el-button size="mini" type="primary">
+                {{ searchMap[searchType] }}<i class="el-icon-arrow-down el-icon--right" />
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="searchTypeClick('all')">{{ $t('commons.all') }}</el-dropdown-item>
+                <el-dropdown-item @click.native="searchTypeClick('folder')">{{ this.$t('commons.folder') }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-col>
+        </el-row>
+      </el-col>
+      <el-col>
+        <div style="height: 400px;overflow: scroll;">
+          <el-tree
+            ref="datasetTreeRef"
+            :default-expanded-keys="expandedArray"
+            :data="tData"
+            node-key="id"
+            highlight-current
+            :expand-on-click-node="true"
+            :filter-node-method="filterNode"
+            @node-expand="nodeExpand"
+            @node-collapse="nodeCollapse"
+            @node-click="nodeClick"
           >
-            <span style="display: flex; flex: 1; width: 0">
-              <span>
-                <i class="el-icon-folder" />
+            <span
+              v-if="data.modelInnerType === 'group'"
+              slot-scope="{ node, data }"
+              class="custom-tree-node father"
+            >
+              <span style="display: flex; flex: 1; width: 0">
+                <span>
+                  <i class="el-icon-folder" />
+                </span>
+                <span
+                  style="
+                    margin-left: 6px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                  "
+                  :title="data.name"
+                  >{{ data.name }}</span
+                >
               </span>
-              <span
-                style="
-                  margin-left: 6px;
-                  white-space: nowrap;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                "
-                :title="data.name"
-                >{{ data.name }}</span
-              >
             </span>
-          </span>
-          <span
-            v-else
-            slot-scope="{ node, data }"
-            class="custom-tree-node-list father"
-          >
-            <span style="display: flex; flex: 1; width: 0">
-              <span>
-                <svg-icon v-if="data.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
-                <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
-                <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
-                <!-- <svg-icon v-if="data.modelInnerType === 'onLineExcel'" icon-class="ds-excel" class="ds-icon-excel" /> -->
-                <i v-if="data.modelInnerType === 'onLineExcel'"  class="el-icon-edit-outline ds-icon-excel"></i>
-                <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
-                <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
-                <svg-icon v-if="data.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
+            <span
+              v-else
+              slot-scope="{ node, data }"
+              class="custom-tree-node-list father"
+            >
+              <span style="display: flex; flex: 1; width: 0">
+                <span>
+                  <svg-icon v-if="data.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
+                  <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
+                  <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
+                  <!-- <svg-icon v-if="data.modelInnerType === 'onLineExcel'" icon-class="ds-excel" class="ds-icon-excel" /> -->
+                  <i v-if="data.modelInnerType === 'onLineExcel'"  class="el-icon-edit-outline ds-icon-excel"></i>
+                  <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
+                  <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
+                  <svg-icon v-if="data.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
+                </span>
+                <span v-if="data.modelInnerType === 'db' || data.modelInnerType === 'sql'">
+                  <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
+                  <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
+                </span>
+                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
               </span>
-              <span v-if="data.modelInnerType === 'db' || data.modelInnerType === 'sql'">
-                <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
-                <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
-              </span>
-              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
             </span>
-          </span>
-        </el-tree>
-      </div>
+          </el-tree>
+        </div>
+      </el-col>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="close()">{{
           $t("dataset.cancel")
@@ -188,28 +198,14 @@ export default {
       // data: [],
       mode: "1",
       // height: 600,
-      fileList: [],
-      headers: {
-        Authorization: token,
-        "Accept-Language": i18n.locale.replace("_", "-"),
+      filterText: '',
+      searchPids: [], // 查询命中的pid
+      searchType: 'all',
+      searchMap: {
+        all: this.$t('commons.all'),
+        folder: this.$t('commons.folder')
       },
-      baseUrl: process.env.VUE_APP_BASE_API,
-      // path: '',
       uploading: false,
-      // fieldOptions: [
-      //   { label: this.$t('dataset.text'), value: 'TEXT' },
-      //   { label: this.$t('dataset.time'), value: 'DATETIME' },
-      //   { label: this.$t('dataset.value'), value: 'LONG' },
-      //   { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 'DOUBLE' }
-      // ],
-      // props: {
-      //   label: 'excelLable',
-      //   children: 'sheets'
-      // },
-      // count: 1,
-      // excelData: [],
-      // defaultExpandedKeys: [],
-      // defaultCheckedKeys: [],
       isMaskShow: false,
       showLuckysheet: false,
       name: "",
@@ -232,12 +228,17 @@ export default {
       _unhandledRejectionHandler: null
     };
   },
-  watch: {},
+  watch: {
+    filterText(val) {
+      this.searchPids = []
+      this.$refs.datasetTreeRef.filter(val)
+    },
+    searchType(val) {
+      this.searchPids = []
+      this.$refs.datasetTreeRef.filter(this.filterText)
+    }
+  },
   mounted() {
-    // window.onresize = () => {
-    //   this.calHeight()
-    // }
-    // this.calHeight()
   },
   created() {
     if (!this.param.tableId) {
@@ -489,6 +490,24 @@ export default {
     //   })
     //   return arr
     // },
+    filterNode(value, data) {
+      if (!value) return true
+      if (this.searchType === 'folder') {
+        if (data.modelInnerType === 'group' && data.label.indexOf(value) !== -1) {
+          this.searchPids.push(data.id)
+          return true
+        }
+        if (this.searchPids.indexOf(data.pid) !== -1) {
+          if (data.modelInnerType === 'group') {
+            this.searchPids.push(data.id)
+          }
+          return true
+        }
+      } else {
+        return data.label.indexOf(value) !== -1
+      }
+      return false
+    },
     nodeExpand(data) {
       if (data.id) {
         this.expandedArray.push(data.id)
@@ -504,7 +523,9 @@ export default {
         this.selectedData = data
       }
     },
-    
+    searchTypeClick(searchTypeInfo) {
+      this.searchType = searchTypeInfo
+    },
   },
 };
 </script>
