@@ -28,15 +28,15 @@
       <el-divider />
 
       <div style="margin-top: 10px; height: 100%">
-        <div class="excel">
-          <div id="luckysheet" class="luckysheet-container" />
+        <div class="excel" >
+          <div v-if="showLuckysheet" id="luckysheet" class="luckysheet-container" />
 
-          <div v-show="isMaskShow" class="download-mask">
+          <!-- <div v-show="isMaskShow" class="download-mask">
             <div class="download-content">
               <i class="el-icon-loading" />
               <div class="download-text">正在加载数据...</div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </el-row>
@@ -76,6 +76,7 @@ export default {
       isMaskShow: false,
       name: "",
       file: null,
+      showLuckysheet: false
     };
   },
   watch: {
@@ -89,6 +90,10 @@ export default {
     // console.log('this.param', this.param);
 
     this.getFileId();
+  },
+  beforeDestroy() {
+    document.getElementById('luckysheet-icon-morebtn-div').style.display = 'none'
+    this.showLuckysheet = false
   },
   methods: {
     getFileId() {
@@ -128,6 +133,7 @@ export default {
       });
     },
     init(data) {
+      this.showLuckysheet = true
       this.isMaskShow = true;
       this.$nextTick(() => {
         this.isMaskShow = false;

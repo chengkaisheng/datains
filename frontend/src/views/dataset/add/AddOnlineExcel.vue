@@ -257,6 +257,8 @@ export default {
     window.addEventListener("unhandledrejection", this._unhandledRejectionHandler);
   },
   beforeDestroy() {
+    document.getElementById('luckysheet-icon-morebtn-div').style.display = 'none'
+    this.showLuckysheet = false
     window.removeEventListener("unhandledrejection", this._unhandledRejectionHandler)
   },
   methods: {
