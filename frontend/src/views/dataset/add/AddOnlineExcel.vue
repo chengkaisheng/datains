@@ -409,7 +409,7 @@ export default {
     close() {
       this.visible = false
       this.tData = []
-      this.selectedData = null
+      // this.selectedData = null
       this.filterText = ''
       this.searchPids = []
       this.searchType = 'all'
@@ -419,7 +419,7 @@ export default {
         this.$message.warning('请选择数据集！')
         return
       }
-      this.close()
+      this.visible = false
       // 获取 数据集 数据
       this.initTable(this.selectedData.id)
       
@@ -454,6 +454,7 @@ export default {
             const blob = dataToExcelBlob(data)
             blob.name = this.selectedData.name + '.xlsx'
             this.uploadExcel(blob)
+            this.close()
           }
           if (response.data.status === 'warnning') {
             this.$warning(response.data.msg, 3000)
@@ -462,6 +463,7 @@ export default {
             this.$error(response.data.msg, 3000)
           }
         }).catch(response => {
+          this.close()
           this.page = {
             page: 1,
             pageSize: this.pageShow,
@@ -483,6 +485,7 @@ export default {
     },
     openDialog() {
       this.visible = true
+      this.selectedData = null
       this.treeNode()
     },
     treeNode(cache) {
