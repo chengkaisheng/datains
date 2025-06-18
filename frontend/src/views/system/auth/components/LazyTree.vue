@@ -518,6 +518,7 @@ import log from "video.js/es5/utils/log";
 // import { authChange, authDetails, authDetailsModel, authModel } from '@/api/system/sysAuth'
 // import { execute } from '@/de-base/api/de-api'
 import { execute } from "@/api/system/dynamic";
+import store from '@/store'
 export default {
   name: "LazyTree",
   components: {},
@@ -814,7 +815,13 @@ export default {
         "get",
         {},
         (res) => {
-          this.defaultAuthDetails = res.data;
+          // this.dataInfo.authType 仪表板  非管理员角色 需要隐藏导出
+          let index = store.getters.roles.findIndex(item => item.id == 1)
+          if(this.dataInfo.authType === 'panel' && index === -1) {
+            this.defaultAuthDetails = res.data.filter(item => item.privilegeExtend !== 'export')
+          } else {
+            this.defaultAuthDetails = res.data;
+          }
         }
       );
       //   authDetailsModel(this.dataInfo.authType).then(res => {
@@ -865,13 +872,26 @@ export default {
           "post",
           authQueryCondition,
           (res) => {
-            this.authDetails = res.data;
+            // this.dataInfo.authType 仪表板  非管理员角色 需要隐藏导出
+            let index = store.getters.roles.findIndex(item => item.id == 1)
+            if(this.dataInfo.authType === 'panel' && index === -1) {
+              this.authDetails = this.filterExport(res.data);
+            } else {
+              this.authDetails = res.data;
+            }
+            
           }
         );
         // authDetails(authQueryCondition).then(res => {
         //   this.authDetails = res.data
         // })
       }
+    },
+    // 将 export 过滤掉
+    filterExport(data) {
+      Object.values(data).map(value => {
+        value = value.filter(item => item.privilegeExtend !== 'export')
+      })
     },
     loadNodes(node, resolve) {
       if (!this.searchStatus) {

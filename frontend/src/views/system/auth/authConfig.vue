@@ -72,12 +72,12 @@ export default {
             direction: 'target',
             authType: 'dept'
           },
-          {
-            tabName: this.$t('auth.role'),
-            head: this.$t('auth.roleHead'),
-            direction: 'target',
-            authType: 'role'
-          },
+          // {
+          //   tabName: this.$t('auth.role'),
+          //   head: this.$t('auth.roleHead'),
+          //   direction: 'target',
+          //   authType: 'role'
+          // },
           {
             tabName: this.$t('auth.user'),
             head: this.$t('auth.userHead'),
