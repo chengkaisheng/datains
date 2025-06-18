@@ -30,6 +30,17 @@
           </el-form-item>
         </el-col>
       </el-row>
+      <!-- 在线数据集 选择数据集导入时设置的条数 -->
+      <el-row>
+        <el-col>
+          <el-form-item label="在线数据集-选择数据集导入时设置的条数" prop="onLineExcelCount">
+            <el-input
+              v-model="formInline.onLineExcelCount"
+              placeholder="为空默认为1000"
+            />
+          </el-form-item>
+        </el-col>
+      </el-row>
 
       <el-row>
         <el-col>
@@ -113,6 +124,7 @@ export default {
       const param = [
         { paramKey: 'basic.frontTimeOut', paramValue: this.formInline.frontTimeOut, type: 'text', sort: 1 },
         { paramKey: 'basic.msgTimeOut', paramValue: this.formInline.msgTimeOut, type: 'text', sort: 2 },
+        { paramKey: 'basic.onLineExcelCount', paramValue: this.formInline.onLineExcelCount, type: 'text', sort: 3 },
         { paramKey: 'ui.openHomePage', paramValue: this.formInline.openHomePage, type: 'text', sort: 13 }
 
       ]

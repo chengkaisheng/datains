@@ -168,6 +168,7 @@ import { getToken } from "@/utils/auth";
 import i18n from "@/lang";
 import { $alert } from "@/utils/message";
 import store from "@/store";
+import { basicInfo } from '@/api/system/basic'
 import { queryAuthModel } from '@/api/authModel/authModel'
 // import { exportExcel } from "../data/export";
 import { dataToExcelBlob } from '@/utils/dataToExcelBlob'
@@ -217,6 +218,7 @@ export default {
       table: {
         name: ''
       },
+      pageShow: 0,
       page: {
         page: 1,
         pageSize: 65535,
@@ -238,8 +240,7 @@ export default {
       this.$refs.datasetTreeRef.filter(this.filterText)
     }
   },
-  mounted() {
-  },
+  
   created() {
     if (!this.param.tableId) {
       this.param.tableId = "";
@@ -256,12 +257,28 @@ export default {
     }
     window.addEventListener("unhandledrejection", this._unhandledRejectionHandler);
   },
+  mounted() {
+    this.queryBasicInfo()
+  },
   beforeDestroy() {
     document.getElementById('luckysheet-icon-morebtn-div').style.display = 'none'
     this.showLuckysheet = false
     window.removeEventListener("unhandledrejection", this._unhandledRejectionHandler)
   },
   methods: {
+    queryBasicInfo() {
+      basicInfo().then(response => {
+        this.pageShow = Number(response.data.onLineExcelCount)
+        this.page = {
+          page: 1,
+          pageSize: this.pageShow,
+          show: this.pageShow
+        }
+        this.tableViewRowForm = {
+          row: this.pageShow
+        }
+      })
+    },
     refresh() {
       this.showLuckysheet = false
     },
@@ -405,7 +422,7 @@ export default {
       
     },
     initTable(id) {
-      this.tableViewRowForm.row = 65535
+      this.tableViewRowForm.row = this.pageShow
       if (id !== null) {
         post('/dataset/table/getWithPermission/' + id, null).then(response => {
           if(this.selectedData.modelInnerType === 'onLineExcel') {
@@ -444,7 +461,7 @@ export default {
         }).catch(response => {
           this.page = {
             page: 1,
-            pageSize: 65535,
+            pageSize: this.pageShow,
             show: 0
           }
         })
