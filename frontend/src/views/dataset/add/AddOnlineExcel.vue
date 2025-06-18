@@ -62,6 +62,7 @@
       :visible="visible"
       title="数据集"
       width="50%"
+      @close="close"
     >
       <el-col>
         <el-row style="margin-bottom: 10px">
@@ -409,14 +410,16 @@ export default {
       this.visible = false
       this.tData = []
       this.selectedData = null
+      this.filterText = ''
+      this.searchPids = []
+      this.searchType = 'all'
     },
     confirm() {
       if(!this.selectedData) {
         this.$message.warning('请选择数据集！')
         return
       }
-
-      this.visible = false
+      this.close()
       // 获取 数据集 数据
       this.initTable(this.selectedData.id)
       
