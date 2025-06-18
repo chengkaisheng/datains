@@ -268,7 +268,7 @@ export default {
   methods: {
     queryBasicInfo() {
       basicInfo().then(response => {
-        this.pageShow = Number(response.data.onLineExcelCount)
+        this.pageShow = Number(response.data.onLineExcelCount === null ? 1000 : response.data.onLineExcelCount)
         this.page = {
           page: 1,
           pageSize: this.pageShow,
