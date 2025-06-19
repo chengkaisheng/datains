@@ -171,7 +171,7 @@ import { $alert } from "@/utils/message";
 import store from "@/store";
 import { basicInfo } from '@/api/system/basic'
 import { queryAuthModel } from '@/api/authModel/authModel'
-// import { exportExcel } from "../data/export";
+import { exportExcel } from "../data/export";
 import { dataToExcelBlob } from '@/utils/dataToExcelBlob'
 import LuckyExcel from "luckyexcel";
 
@@ -222,11 +222,11 @@ export default {
       pageShow: 0,
       page: {
         page: 1,
-        pageSize: 65535,
-        show: 65535
+        pageSize: 5000,
+        show: 5000
       },
       tableViewRowForm: {
-        row: 65535
+        row: 5000
       },
       _unhandledRejectionHandler: null
     };
@@ -293,7 +293,7 @@ export default {
           container: "luckysheet", // 设定DOM容器的id
           title: this.name, // 设定表格名称
           lang: "zh", // 设定表格语言
-          plugins: ["chart"],
+          // plugins: ["chart"],
           data: data || [],
           // 添加只读模式配置
           showtoolbar: !this.isReadOnly, // 是否显示工具栏
@@ -303,7 +303,21 @@ export default {
           enableAddCol: !this.isReadOnly, // 是否允许添加列
           allowCopy: false
         });
+        this.exportXlsx()
       });
+    },
+    exportXlsx() {
+      // 管理员角色可以导出
+      let index = store.getters.roles.findIndex(item => item.id == 1)
+      let exportXlsxDom = document.getElementById('luckysheet-exportXlsx-btn-title')
+      if(index !== -1) {
+        let _this = this
+        exportXlsxDom.addEventListener('click', async function() {
+          await exportExcel(luckysheet.getAllSheets(), _this.name, false)
+        })
+      } else {
+        exportXlsxDom.style.display = 'none'
+      }
     },
     uploadFile() {
       const input = document.createElement("input");
@@ -759,5 +773,8 @@ span {
     width: 12px !important;
     height: 12px !important;
     background-color: #fff;
+}
+.luckysheet-icon-img-container.iconfont, .luckysheet-submenu-arrow .iconfont {
+    font-size: 24px !important;
 }
 </style>
