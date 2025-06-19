@@ -755,4 +755,9 @@ span {
 .luckysheet-rows-menu {
   z-index: 1000000 !important;
 }
+.luckysheet-scrollbars::-webkit-scrollbar {
+    width: 12px !important;
+    height: 12px !important;
+    background-color: #fff;
+}
 </style>
