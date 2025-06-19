@@ -78,7 +78,7 @@ public class SysUserService {
         checkUsername(request);
         autoEmail(request);
         checkEmail(request);
-        checkNickName(request);
+//        checkNickName(request);
         SysUser user = BeanUtils.copyBean(new SysUser(), request);
         long now = System.currentTimeMillis();
         user.setCreateTime(now);
@@ -180,7 +180,7 @@ public class SysUserService {
     public int update(SysUserCreateRequest request) {
         checkUsername(request);
         checkEmail(request);
-        checkNickName(request);
+//        checkNickName(request);
         if (StringUtils.isEmpty(request.getPassword())) {
             request.setPassword(null);
         }

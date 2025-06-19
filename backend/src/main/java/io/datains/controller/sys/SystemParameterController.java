@@ -46,7 +46,7 @@ public class SystemParameterController {
         return emailService.mailInfo();
     }
 
-    @RequiresPermissions("sysparam:read")
+//    @RequiresPermissions("sysparam:read")
     @GetMapping("/basic/info")
     public BasicInfo basicInfo() {
         return systemParameterService.basicInfo();

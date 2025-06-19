@@ -43,14 +43,17 @@
         <where>
             auth_id in
             <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
-            <if test="privilegeValue == 1">
-                and (privilege_type &lt;= #{privilegeType} or privilege_type = 20)
+            <if test="privilegeValue == 1 and privilegeType != 3">
+                and ((privilege_type &lt;= #{privilegeType} or privilege_type = 20) and privilege_type != 3)
             </if>
-            <if test="privilegeValue == 0 and privilegeType != 1">
-                and (privilege_type &gt;= #{privilegeType} and privilege_type != 20)
+            <if test="privilegeValue == 0 and privilegeType != 1  and privilegeType != 3">
+                and (privilege_type &gt;= #{privilegeType} and privilege_type != 20 and privilege_type != 3)
             </if>
             <if test="privilegeValue == 0 and privilegeType == 1">
-                and privilege_type &gt;= #{privilegeType}
+                and (privilege_type &gt;= #{privilegeType} and privilege_type != 3)
+            </if>
+            <if test="privilegeType == 3">
+                and privilege_type = 3
             </if>
         </where>
     </update>

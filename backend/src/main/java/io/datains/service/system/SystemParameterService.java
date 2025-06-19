@@ -53,6 +53,9 @@ public class SystemParameterService {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.MSG_TIME_OUT.getValue())) {
                     result.setMsgTimeOut(param.getParamValue());
                 }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.ON_LINE_EXCEL_COUNT.getValue())){
+                    result.setOnLineExcelCount(param.getParamValue());
+                }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.OPEN_HOME_PAGE.getValue())) {
                     boolean open = StringUtils.equals("true", param.getParamValue());
                     result.setOpenHomePage(open ? "true" : "false");

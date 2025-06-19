@@ -282,7 +282,7 @@ public class DataSetTableService {
     @DeCleaner(value = DePermissionType.DATASET)
     public void saveOnLineExcel(DataSetOnLineExcelRequest datasetTable) {
         checkName(datasetTable);
-        if(datasetTable.getFile() != null){
+        if (datasetTable.getFile() != null) {
             //将文件传入minio
             try (InputStream inputStream = datasetTable.getFile().getInputStream()) {
                 //删除老文件
@@ -355,9 +355,9 @@ public class DataSetTableService {
 
     public void delete(String id) throws Exception {
         DatasetTable table = datasetTableMapper.selectByPrimaryKey(id);
-//        if (table.getType().equals("onLineExcel")) {
-//            minIOUtils.removeFile(table.getInfo());
-//        }
+        if (table.getType().equals("onLineExcel")) {
+            minIOUtils.removeFile(table.getInfo());
+        }
         datasetTableMapper.deleteByPrimaryKey(id);
         dataSetTableFieldsService.deleteByTableId(id);
         // 删除同步任务
@@ -620,7 +620,15 @@ public class DataSetTableService {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
                     datasourceRequest.setPageable(false);
-                    dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
+                    int total = 0;
+                    String sqlTmp = datasourceRequest.getQuery();
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    List<String[]> count = datasourceProvider.getData(datasourceRequest);
+                    if (count != null && !count.isEmpty()){
+                        total = Integer.parseInt(count.get(0)[0]);
+                    }
+                    dataSetPreviewPage.setTotal(total);
+                    datasourceRequest.setQuery(sqlTmp);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -648,7 +656,15 @@ public class DataSetTableService {
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
-                    dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
+                    int total = 0;
+                    String sqlTmp = datasourceRequest.getQuery();
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    List<String[]> count = jdbcProvider.getData(datasourceRequest);
+                    if (count != null && !count.isEmpty()){
+                        total = Integer.parseInt(count.get(0)[0]);
+                    }
+                    dataSetPreviewPage.setTotal(total);
+                    datasourceRequest.setQuery(sqlTmp);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -689,7 +705,15 @@ public class DataSetTableService {
                     datasourceRequest.setPageable(false);
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, customFilter));
-                    dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
+                    int total = 0;
+                    String sqlTmp = datasourceRequest.getQuery();
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(sql, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    List<String[]> count = datasourceProvider.getData(datasourceRequest);
+                    if (count != null && !count.isEmpty()){
+                        total = Integer.parseInt(count.get(0)[0]);
+                    }
+                    dataSetPreviewPage.setTotal(total);
+                    datasourceRequest.setQuery(sqlTmp);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -717,7 +741,15 @@ public class DataSetTableService {
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
-                    dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
+                    int total = 0;
+                    String sqlTmp = datasourceRequest.getQuery();
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    List<String[]> count = jdbcProvider.getData(datasourceRequest);
+                    if (count != null && !count.isEmpty()){
+                        total = Integer.parseInt(count.get(0)[0]);
+                    }
+                    dataSetPreviewPage.setTotal(total);
+                    datasourceRequest.setQuery(sqlTmp);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -746,7 +778,15 @@ public class DataSetTableService {
             try {
                 datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
                         Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
-                dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
+                int total = 0;
+                String sqlTmp = datasourceRequest.getQuery();
+                datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                List<String[]> count = jdbcProvider.getData(datasourceRequest);
+                if (count != null && !count.isEmpty()){
+                    total = Integer.parseInt(count.get(0)[0]);
+                }
+                dataSetPreviewPage.setTotal(total);
+                datasourceRequest.setQuery(sqlTmp);
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -792,7 +832,15 @@ public class DataSetTableService {
                     datasourceRequest.setPageable(false);
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, customFilter));
-                    dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
+                    int total = 0;
+                    String sqlTmp = datasourceRequest.getQuery();
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(sql, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    List<String[]> count = datasourceProvider.getData(datasourceRequest);
+                    if (count != null && !count.isEmpty()){
+                        total = Integer.parseInt(count.get(0)[0]);
+                    }
+                    dataSetPreviewPage.setTotal(total);
+                    datasourceRequest.setQuery(sqlTmp);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -817,7 +865,15 @@ public class DataSetTableService {
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
-                    dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
+                    int total = 0;
+                    String sqlTmp = datasourceRequest.getQuery();
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    List<String[]> count = jdbcProvider.getData(datasourceRequest);
+                    if (count != null && !count.isEmpty()){
+                        total = Integer.parseInt(count.get(0)[0]);
+                    }
+                    dataSetPreviewPage.setTotal(total);
+                    datasourceRequest.setQuery(sqlTmp);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -862,7 +918,15 @@ public class DataSetTableService {
                     datasourceRequest.setPageable(false);
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, customFilter));
-                    dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
+                    int total = 0;
+                    String sqlTmp = datasourceRequest.getQuery();
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(sql, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    List<String[]> count = datasourceProvider.getData(datasourceRequest);
+                    if (count != null && !count.isEmpty()){
+                        total = Integer.parseInt(count.get(0)[0]);
+                    }
+                    dataSetPreviewPage.setTotal(total);
+                    datasourceRequest.setQuery(sqlTmp);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -887,7 +951,15 @@ public class DataSetTableService {
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
-                    dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
+                    int total = 0;
+                    String sqlTmp = datasourceRequest.getQuery();
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    List<String[]> count = jdbcProvider.getData(datasourceRequest);
+                    if (count != null && !count.isEmpty()){
+                        total = Integer.parseInt(count.get(0)[0]);
+                    }
+                    dataSetPreviewPage.setTotal(total);
+                    datasourceRequest.setQuery(sqlTmp);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -1912,6 +1984,15 @@ public class DataSetTableService {
         String filename = file.getOriginalFilename();
         // parse file
         List<ExcelSheetData> excelSheetDataList = parseExcel2(filename, file.getInputStream(), true);
+        for (ExcelSheetData excelSheetData : excelSheetDataList){
+            if (excelSheetData.getFields()!= null && !excelSheetData.getFields().isEmpty()){
+                String[] fieldArray = excelSheetData.getFields().stream().map(TableField::getFieldName)
+                        .toArray(String[]::new);
+                if (checkIsRepeat(fieldArray)){
+                    DataInsException.throwException(Translator.get("i18n_excel_field_repeat"));
+                }
+            }
+        }
         List<ExcelSheetData> retrunSheetDataList = new ArrayList<>();
 
         if (StringUtils.isNotEmpty(tableId) && editType == 1) {

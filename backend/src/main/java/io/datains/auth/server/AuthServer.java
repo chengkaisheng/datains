@@ -24,7 +24,6 @@ import io.datains.plugins.xpack.ldap.dto.response.ValidateResult;
 import io.datains.plugins.xpack.ldap.service.LdapXpackService;
 import io.datains.plugins.xpack.oidc.service.OidcXpackService;
 import io.datains.service.sys.SysUserService;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -33,13 +32,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class AuthServer implements AuthApi {
@@ -204,15 +202,15 @@ public class AuthServer implements AuthApi {
         }
         try {
              userId = JWTUtils.tokenInfoByToken(token).getUserId();
-            authUserService.clearCache(userId);
+//            authUserService.clearCache(userId);
         } catch (Exception e) {
             LogUtil.error(e);
             return "fail";
         }
        // CurrentUserDto user = AuthUtils.getUser();
-        boolean set = redisService.delete(UserKey.getById, "datains_"+userId.toString());
+//        boolean set = redisService.delete(UserKey.getById, "datains_"+userId.toString());
 
-        System.err.println("token注销"+set);
+//        System.err.println("token注销"+set);
         return "success";
     }
 

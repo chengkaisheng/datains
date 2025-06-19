@@ -1,8 +1,8 @@
 package io.datains.auth.util;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTCreator.Builder;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -20,7 +20,7 @@ import java.util.Date;
 public class JWTUtils {
 
     // token过期时间1min (过期会自动刷新续命 目的是避免一直都是同一个token )
-    private static final long EXPIRE_TIME = 1 * 60 * 1000;
+    private static final long EXPIRE_TIME = 60 * 60 * 1000;
     // 登录间隔时间10min 超过这个时间强制重新登录
     private static long Login_Interval;
 

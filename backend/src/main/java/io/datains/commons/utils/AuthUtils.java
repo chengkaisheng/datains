@@ -8,7 +8,6 @@ import io.datains.auth.service.ProxyAuthService;
 import io.datains.commons.constants.DePermissionType;
 import io.datains.commons.constants.ResourceAuthLevel;
 import io.datains.commons.model.AuthURD;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -45,8 +44,7 @@ public class AuthUtils {
     public static CurrentUserDto getUser() {
         if (ObjectUtils.isNotEmpty(USER_INFO.get()))
             return USER_INFO.get();
-        CurrentUserDto userDto = (CurrentUserDto) SecurityUtils.getSubject().getPrincipal();
-        return userDto;
+        return (CurrentUserDto) SecurityUtils.getSubject().getPrincipal();
     }
 
     public static void setProxyUser(Long userId) {

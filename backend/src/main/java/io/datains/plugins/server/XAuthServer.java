@@ -7,6 +7,7 @@ import io.datains.commons.utils.AuthUtils;
 import io.datains.controller.handler.annotation.I18n;
 import io.datains.listener.util.CacheUtils;
 import io.datains.service.sys.AuthXpackService;
+import io.datains.service.sys.SysDeptLeaderAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,8 @@ public class XAuthServer {
 
     @Autowired
     private AuthXpackService sysAuthService;
-
+    @Resource
+    private SysDeptLeaderAuthService sysDeptLeaderAuthService;
     @RequiresPermissions("auth:read")
     @PostMapping("/authModels")
     @I18n
@@ -69,6 +72,10 @@ public class XAuthServer {
     public void authChange(@RequestBody XpackSysAuthRequest request) {
         CurrentUserDto user = AuthUtils.getUser();
         sysAuthService.authChange(request, user.getUserId(), user.getUsername(), user.getIsAdmin());
+        //当给一个组织权限时，需要同步给到组织负责人
+        if (request.getAuthTargetType().equals("dept")){
+            sysDeptLeaderAuthService.addAuthToLeaders(user.getUserId(), request.getAuthSource(), request.getAuthSourceType());
+        }
         // 当权限发生变化 前端实时刷新对应菜单
         Optional.ofNullable(request.getAuthSourceType()).ifPresent(type -> {
             if (StringUtils.equals("menu", type)) {
@@ -102,6 +109,10 @@ public class XAuthServer {
             CurrentUserDto user = AuthUtils.getUser();
             for (XpackSysAuthRequest request : requests.getAuths()) {
                 sysAuthService.authChange(request, user.getUserId(), user.getUsername(), user.getIsAdmin());
+                //当给一个组织权限时，需要同步给到组织负责人
+                if (request.getAuthTargetType().equals("dept")){
+                    sysDeptLeaderAuthService.addAuthToLeaders(user.getUserId(), request.getAuthSource(), request.getAuthSourceType());
+                }
                 // 当权限发生变化 前端实时刷新对应菜单
                 Optional.ofNullable(request.getAuthSourceType()).ifPresent(type -> {
                     if (StringUtils.equals("menu", type)) {
