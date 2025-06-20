@@ -28,7 +28,7 @@
       <el-divider />
 
       <div style="margin-top: 10px; height: 100%">
-        <div class="btn" style="display: flex;align-items: center;">
+        <div style="display: flex;align-items: center;">
           <el-button
             style="margin-right: 20px;"
             size="mini"
@@ -269,7 +269,7 @@ export default {
   methods: {
     queryBasicInfo() {
       basicInfo().then(response => {
-        this.pageShow = Number(response.data.onLineExcelCount === null ? 1000 : response.data.onLineExcelCount)
+        this.pageShow = Number(response.data.onLineExcelCount === null || response.data.onLineExcelCount === undefined ? 1000 : response.data.onLineExcelCount)
         this.page = {
           page: 1,
           pageSize: this.pageShow,
@@ -307,17 +307,19 @@ export default {
       });
     },
     exportXlsx() {
-      // 管理员角色可以导出
-      let index = store.getters.roles.findIndex(item => item.id == 1)
-      let exportXlsxDom = document.getElementById('luckysheet-exportXlsx-btn-title')
-      if(index !== -1) {
-        let _this = this
-        exportXlsxDom.addEventListener('click', async function() {
-          await exportExcel(luckysheet.getAllSheets(), _this.name, false)
-        })
-      } else {
-        exportXlsxDom.style.display = 'none'
-      }
+      setTimeout(() => {
+        // 管理员角色可以导出
+        let index = store.getters.roles.findIndex(item => item.id == 1)
+        let exportXlsxDom = document.getElementById('luckysheet-exportXlsx-btn-title')
+        if(index === -1) {
+          let _this = this
+          exportXlsxDom.addEventListener('click', async function() {
+            await exportExcel(luckysheet.getAllSheets(), _this.name, false)
+          })
+        } else {
+          exportXlsxDom.style.display = 'none'
+        }
+      }, 1500)
     },
     uploadFile() {
       const input = document.createElement("input");
@@ -462,7 +464,14 @@ export default {
         this.table.row = this.tableViewRowForm.row
         post('/dataset/table/getPreviewData/' + page.page + '/' + page.pageSize, this.table, true, 30000).then(response => {
           if(response.success) {
-            // this.page = response.data.page
+            // 如果总条数大于需要加载的条数，弹出提示
+            if(response.data.page.total > this.pageShow) {
+              this.$message({
+                message: `导入的数据集超过设定的阈值‘${this.pageShow}’,仅加载阈值数量的数据条数。`,
+                type: 'warning',
+                showClose: true
+              })
+            }
             // 需要将 fields 与 data 结合
             const data = this.formatterData(response.data.fields, response.data.data)
             const blob = dataToExcelBlob(data)
