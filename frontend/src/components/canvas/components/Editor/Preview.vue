@@ -101,6 +101,7 @@ import { buildFilterMap } from '@/utils/conditionUtil'
 import { printA4 } from '@/utils/print'
 import { viewDataExport, viewData } from '@/api/panel/panel'
 import { export_json_to_excel } from '@/plugins/Export2Excel'
+import { createExcelExporter } from '@/plugins/exportExcel'
 export default {
   components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
   model: {
@@ -591,17 +592,53 @@ export default {
         'cache': false,
         excelExportFlag: true
       }
+      let messageInstance = this.$message({
+        message: '导出中',
+        type: 'info',
+        duration: 0, // 设置为 0 表示不会自动关闭
+        showClose: false, // 显示右上角关闭按钮
+      });
+      let _this = this
       try {
         const res = await viewData(this.showChartInfo.id, this.panelInfo.id, data)
         if (res.success) {
           excelData = JSON.parse(JSON.stringify(res.data.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
-          export_json_to_excel(excelHeader, excelData, excelName)
+          // export_json_to_excel(excelHeader, excelData, excelName)
+          const exporter = createExcelExporter({
+            // totalRows: 100000,
+            chunkSize: 10000,
+            excelHeader,
+            excelData,
+            onProgress: ({ percent }) => console.log(`进度: ${percent}%`),
+            onComplete: ({ blob, totalTime }) => {
+              console.log('导出完成，用时:', totalTime + '秒');
+              const link = document.createElement('a');
+              link.href = URL.createObjectURL(blob);
+              link.download = `${excelName}.xlsx`;
+              link.click();
+              messageInstance.close()
+              _this.$message.success('导出成功！')
+              localStorage.setItem('exportDataFlag', 'false')
+            },
+            onError: (e) => {
+              console.error(e)
+              setTimeout(() => {
+                messageInstance.close()
+                _this.$message.error('导出失败！')
+                localStorage.setItem('exportDataFlag', 'false')
+              }, 2000)
+            }
+          });
+          exporter.start();
         }
-        setTimeout(() => {
-          localStorage.setItem('exportDataFlag', 'false')
-        }, 2000)
+        // setTimeout(() => {
+        //   messageInstance.close()
+        //   localStorage.setItem('exportDataFlag', 'false')
+        // }, 2000)
       } catch (err) {
         setTimeout(() => {
+          messageInstance.close()
+          _this.$message.error('导出失败！')
           localStorage.setItem('exportDataFlag', 'false')
         }, 2000)
       }
