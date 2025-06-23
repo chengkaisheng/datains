@@ -156,17 +156,19 @@ export default {
       });
     },
     exportXlsx() {
-      // 管理员角色可以导出
-      let index = store.getters.roles.findIndex(item => item.id == 1)
-      let exportXlsxDom = document.getElementById('luckysheet-exportXlsx-btn-title')
-      if(index !== -1) {
-        let _this = this
-        exportXlsxDom.addEventListener('click', async function() {
-          await exportExcel(luckysheet.getAllSheets(), _this.param.name, false)
-        })
-      } else {
-        exportXlsxDom.style.display = 'none'
-      }
+      setTimeout(() => {
+        // 管理员角色可以导出
+        let index = store.getters.roles.findIndex(item => item.id == 1)
+        let exportXlsxDom = document.getElementById('luckysheet-exportXlsx-btn-title')
+        if(index !== -1) {
+          let _this = this
+          exportXlsxDom.addEventListener('click', async function() {
+            await exportExcel(luckysheet.getAllSheets(), _this.param.name, false)
+          })
+        } else {
+          exportXlsxDom.style.display = 'none'
+        }
+      }, 1500)
     },
     uploadExcel(file) {
       this.name = file.name;
