@@ -5,11 +5,12 @@ package io.datains.base.mapper;
  * @Date: 2022/05/10/ 14:30
  * @Description
  */
-import java.util.List;
 
 import io.datains.base.domain.XpackSysAuthDetailDTO;
 import io.datains.base.domain.XpackSysAuthRequest;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface XpackExtSysAuthMapper {
     Boolean authExist(@Param("authSource") String paramString1, @Param("authTarget") String paramString2);
@@ -18,8 +19,10 @@ public interface XpackExtSysAuthMapper {
 
     List<XpackSysAuthDetailDTO> search(XpackSysAuthRequest paramXpackSysAuthRequest);
 
-    List<XpackSysAuthDetailDTO> getSysAuthByAuthSource(@Param("authSource")String authSource ,@Param("authTarget") String authTarget,@Param("authSourceType") String authSourceType,
+    List<XpackSysAuthDetailDTO> getSysAuthByAuthSource(@Param("authSource") String authSource, @Param("authTarget") String authTarget, @Param("authSourceType") String authSourceType,
                                                        @Param("authTargetType") String authTargetType);
 
-   int insertSysAuth(XpackSysAuthDetailDTO xpackSysAuthDetailDTO);
+    int insertSysAuth(XpackSysAuthDetailDTO xpackSysAuthDetailDTO);
+
+    List<XpackSysAuthDetailDTO> getAllByAuthSource(@Param("userId") Long userId, @Param("authSources") List<String> authSources);
 }

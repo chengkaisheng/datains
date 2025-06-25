@@ -43,6 +43,34 @@
         <where>
             auth_id in
             <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
+            <if test="privilegeValue == 1">
+                and (privilege_type &lt;= #{privilegeType} or privilege_type = 20)
+            </if>
+            <if test="privilegeValue == 0 and privilegeType != 1">
+                and (privilege_type &gt;= #{privilegeType} and privilege_type != 20)
+            </if>
+            <if test="privilegeValue == 0 and privilegeType == 1">
+                and privilege_type &gt;= #{privilegeType}
+            </if>
+        </where>
+    </update>
+
+    <update id="authDetailsChange2">
+        UPDATE sys_auth_detail
+        SET privilege_value = #{privilegeValue}
+        <where>
+            auth_id in
+            <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
+            and privilege_type = #{privilegeType}
+        </where>
+    </update>
+
+    <update id="authDetailsChange3">
+        UPDATE sys_auth_detail
+        SET privilege_value = #{privilegeValue}
+        <where>
+            auth_id in
+            <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
             <if test="privilegeValue == 1 and privilegeType != 3">
                 and ((privilege_type &lt;= #{privilegeType} or privilege_type = 20) and privilege_type != 3)
             </if>
@@ -57,15 +85,16 @@
             </if>
         </where>
     </update>
-
-    <update id="authDetailsChange2">
-        UPDATE sys_auth_detail
-        SET privilege_value = #{privilegeValue}
-        <where>
-            auth_id in
-            <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
-            and privilege_type = #{privilegeType}
-        </where>
+    <update id="authBatchChangeForDeptLeader">
+        UPDATE sys_auth_detail sad
+        SET sad.privilege_value = #{privilegeValue}
+        where sad.auth_id in
+        (
+        select sa.id from sys_auth sa where sa.auth_target in
+        <foreach collection='userIds' item='userId' open='(' separator=',' close=')'>#{userId}</foreach>
+        and sa.auth_target_type = 'user'
+        )
+        and sad.create_user = 'dept'
     </update>
 
 </mapper>

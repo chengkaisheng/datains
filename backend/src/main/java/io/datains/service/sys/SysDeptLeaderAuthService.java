@@ -30,6 +30,26 @@ public interface SysDeptLeaderAuthService {
     /**
      * 将权限存储在组织下，为后续同步给组织负责人做准备
      *
+     * @param deptId         组织
+     * @param userId         权限来源用户，可为空
+     * @param authSource     权限来源
+     * @param authSourceType 权限来源类型
+     */
+    void addAuthToLeadersByDeptId(Long deptId, Long userId, String authSource, String authSourceType);
+
+    /**
+     * 取消组织权限时，删除组织负责人权限
+     *
+     * @param deptId         组织
+     * @param userId         权限来源用户，可为空
+     * @param authSource     权限来源
+     * @param authSourceType 权限来源类型
+     */
+    void deleteAuthToLeadersByDeptId(Long deptId, Long userId, String authSource, String authSourceType);
+
+    /**
+     * 将权限存储在组织下，为后续同步给组织负责人做准备
+     *
      * @param userId         权限来源用户，用于判断所属组织
      * @param authSource     权限来源
      * @param authSourceType 权限来源类型

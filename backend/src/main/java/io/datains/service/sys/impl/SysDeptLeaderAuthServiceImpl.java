@@ -100,15 +100,9 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
         }
     }
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void addAuthToLeaders(Long userId, String authSource, String authSourceType) {
-        SysUser sysUser = this.sysUserMapper.selectByPrimaryKey(userId);
-        if (sysUser == null || sysUser.getDeptId() == null) {
-            return;
-        }
-        //开始进行权限处理
-        Long deptId = sysUser.getDeptId();
+    @Override
+    public void addAuthToLeadersByDeptId(Long deptId, Long userId, String authSource, String authSourceType) {
         while (deptId != null && deptId > 0) {
             XpackSysDept dept = sysDeptMapper.selectByPrimaryKey(deptId);
             SysDeptLeaderAuth auth = new SysDeptLeaderAuth();
@@ -127,21 +121,62 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
             auth.setPrivilegeType(privilegeType);
             auth.setCreateTime(System.currentTimeMillis());
             auth.setUpdateTime(auth.getCreateTime());
-            this.sysDeptLeaderAuthMapper.insertBatch(Collections.singletonList(auth));
-
-            //同步将权限添加到组织负责人身上
-            List<Long> leaderIds = this.sysDeptLeaderMapper.selectUserIdsByDeptId(deptId);
-            if (leaderIds != null && !leaderIds.isEmpty() && auth.getPrivilegeType() != null) {
-                for (Long leaderId : leaderIds) {
-                    List<Integer> privilegeTypes = Arrays.stream(auth.getPrivilegeType().split(",")).map(Integer::parseInt).collect(Collectors.toList());
-                    for (Integer privilegeType1 : privilegeTypes) {
-                        this.changeAuthForUser(leaderId, authSource, authSourceType, privilegeType1, 1);
+            //要判断是否重复，根据授予的组织以及资源进行判断
+            if (this.sysDeptLeaderAuthMapper.getCountByDeptIdAndSource(deptId, auth.getAuthSource(), auth.getAuthSourceType()) <= 0) {
+                this.sysDeptLeaderAuthMapper.insertBatch(Collections.singletonList(auth));
+                //同步将权限添加到组织负责人身上
+                List<Long> leaderIds = this.sysDeptLeaderMapper.selectUserIdsByDeptId(deptId);
+                if (leaderIds != null && !leaderIds.isEmpty() && auth.getPrivilegeType() != null) {
+                    for (Long leaderId : leaderIds) {
+                        List<Integer> privilegeTypes = Arrays.stream(auth.getPrivilegeType().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+                        for (Integer privilegeType1 : privilegeTypes) {
+                            this.changeAuthForUser(leaderId, authSource, authSourceType, privilegeType1, 1);
+                        }
                     }
                 }
             }
             //获取上级组织id，循环添加权限信息
             deptId = dept.getPid();
         }
+    }
+
+    @Override
+    public void deleteAuthToLeadersByDeptId(Long deptId, Long userId, String authSource, String authSourceType) {
+        while (deptId != null && deptId > 0) {
+            XpackSysDept dept = sysDeptMapper.selectByPrimaryKey(deptId);
+            //先查询出该组织下的负责人
+            List<Long> leaderIds = this.sysDeptLeaderMapper.selectUserIdsByDeptId(deptId);
+            if (leaderIds != null && !leaderIds.isEmpty()) {
+                //如果有负责人的话
+                //查询权限信息
+                List<SysDeptLeaderAuth> auths = this.sysDeptLeaderAuthMapper.selectByDeptIdAndSource(deptId, authSource, authSourceType);
+                for (SysDeptLeaderAuth auth : auths) {
+                    for (Long leaderId : leaderIds) {
+                        //删除负责人的权限
+                        List<Integer> privilegeTypes = Arrays.stream(auth.getPrivilegeType().split(",")).map(Integer::parseInt).collect(Collectors.toList());
+                        for (Integer privilegeType1 : privilegeTypes) {
+                            this.changeAuthForUser(leaderId, authSource, authSourceType, privilegeType1, 0);
+                        }
+                    }
+                }
+            }
+            //最后删除组织权限记录
+            this.sysDeptLeaderAuthMapper.deleteByDeptIdAndSource(deptId, authSource, authSourceType);
+            //获取上级组织id，循环删除权限信息
+            deptId = dept.getPid();
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addAuthToLeaders(Long userId, String authSource, String authSourceType) {
+        SysUser sysUser = this.sysUserMapper.selectByPrimaryKey(userId);
+        if (sysUser == null || sysUser.getDeptId() == null) {
+            return;
+        }
+        //开始进行权限处理
+        Long deptId = sysUser.getDeptId();
+        addAuthToLeadersByDeptId(deptId, userId, authSource, authSourceType);
     }
 
     @Override

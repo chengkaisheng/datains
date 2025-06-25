@@ -13,6 +13,7 @@ import io.datains.base.mapper.XpackExtSysAuthMapper;
 import io.datains.base.mapper.XpackExtVAuthModelMapper;
 import io.datains.base.mapper.XpackSysAuthDetailMapper;
 import io.datains.commons.utils.IsNullUtils;
+import io.datains.dto.authModel.AuthChangeForDeptLeaderDTO;
 import io.datains.service.sys.AuthXpackService;
 import org.springframework.stereotype.Service;
 
@@ -100,14 +101,14 @@ public class AuthXpackDefaultService implements AuthXpackService {
         }
         arrayList.add(sysAuthByAuthSource.get(0).getId());
         if (PluginSystemConstants.PRIVILEGE_VALUE.ON.equals(xpackSysAuthDetail.getPrivilegeValue())) {
-            if (xpackSysAuthRequest.getAuthSourceType().equalsIgnoreCase("panel") && xpackSysAuthDetail.getPrivilegeType() == 3) {
-                this.i.authDetailsChange2(PluginSystemConstants.PRIVILEGE_VALUE.OFF, xpackSysAuthDetail.getPrivilegeType(), arrayList);
+            if (xpackSysAuthRequest.getAuthSourceType().equalsIgnoreCase("panel")) {
+                this.i.authDetailsChange3(PluginSystemConstants.PRIVILEGE_VALUE.OFF, xpackSysAuthDetail.getPrivilegeType(), arrayList);
             } else {
                 this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.OFF, xpackSysAuthDetail.getPrivilegeType(), arrayList);
             }
         } else {
-            if (xpackSysAuthRequest.getAuthSourceType().equalsIgnoreCase("panel") && xpackSysAuthDetail.getPrivilegeType() == 3) {
-                this.i.authDetailsChange2(PluginSystemConstants.PRIVILEGE_VALUE.ON, xpackSysAuthDetail.getPrivilegeType(), arrayList);
+            if (xpackSysAuthRequest.getAuthSourceType().equalsIgnoreCase("panel")) {
+                this.i.authDetailsChange3(PluginSystemConstants.PRIVILEGE_VALUE.ON, xpackSysAuthDetail.getPrivilegeType(), arrayList);
             } else {
                 this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.ON, xpackSysAuthDetail.getPrivilegeType(), arrayList);
             }
@@ -155,6 +156,34 @@ public class AuthXpackDefaultService implements AuthXpackService {
         } else {
             this.i.authDetailsChange(privilegeValue, privilegeType, arrayList);
         }
+    }
+
+    /**
+     * 为权限负责人批量添加权限
+     *
+     * @param a AuthChangeForDeptLeaderDTO
+     */
+    public void authAddForDeptLeader(Long userId, List<AuthChangeForDeptLeaderDTO> a) {
+        if (a == null || a.isEmpty()) {
+            return;
+        }
+        //首先需要根据用户和资源id查询出已经存在的权限
+        List<XpackSysAuthDetailDTO> sysAuthByAuthSourceList = B.getAllByAuthSource(userId, a.stream().map(AuthChangeForDeptLeaderDTO::getAuthSource).collect(Collectors.toList()));
+        Map<String, XpackSysAuthDetailDTO> sysAuthByAuthSourceMap = sysAuthByAuthSourceList.stream().collect(Collectors.toMap(XpackSysAuthDetailDTO::getAuthSource, item -> item));
+        //筛选出需要新创建的
+        List<AuthChangeForDeptLeaderDTO> needAdd = new ArrayList<>();
+        for (AuthChangeForDeptLeaderDTO item : a) {
+            if (!sysAuthByAuthSourceMap.containsKey(item.getAuthSource()) || !sysAuthByAuthSourceMap.get(item.getAuthSource()).getAuthSourceType().equals(item.getAuthSourceType())) {
+                needAdd.add(item);
+            }
+        }
+        //进行权限的批量创建
+    }
+
+    @Override
+    public void authBatchChangeForDeptLeader(List<Long> user, Integer privilegeValue) {
+        //修改此用户所有来自组织负责人的权限
+        this.i.authBatchChangeForDeptLeader(user, privilegeValue);
     }
 
     public List<XpackSysAuthDetail> authDetailsModel(String authType) {

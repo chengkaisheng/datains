@@ -14,9 +14,15 @@ import java.util.List;
 public interface SysDeptLeaderAuthMapper {
     int insertBatch(@Param("list") List<SysDeptLeaderAuth> list);
 
+    int getCountByDeptIdAndSource(@Param("deptId") Long deptId, @Param("authSource") String authSource, @Param("authSourceType") String authSourceType);
+
     List<SysDeptLeaderAuth> selectByDeptId(Long deptId);
 
+    List<SysDeptLeaderAuth> selectByDeptIdAndSource(@Param("deptId") Long deptId, @Param("authSource") String authSource, @Param("authSourceType") String authSourceType);
+
     void batchDeleteByDeptIds(@Param("deptIds") List<Long> deptIds);
+
+    void deleteByDeptIdAndSource(@Param("deptId") Long deptId, @Param("authSource") String authSource, @Param("authSourceType") String authSourceType);
 
     void deleteByAuthSource(String authSource);
 }

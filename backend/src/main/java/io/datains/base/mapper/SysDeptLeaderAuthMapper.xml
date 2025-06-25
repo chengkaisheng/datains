@@ -28,6 +28,20 @@
         FROM sys_dept_leader_auth
         WHERE dept_id = #{deptId}
     </select>
+    <select id="getCountByDeptIdAndSource" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sys_dept_leader_auth
+        WHERE dept_id = #{deptId}
+          AND auth_source = #{authSource}
+          AND auth_source_type = #{authSourceType}
+    </select>
+    <select id="selectByDeptIdAndSource" resultType="io.datains.base.domain.SysDeptLeaderAuth">
+        SELECT *
+        FROM sys_dept_leader_auth
+        WHERE dept_id = #{deptId}
+          AND auth_source = #{authSource}
+          AND auth_source_type = #{authSourceType}
+    </select>
     <delete id="batchDeleteByDeptIds">
         DELETE FROM sys_dept_leader_auth
         WHERE dept_id IN
@@ -39,5 +53,12 @@
         DELETE
         FROM sys_dept_leader_auth
         WHERE auth_source = #{authSource}
+    </delete>
+    <delete id="deleteByDeptIdAndSource">
+        DELETE
+        FROM sys_dept_leader_auth
+        WHERE dept_id = #{deptId}
+          AND auth_source = #{authSource}
+          AND auth_source_type = #{authSourceType}
     </delete>
 </mapper>

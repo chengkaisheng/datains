@@ -29,4 +29,12 @@ public interface AuthXpackService {
      * @param privilegeType  权限类型
      */
     void authChangeForDeptLeader(String user, String authSource, String authSourceType, String authTarget, String authTargetType, Integer privilegeValue, Integer privilegeType);
+
+    /**
+     * 批量去除部门负责人权限
+     *
+     * @param user           授权人员
+     * @param privilegeValue 权限值 1-授予权限 0-取消权限
+     */
+    void authBatchChangeForDeptLeader(List<Long> user, Integer privilegeValue);
 }
