@@ -37,9 +37,12 @@
           >
             上传文件
           </el-button>
-          <el-button size="mini" type="primary" @click="openDialog">
+          <el-button style="margin-right: 20px;" size="mini" type="primary" @click="openDialog">
             选择数据集
           </el-button>
+          <!-- <el-button size="mini" type="primary" @click="openDatabaseDialog">
+            数据库创建
+          </el-button> -->
           <div style="width: 95px;margin-left: 30px;font-size: 12px;">数据集名称：</div>
           <el-input style="width: 200px" size="mini" v-model="name"></el-input>
         </div>
@@ -160,25 +163,44 @@
         </el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      v-dialogDrag
+      :visible="visibleDatabase"
+      title="数据库"
+      width="50%"
+      @close="closeDatabase"
+    >
+      <AddDB style="height: 400px;overflow: auto;" :isOnlineExcel="true"></AddDB>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeDatabase()">{{
+          $t("dataset.cancel")
+        }}</el-button>
+        <el-button type="primary" size="mini" @click="confirmDatabase"
+          >{{ $t("dataset.confirm") }}
+        </el-button>
+      </div>
+    </el-dialog>
   </el-col>
 </template>
 
 <script>
 import { post, getOnlineExcelFile } from "@/api/dataset/dataset";
-import { getToken } from "@/utils/auth";
-import i18n from "@/lang";
-import { $alert } from "@/utils/message";
+// import { getToken } from "@/utils/auth";
+// import i18n from "@/lang";
+// import { $alert } from "@/utils/message";
 import store from "@/store";
+import AddDB from './AddDB'
 import { basicInfo } from '@/api/system/basic'
 import { queryAuthModel } from '@/api/authModel/authModel'
 import { exportExcel } from "../data/export";
 import { dataToExcelBlob } from '@/utils/dataToExcelBlob'
 import LuckyExcel from "luckyexcel";
 
-const token = getToken();
+// const token = getToken();
 
 export default {
   name: "AddExcel",
+  components: {AddDB},
   props: {
     param: {
       type: Object,
@@ -213,6 +235,7 @@ export default {
       name: "",
       file: null,
       visible: false,
+      visibleDatabase: false,
       tData: [],
       expandedArray: [],
       selectedData: null,
@@ -293,7 +316,7 @@ export default {
           container: "luckysheet", // 设定DOM容器的id
           title: this.name, // 设定表格名称
           lang: "zh", // 设定表格语言
-          // plugins: ["chart"],
+          plugins: [{name: 'chart'},{name: 'print'}],
           data: data || [],
           // 添加只读模式配置
           showtoolbar: !this.isReadOnly, // 是否显示工具栏
@@ -311,6 +334,7 @@ export default {
         // 管理员角色可以导出
         let index = store.getters.roles.findIndex(item => item.id == 1)
         let exportXlsxDom = document.getElementById('luckysheet-exportXlsx-btn-title')
+        let printDom = document.getElementById('luckysheet-icon-print')
         if(index !== -1) {
           let _this = this
           exportXlsxDom.addEventListener('click', async function() {
@@ -318,6 +342,7 @@ export default {
           })
         } else {
           exportXlsxDom.style.display = 'none'
+          printDom.style.display = 'none'
         }
       }, 1500)
     },
@@ -381,7 +406,6 @@ export default {
         _this.$message.error("无法读取文件内容，请检查文件是否损坏3");
       }
     },
-
     async save() {
       // let blob = await exportExcel(luckysheet.getAllSheets(), this.name, true)
       // console.log('blob', blob)
@@ -440,6 +464,13 @@ export default {
       this.initTable(this.selectedData.id)
       
     },
+    closeDatabase() {
+      this.visibleDatabase = false
+      
+    },
+    confirmDatabase() {
+      
+    },
     initTable(id) {
       this.tableViewRowForm.row = this.pageShow
       if (id !== null) {
@@ -458,7 +489,6 @@ export default {
         })
       }
     },
-
     initPreviewData(page) {
       if (this.table.id) {
         this.table.row = this.tableViewRowForm.row
@@ -510,6 +540,9 @@ export default {
       this.visible = true
       this.selectedData = null
       this.treeNode()
+    },
+    openDatabaseDialog() {
+      this.visibleDatabase = true
     },
     treeNode(cache) {
       const modelInfo = localStorage.getItem('dataset-tree')

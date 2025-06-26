@@ -142,7 +142,7 @@ export default {
           container: "luckysheet", // 设定DOM容器的id
           title: this.name, // 设定表格名称
           lang: "zh", // 设定表格语言
-          // plugins: ["chart"],
+          plugins: [{name: 'chart'},{name: 'print'}],
           data: data || [],
           // 添加只读模式配置
           showtoolbar: !this.isReadOnly, // 是否显示工具栏
@@ -160,13 +160,15 @@ export default {
         // 管理员角色可以导出
         let index = store.getters.roles.findIndex(item => item.id == 1)
         let exportXlsxDom = document.getElementById('luckysheet-exportXlsx-btn-title')
-        if(index !== -1) {
+        let printDom = document.getElementById('luckysheet-icon-print')
+        if(index === -1) {
           let _this = this
           exportXlsxDom.addEventListener('click', async function() {
             await exportExcel(luckysheet.getAllSheets(), _this.param.name, false)
           })
         } else {
           exportXlsxDom.style.display = 'none'
+          printDom.style.display = 'none'
         }
       }, 1500)
     },
@@ -366,5 +368,14 @@ span {
 }
 .luckysheet-icon-img-container.iconfont, .luckysheet-submenu-arrow .iconfont {
     font-size: 24px !important;
+}
+.luckysheet-print {
+  p {
+    margin: 12px 0;
+  }
+  .luckysheet-modal-dialog-title-close {
+    width: 45px;
+    height: 45px;
+  }
 }
 </style>

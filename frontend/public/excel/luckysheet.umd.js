@@ -76103,23 +76103,25 @@ field\u53EF\u4EE5\u662F\u8207database\u7B2C\u4E00\u884C\u4E2D\u67D0\u500B\u5217\
                           text: o.menuItemPrint,
                           value: "print",
                           example: '<i class="iconfont luckysheet-iconfont-dayin" aria-hidden="true"></i>'
-                      }, {
-                          text: "",
-                          value: "split",
-                          example: ""
-                      }, {
-                          text: o.menuItemAreas,
-                          value: "areas",
-                          example: '<i class="iconfont luckysheet-iconfont-tihuan" aria-hidden="true"></i>'
-                      }, {
-                          text: o.menuItemRows,
-                          value: "rows",
-                          example: '<i class="iconfont luckysheet-iconfont-zhuandao1" aria-hidden="true"></i>'
-                      }, {
-                          text: o.menuItemColumns,
-                          value: "columns",
-                          example: '<i class="iconfont luckysheet-iconfont-dingwei" aria-hidden="true"></i>'
-                      }]
+                      }, 
+                      // {
+                      //     text: "",
+                      //     value: "split",
+                      //     example: ""
+                      // }, {
+                      //     text: o.menuItemAreas,
+                      //     value: "areas",
+                      //     example: '<i class="iconfont luckysheet-iconfont-tihuan" aria-hidden="true"></i>'
+                      // }, {
+                      //     text: o.menuItemRows,
+                      //     value: "rows",
+                      //     example: '<i class="iconfont luckysheet-iconfont-zhuandao1" aria-hidden="true"></i>'
+                      // }, {
+                      //     text: o.menuItemColumns,
+                      //     value: "columns",
+                      //     example: '<i class="iconfont luckysheet-iconfont-dingwei" aria-hidden="true"></i>'
+                      // }
+                      ]
                         , m = e.createButtonMenu(f)
                         , g = xe(e.menu, {
                           id: "print",
