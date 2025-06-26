@@ -161,7 +161,7 @@ export default {
         let index = store.getters.roles.findIndex(item => item.id == 1)
         let exportXlsxDom = document.getElementById('luckysheet-exportXlsx-btn-title')
         let printDom = document.getElementById('luckysheet-icon-print')
-        if(index === -1) {
+        if(index !== -1) {
           let _this = this
           exportXlsxDom.addEventListener('click', async function() {
             await exportExcel(luckysheet.getAllSheets(), _this.param.name, false)
