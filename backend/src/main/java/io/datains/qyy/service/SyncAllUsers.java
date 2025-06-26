@@ -58,8 +58,30 @@ public class SyncAllUsers {
         }
         List<SysDept> sysDepts = new ArrayList<>();
         toSysDept(sysDepts, qyyDepts);
-        sysDeptMapper.deleteAll();
-        sysDeptMapper.insertBatch(sysDepts);
+        Map<Long, SysDept> sysDeptMap = sysDepts.stream().collect(Collectors.toMap(SysDept::getDeptId, sysDept -> sysDept));
+        List<SysDept> src = sysDeptMapper.selectAll();
+        Map<Long, SysDept> srcMap = src.stream().collect(Collectors.toMap(SysDept::getDeptId, sysDept -> sysDept));
+        //与原有的组织进行对比
+        for (SysDept sysDept : sysDepts) {
+            if (srcMap.containsKey(sysDept.getDeptId())) {
+                SysDept sysDept1 = srcMap.get(sysDept.getDeptId());
+                //判断组织信息是否一致，不一致则更新
+                if (!Objects.equals(sysDept1.getName(), sysDept.getName())) {
+                    SysDept sysDept2 = new SysDept();
+                    sysDept2.setDeptId(sysDept.getDeptId());
+                    sysDept2.setName(sysDept.getName());
+                    sysDeptMapper.updateByPrimaryKeySelective(sysDept1);
+                }
+            } else {
+                sysDeptMapper.insert(sysDept);
+            }
+        }
+        //删除多余的部门
+        for (SysDept sysDept : src) {
+            if (!sysDeptMap.containsKey(sysDept.getDeptId())) {
+                sysDeptMapper.deleteByPrimaryKey(sysDept.getDeptId());
+            }
+        }
     }
 
     private void toSysDept(List<SysDept> sysDepts, List<QyyDept> qyyDepts) {
@@ -83,7 +105,7 @@ public class SyncAllUsers {
             return;
         }
         //剔除非填报的用户
-        List<QyyUser> qyyUsers1 = qyyUsers.stream().filter(qyyUser -> qyyUser.getAppRole() != null || qyyUser.getPcrole() != null).collect(Collectors.toList());
+        List<QyyUser> qyyUsers1 = qyyUsers.stream().filter(this::isUser).collect(Collectors.toList());
 
         //取出所有已存在的用户
         List<SysUser> sysUsers = sysUserMapper.selectByExample(new SysUserExample());
@@ -110,6 +132,23 @@ public class SyncAllUsers {
 
     }
 
+    private boolean isUser(QyyUser qyyUser) {
+        if (qyyUser.getPcrole() != null) {
+            for (Role role : qyyUser.getPcrole()) {
+                if (role.getScenId().equals(qyyCommon.getScenId()) || role.getScenId().equals(qyyCommon.getScenId2())) {
+                    return true;
+                }
+            }
+        }
+        if (qyyUser.getAppRole() != null) {
+            for (Role role : qyyUser.getAppRole()) {
+                if (role.getScenId().equals(qyyCommon.getScenId()) || role.getScenId().equals(qyyCommon.getScenId2())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     private List<QyyUser> fetchMobileUsers() {
         String path = qyyCommon.getHost() + "/fetchMobileUsers";
@@ -156,14 +195,7 @@ public class SyncAllUsers {
         request.setPhone(qyyUser.getPhone());
         request.setDeptId(qyyUser.getOrgId());
         request.setEmail(qyyUser.getEmail());
-        List<Long> roleIds = new ArrayList<>();
-        if (qyyUser.getAppRole() != null) {
-            roleIds.add(Long.valueOf(qyyUser.getAppRole().getKey()));
-        }
-        if (qyyUser.getPcrole() != null) {
-            roleIds.add(Long.valueOf(qyyUser.getPcrole().getKey()));
-        }
-        request.setRoleIds(roleIds.stream().distinct().collect(Collectors.toList()));
+        request.setRoleIds(getRoleIds(qyyUser));
         request.setEnabled(1L);
         sysUserService.save(request);
     }
@@ -176,18 +208,33 @@ public class SyncAllUsers {
         request.setPhone(qyyUser.getPhone());
         request.setDeptId(qyyUser.getOrgId());
         request.setEmail(qyyUser.getEmail());
-        List<Long> roleIds = new ArrayList<>();
-        if (qyyUser.getAppRole() != null) {
-            roleIds.add(Long.valueOf(qyyUser.getAppRole().getKey()));
-        }
-        if (qyyUser.getPcrole() != null) {
-            roleIds.add(Long.valueOf(qyyUser.getPcrole().getKey()));
-        }
-        request.setRoleIds(roleIds.stream().distinct().collect(Collectors.toList()));
+        request.setRoleIds(getRoleIds(qyyUser));
         request.setEnabled(1L);
         sysUserService.update(request);
     }
 
+    private List<Long> getRoleIds(QyyUser qyyUser) {
+        List<Long> roleIds = new ArrayList<>();
+        if (qyyUser.getPcrole() != null) {
+            for (Role role : qyyUser.getPcrole()) {
+                if (role.getScenId().equals(qyyCommon.getScenId()) || role.getScenId().equals(qyyCommon.getScenId2())) {
+                    if (role.getKey() != null) {
+                        roleIds.add(Long.valueOf(role.getKey()));
+                    }
+                }
+            }
+        }
+        if (qyyUser.getAppRole() != null) {
+            for (Role role : qyyUser.getAppRole()) {
+                if (role.getScenId().equals(qyyCommon.getScenId()) || role.getScenId().equals(qyyCommon.getScenId2())) {
+                    if (role.getKey() != null) {
+                        roleIds.add(Long.valueOf(role.getKey()));
+                    }
+                }
+            }
+        }
+        return roleIds.stream().distinct().collect(Collectors.toList());
+    }
 
     @Data
     public static class ResponseUser {
@@ -268,11 +315,11 @@ public class SyncAllUsers {
         /**
          * Pc填报角色信息
          */
-        private Role Pcrole;
+        private List<Role> Pcrole;
         /**
          * App填报角色信息
          */
-        private Role AppRole;
+        private List<Role> AppRole;
 
     }
 
@@ -303,5 +350,9 @@ public class SyncAllUsers {
          * 角色描述
          */
         private String describe;
+        /**
+         * 场景编码
+         */
+        private String scenId;
     }
 }

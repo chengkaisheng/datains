@@ -107,6 +107,7 @@
     delete from sys_dept
   </delete>
   <insert id="insert" parameterType="io.datains.base.domain.SysDept">
+    SET IDENTITY_INSERT sys_dept ON;
     insert into sys_dept (dept_id, pid, sub_count,
       `name`, dept_sort, create_by,
       update_by, create_time, update_time
