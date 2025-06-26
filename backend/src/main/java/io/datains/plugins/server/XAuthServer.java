@@ -76,7 +76,7 @@ public class XAuthServer {
         //当给一个组织权限时，需要同步给到组织负责人
         if (request.getAuthTargetType().equals("dept") && request.getAuthDetail().getPrivilegeValue().equals(0)) {
             sysDeptLeaderAuthService.addAuthToLeadersByDeptId(Long.valueOf(request.getAuthTarget()), null, request.getAuthSource(), request.getAuthSourceType());
-        } else {
+        } else if (request.getAuthTargetType().equals("dept") && request.getAuthDetail().getPrivilegeValue().equals(1)) {
             sysDeptLeaderAuthService.deleteAuthToLeadersByDeptId(Long.valueOf(request.getAuthTarget()), null, request.getAuthSource(), request.getAuthSourceType());
         }
         // 当权限发生变化 前端实时刷新对应菜单
@@ -115,7 +115,7 @@ public class XAuthServer {
                 //当给一个组织权限时，需要同步给到组织负责人
                 if (request.getAuthTargetType().equals("dept") && request.getAuthDetail().getPrivilegeValue().equals(0)) {
                     sysDeptLeaderAuthService.addAuthToLeadersByDeptId(Long.valueOf(request.getAuthTarget()), null, request.getAuthSource(), request.getAuthSourceType());
-                } else {
+                } else if (request.getAuthTargetType().equals("dept") && request.getAuthDetail().getPrivilegeValue().equals(1)) {
                     sysDeptLeaderAuthService.deleteAuthToLeadersByDeptId(Long.valueOf(request.getAuthTarget()), null, request.getAuthSource(), request.getAuthSourceType());
                 }
                 // 当权限发生变化 前端实时刷新对应菜单

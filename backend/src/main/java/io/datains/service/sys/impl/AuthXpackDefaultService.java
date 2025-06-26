@@ -6,6 +6,7 @@ package io.datains.service.sys.impl;
  * @Description
  */
 
+import cn.hutool.core.util.IdUtil;
 import io.dataease.plugins.common.constants.PluginSystemConstants;
 import io.datains.base.domain.*;
 import io.datains.base.mapper.XpackExtSysAuthDetailMapper;
@@ -18,10 +19,7 @@ import io.datains.service.sys.AuthXpackService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -178,6 +176,41 @@ public class AuthXpackDefaultService implements AuthXpackService {
             }
         }
         //进行权限的批量创建
+        if (!needAdd.isEmpty()) {
+            Map<String, List<XpackSysAuthDetail>> authDetailMap = new HashMap<>();
+            List<XpackSysAuthDetailDTO> addAuth = new ArrayList<>();
+            List<XpackSysAuthDetail> addAuthDetail = new ArrayList<>();
+            for (AuthChangeForDeptLeaderDTO item : needAdd) {
+                //新建权限
+                XpackSysAuthDetailDTO auth = new XpackSysAuthDetailDTO();
+                auth.setId(IdUtil.fastSimpleUUID());
+                auth.setAuthSource(item.getAuthSource());
+                auth.setAuthSourceType(item.getAuthSourceType());
+                auth.setAuthTarget(userId.toString());
+                auth.setAuthTargetType("user");
+                auth.setAuthUser("dept");
+                addAuth.add(auth);
+                //新建权限详情
+                if (!authDetailMap.containsKey(auth.getAuthSource())) {
+                    List<XpackSysAuthDetail> authDetails = i.searchAuthTypeModel(auth.getAuthSource());
+                    authDetailMap.put(auth.getAuthSource(), authDetails);
+                }
+                for (XpackSysAuthDetail sysAuthDetail : authDetailMap.get(auth.getAuthSource())) {
+                    XpackSysAuthDetail authDetail = new XpackSysAuthDetail();
+                    authDetail.setAuthId(auth.getId());
+                    authDetail.setPrivilegeName(sysAuthDetail.getPrivilegeName());
+                    authDetail.setPrivilegeType(sysAuthDetail.getPrivilegeType());
+                    authDetail.setPrivilegeValue(sysAuthDetail.getPrivilegeValue());
+                    authDetail.setPrivilegeExtend(sysAuthDetail.getPrivilegeExtend());
+                    authDetail.setRemark(sysAuthDetail.getRemark());
+                    authDetail.setCreateUser(auth.getCreateUser());
+                    authDetail.setCreateTime(System.currentTimeMillis());
+                    addAuthDetail.add(authDetail);
+                }
+            }
+            //TODO开始进行创建
+
+        }
     }
 
     @Override
