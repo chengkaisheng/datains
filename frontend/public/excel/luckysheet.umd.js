@@ -26134,7 +26134,7 @@ field\u53EF\u4EE5\u662F\u8207database\u7B2C\u4E00\u884C\u4E2D\u67D0\u500B\u5217\
                       </div>
                   </div>
                   <div class="luckysheet-toolbar-menu-button-dropdown luckysheet-inline-block iconfont luckysheet-iconfont-xiayige"
-                  style="user-select: none;margin-left: 0px;margin-right: 4px;">
+                  style="user-select: none;margin-left: 0px;margin-right: 4px;display: none;">
                   </div>
               </div>
           </div>
@@ -76094,59 +76094,70 @@ field\u53EF\u4EE5\u662F\u8207database\u7B2C\u4E00\u884C\u4E2D\u67D0\u500B\u5217\
                   let t = ve.getSheetByIndex();
                   _o(t)
               }),
-              $("#luckysheet-icon-print").click(function() {
-                  let t = $(this).attr("id") + "-menuButton"
-                    , l = $("#" + t)
-                    , o = Q().print;
-                  if (l.length == 0) {
-                      let f = [{
-                          text: o.menuItemPrint,
-                          value: "print",
-                          example: '<i class="iconfont luckysheet-iconfont-dayin" aria-hidden="true"></i>'
-                      }, 
-                      // {
-                      //     text: "",
-                      //     value: "split",
-                      //     example: ""
-                      // }, {
-                      //     text: o.menuItemAreas,
-                      //     value: "areas",
-                      //     example: '<i class="iconfont luckysheet-iconfont-tihuan" aria-hidden="true"></i>'
-                      // }, {
-                      //     text: o.menuItemRows,
-                      //     value: "rows",
-                      //     example: '<i class="iconfont luckysheet-iconfont-zhuandao1" aria-hidden="true"></i>'
-                      // }, {
-                      //     text: o.menuItemColumns,
-                      //     value: "columns",
-                      //     example: '<i class="iconfont luckysheet-iconfont-dingwei" aria-hidden="true"></i>'
-                      // }
-                      ]
-                        , m = e.createButtonMenu(f)
-                        , g = xe(e.menu, {
-                          id: "print",
-                          item: m,
-                          subclass: "",
-                          sub: ""
-                      });
-                      $("body").append(g),
-                      l = $("#" + t).width(180),
-                      l.find(".luckysheet-cols-menuitem").click(function() {
-                          l.hide(),
-                          rt();
-                          let y = $(this)
-                            , v = y.attr("itemvalue");
-                          v == "print" ? h.luckysheetPrint && (luckysheetPrint = h.luckysheetPrint,
-                          luckysheetPrint.createDialog(),
-                          luckysheetPrint.init()) : (v == "areas" || v == "rows" || v == "columns") && alert("areas")
-                      })
-                  }
-                  let s = $(this).outerWidth()
-                    , u = l.outerWidth()
-                    , d = $(this).offset().left;
-                  u > s && u + d > $("#" + h.container).width() && (d = d - u + s),
-                  dl(l, d, $(this).offset().top + 25, "lefttop")
-              }),
+              // $("#luckysheet-icon-print").click(function() {
+              //     let t = $(this).attr("id") + "-menuButton"
+              //       , l = $("#" + t)
+              //       , o = Q().print;
+              //     if (l.length == 0) {
+              //         let f = [{
+              //             text: o.menuItemPrint,
+              //             value: "print",
+              //             example: '<i class="iconfont luckysheet-iconfont-dayin" aria-hidden="true"></i>'
+              //         }, 
+              //         // {
+              //         //     text: "",
+              //         //     value: "split",
+              //         //     example: ""
+              //         // }, {
+              //         //     text: o.menuItemAreas,
+              //         //     value: "areas",
+              //         //     example: '<i class="iconfont luckysheet-iconfont-tihuan" aria-hidden="true"></i>'
+              //         // }, {
+              //         //     text: o.menuItemRows,
+              //         //     value: "rows",
+              //         //     example: '<i class="iconfont luckysheet-iconfont-zhuandao1" aria-hidden="true"></i>'
+              //         // }, {
+              //         //     text: o.menuItemColumns,
+              //         //     value: "columns",
+              //         //     example: '<i class="iconfont luckysheet-iconfont-dingwei" aria-hidden="true"></i>'
+              //         // }
+              //         ]
+              //           , m = e.createButtonMenu(f)
+              //           , g = xe(e.menu, {
+              //             id: "print",
+              //             item: m,
+              //             subclass: "",
+              //             sub: ""
+              //         });
+              //         $("body").append(g),
+              //         l = $("#" + t).width(180),
+              //         l.find(".luckysheet-cols-menuitem").click(function() {
+              //             l.hide(),
+              //             rt();
+              //             let y = $(this)
+              //               , v = y.attr("itemvalue");
+              //             // v == "print" ? h.luckysheetPrint && (luckysheetPrint = h.luckysheetPrint,
+              //             // luckysheetPrint.createDialog(),
+              //             // luckysheetPrint.init()) : (v == "areas" || v == "rows" || v == "columns") && alert("areas")
+              //             var selectHtml = luckysheet.getRangeHtml();
+
+              //             // 创建一个临时窗口或 iframe
+              //             var printWindow = window.open('', '_blank'); // 使用空 URL 打开新窗口
+
+              //             // 将 HTML 内容插入临时窗口或 iframe
+              //             printWindow.document.write(selectHtml);
+              //             printWindow.document.close();
+
+              //             // 调用打印功能
+              //             printWindow.print();
+              //         })
+              //     }
+              //     let s = $(this).outerWidth()
+              //       , u = l.outerWidth()
+              //       , d = $(this).offset().left;
+              //     u > s && u + d > $("#" + h.container).width() && (d = d - u + s),
+              //     dl(l, d, $(this).offset().top + 25, "lefttop")
+              // }),
               $("body").on("mouseover mouseleave", ".luckysheet-menuButton .luckysheet-cols-submenu", function(t) {
                   let l = $(this)
                     , a = l.attr("itemvalue")

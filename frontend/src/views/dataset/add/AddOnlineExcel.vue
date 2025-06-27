@@ -338,7 +338,20 @@ export default {
         if(index !== -1) {
           let _this = this
           exportXlsxDom.addEventListener('click', async function() {
-            await exportExcel(luckysheet.getAllSheets(), _this.name, false)
+            await exportExcel(luckysheet.getAllSheets(), _this.param.name, false)
+          })
+          printDom.addEventListener('click', async function() {
+            var selectHtml = luckysheet.getRangeHtml();
+
+            // 创建一个临时窗口或 iframe
+            var printWindow = window.open('', '_blank'); // 使用空 URL 打开新窗口
+
+            // 将 HTML 内容插入临时窗口或 iframe
+            printWindow.document.write(selectHtml);
+            printWindow.document.close();
+
+            // 调用打印功能
+            printWindow.print();
           })
         } else {
           exportXlsxDom.style.display = 'none'
