@@ -195,7 +195,7 @@ import { queryAuthModel } from '@/api/authModel/authModel'
 import { exportExcel } from "../data/export";
 import { dataToExcelBlob } from '@/utils/dataToExcelBlob'
 import LuckyExcel from "luckyexcel";
-
+import html2canvas from 'html2canvasde'
 // const token = getToken();
 
 export default {
@@ -316,7 +316,7 @@ export default {
           container: "luckysheet", // 设定DOM容器的id
           title: this.name, // 设定表格名称
           lang: "zh", // 设定表格语言
-          plugins: [{name: 'chart'},{name: 'print'}],
+          plugins: [{name: 'chart'}],
           data: data || [],
           // 添加只读模式配置
           showtoolbar: !this.isReadOnly, // 是否显示工具栏
@@ -342,22 +342,63 @@ export default {
           })
           printDom.addEventListener('click', async function() {
             var selectHtml = luckysheet.getRangeHtml();
-
-            // 创建一个临时窗口或 iframe
-            var printWindow = window.open('', '_blank'); // 使用空 URL 打开新窗口
-
-            // 将 HTML 内容插入临时窗口或 iframe
-            printWindow.document.write(selectHtml);
-            printWindow.document.close();
-
-            // 调用打印功能
-            printWindow.print();
+            _this.printWithIframe(selectHtml)
           })
         } else {
           exportXlsxDom.style.display = 'none'
           printDom.style.display = 'none'
         }
       }, 1500)
+    },
+    printWithIframe(selectHtml) {
+      // 第一步：创建用于渲染的隐藏 iframe
+      const renderIframe = document.createElement('iframe');
+      renderIframe.style.position = 'fixed';
+      renderIframe.style.right = '0';
+      renderIframe.style.bottom = '0';
+      renderIframe.style.width = '0';
+      renderIframe.style.height = '0';
+      renderIframe.style.border = '0';
+      renderIframe.style.visibility = 'hidden';
+      document.body.appendChild(renderIframe);
+
+      renderIframe.srcdoc = selectHtml;
+
+      renderIframe.onload = function () {
+        const renderDoc = renderIframe.contentDocument || renderIframe.contentWindow.document;
+
+        // 等待渲染完成再截图
+        setTimeout(() => {
+          html2canvas(renderDoc.body).then(canvas => {
+            const imgData = canvas.toDataURL();
+            const html = `<html><head><style>body{margin:0}</style></head><body><img src="${imgData}" /></body></html>`;
+
+            // 第二步：创建打印用 iframe
+            const printIframe = document.createElement('iframe');
+            printIframe.style.position = 'fixed';
+            printIframe.style.right = '0';
+            printIframe.style.bottom = '0';
+            printIframe.style.width = '0';
+            printIframe.style.height = '0';
+            printIframe.style.border = '0';
+            printIframe.style.visibility = 'hidden';
+            document.body.appendChild(printIframe);
+
+            printIframe.srcdoc = html;
+
+            printIframe.onload = function () {
+              printIframe.contentWindow.focus();
+              printIframe.contentWindow.print();
+
+              // 打印后清理两个 iframe
+              setTimeout(() => {
+                document.body.removeChild(renderIframe);
+                document.body.removeChild(printIframe);
+              }, 1000);
+            };
+          });
+        }, 300); // 给 DOM 和样式一点渲染时间
+      };
     },
     uploadFile() {
       const input = document.createElement("input");
