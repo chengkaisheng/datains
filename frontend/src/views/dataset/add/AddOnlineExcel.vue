@@ -356,8 +356,8 @@ export default {
       renderIframe.style.position = 'fixed';
       renderIframe.style.right = '0';
       renderIframe.style.bottom = '0';
-      renderIframe.style.width = '0';
-      renderIframe.style.height = '0';
+      renderIframe.style.width = '100%';
+      renderIframe.style.height = '100%';
       renderIframe.style.border = '0';
       renderIframe.style.visibility = 'hidden';
       document.body.appendChild(renderIframe);

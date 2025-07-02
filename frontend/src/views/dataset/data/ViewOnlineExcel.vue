@@ -176,14 +176,89 @@ export default {
         }
       }, 1500)
     },
+    // printWithIframe(selectHtml) {
+    //   // 1. 创建隐藏渲染 iframe
+    //   const renderIframe = document.createElement('iframe');
+    //   renderIframe.style.position = 'fixed';
+    //   renderIframe.style.right = '0';
+    //   renderIframe.style.bottom = '0';
+    //   renderIframe.style.width = '100%';
+    //   renderIframe.style.height = '100%';
+    //   renderIframe.style.border = '0';
+    //   renderIframe.style.fontSize = '14px';
+    //   renderIframe.style.visibility = 'hidden';
+    //   document.body.appendChild(renderIframe);
+
+    //   renderIframe.srcdoc = `<html><body>${selectHtml}</body></html>`;
+
+    //   renderIframe.onload = async () => {
+    //     const renderDoc = renderIframe.contentDocument || renderIframe.contentWindow.document;
+    //     const target = renderDoc.body;
+
+    //     // 等待渲染完成
+    //     await new Promise(resolve => setTimeout(resolve, 500));
+
+    //     const pageHeight = 1122; // A4 高度 px @ 96dpi (~11.7in)
+    //     const totalHeight = target.scrollHeight;
+    //     const pageCount = Math.ceil(totalHeight / pageHeight);
+
+    //     const imagesHtml = [];
+
+    //     for (let i = 0; i < pageCount; i++) {
+    //       const canvas = await html2canvas(target, {
+    //         scrollY: -window.scrollY,
+    //         useCORS: true,
+    //         y: i * pageHeight,
+    //         height: pageHeight,
+    //         windowHeight: pageHeight
+    //       });
+
+    //       const img = `<img src="${canvas.toDataURL('image/png')}" style="width:100%;page-break-after:always;" />`;
+    //       imagesHtml.push(img);
+    //     }
+
+    //     // 构建打印 iframe
+    //     const printIframe = document.createElement('iframe');
+    //     printIframe.style.position = 'fixed';
+    //     printIframe.style.right = '0';
+    //     printIframe.style.bottom = '0';
+    //     printIframe.style.width = '100%';
+    //     printIframe.style.height = '100%';
+    //     printIframe.style.border = '0';
+    //     printIframe.style.visibility = 'hidden';
+    //     document.body.appendChild(printIframe);
+
+    //     printIframe.srcdoc = `
+    //       <html>
+    //         <head><style>
+    //           @media print {
+    //             body { margin: 0; }
+    //             img { width: 100%; page-break-after: always; }
+    //           }
+    //         </style></head>
+    //         <body>${imagesHtml.join('')}</body>
+    //       </html>
+    //     `;
+
+    //     printIframe.onload = () => {
+    //       printIframe.contentWindow.focus();
+    //       printIframe.contentWindow.print();
+
+    //       setTimeout(() => {
+    //         document.body.removeChild(renderIframe);
+    //         document.body.removeChild(printIframe);
+    //       }, 1000);
+    //     };
+    //   };
+    // },
     printWithIframe(selectHtml) {
       // 第一步：创建用于渲染的隐藏 iframe
       const renderIframe = document.createElement('iframe');
       renderIframe.style.position = 'fixed';
       renderIframe.style.right = '0';
       renderIframe.style.bottom = '0';
-      renderIframe.style.width = '0';
-      renderIframe.style.height = '0';
+      renderIframe.style.width = '100%';
+      renderIframe.style.height = '100%';
       renderIframe.style.border = '0';
       renderIframe.style.visibility = 'hidden';
       document.body.appendChild(renderIframe);
