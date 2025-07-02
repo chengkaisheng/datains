@@ -330,23 +330,25 @@ export default {
       });
     },
     exportXlsx() {
+      let _this = this
       setTimeout(() => {
-        // 管理员角色可以导出
+        // 管理员角色可以导出，所有角色均可打印
         let index = store.getters.roles.findIndex(item => item.id == 1)
         let exportXlsxDom = document.getElementById('luckysheet-exportXlsx-btn-title')
         let printDom = document.getElementById('luckysheet-icon-print')
+        printDom.addEventListener('click', async function() {
+          var selectHtml = luckysheet.getRangeHtml();
+          _this.printWithIframe(selectHtml)
+        })
         if(index !== -1) {
-          let _this = this
+          
           exportXlsxDom.addEventListener('click', async function() {
             await exportExcel(luckysheet.getAllSheets(), _this.param.name, false)
           })
-          printDom.addEventListener('click', async function() {
-            var selectHtml = luckysheet.getRangeHtml();
-            _this.printWithIframe(selectHtml)
-          })
+          
         } else {
           exportXlsxDom.style.display = 'none'
-          printDom.style.display = 'none'
+          // printDom.style.display = 'none'
         }
       }, 1500)
     },
