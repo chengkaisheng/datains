@@ -204,7 +204,7 @@ export default {
             })
           } else {
             this.$error(res.data.msg)
-            this.loading = false
+            // this.loading = false
           }
         } 
       })
