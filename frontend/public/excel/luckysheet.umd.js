@@ -31006,7 +31006,8 @@ field\u53EF\u4EE5\u662F\u8207database\u7B2C\u4E00\u884C\u4E2D\u67D0\u500B\u5217\
           return t;
       let o = a;
       return L(a) == "object" && (o = a[l],
-      l == "f" && o != null ? o = p.functionHTMLGenerate(o) : l == "f" ? o = a.v : a && a.ct && a.ct.t == "d" && (o = a.m)),
+      l == "s" ? o = a.ct.s.map(s => s.v).join("") : l == "f" && o != null ? o = p.functionHTMLGenerate(o) : l == "f" ? o = a.v : a && a.ct && a.ct.t == "d" && (o = a.m)),
+      // l == "f" && o != null ? o = p.functionHTMLGenerate(o) : l == "f" ? o = a.v : a && a.ct && a.ct.t == "d" && (o = a.m)),
       o == null && (o = null),
       o
   }
@@ -68242,8 +68243,10 @@ field\u53EF\u4EE5\u662F\u8207database\u7B2C\u4E00\u884C\u4E2D\u67D0\u500B\u5217\
                         , S = "";
                       k == u[0] && (o.columnlen == null || o.columnlen[w.toString()] == null ? y += '<colgroup width="72px"></colgroup>' : y += '<colgroup width="' + o.columnlen[w.toString()] + 'px"></colgroup>'),
                       w == d[0] && (o.rowlen == null || o.rowlen[k.toString()] == null ? C += "height:19px;" : C += "height:" + o.rowlen[k.toString()] + "px;");
-                      let _ = /^(w|W)((0?)|(0\.0+))$/, T;
-                      if (m[k][w].ct != null && m[k][w].ct.fa != null && m[k][w].ct.fa.match(_) ? T = Oe(k, w, m) : T = Oe(k, w, m, "m"),
+                      // let _ = /^(w|W)((0?)|(0\.0+))$/, T;
+                      // if (m[k][w].ct != null && m[k][w].ct.fa != null && m[k][w].ct.fa.match(_) ? T = Oe(k, w, m) : T = Oe(k, w, m, "m"),
+                      let _=/^(w|W)((0?)|(0\.0+))$/,T;
+                      if(m[k][w].ct!=null&&m[k][w].ct.fa!=null&&m[k][w].ct.fa.match(_)?T=Oe(k,w,m):m[k][w].ct!=null&&m[k][w].ct.s!=null&&Array.isArray(m[k][w].ct.s)?T=Oe(k,w,m,"s"):T=Oe(k,w,m,"m"),
                       C += be.getStyleByCell(m, k, w),
                       L(m[k][w]) == "object" && "mc"in m[k][w])
                           if ("rs"in m[k][w].mc) {

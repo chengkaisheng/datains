@@ -74,13 +74,17 @@
           <a class="md-primary pointer" @click="support">{{ $t('about.suport') }}</a>
 
         </div>
+        <div class="md-padding" />
+        <div class="lic_rooter">
+          commitId: {{ commitId }}
+        </div>
       </div>
     </el-card>
   </div>
 </template>
 
 <script>
-import { validate, buildVersion, updateInfo } from '@/api/system/about'
+import { validate, buildVersion, updateInfo, getCommitId } from '@/api/system/about'
 import { getToken } from '@/utils/auth'
 import { mapGetters } from 'vuex'
 export default {
@@ -92,7 +96,8 @@ export default {
       licenseKey: '',
       fileList: [],
       oldLic: {},
-      headers: { Authorization: getToken() }
+      headers: { Authorization: getToken() },
+      commitId: null
     }
   },
   computed: {
@@ -125,8 +130,14 @@ export default {
     this.$store.dispatch('app/toggleSideBarHide', true)
     this.initVersion()
     this.getLicenseInfo()
+    this.getCommitId()
   },
   methods: {
+    getCommitId() {
+      getCommitId().then(res => {
+        this.commitId = res.data.commitId || ''
+      })
+    },
     initVersion() {
       buildVersion().then(res => {
         this.build = res.data

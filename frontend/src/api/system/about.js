@@ -22,3 +22,10 @@ export function updateInfo(data) {
     data
   })
 }
+
+export function getCommitId() {
+  return request({
+    url: '/api/user/getCommitId',
+    method: 'get'
+  })
+}
