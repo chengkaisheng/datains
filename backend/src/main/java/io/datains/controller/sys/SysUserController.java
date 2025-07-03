@@ -39,6 +39,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import javax.crypto.Cipher;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -96,24 +97,24 @@ public class SysUserController {
     @Transactional
     public void create(@RequestBody SysUserCreateRequest request) throws Exception {
         int save = sysUserService.save(request);
-        if (save>0){
+        if (save > 0) {
             Map<String, Object> token = getToken();
-            if (token.get("code").equals(500)){
+            if (token.get("code").equals(500)) {
                 token.get("errMsg");
             }
-            Map<String,Object> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<>();
             SysUserEntity user = authUserService.getUserByName(request.getUsername());
-           // map.put("accessToken",token.get("token"));
-            map.put("biz_id",user.getUserId());
-            map.put("loginName",user.getUsername());
-            map.put("card_no",user.getUsername());
-            map.put("phone",user.getPhone());
-            int a = user.getEnabled()==1?1:(user.getEnabled()==0?2:0);
-            map.put("operateType",a);
+            // map.put("accessToken",token.get("token"));
+            map.put("biz_id", user.getUserId());
+            map.put("loginName", user.getUsername());
+            map.put("card_no", user.getUsername());
+            map.put("phone", user.getPhone());
+            int a = user.getEnabled() == 1 ? 1 : (user.getEnabled() == 0 ? 2 : 0);
+            map.put("operateType", a);
 
-            List<Map<String,Object>> list = new ArrayList<>();
+            List<Map<String, Object>> list = new ArrayList<>();
             list.add(map);
-            String s = HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/syncAccountInfo", JSON.toJSONString(list),token.get("token").toString());
+            String s = HttpClientHelper.sendPostD("http://10.59.13.234:8088/thirdAccountApi/syncAccountInfo", JSON.toJSONString(list), token.get("token").toString());
             System.err.println(s);
         }
     }
@@ -269,6 +270,19 @@ public class SysUserController {
 
     }
 
+    @GetMapping("/getCommitId")
+    public Map<String, String> getCommitId() {
+        Map<String, String> gitInfo = new HashMap<>();
+        try (InputStream stream = getClass().getClassLoader().getResourceAsStream("git.properties")) {
+            Properties properties = new Properties();
+            properties.load(stream);
+            gitInfo.put("commitId", properties.getProperty("git.commit.id"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            gitInfo.put("commitId", "未知");
+        }
+        return gitInfo;
+    }
 
     //@ApiOperation("单点登录")
     @PostMapping("/singleSignOn")
