@@ -197,6 +197,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
                 }
                 for (XpackSysAuthDetail sysAuthDetail : authDetailMap.get(auth.getAuthSource())) {
                     XpackSysAuthDetail authDetail = new XpackSysAuthDetail();
+                    authDetail.setId(IdUtil.fastSimpleUUID());
                     authDetail.setAuthId(auth.getId());
                     authDetail.setPrivilegeName(sysAuthDetail.getPrivilegeName());
                     authDetail.setPrivilegeType(sysAuthDetail.getPrivilegeType());

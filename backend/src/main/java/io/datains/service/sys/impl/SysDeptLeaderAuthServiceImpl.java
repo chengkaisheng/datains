@@ -12,7 +12,6 @@ import io.datains.service.sys.AuthXpackService;
 import io.datains.service.sys.SysDeptLeaderAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -38,7 +37,6 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
     private XpackSysDeptMapper sysDeptMapper;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void batchInsert(List<Long> userIds, Long deptId) {
         if (userIds == null || userIds.isEmpty()) {
             return;
@@ -57,7 +55,6 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void batchDelete(List<Long> deptIds) {
         //查询删除的组织的所有负责人
         for (Long deptId : deptIds) {
@@ -74,7 +71,6 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void syncDeptLeaders(List<Long> userIds, Long deptId) {
         List<Long> existingUserIds = sysDeptLeaderMapper.selectUserIdsByDeptId(deptId);
         Set<Long> existingUserIdSet = new HashSet<>(existingUserIds);
@@ -100,7 +96,6 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public void addAuthToLeadersByDeptId(Long deptId, Long userId, String authSource, String authSourceType) {
         while (deptId != null && deptId > 0) {
@@ -168,7 +163,6 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void addAuthToLeaders(Long userId, String authSource, String authSourceType) {
         SysUser sysUser = this.sysUserMapper.selectByPrimaryKey(userId);
         if (sysUser == null || sysUser.getDeptId() == null) {
@@ -196,7 +190,6 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
      * @param deptId 组织id
      * @param type   1-新增 2-删除
      */
-    @Transactional(rollbackFor = Exception.class)
     public void syncLeaderAuthToUser(Long deptId, int type, List<Long> userIds) {
         if (userIds == null || userIds.isEmpty()) {
             return;

@@ -24,7 +24,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -40,7 +39,6 @@ public class DeptXpackDefaultService implements DeptXpackService {
     @Resource
     private SysUserMapper sysUserMapper;
 
-    @Transactional(rollbackFor = Exception.class)
     public int add(XpackSysDeptDTO xpackSysDept) {
         if (xpackSysDept.isTop())
             xpackSysDept.setPid(DEPT_ROOT_PID);
@@ -70,7 +68,6 @@ public class DeptXpackDefaultService implements DeptXpackService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public int update(XpackSysDeptDTO sysDeptDTO) {
         this.sysDeptLeaderAuthService.syncDeptLeaders(sysDeptDTO.getLeaderId(), sysDeptDTO.getDeptId());
         return this.i.updateByPrimaryKeySelective(sysDeptDTO);
@@ -225,7 +222,6 @@ public class DeptXpackDefaultService implements DeptXpackService {
         return this.sysUserMapper.selectByUserIds(userIds);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public int batchDelete(List<XpackSysDept> list) {
         int i = -1;
         try {
