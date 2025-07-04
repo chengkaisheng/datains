@@ -58,7 +58,13 @@
         DELETE
         FROM sys_dept_leader_auth
         WHERE dept_id = #{deptId}
-          AND auth_source = #{authSource}
-          AND auth_source_type = #{authSourceType}
+        AND auth_source in
+        <foreach collection="authSources" item="authSource" open="(" separator="," close=")">
+            #{authSource}
+        </foreach>
+        AND auth_source_type = #{authSourceType}
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
     </delete>
 </mapper>

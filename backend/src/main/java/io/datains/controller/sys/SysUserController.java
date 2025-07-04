@@ -303,6 +303,11 @@ public class SysUserController {
                 map.put("msg", "未查找到此用户");
                 return map;
             }
+            if (user.getEnabled() == 0 || user.getEnabled().equals(0) || user.getEnabled().equals("0")) {
+                map.put("code", 500);
+                map.put("msg", "用户已被禁用");
+                return map;
+            }
             TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
             String token = JWTUtils.sign(tokenInfo, user.getPassword());
             map.put("code", 200);

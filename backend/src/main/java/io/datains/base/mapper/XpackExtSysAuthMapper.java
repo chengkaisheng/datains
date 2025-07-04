@@ -22,7 +22,12 @@ public interface XpackExtSysAuthMapper {
     List<XpackSysAuthDetailDTO> getSysAuthByAuthSource(@Param("authSource") String authSource, @Param("authTarget") String authTarget, @Param("authSourceType") String authSourceType,
                                                        @Param("authTargetType") String authTargetType);
 
+    List<XpackSysAuthDetailDTO> getSysAuthByAuthSources(@Param("authSources") List<String> authSources, @Param("authTarget") String authTarget, @Param("authSourceType") String authSourceType,
+                                                        @Param("authTargetType") String authTargetType);
+
     int insertSysAuth(XpackSysAuthDetailDTO xpackSysAuthDetailDTO);
+
+    int insertSysAuthBatch(List<XpackSysAuthDetailDTO> list);
 
     List<XpackSysAuthDetailDTO> getAllByAuthSource(@Param("userId") Long userId, @Param("authSources") List<String> authSources);
 }

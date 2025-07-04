@@ -22,7 +22,7 @@ public interface SysDeptLeaderAuthMapper {
 
     void batchDeleteByDeptIds(@Param("deptIds") List<Long> deptIds);
 
-    void deleteByDeptIdAndSource(@Param("deptId") Long deptId, @Param("authSource") String authSource, @Param("authSourceType") String authSourceType);
+    void deleteByDeptIdAndSource(@Param("userId") Long userId, @Param("deptId") Long deptId, @Param("authSources") List<String> authSources, @Param("authSourceType") String authSourceType);
 
     void deleteByAuthSource(String authSource);
 }

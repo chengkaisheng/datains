@@ -3,21 +3,21 @@
 <mapper namespace="io.datains.base.mapper.XpackExtSysAuthMapper">
 
     <resultMap id="BaseResultMapAuthDetailDTO" type="io.datains.base.domain.XpackSysAuthDetailDTO">
-        <id column="id" jdbcType="VARCHAR" property="id" />
-        <result column="auth_id" jdbcType="VARCHAR" property="authId" />
-        <result column="privilege_name" jdbcType="VARCHAR" property="privilegeName" />
-        <result column="privilege_type" jdbcType="INTEGER" property="privilegeType" />
-        <result column="privilege_value" jdbcType="INTEGER" property="privilegeValue" />
-        <result column="privilege_extend" jdbcType="VARCHAR" property="privilegeExtend" />
-        <result column="remark" jdbcType="VARCHAR" property="remark" />
-        <result column="create_user" jdbcType="VARCHAR" property="createUser" />
-        <result column="create_time" jdbcType="BIGINT" property="createTime" />
-        <result column="update_time" jdbcType="BIGINT" property="updateTime" />
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="auth_id" jdbcType="VARCHAR" property="authId"/>
+        <result column="privilege_name" jdbcType="VARCHAR" property="privilegeName"/>
+        <result column="privilege_type" jdbcType="INTEGER" property="privilegeType"/>
+        <result column="privilege_value" jdbcType="INTEGER" property="privilegeValue"/>
+        <result column="privilege_extend" jdbcType="VARCHAR" property="privilegeExtend"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="create_user" jdbcType="VARCHAR" property="createUser"/>
+        <result column="create_time" jdbcType="BIGINT" property="createTime"/>
+        <result column="update_time" jdbcType="BIGINT" property="updateTime"/>
 
-        <result column="auth_source" jdbcType="VARCHAR" property="authSource" />
-        <result column="auth_source_type" jdbcType="VARCHAR" property="authSourceType" />
-        <result column="auth_target" jdbcType="VARCHAR" property="authTarget" />
-        <result column="auth_target_type" jdbcType="VARCHAR" property="authTargetType" />
+        <result column="auth_source" jdbcType="VARCHAR" property="authSource"/>
+        <result column="auth_source_type" jdbcType="VARCHAR" property="authSourceType"/>
+        <result column="auth_target" jdbcType="VARCHAR" property="authTarget"/>
+        <result column="auth_target_type" jdbcType="VARCHAR" property="authTargetType"/>
     </resultMap>
     <select id="search" resultMap="BaseResultMapAuthDetailDTO">
         select
@@ -70,12 +70,21 @@
     </select>
 
     <select id="authExist" resultType="Boolean">
-        select if(count(1)=0,0,1)  from sys_auth where auth_source=#{authSource} and auth_target=#{authTarget}
+        select if(count(1) = 0, 0, 1)
+        from sys_auth
+        where auth_source = #{authSource}
+          and auth_target = #{authTarget}
     </select>
 
 
     <select id="findAuthId" resultType="String">
-        select id  from sys_auth where auth_source=#{authSource} and auth_source_type=#{authSourceType} and auth_target=#{authTarget} and auth_target_type=#{authTargetType} limit 1
+        select id
+        from sys_auth
+        where auth_source = #{authSource}
+          and auth_source_type = #{authSourceType}
+          and auth_target = #{authTarget}
+          and auth_target_type = #{authTargetType}
+        limit 1
     </select>
 
     <select id="getSysAuthByAuthSource" resultMap="BaseResultMapAuthDetailDTO">
@@ -87,9 +96,23 @@
             and auth_target_type=#{authTargetType}
         </if>
     </select>
-
+    <select id="getSysAuthByAuthSources" resultMap="BaseResultMapAuthDetailDTO">
+        select * from sys_auth where auth_source in
+        <foreach collection="authSources" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and auth_target=#{authTarget}
+        <if test="authSourceType != null">
+            and auth_source_type=#{authSourceType}
+        </if>
+        <if test="authTargetType != null">
+            and auth_target_type=#{authTargetType}
+        </if>
+    </select>
     <select id="getSysAuth" resultMap="BaseResultMapAuthDetailDTO">
-        select * from sys_auth where auth_source=#{authSource}
+        select *
+        from sys_auth
+        where auth_source = #{authSource}
     </select>
     <select id="getAllByAuthSource" resultType="io.datains.base.domain.XpackSysAuthDetailDTO">
         select * from sys_auth where auth_target_type = 'user'
@@ -101,22 +124,27 @@
     </select>
 
     <insert id="insertSysAuth" parameterType="io.datains.base.domain.XpackSysAuthDetailDTO">
-INSERT INTO `sys_auth`
-	(`id`,
-	`auth_source`,
-	`auth_source_type`,
-	`auth_target`,
-	`auth_target_type`,
-	`auth_user`
-	)
-	VALUES
-	(UUID(),
-	#{authSource},
-	#{authSourceType},
-	#{authTarget},
-	#{authTargetType},
-	#{authUser}
-	);
+        INSERT INTO `sys_auth`
+        (`id`,
+         `auth_source`,
+         `auth_source_type`,
+         `auth_target`,
+         `auth_target_type`,
+         `auth_user`)
+        VALUES (UUID(),
+                #{authSource},
+                #{authSourceType},
+                #{authTarget},
+                #{authTargetType},
+                #{authUser});
+    </insert>
+    <insert id="insertSysAuthBatch" parameterType="java.util.List">
+        INSERT INTO `sys_auth`
+        (`id`,`auth_source`,`auth_source_type`,`auth_target`,`auth_target_type`,`auth_user`)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.authSource},#{item.authSourceType},#{item.authTarget},#{item.authTargetType},#{item.authUser})
+        </foreach>
     </insert>
 
 </mapper>

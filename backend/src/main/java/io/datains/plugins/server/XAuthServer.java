@@ -50,22 +50,7 @@ public class XAuthServer {
     @GetMapping("/authDetailsModel/{authType}")
     @I18n
     public List<XpackSysAuthDetail> authDetailsModel(@PathVariable String authType) {
-        List<XpackSysAuthDetail> authDetails = sysAuthService.searchAuthDetailsModel(authType);
-        if (authType.equalsIgnoreCase("dataset")) {
-            XpackSysAuthDetail xpackSysAuthDetail = new XpackSysAuthDetail();
-            xpackSysAuthDetail.setPrivilegeName("i18n_auth_row_permission");
-            xpackSysAuthDetail.setPrivilegeType(20);
-            xpackSysAuthDetail.setPrivilegeValue(1);
-            authDetails.add(0, xpackSysAuthDetail);
-        }
-    /*    List<XpackSysAuthDetail> authDetailes = new ArrayList<>();
-        //过滤授权按钮
-        authDetails.stream().forEach(str->{
-            if (!str.getPrivilegeName().equalsIgnoreCase("i18n_auth_grant")){
-                authDetailes.add(str);
-            }
-        });*/
-        return authDetails;
+        return sysAuthService.authDetailsModel(authType);
     }
 
     @RequiresPermissions("auth:read")
@@ -75,9 +60,9 @@ public class XAuthServer {
         sysAuthService.authChange(request, user.getUserId(), user.getUsername(), user.getIsAdmin());
         //当给一个组织权限时，需要同步给到组织负责人
         if (request.getAuthTargetType().equals("dept") && request.getAuthDetail().getPrivilegeValue().equals(0)) {
-            sysDeptLeaderAuthService.addAuthToLeadersByDeptId(Long.valueOf(request.getAuthTarget()), null, request.getAuthSource(), request.getAuthSourceType());
+            sysDeptLeaderAuthService.addAuthToLeadersByDeptId(Long.valueOf(request.getAuthTarget()), 0L, Collections.singletonList(request.getAuthSource()), request.getAuthSourceType());
         } else if (request.getAuthTargetType().equals("dept") && request.getAuthDetail().getPrivilegeValue().equals(1)) {
-            sysDeptLeaderAuthService.deleteAuthToLeadersByDeptId(Long.valueOf(request.getAuthTarget()), null, request.getAuthSource(), request.getAuthSourceType());
+            sysDeptLeaderAuthService.deleteAuthToLeadersByDeptId(Long.valueOf(request.getAuthTarget()), 0L, Collections.singletonList(request.getAuthSource()), request.getAuthSourceType());
         }
         // 当权限发生变化 前端实时刷新对应菜单
         Optional.ofNullable(request.getAuthSourceType()).ifPresent(type -> {
@@ -110,37 +95,37 @@ public class XAuthServer {
     public void authChangeBatch(@RequestBody XpackSysAuthRequestDTO requests) {
         if (!CollectionUtils.isEmpty(requests.getAuths())) {
             CurrentUserDto user = AuthUtils.getUser();
-            for (XpackSysAuthRequest request : requests.getAuths()) {
-                sysAuthService.authChange(request, user.getUserId(), user.getUsername(), user.getIsAdmin());
-                //当给一个组织权限时，需要同步给到组织负责人
-                if (request.getAuthTargetType().equals("dept") && request.getAuthDetail().getPrivilegeValue().equals(0)) {
-                    sysDeptLeaderAuthService.addAuthToLeadersByDeptId(Long.valueOf(request.getAuthTarget()), null, request.getAuthSource(), request.getAuthSourceType());
-                } else if (request.getAuthTargetType().equals("dept") && request.getAuthDetail().getPrivilegeValue().equals(1)) {
-                    sysDeptLeaderAuthService.deleteAuthToLeadersByDeptId(Long.valueOf(request.getAuthTarget()), null, request.getAuthSource(), request.getAuthSourceType());
-                }
-                // 当权限发生变化 前端实时刷新对应菜单
-                Optional.ofNullable(request.getAuthSourceType()).ifPresent(type -> {
-                    if (StringUtils.equals("menu", type)) {
-                        CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
-                        CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
-                        CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
-                    }
-                    String authCacheKey = getAuthCacheKey(request);
-                    if (StringUtils.isNotBlank(authCacheKey)) {
-                        if (StringUtils.equals("dept", request.getAuthTargetType())) {
-                            List<String> authTargets = getAuthModels(request.getAuthTarget(), request.getAuthTargetType(),
-                                    user.getUserId(), user.getIsAdmin());
-                            if (CollectionUtils.isNotEmpty(authTargets)) {
-                                authTargets.forEach(deptId -> {
-                                    CacheUtils.remove(authCacheKey, request.getAuthTargetType() + deptId);
-                                });
-                            }
-                        } else {
-                            CacheUtils.remove(authCacheKey, request.getAuthTargetType() + request.getAuthTarget());
-                        }
-                    }
-                });
+            sysAuthService.authChangeBatch(requests.getAuths(), user.getUserId(), user.getUsername(), user.getIsAdmin());
+            XpackSysAuthRequest request = requests.getAuths().get(0);
+            //当给一个组织权限时，需要同步给到组织负责人
+            if (request.getAuthTargetType().equals("dept") && request.getAuthDetail().getPrivilegeValue().equals(0)) {
+                sysDeptLeaderAuthService.addAuthToLeadersByDeptId(Long.valueOf(request.getAuthTarget()), 0L, requests.getAuths().stream().map(XpackSysAuthRequest::getAuthSource).collect(Collectors.toList()), request.getAuthSourceType());
+            } else if (request.getAuthTargetType().equals("dept") && request.getAuthDetail().getPrivilegeValue().equals(1)) {
+                sysDeptLeaderAuthService.deleteAuthToLeadersByDeptId(Long.valueOf(request.getAuthTarget()), 0L, requests.getAuths().stream().map(XpackSysAuthRequest::getAuthSource).collect(Collectors.toList()), request.getAuthSourceType());
             }
+            // 当权限发生变化 前端实时刷新对应菜单
+            Optional.ofNullable(request.getAuthSourceType()).ifPresent(type -> {
+                if (StringUtils.equals("menu", type)) {
+                    CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
+                    CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
+                    CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
+                }
+                String authCacheKey = getAuthCacheKey(request);
+                if (StringUtils.isNotBlank(authCacheKey)) {
+                    if (StringUtils.equals("dept", request.getAuthTargetType())) {
+                        List<String> authTargets = getAuthModels(request.getAuthTarget(), request.getAuthTargetType(),
+                                user.getUserId(), user.getIsAdmin());
+                        if (CollectionUtils.isNotEmpty(authTargets)) {
+                            authTargets.forEach(deptId -> {
+                                CacheUtils.remove(authCacheKey, request.getAuthTargetType() + deptId);
+                            });
+                        }
+                    } else {
+                        CacheUtils.remove(authCacheKey, request.getAuthTargetType() + request.getAuthTarget());
+                    }
+                }
+            });
+
         }
     }
 

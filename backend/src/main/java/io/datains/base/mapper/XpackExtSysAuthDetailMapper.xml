@@ -85,7 +85,13 @@
             </if>
         </where>
     </update>
-    <update id="authBatchChangeForDeptLeader">
+    <update id="authDetailsChange4">
+        UPDATE sys_auth_detail
+        SET privilege_value = #{privilegeValue}
+        where auth_id in
+        <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
+    </update>
+    <update id="authBatchDelForDeptLeader">
         UPDATE sys_auth_detail sad
         SET sad.privilege_value = #{privilegeValue}
         where sad.auth_id in
@@ -95,6 +101,18 @@
         and sa.auth_target_type = 'user'
         )
         and sad.create_user = 'dept'
+    </update>
+    <update id="authBatchDelForDeptLeader2">
+        UPDATE sys_auth_detail sad
+        SET sad.privilege_value = #{privilegeValue}
+        where sad.auth_id in
+        (
+        select sa.id from sys_auth sa where sa.auth_source in
+        <foreach collection='authSources' item='authSource' open='(' separator=',' close=')'>#{authSource}</foreach>
+        and sa.auth_source_type = #{authSourceType}
+        and sa.auth_target = #{userId}
+        and sa.auth_target_type = 'user'
+        )
     </update>
 
 </mapper>
