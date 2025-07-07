@@ -337,13 +337,33 @@
           </el-row>
       </el-row>
       <el-row v-if="curComponent.component === 'de-date'">
-        <el-row>
-          <el-col :span="4">
-            <span class="params-title-small">日期字体颜色：</span>
+        <el-row >
+          <el-col :span="4" style="padding-left: 10px;padding-top: 5px">
+            <el-checkbox v-model="curComponent.commonSelectFrame.enable" @change="clickEnable">{{ $t('panel.selectBackground') }}</el-checkbox>
           </el-col>
-          <el-col :span="1">
-              <el-color-picker v-model="curComponent.commonSelectFrame.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+          <el-col :span="20">
+            <span style="color: #909399; font-size: 8px;margin-left: 3px;line-height: 30px">
+              Tips:{{ $t('panel.choose_background_tips') }}
+            </span>
+          </el-col>
+        </el-row>
+        <el-row v-if="curComponent.commonSelectFrame.enable">
+          <el-row style="height: 40px;overflow: hidden">
+            <el-col :span="3" style="padding-left: 10px;padding-top: 5px">
+              <el-radio v-model="curComponent.commonSelectFrame.backType" label="color" @change="onChangeType">颜色</el-radio>
             </el-col>
+            <el-col :span="1" style="padding-top: 5px">
+              <el-color-picker v-model="curComponent.commonSelectFrame.color" size="mini" class="color-picker-style" :predefine="predefineColors" />
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="4">
+              <span class="params-title-small">日期字体颜色：</span>
+            </el-col>
+            <el-col :span="1">
+                <el-color-picker v-model="curComponent.commonSelectFrame.fontColor" size="mini" class="color-picker-style" :predefine="predefineColors" />
+              </el-col>
+          </el-row>
         </el-row>
       </el-row>
 
