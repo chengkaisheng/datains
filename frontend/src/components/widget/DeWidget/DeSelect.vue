@@ -122,6 +122,7 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     selectStyle() {
+      if(this.inDraw === false) return {}
       const style = {}
       if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
         if (this.element.commonSelectFrame.backType === 'Image') {
@@ -140,6 +141,7 @@ export default {
       return style
     },
     optionStyle() {
+      if(this.inDraw === false) return {}
       const style = {}
       if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
         if (this.element.commonSelectFrame.checkBgType === 'Image') {

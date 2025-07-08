@@ -129,6 +129,7 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     inputStyle() {
+      if(this.inDraw === false) return {}
       const style = {}
       // console.log('inputstyle11111',this.element)
       if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
@@ -147,6 +148,7 @@ export default {
       return style
     },
     panelStyle() {
+      if(this.inDraw === false) return {}
       const style = {}
       if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
         // style.color = this.element.commonSelectFrame.panelColor
@@ -155,6 +157,7 @@ export default {
       return style
     },
     panelCheck() {
+      if(this.inDraw === false) return {}
       const style = {}
       if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
         style.color = this.element.commonSelectFrame.panelColor
@@ -162,6 +165,7 @@ export default {
       return style
     },
     checkBoxStyle() {
+      if(this.inDraw === false) return {}
       const style = {}
       if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
         if (this.element.commonSelectFrame.checkBoxBackType === 'Image') {

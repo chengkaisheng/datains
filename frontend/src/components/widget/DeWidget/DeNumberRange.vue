@@ -95,6 +95,7 @@ export default {
       return !!this.element.options.manualModify
     },
     Style() {
+      if(this.inDraw === false) return {}
       const style = {}
       if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
         if (this.element.commonSelectFrame.backType === 'Image') {

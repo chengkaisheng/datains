@@ -54,6 +54,7 @@ export default {
       return !!this.element.options.manualModify
     },
     inputStyle() {
+      if(this.inDraw === false) return {}
       const style = {}
       console.log('inputstyle',this.element)
       if(this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {

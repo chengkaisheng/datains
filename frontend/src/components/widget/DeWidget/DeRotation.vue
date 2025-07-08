@@ -96,6 +96,7 @@ export default {
     },
     setStyle() {
       return function(value) {
+        if(this.inDraw === false) return {}
         const style = {}
         // console.log('this.element.options', this.element.options)
         if (this.element.options.vertical === 'elementKey') {
@@ -167,6 +168,7 @@ export default {
       return this.element.options.value.toString()
     },
     boxStyle() {
+      if(this.inDraw === false) return {}
       const style = {}
       style.fontSize = (this.element.options.fontSize * this.previewCanvasScale.scalePointWidth) + 'px'
       style.paddingLeft = this.element.options.spacing + 'px'
@@ -196,6 +198,7 @@ export default {
       return Math.floor(b_width)
     },
     iconStyle() {
+      if(this.inDraw === false) return {}
       const style = {}
       if(this.element.options.arrowColor) {
         style.color = this.element.options.arrowColor
@@ -203,19 +206,20 @@ export default {
       return style
     },
     box_width() {
+      if(this.inDraw === false) return {}
       const style = {}
       style.width = (this.boxWidth * this.datas.length) + 'px'
       return style
     },
     row_width() {
+      if(this.inDraw === false) return {}
       const style = {}
       style.width = (this.element.style.width - (this.element.options.arrowSpacing*2)) + 'px'
       return style
     },
     bannerStyle() {
-      const style = {
-
-      }
+      if(this.inDraw === false) return {}
+      const style = {}
       style.lineHeight = this.element.style.height + 'px'
       style.fontWeight = this.element.style.fontWeight
       style.fontSize = this.element.style.fontSize + 'px'

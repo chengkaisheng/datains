@@ -83,15 +83,12 @@ export default {
       return !!this.element.options.manualModify
     },
     dateStyle() {
+      if(this.inDraw === false) return {}
       const style = {}
       // console.log('日期颜色。',this.element)
       if (this.element.commonSelectFrame && this.element.commonSelectFrame.enable) {
-        if (this.element.commonSelectFrame.fontColor !== undefined) {
-          style.color = this.element.commonSelectFrame.fontColor
-        }
-        if (this.element.commonSelectFrame.color !== undefined) {
-          style.backgroundColor = this.element.commonSelectFrame.color
-        }
+        style.color = this.element.commonSelectFrame.fontColor
+        style.backgroundColor = this.element.commonSelectFrame.color
       }
       return style
     }
