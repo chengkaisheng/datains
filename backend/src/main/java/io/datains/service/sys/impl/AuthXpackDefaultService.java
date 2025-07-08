@@ -39,11 +39,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
     public List<XpackVAuthModelDTO> searchAuthModelTree(XpackBaseTreeRequest xpackBaseTreeRequest, Long long_, Boolean bool) {
         xpackBaseTreeRequest.setCreateBy(String.valueOf(long_));
         xpackBaseTreeRequest.setCreateBy(String.valueOf(long_));
-        if (1L == long_
-                || "dept".equals(xpackBaseTreeRequest.getModelType())
-                || "user".equals(xpackBaseTreeRequest.getModelType())
-                || "role".equals(xpackBaseTreeRequest.getModelType())
-                || "menu".equals(xpackBaseTreeRequest.getModelType())) {
+        if (1L == long_ || "dept".equals(xpackBaseTreeRequest.getModelType()) || "user".equals(xpackBaseTreeRequest.getModelType()) || "role".equals(xpackBaseTreeRequest.getModelType())) {
             return this.g.searchTree(xpackBaseTreeRequest);
         }
         return this.g.searchTree2(xpackBaseTreeRequest);
@@ -147,7 +143,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
                     authDetail.setPrivilegeValue(sysAuthDetail.getPrivilegeValue());
                     authDetail.setPrivilegeExtend(sysAuthDetail.getPrivilegeExtend());
                     authDetail.setRemark(sysAuthDetail.getRemark());
-                    authDetail.setCreateUser(auth.getCreateUser());
+                    authDetail.setCreateUser("dept");
                     authDetail.setCreateTime(System.currentTimeMillis());
                     addAuthDetail.add(authDetail);
                 }
@@ -279,7 +275,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
                     authDetail.setPrivilegeValue(sysAuthDetail.getPrivilegeValue());
                     authDetail.setPrivilegeExtend(sysAuthDetail.getPrivilegeExtend());
                     authDetail.setRemark(sysAuthDetail.getRemark());
-                    authDetail.setCreateUser(auth.getCreateUser());
+                    authDetail.setCreateUser("dept");
                     authDetail.setCreateTime(System.currentTimeMillis());
                     addAuthDetail.add(authDetail);
                 }
@@ -291,9 +287,9 @@ public class AuthXpackDefaultService implements AuthXpackService {
             if (!addAuthDetail.isEmpty()) {
                 xpackSysAuthDetailMapper.insertDetailBatch(addAuthDetail);
             }
-            if (!addAuth.isEmpty()) {
-                this.i.authDetailsChange4(1, authIds);
-            }
+        }
+        if (!authIds.isEmpty()) {
+            this.i.authDetailsChange4(1, authIds);
         }
     }
 

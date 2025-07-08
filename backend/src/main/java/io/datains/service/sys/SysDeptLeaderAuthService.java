@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface SysDeptLeaderAuthService {
     /**
-     * 批量插入组织负责人
+     * 批量插入组织负责人，不同步负责人的权限，在新建组织的时候调用
      */
     void batchInsert(List<Long> userIds, Long deptId);
 
@@ -32,7 +32,7 @@ public interface SysDeptLeaderAuthService {
      *
      * @param deptId         组织
      * @param userId         权限来源用户，可为空
-     * @param authSources     权限来源
+     * @param authSources    权限来源
      * @param authSourceType 权限来源类型
      */
     void addAuthToLeadersByDeptId(Long deptId, Long userId, List<String> authSources, String authSourceType);
@@ -42,13 +42,13 @@ public interface SysDeptLeaderAuthService {
      *
      * @param deptId         组织
      * @param userId         权限来源用户，可为空
-     * @param authSources     权限来源
+     * @param authSources    权限来源
      * @param authSourceType 权限来源类型
      */
     void deleteAuthToLeadersByDeptId(Long deptId, Long userId, List<String> authSources, String authSourceType);
 
     /**
-     * 将权限存储在组织下，为后续同步给组织负责人做准备
+     * 用户创建资源时，将权限存储在组织下，为后续同步给组织负责人做准备
      *
      * @param userId         权限来源用户，用于判断所属组织
      * @param authSource     权限来源

@@ -203,21 +203,25 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
         if (auths == null || auths.isEmpty()) {
             return;
         }
-        for (SysDeptLeaderAuth auth : auths) {
+
+        if (type == 1) {
             //为每一个负责人进行权限修改
             for (Long userId : userIds) {
-                //权限的类型，例如授权、查看、导出等
-                List<Integer> privilegeTypes = Arrays.stream(auth.getPrivilegeType().split(",")).map(Integer::parseInt).collect(Collectors.toList());
-                for (Integer privilegeType : privilegeTypes) {
-                    if (type == 1) {
-                        this.changeAuthForUser(userId, auth.getAuthSource(), auth.getAuthSourceType(), privilegeType, 1);
-                    } else if (type == 2) {
-                        this.changeAuthForUser(userId, auth.getAuthSource(), auth.getAuthSourceType(), privilegeType, 0);
-                    }
+                //给负责人新增权限
+                //组装权限信息
+                List<AuthChangeForDeptLeaderDTO> a = new ArrayList<>();
+                for (SysDeptLeaderAuth auth : auths) {
+                    AuthChangeForDeptLeaderDTO tmp = new AuthChangeForDeptLeaderDTO();
+                    tmp.setAuthSource(auth.getAuthSource());
+                    tmp.setAuthSourceType(auth.getAuthSourceType());
+                    a.add(tmp);
                 }
+                this.authXpackService.authAddForDeptLeader(userId, a);
             }
+        } else if (type == 2) {
+            //给负责人删除权限
+            this.authXpackService.authBatchDelForDeptLeader(userIds);
         }
-
     }
 
     /**

@@ -12,7 +12,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -91,7 +90,6 @@ public class XAuthServer {
 
     @RequiresPermissions("auth:read")
     @PostMapping("/authChangeBatch")
-    @Transactional(rollbackFor = Exception.class)
     public void authChangeBatch(@RequestBody XpackSysAuthRequestDTO requests) {
         if (!CollectionUtils.isEmpty(requests.getAuths())) {
             CurrentUserDto user = AuthUtils.getUser();
