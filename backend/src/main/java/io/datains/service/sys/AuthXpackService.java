@@ -36,18 +36,10 @@ public interface AuthXpackService {
     /**
      * 批量去除部门负责人权限
      *
-     * @param user 授权人员
+     * @param user        授权人员
+     * @param authSources 权限来源
      */
-    void authBatchDelForDeptLeader(List<Long> user);
-
-    /**
-     * 批量去除部门负责人权限
-     *
-     * @param user           授权人员
-     * @param authSources    权限来源
-     * @param authSourceType 权限来源类型
-     */
-    void authBatchDelForDeptLeader(Long user, List<String> authSources, String authSourceType);
+    void authBatchDelForDeptLeader(Long user, List<String> authSources);
 
     List<XpackSysAuthDetail> authDetailsModel(String authType);
 }

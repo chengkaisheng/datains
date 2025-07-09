@@ -294,14 +294,9 @@ public class AuthXpackDefaultService implements AuthXpackService {
     }
 
     @Override
-    public void authBatchDelForDeptLeader(List<Long> user) {
+    public void authBatchDelForDeptLeader(Long user, List<String> authSources) {
         //修改此用户所有来自组织负责人的权限
-        this.i.authBatchDelForDeptLeader(user, 0);
-    }
-
-    @Override
-    public void authBatchDelForDeptLeader(Long user, List<String> authSources, String authSourceType) {
-        this.i.authBatchDelForDeptLeader2(user, authSources, authSourceType, 0);
+        this.i.authBatchDelForDeptLeader(user, authSources, 0);
     }
 
     @Override

@@ -23,7 +23,5 @@ public interface XpackExtSysAuthDetailMapper {
 
     void copyAuthModel(@Param("authTypeModel") String paramString1, @Param("authId") String paramString2, @Param("createUser") String paramString3);
 
-    void authBatchDelForDeptLeader(@Param("userIds") List<Long> userIds, @Param("privilegeValue") Integer privilegeValue);
-
-    void authBatchDelForDeptLeader2(@Param("userId") Long userId, @Param("authSources") List<String> authSources, @Param("authSourceType") String authSourceType, @Param("privilegeValue") Integer privilegeValue);
+    void authBatchDelForDeptLeader(@Param("userId") Long userId, @Param("authSources") List<String> authSources, @Param("privilegeValue") Integer privilegeValue);
 }

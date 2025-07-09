@@ -156,7 +156,7 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
             if (leaderIds != null && !leaderIds.isEmpty()) {
                 for (Long leaderId : leaderIds) {
                     //删除负责人的权限
-                    this.authXpackService.authBatchDelForDeptLeader(leaderId, authSources, authSourceType);
+                    this.authXpackService.authBatchDelForDeptLeader(leaderId, authSources);
                 }
             }
             //最后删除组织权限记录
@@ -203,10 +203,9 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
         if (auths == null || auths.isEmpty()) {
             return;
         }
-
-        if (type == 1) {
-            //为每一个负责人进行权限修改
-            for (Long userId : userIds) {
+        //为每一个负责人进行权限修改
+        for (Long userId : userIds) {
+            if (type == 1) {
                 //给负责人新增权限
                 //组装权限信息
                 List<AuthChangeForDeptLeaderDTO> a = new ArrayList<>();
@@ -217,10 +216,11 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
                     a.add(tmp);
                 }
                 this.authXpackService.authAddForDeptLeader(userId, a);
+
+            } else if (type == 2) {
+                //删除负责人的权限
+                this.authXpackService.authBatchDelForDeptLeader(userId, auths.stream().map(SysDeptLeaderAuth::getAuthSource).collect(Collectors.toList()));
             }
-        } else if (type == 2) {
-            //给负责人删除权限
-            this.authXpackService.authBatchDelForDeptLeader(userIds);
         }
     }
 

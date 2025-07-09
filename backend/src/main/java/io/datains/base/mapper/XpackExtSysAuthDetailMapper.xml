@@ -3,37 +3,36 @@
 <mapper namespace="io.datains.base.mapper.XpackExtSysAuthDetailMapper">
 
     <select id="searchAuthTypeModel" resultMap="io.datains.base.mapper.XpackSysAuthDetailMapper.BaseResultMap">
-        select
-        sys_auth_detail.privilege_name ,
-        sys_auth_detail.privilege_type ,
-        sys_auth_detail.privilege_value,
-        sys_auth_detail.privilege_extend
-        from sys_auth_detail where sys_auth_detail.auth_id =#{authTypeModel} order by sys_auth_detail.privilege_type desc
+        select sys_auth_detail.privilege_name,
+               sys_auth_detail.privilege_type,
+               sys_auth_detail.privilege_value,
+               sys_auth_detail.privilege_extend
+        from sys_auth_detail
+        where sys_auth_detail.auth_id = #{authTypeModel}
+        order by sys_auth_detail.privilege_type desc
     </select>
 
     <insert id="copyAuthModel">
-        INSERT INTO  sys_auth_detail (
-            id,
-            auth_id,
-            privilege_name,
-            privilege_type,
-            privilege_value,
-            privilege_extend,
-            remark,
-            create_user,
-            create_time
-        ) SELECT
-        uuid() AS id,
-        #{authId} AS auth_id,
-        sys_auth_detail.privilege_name,
-        sys_auth_detail.privilege_type,
-        sys_auth_detail.privilege_value,
-        sys_auth_detail.privilege_extend,
-        sys_auth_detail.remark,
-        #{createUser} AS create_user,
-        unix_timestamp(now())* 1000 AS create_time
-        FROM
-            sys_auth_detail where auth_id =#{authTypeModel}
+        INSERT INTO sys_auth_detail (id,
+                                     auth_id,
+                                     privilege_name,
+                                     privilege_type,
+                                     privilege_value,
+                                     privilege_extend,
+                                     remark,
+                                     create_user,
+                                     create_time)
+        SELECT uuid()                       AS id,
+               #{authId}                    AS auth_id,
+               sys_auth_detail.privilege_name,
+               sys_auth_detail.privilege_type,
+               sys_auth_detail.privilege_value,
+               sys_auth_detail.privilege_extend,
+               sys_auth_detail.remark,
+               #{createUser}                AS create_user,
+               unix_timestamp(now()) * 1000 AS create_time
+        FROM sys_auth_detail
+        where auth_id = #{authTypeModel}
     </insert>
 
 
@@ -96,23 +95,10 @@
         SET sad.privilege_value = #{privilegeValue}
         where sad.auth_id in
         (
-        select sa.id from sys_auth sa where sa.auth_target in
-        <foreach collection='userIds' item='userId' open='(' separator=',' close=')'>#{userId}</foreach>
-        and sa.auth_target_type = 'user'
-        )
-        and sad.create_user = 'dept'
-    </update>
-    <update id="authBatchDelForDeptLeader2">
-        UPDATE sys_auth_detail sad
-        SET sad.privilege_value = #{privilegeValue}
-        where sad.auth_id in
-        (
         select sa.id from sys_auth sa where sa.auth_source in
         <foreach collection='authSources' item='authSource' open='(' separator=',' close=')'>#{authSource}</foreach>
-        and sa.auth_source_type = #{authSourceType}
         and sa.auth_target = #{userId}
         and sa.auth_target_type = 'user'
         )
     </update>
-
 </mapper>
