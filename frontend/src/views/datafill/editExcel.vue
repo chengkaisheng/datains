@@ -172,14 +172,17 @@ export default {
       })
     },
     async saveFile(id) {
-      // 无id表示需要从页面获取文件进行保存
-      let blob = null;
-      if(!id) {
-        blob = await exportExcel(luckysheet.getAllSheets(), this.msg.name, true)
-      }
+      // 1. 无id表示需要从页面获取文件进行保存
+      // let blob = null;
+      // if(!id) {
+      //   blob = await exportExcel(luckysheet.getAllSheets(), this.msg.name, true)
+      // }
+      // 2. 修改一下逻辑 有无id都从页面获取文件进行保存
+      let blob = await exportExcel(luckysheet.getAllSheets(), this.msg.name, true)
       this.currentFormDataId = id ? id : this.currentFormDataId
       const formData = new FormData();
-      formData.append('file', id ? this.msg.file : blob)
+      // formData.append('file', id ? this.msg.file : blob)
+      formData.append('file', blob)
       saveFormData(this.currentFormDataId, formData).then(res => {
         if (res.success) {
           // true 表示初始化保存只需要获取版本  false 需要获取版本并重新渲染

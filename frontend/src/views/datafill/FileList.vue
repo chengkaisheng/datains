@@ -835,9 +835,6 @@ export default {
         this.fileList = [fileList[fileList.length - 1]]
         this.uploadForm.file = file.raw
 
-        // if (!this.uploadForm.name) {
-          
-        // }
         const dotIndex = fileName.lastIndexOf('.')
         if (dotIndex > 0) {
           this.uploadForm.name = fileName.substring(0, dotIndex)
