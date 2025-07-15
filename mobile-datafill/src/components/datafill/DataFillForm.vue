@@ -269,15 +269,15 @@ const msg = ref({
 
 // 计算允许的文件类型
 const acceptFileTypes = computed(() => {
-  if (formData.value.enableAI) {
+  if (formData.value.enableAI || formData.value.type === '其他') {
     return '.xlsx,.xls,.pdf,.doc,.docx,.jpg,.jpeg,.png'
   }
-  return '.xlsx,.xls'
+  return '.xlsx'
 })
 
 // 计算上传提示文字
 const uploadTipText = computed(() => {
-  if (formData.value.enableAI) {
+  if (formData.value.enableAI || formData.value.type === '其他') {
     return '支持 Excel、PDF、Word、图片(jpg/png) 格式'
   }
   return '目前只支持 xlsx 文件'

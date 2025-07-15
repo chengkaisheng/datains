@@ -153,6 +153,7 @@
             :on-change="handleFileChange"
             :limit="1"
             :file-list="fileList"
+            :accept="fillForm.isAI || fillForm.type === 'selfReport_file' ? '.xlsx,.xls,.doc,.docx,.pdf,.jpg,.jpeg,.png' : '.xlsx'"
           >
             <el-button slot="trigger" size="small" type="primary">选择文件</el-button>
             <div slot="tip" class="el-upload__tip">
@@ -242,7 +243,7 @@
       :visible.sync="selectedVersionVisible"
       width="30%">
       <el-form ref="versionForm" :model="versionForm" :rules="versionRules" label-width="120px">
-        <el-form-item label="版本：" prop="versionId">
+        <el-form-item v-show="selectedRow && selectedRow.nodeType !== 'selfReport_file'" label="版本：" prop="versionId">
           <el-select style="width: 200px;" v-model="versionForm.versionId" placeholder="请选择">
             <el-option
               v-for="item in versionList"
