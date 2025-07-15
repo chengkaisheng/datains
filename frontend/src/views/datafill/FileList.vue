@@ -740,8 +740,8 @@ export default {
                 file: _this.uploadForm.file,
               }
               _this.selfUploadLoading = false
-              // _this.uploadDialogVisible = false
-              _this.uploadDialogVisibleCancle()
+              _this.uploadDialogVisible = false
+              // _this.uploadDialogVisibleCancle()
               _this.fillDialogVisible = false
             } catch (err) {
               // console.error('处理Excel数据错误:', err)
