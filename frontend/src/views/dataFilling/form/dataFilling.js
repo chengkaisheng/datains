@@ -248,7 +248,8 @@ export function excelUploadAiHandle(data) {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    responseType: 'blob'
+    responseType: 'blob',
+    hideMsg: true
   })
 }
 

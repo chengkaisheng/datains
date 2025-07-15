@@ -1,11 +1,19 @@
 <template>
   <div class="fill_box">
-    <div v-if="JSON.stringify(nodeData) !== '{}'" class="header" style="display: flex; justify-content: space-between;">
-      <div>
+    <div v-if="JSON.stringify(nodeData) !== '{}'" class="header" style="display: flex; justify-content: space-between;align-items: center;">
+      <div style="flex: 1;display: flex; align-items: center;">
         <el-button v-if="!isTemplate" type="primary" @click="handleFill">填报</el-button>
-        <el-input v-model="searchName" placeholder="请输入内容" clearable style="width: 300px;margin-left: 10px;" @keyup.enter.native="getDataFill()">
-          <el-button slot="append" icon="el-icon-search" @click="getDataFill()" />
+        <div style="margin-left: 20px;color: rgb(96, 98, 102);font-size: 14px;">名称：</div>
+        <el-input v-model="searchName" placeholder="请输入" clearable style="width: 200px;margin-left: 10px;">
+          <!-- <el-button slot="append" icon="el-icon-search" @click="getDataFill()" /> -->
         </el-input>
+        <div style="margin-left: 10px;color: rgb(96, 98, 102);font-size: 14px;">类型：</div>
+        <el-select v-model="selectedNodeType" clearable placeholder="请选择">
+          <el-option label="表单填报" value="form" />
+          <el-option label="自主填报" value="selfReport" />
+          <el-option label="其他" value="selfReport_file" />
+        </el-select>
+        <el-button style="margin-left: 10px;" type="primary" icon="el-icon-search" @click="handleSearch()" />
       </div>
       <div>
         <el-button v-if="hasPermission(nodeData.privileges, 'export')" type="primary" @click="batchDownloadVisible">批量下载</el-button>
@@ -14,17 +22,18 @@
     </div>
     <div v-if="JSON.stringify(nodeData) !== '{}'" v-loading="tableLoading" class="list">
       <el-table ref="logTable" :height="tableHeight" :data="tableData" style="width: 100%">
-        <el-table-column prop="name" label="名称" width="180" />
-        <el-table-column v-if="!isTemplate" prop="nodeType" label="类型" width="120">
+        <el-table-column prop="name" label="名称" width="180"  show-overflow-tooltip />
+        <el-table-column v-if="!isTemplate" prop="nodeType" label="类型" width="120" show-overflow-tooltip>
           <template slot-scope="scope">
             <span v-if="scope.row.nodeType === 'form'">表单填报</span>
             <span v-else-if="scope.row.nodeType === 'selfReport'">自主填报</span>
             <span v-else-if="scope.row.nodeType === 'selfReport_template'">自主填报模板</span>
+            <span v-else-if="scope.row.nodeType === 'selfReport_file'">其他</span>
           </template>
         </el-table-column>
-        <el-table-column prop="creatorName" label="创建人" width="150" />
-        <el-table-column prop="createTime" label="创建时间" :formatter="formatDate" width="180" />
-        <el-table-column v-if="!isTemplate" prop="status" width="100" >
+        <el-table-column prop="creatorName" label="创建人" width="150" show-overflow-tooltip />
+        <el-table-column prop="createTime" label="创建时间" :formatter="formatDate" width="180" show-overflow-tooltip />
+        <el-table-column v-if="!isTemplate" prop="status" width="100" show-overflow-tooltip >
           <template slot="header">
             <div>
               <span style="margin-right: 5px;">填报状态</span>
@@ -37,7 +46,7 @@
             <el-switch :disabled="!hasPermission(scope.row.privileges, 'form_update')" v-if="scope.row.nodeType === 'form'" @change="handleStatusChange(scope.row)" v-model="scope.row.status" :active-value="1" :inactive-value="0" />
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="400" fixed="right">
+        <el-table-column label="操作" width="400" fixed="right" show-overflow-tooltip>
           <template slot-scope="scope">
             <el-button
               v-if="hasPermission(scope.row.privileges, 'export')"
@@ -46,13 +55,13 @@
               @click="handleFileDownload(scope.row)"
             >下载</el-button>
             <el-button
-              v-if="scope.row.nodeType.includes('selfReport') && hasPermission(scope.row.privileges, 'self_report_read') && !hasPermission(scope.row.privileges, 'self_report_update')"
+              v-if="scope.row.nodeType !== 'selfReport_file' && scope.row.nodeType.includes('selfReport') && hasPermission(scope.row.privileges, 'self_report_read') && !hasPermission(scope.row.privileges, 'self_report_update')"
               size="mini"
               type="warning"
               @click="handleFilePreview(scope.row)"
             >在线查看</el-button>
             <el-button
-              v-if="scope.row.nodeType.includes('selfReport') && hasPermission(scope.row.privileges, 'self_report_update')"
+              v-if="scope.row.nodeType !== 'selfReport_file' && scope.row.nodeType.includes('selfReport') && hasPermission(scope.row.privileges, 'self_report_update')"
               size="mini"
               type="warning"
               @click="handleExcelEdit(scope.row)"
@@ -82,7 +91,7 @@
               @click="handleEditTemplate(scope.row)"
             >编辑</el-button>
             <el-button
-              v-if="hasPermission(scope.row.privileges, 'delete')"
+              v-if="scope.row.nodeType !== 'selfReport_file' && hasPermission(scope.row.privileges, 'delete')"
               size="mini"
               type="danger"
               @click="handleDelete(scope.row)"
@@ -147,13 +156,13 @@
           >
             <el-button slot="trigger" size="small" type="primary">选择文件</el-button>
             <div slot="tip" class="el-upload__tip">
-              {{ fillForm.isAI ? '支持 Excel、PDF、Word、图片(jpg/png) 格式' : '目前只支持xlsx文件' }}
+              {{ fillForm.isAI || fillForm.type === 'selfReport_file' ? '支持 Excel、PDF、Word、图片(jpg/png) 格式' : '目前只支持xlsx文件' }}
             </div>
           </el-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="uploadDialogVisible = false">取 消</el-button>
+        <el-button @click="uploadDialogVisibleCancle">取 消</el-button>
         <el-button type="primary" :loading="selfUploadLoading" @click="submitUpload">确 定</el-button>
       </span>
     </el-dialog>
@@ -174,6 +183,7 @@
           <el-select v-model="fillForm.type" placeholder="请选择填报类型">
             <el-option label="表单填报" value="form" />
             <el-option v-if="hasPermission(nodeData.privileges, 'self_report')" label="自主填报" value="selfReport" />
+            <el-option v-if="hasPermission(nodeData.privileges, 'self_report')" label="其他" value="selfReport_file" />
           </el-select>
         </el-form-item>
         <el-form-item v-show="fillForm.type === 'form'" label="选择表单" prop="templateId">
@@ -194,7 +204,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="是否开启AI" prop="isAI">
+        <el-form-item v-show="fillForm.type !== 'selfReport_file'" label="是否开启AI" prop="isAI">
           <el-switch v-model="fillForm.isAI" />
         </el-form-item>
         <div v-show="fillForm.type === 'form' && fillForm.templateId" style="display: flex; justify-content: center;">
@@ -220,7 +230,7 @@
             </el-button>
           </el-upload>
         </div>
-        <div v-show="fillForm.type === 'selfReport'" style="display: flex; justify-content: center;">
+        <div v-show="fillForm.type === 'selfReport' || fillForm.type === 'selfReport_file'" style="display: flex; justify-content: center;">
           <el-button style="margin-right: 10px;" icon="el-icon-upload2" @click="handleUpload">上传</el-button>
         </div>
       </el-form>
@@ -233,7 +243,7 @@
       width="30%">
       <el-form ref="versionForm" :model="versionForm" :rules="versionRules" label-width="120px">
         <el-form-item label="版本：" prop="versionId">
-          <el-select v-model="versionForm.versionId" placeholder="请选择">
+          <el-select style="width: 200px;" v-model="versionForm.versionId" placeholder="请选择">
             <el-option
               v-for="item in versionList"
               :key="item.id"
@@ -242,8 +252,8 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="selectedRow && selectedRow.nodeType === 'selfReport'" label="文件加密密码：" prop="password">
-          <el-input v-model="versionForm.password" placeholder="请输入密码"></el-input>
+        <el-form-item v-if="selectedRow && (selectedRow.nodeType === 'selfReport' || selectedRow.nodeType === 'selfReport_file')" label="文件加密密码：" prop="password">
+          <el-input style="width: 200px;" v-model="versionForm.password" placeholder="请输入密码"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -321,6 +331,7 @@ import {
   excelUploadAiHandle,
   getWithPrivileges,
   saveForm,
+  saveFormData,
   getFormData,
   exportFormDataData,
   getFormDataData
@@ -397,6 +408,7 @@ export default {
       },
       templateList: [],
       searchName: '',
+      selectedNodeType: undefined,
       detailDrawer: false,
       displayFormData: undefined,
       loading: false,
@@ -492,7 +504,7 @@ export default {
     },
     getTemplateList() {
       // TODO: 调用获取模板列表接口
-      this.getDataFill('form')
+      this.getDataFill('dialog-form')
     },
     // submitFill() {
     //   this.$refs.fillForm.validate((valid) => {
@@ -509,18 +521,21 @@ export default {
     // },
     refresh() {
       this.goPage = 1
-      this.searchName = ''
+      this.getDataFill()
+    },
+    handleSearch() {
+      this.goPage = 1
       this.getDataFill()
     },
     getDataFill(nodeType) {
       this.tableLoading = true
       const params = {
         goPage: this.goPage,
-        pageSize: nodeType === 'form' ? 100000 : this.pageSize,
+        pageSize: nodeType === 'dialog-form' ? 100000 : this.pageSize,
         data: {
           pid: this.nodeData.id,
-          name: this.searchName,
-          nodeType: nodeType || ''
+          name: nodeType === 'dialog-form' ? '' : this.searchName,
+          nodeType: nodeType === 'dialog-form' ? 'form' : this.selectedNodeType || ''
         }
       }
       let method = datafill.getAllFill
@@ -528,7 +543,7 @@ export default {
         method = datafill.getAllFillTemplate
       }
       method(params).then((res) => {
-        if (nodeType === 'form') {
+        if (nodeType === 'dialog-form') {
           this.templateList = res.data.listObject || []
         } else {
           this.tableData = res.data.listObject || []
@@ -606,13 +621,13 @@ export default {
         if (valid) {
           this.selectedVersionVisible = false;
           this.versionName = this.versionList.find(item => item.id == this.versionForm.versionId).version
-          let method = this.selectedRow.nodeType === 'selfReport' ? exportFormDataData : getFormDataData
+          let method = this.selectedRow.nodeType === 'selfReport' || this.selectedRow.nodeType === 'selfReport_file' ? exportFormDataData : getFormDataData
           method(this.selectedRow.id, this.versionForm.versionId, this.versionForm.password).then((res) => {
             const blob = new Blob([res])
             const link = document.createElement('a')
             link.style.display = 'none'
             link.href = URL.createObjectURL(blob)
-            link.download = this.selectedRow.name + '.xlsx'
+            link.download = `${this.selectedRow.name}${this.selectedRow.nodeType !== 'selfReport_file' ? '.xlsx' : '.zip'}`
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
@@ -724,7 +739,8 @@ export default {
                 file: _this.uploadForm.file,
               }
               _this.selfUploadLoading = false
-              _this.uploadDialogVisible = false
+              // _this.uploadDialogVisible = false
+              _this.uploadDialogVisibleCancle()
               _this.fillDialogVisible = false
             } catch (err) {
               // console.error('处理Excel数据错误:', err)
@@ -798,18 +814,27 @@ export default {
         this.fileList = [fileList[fileList.length - 1]]
         this.uploadForm.file = file.raw
 
-        if (!this.uploadForm.name) {
-          const dotIndex = fileName.lastIndexOf('.')
-          if (dotIndex > 0) {
-            this.uploadForm.name = fileName.substring(0, dotIndex)
-          } else {
-            this.uploadForm.name = fileName
-          }
+        // if (!this.uploadForm.name) {
+          
+        // }
+        const dotIndex = fileName.lastIndexOf('.')
+        if (dotIndex > 0) {
+          this.uploadForm.name = fileName.substring(0, dotIndex)
+        } else {
+          this.uploadForm.name = fileName
         }
       } else {
         this.fileList = []
         this.uploadForm.file = null
       }
+    },
+    uploadDialogVisibleCancle() {
+      this.uploadDialogVisible = false
+      this.uploadForm = {
+        name: '',
+        file: null
+      }
+      this.fileList = []
     },
     submitUpload() {
       this.$refs.uploadForm.validate((valid) => {
@@ -819,15 +844,50 @@ export default {
             this.$message.error('请选择要上传的文件')
             return
           }
-          if (this.fillForm.isAI) {
-            this.excelUploadAiHandle(this.uploadForm.file).then(file => {
-              this.uploadExcel(file)
-            })
+          // 选择‘其他’直接上传文件
+          if(this.fillForm.type === 'selfReport_file') {
+            this.otherFileUpload(this.uploadForm.file)
           } else {
-            this.uploadExcel(this.uploadForm.file)
+            if (this.fillForm.isAI) {
+              this.excelUploadAiHandle(this.uploadForm.file).then(file => {
+                this.uploadExcel(file)
+              })
+            } else {
+              this.uploadExcel(this.uploadForm.file)
+            }
           }
+          
         } else {
           return false
+        }
+      })
+    },
+    // 其他文件上传  先走saveForm接口获取id再上传文件saveFormData
+    otherFileUpload(file) {
+      saveForm({
+        name: this.uploadForm.name,
+        pid: this.nodeData.id,
+        level: this.nodeData.level,
+        nodeType: 'selfReport_file',
+      }).then(res => {
+        if (res.success && res.data) {
+          this.saveFormDataOther(res.data, file)
+        }
+      })
+    },
+    saveFormDataOther(id, file) {
+      const formData = new FormData();
+      formData.append('file', file)
+      saveFormData(id, formData).then(res => {
+        if (res.success) {
+          this.$message({
+            type: 'success',
+            message: '上传成功！'
+          })
+          this.uploadDialogVisibleCancle()
+          this.fillDialogVisible = false
+          this.selfUploadLoading = false
+          this.getDataFill()
         }
       })
     },
@@ -996,7 +1056,7 @@ export default {
         })
         return file
       }).catch(() => {
-        this.$message.error('上传失败')
+        this.$message.error('AI识别失败')
         this.templateUploadLoading = false
         this.selfUploadLoading = false
         return false

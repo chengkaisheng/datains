@@ -759,12 +759,13 @@ export default {
       permissions: {
         folder: ['read', 'write', 'create_t', 'create', 'update', 'manage'],
         form: ['read', 'write', 'read_data', 'update', 'export', 'manage'],
-        selfReport: ['read', 'update', 'export', 'manage']
+        selfReport: ['read', 'update', 'export', 'manage'],
+        selfReport_file: ['read', 'export']
       },
       permissionTitle: {
         folder: {
           read: '查看文件夹',
-          write: '自主填报',
+          write: '自主填报及其他',
           create_t: '创建表单',
           create: '创建文件夹',
           update: '修改文件夹',
@@ -783,6 +784,11 @@ export default {
           update: '修改填报数据',
           export: '导出填报数据',
           manage: '管理填报',
+        },
+        selfReport_file: {
+          read: '查看',
+          export: '导出文件',
+          // manage: '管理文件',
         }
       },
       permissionTitleTemplate: {

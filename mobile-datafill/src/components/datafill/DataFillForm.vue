@@ -46,6 +46,7 @@
 
           <!-- AI开关选项 -->
           <van-field
+            v-show="formData.type !== '其他'"
             name="enableAI"
             label="开启AI"
           >
@@ -63,7 +64,7 @@
           <van-button v-show="formData.type === '自主填报'" round block type="primary" native-type="button" @click="downloadSelfTemplateFn">
             下载模板
           </van-button>
-          <van-button  round block type="primary" native-type="button" style="margin-top: 16px" @click="handleUploadClick">
+          <van-button round block type="primary" native-type="button" style="margin-top: 16px" @click="handleUploadClick">
             上传
           </van-button>
           <input
@@ -150,7 +151,7 @@
       </div>
     </van-popup>
 
-    <!-- 自主上传弹窗 -->
+    <!-- 其他 自主上传弹窗 -->
     <van-popup v-model:show="showUploadPopup" position="center" round :style="{ width: '90%' }">
       <div class="upload-popup">
         <div class="upload-popup-header">
@@ -234,7 +235,7 @@ const showTemplatePopup = ref(false)
 const showUploadPopup = ref(false)
 
 // 填报类型列表
-const fillTypes = ['表单填报', '自主填报']
+const fillTypes = ['表单填报', '自主填报', '其他']
 
 // 文件夹选择相关
 const selectedTask = ref({})
@@ -534,7 +535,7 @@ const handleFileChange = async (event) => {
   uploadForm.value.file = file
   uploadForm.value.fileName = file.name
 
-  if(formData.value.type === '自主填报') {
+  if(formData.value.type === '自主填报' || formData.value.type === '其他') {
      uploadForm.value.file = file
      uploadForm.value.fileName = file.name.replace(/\.[^/.]+$/, "") // 去除文件扩展名
      return
@@ -635,23 +636,47 @@ const handleUploadSubmit = async () => {
   })
 
   try {
-    if (formData.value.enableAI) {
-      const formData1 = new FormData()
-      formData1.append('file', uploadForm.value.file)
-      const res = await getAIData(formData1)
-
-      // 将 AI 处理后的数据转换为 Excel 文件
-      let file = new File([res], '表单.xlsx', {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        lastModified: Date.now()
-      })
-      uploadExcel(file)
+    // 其他类型文件上传 先走save获取id，再上传文件
+    if(formData.value.type === '其他') {
+      let data = {
+        level: selectedTask.value.level,
+        name: uploadForm.value.fileName,
+        nodeType: 'selfReport_file',
+        pid: selectedTask.value.id
+      }
+      let res = await saveSelfReport(data)
+      if(res.success && res.data) {
+        const formData = new FormData()
+        formData.append('file', uploadForm.value.file)
+        saveFormData(res.data, formData).then(res1 => {
+          if (res1.success) {
+            closeUploadPopup()
+            showToast('上传成功')
+          } else {
+            showToast(res1.message || '上传失败')
+          }
+        })
+      } 
     } else {
-      uploadExcel(uploadForm.value.file)
+      if (formData.value.enableAI) {
+        const formData1 = new FormData()
+        formData1.append('file', uploadForm.value.file)
+        const res = await getAIData(formData1)
+
+        // 将 AI 处理后的数据转换为 Excel 文件
+        let file = new File([res], '表单.xlsx', {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          lastModified: Date.now()
+        })
+        uploadExcel(file)
+      } else {
+        uploadExcel(uploadForm.value.file)
+      }
     }
+    
   } catch (error) {
     console.error('上传失败：', error)
-    showToast('上传失败')
+    showToast('AI识别失败')
   } finally {
     loading.close()
   }
@@ -727,7 +752,7 @@ const handleUploadClick = () => {
 
     fileInput.value.click()
   } else {
-    // 自主填报时检查文件夹权限
+    // 其他 自主填报时检查文件夹权限
     if (!selectedTask.value || !selectedTask.value.privileges?.includes('write')) {
       showToast('暂无该文件夹自主填报权限！')
       return
@@ -758,7 +783,7 @@ const saveSelfReportFn = async () => {
     saveFile(res.data)
   } 
 }
-// 保存自主填报文件
+// 保存 其他 自主填报文件
 const saveFile = async (formId) => {
   const formData = new FormData()
   formData.append('file', msg.value.file)

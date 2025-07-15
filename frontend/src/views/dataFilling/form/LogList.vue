@@ -17,6 +17,7 @@
             <el-option label="新增" value="INSERT" />
             <el-option label="更新" value="UPDATE" />
             <el-option label="删除" value="DELETE" />
+            <el-option label="下载" value="DOWNLOAD" />
           </el-select>
         </el-form-item>
         <el-form-item label="时间范围">
@@ -174,6 +175,9 @@ export default {
         case 'DELETE':
           type = 'danger';
           break;
+        case 'DOWNLOAD':
+          type = 'success';
+          break;
       }
       return type;
     },
@@ -188,6 +192,9 @@ export default {
           break;
         case 'DELETE':
           name = '删除';
+          break;
+        case 'DOWNLOAD':
+          name = '下载';
           break;
       }
       return name;
