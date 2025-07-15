@@ -83,7 +83,7 @@ const init = (data, type) => {
       container: 'luckysheet',
       title: props.msg.name,
       lang: 'zh',
-      plugins: ['chart'],
+      plugins: [{name: 'chart'}],
       data: data || []
     })
     if(type === 'save') {

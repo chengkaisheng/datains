@@ -36,6 +36,8 @@
 // import datafill from '@/api/datafill/datafill'
 import { getFormData, saveFormData, getFormDataData, deleteForm } from '@/views/dataFilling/form/dataFilling'
 import { exportExcel } from './export'
+import LuckyExcel from "luckyexcel"
+
 export default {
   name: 'EditExcel',
   props: {
@@ -88,7 +90,7 @@ export default {
           container: 'luckysheet', // 设定DOM容器的id
           title: this.msg.name, // 设定表格名称
           lang: 'zh', // 设定表格语言
-          plugins: ['chart'],
+          plugins: [{name: 'chart'}],
           data: data || [],
           // 添加只读模式配置
           showtoolbar: !this.isReadOnly, // 是否显示工具栏

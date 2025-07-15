@@ -210,6 +210,7 @@
 import EditExcel from './editExcel.vue'
 import datafill from '@/api/datafill/datafill'
 import {exportExcel} from './export'
+import LuckyExcel from "luckyexcel"
 
 export default {
   name: 'DataFill',

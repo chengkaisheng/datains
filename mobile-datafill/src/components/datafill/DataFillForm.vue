@@ -214,7 +214,7 @@ import TreeNode from './TreeNode.vue'
 import { downloadTemplate, getAIData, getTaskTree, getTemplates, saveSelfReport, uploadData, downloadSelfReportTemplate, saveFormData, deleteForm } from '@/api/datafill'
 import editExcel from '@/components/excel/editExcel.vue'
 import { hasPermission } from '@/utils/permission.js'
-// import LuckyExcel from 'luckyexcel'
+import LuckyExcel from 'luckyexcel'
 import {exportExcel} from '../excel/export.js'
 
 const router = useRouter()
