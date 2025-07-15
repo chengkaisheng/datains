@@ -806,11 +806,31 @@ export default {
       //   });
     },
     handleFileChange(file, fileList) {
+      
       if (fileList.length > 0) {
+        
         const fileName = file.name
         const fileExt = fileName
           .substring(fileName.lastIndexOf('.') + 1)
           .toLowerCase()
+        
+        if(this.fillForm.isAI || this.fillForm.type === 'selfReport_file') {
+          // 限制文件格式为  .xlsx,.xls,.doc,.docx,.pdf,.jpg,.jpeg,.png
+          if (!['xlsx', 'xls', 'doc', 'docx', 'pdf', 'jpg', 'jpeg', 'png'].includes(fileExt)) {
+            this.$message.error('请上传正确的文件格式！')
+            this.fileList = []
+            this.uploadForm.file = null
+            return
+          }
+        } else {
+          // 限制文件格式为  .xlsx
+          if (fileExt !== 'xlsx') {
+            this.$message.error('请上传正确的文件格式！')
+            this.fileList = []
+            this.uploadForm.file = null
+            return
+          }
+        }
         // 处理xlsx或其他文件
         this.fileList = [fileList[fileList.length - 1]]
         this.uploadForm.file = file.raw
@@ -893,7 +913,7 @@ export default {
       })
     },
     handleUpload() {
-      console.log('this.nodeData', this.nodeData)
+      // console.log('this.nodeData', this.nodeData)
       if (!this.nodeData.id) {
         this.$message.error('请先选择文件夹')
         return

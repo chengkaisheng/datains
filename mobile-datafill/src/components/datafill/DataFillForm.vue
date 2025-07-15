@@ -534,8 +534,33 @@ const handleFileChange = async (event) => {
 
   uploadForm.value.file = file
   uploadForm.value.fileName = file.name
+  const fileExt = file.name
+    .substring(file.name.lastIndexOf('.') + 1)
+    .toLowerCase()
 
   if(formData.value.type === '自主填报' || formData.value.type === '其他') {
+    if(formData.value.type === '其他' || (formData.value.type === '自主填报' && formData.value.enableAI)) {
+      // 限制文件格式为  .xlsx,.xls,.doc,.docx,.pdf,.jpg,.jpeg,.png
+      if (!['xlsx', 'xls', 'doc', 'docx', 'pdf', 'jpg', 'jpeg', 'png'].includes(fileExt)) {
+        showToast({
+           type: 'error',
+           message: '请上传正确的文件格式！'
+         })
+        uploadForm.value.file = null
+        uploadForm.value.fileName = ''
+        return
+      }
+    } else {
+      if (fileExt !== 'xlsx') {
+        showToast({
+           type: 'error',
+           message: '请上传正确的文件格式！'
+         })
+        uploadForm.value.file = null
+        uploadForm.value.fileName = ''
+        return
+      }
+    }
      uploadForm.value.file = file
      uploadForm.value.fileName = file.name.replace(/\.[^/.]+$/, "") // 去除文件扩展名
      return
