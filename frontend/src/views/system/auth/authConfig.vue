@@ -67,12 +67,12 @@ export default {
     return {
       targetInfoArray:
         [
-          {
-            tabName: this.$t('auth.dept'),
-            head: this.$t('auth.deptHead'),
-            direction: 'target',
-            authType: 'dept'
-          },
+          // {
+          //   tabName: this.$t('auth.dept'),
+          //   head: this.$t('auth.deptHead'),
+          //   direction: 'target',
+          //   authType: 'dept'
+          // },
           {
             tabName: this.$t('auth.role'),
             head: this.$t('auth.roleHead'),
