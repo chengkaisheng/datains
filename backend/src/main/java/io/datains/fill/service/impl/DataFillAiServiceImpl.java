@@ -161,7 +161,9 @@ public class DataFillAiServiceImpl implements DataFillAiService {
             String fileName = URLEncoder.encode(originalFilename, "UTF-8").replaceAll("\\+", "%20");
             response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
             // 将接口返回的文件流写入响应
-            IoUtil.write(response.getOutputStream(), true, file.getBytes());
+            throw new RuntimeException("ai解析失败xxxxxxxxxxxxxx");
+//            IoUtil.write(response.getOutputStream(), true, file.getBytes());
+
         }else {
             //获取文件类型
             String type = getFileType(file);

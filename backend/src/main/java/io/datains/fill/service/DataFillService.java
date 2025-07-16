@@ -3,7 +3,6 @@ package io.datains.fill.service;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.ZipUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.context.AnalysisContext;
@@ -53,13 +52,17 @@ import io.minio.ObjectWriteResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.model.enums.AesKeyStrength;
+import net.lingala.zip4j.model.enums.EncryptionMethod;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -77,7 +80,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@Transactional(rollbackFor = Exception.class)
 public class DataFillService {
 
     @Resource
@@ -114,6 +116,50 @@ public class DataFillService {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         request.setUserId(userId);
         return dataFillFormMapper.selectForm(request);
+    }
+
+    /**
+     * 自定义上传文件
+     */
+    public ResultHolder saveCustomFile(DataFillFormWithBLOBs dataFillForm) throws Exception {
+        if (!checkPrivileges(dataFillForm.getPid(), "write")) {
+            //需要检查是否有自主填报的权限
+            throw new RuntimeException("请检查用户权限");
+        }
+        String userName = AuthUtils.getUser().getUsername();
+        dataFillForm.setCreateBy(userName);
+        dataFillForm.setUpdateBy(userName);
+        Date current = new Date();
+        dataFillForm.setCreateTime(current);
+        dataFillForm.setUpdateTime(current);
+
+        String uuid = UUIDUtil.getUUID().toString();
+        dataFillForm.setId(uuid);
+        //先先查询文件夹下有没有同一人上传的同名文件
+        DataFillFormExample example = new DataFillFormExample();
+        example.createCriteria()
+                .andPidEqualTo(dataFillForm.getPid())
+                .andNameEqualTo(dataFillForm.getName())
+                .andCreateByEqualTo(userName)
+                .andNodeTypeEqualTo("selfReport_file");
+        DataFillForm form = dataFillFormMapper.selectByExample(example).stream().findFirst().orElse(null);
+        int i = 1;
+        //有的话需要在名字后面拼上数字
+        while (form != null) {
+            dataFillForm.setName(dataFillForm.getName() + "(" + i + ")");
+            DataFillFormExample example1 = new DataFillFormExample();
+            example1.createCriteria()
+                    .andPidEqualTo(dataFillForm.getPid())
+                    .andNameEqualTo(dataFillForm.getName())
+                    .andCreateByEqualTo(userName)
+                    .andNodeTypeEqualTo("selfReport_file");
+            form = dataFillFormMapper.selectByExample(example1).stream().findFirst().orElse(null);
+            i++;
+        }
+        dataFillFormMapper.insertSelective(dataFillForm);
+        dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.INSERT);
+        sysAuthService.copyAuth(uuid, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING);
+        return ResultHolder.success(dataFillForm.getId());
     }
 
     /**
@@ -167,15 +213,23 @@ public class DataFillService {
                 .andCreateByEqualTo(userName)
                 .andNodeTypeEqualTo("selfReport");
         DataFillForm form = dataFillFormMapper.selectByExample(example).stream().findFirst().orElse(null);
-        if (form != null) {
-            //有则不创建，直接返回原来的表单，让其覆盖成为新版本，以阻止用户创建同名文件
-            return ResultHolder.success(form.getId());
-        } else {
-            dataFillFormMapper.insertSelective(dataFillForm);
-            dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.INSERT);
-            sysAuthService.copyAuth(uuid, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING);
-            return ResultHolder.success(dataFillForm.getId());
+        int i = 1;
+        //有的话需要在名字后面拼上数字
+        while (form != null) {
+            dataFillForm.setName(dataFillForm.getName() + "(" + i + ")");
+            DataFillFormExample example1 = new DataFillFormExample();
+            example1.createCriteria()
+                    .andPidEqualTo(dataFillForm.getPid())
+                    .andNameEqualTo(dataFillForm.getName())
+                    .andCreateByEqualTo(userName)
+                    .andNodeTypeEqualTo("selfReport");
+            form = dataFillFormMapper.selectByExample(example1).stream().findFirst().orElse(null);
+            i++;
         }
+        dataFillFormMapper.insertSelective(dataFillForm);
+        dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.INSERT);
+        sysAuthService.copyAuth(uuid, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING);
+        return ResultHolder.success(dataFillForm.getId());
     }
 
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
@@ -799,7 +853,10 @@ public class DataFillService {
 
         try {
             String waterMark = AuthUtils.getUser().getNickName();
-            ExcelUtil.createExcelWithWaterMark(head, data, password, "数据", response, waterMark);
+            //记录导出日志
+            DataFillForm dataFillForm = this.dataFillFormMapper.selectByPrimaryKey(formId);
+            dataFillFormLogService.insert(formId, dataFillForm.getName(), FormLogEnum.DOWNLOAD);
+            ExcelUtil.createExcelWithWaterMarkAndDownload(head, data, password, "数据", response, waterMark);
         } catch (Exception e) {
             e.printStackTrace();
             // 重置response
@@ -1089,7 +1146,6 @@ public class DataFillService {
 
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void saveFormData(String formId, MultipartFile file) {
         CurrentUserDto user = AuthUtils.getUser();
         //判断是否存在表单
@@ -1116,7 +1172,15 @@ public class DataFillService {
             DataFillData dataFillData = new DataFillData();
             //将文件传入minio
             try (InputStream inputStream = file.getInputStream()) {
-                ObjectWriteResponse response = minIOUtils.uploadFile(UUIDUtil.getUUID().toString(), inputStream);
+                String x;
+                //加上文件后缀
+                if (file.getOriginalFilename() != null) {
+                    String[] split = file.getOriginalFilename().split("\\.");
+                    x = "." + split[split.length - 1];
+                } else {
+                    x = "";
+                }
+                ObjectWriteResponse response = minIOUtils.uploadFile(UUIDUtil.getUUID() + x, inputStream);
                 dataFillData.setFileKey(response.object());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1181,16 +1245,43 @@ public class DataFillService {
         if (!checkPrivileges(formId, "export")) {
             throw new RuntimeException("请检查用户权限");
         }
+        //获取表单信息
+        DataFillForm dataFillForm = this.dataFillFormMapper.selectByPrimaryKey(formId);
         //自主填报的导出，需要添加水印
         DataFillData dataFillData = this.dataFillDataMapper.getByIdAndFormId(formId, id);
-
         if (dataFillData == null) {
             throw new RuntimeException("数据不存在");
         }
+        //记录导出日志
+        dataFillFormLogService.insert(formId, dataFillForm.getName(), FormLogEnum.DOWNLOAD);
         try (InputStream inputStream = minIOUtils.getObject(dataFillData.getFileKey())) {
-            ExcelUtil.responseHandle(response, "数据");
-            String waterMark = AuthUtils.getUser().getNickName();
-            ExcelUtil.addWaterMark(inputStream, response.getOutputStream(), password, waterMark);
+            if (dataFillForm.getNodeType().equals("selfReport_file")) {
+                //自定义文件的导出
+                String path = "/opt/datains/temp" + "/" + UUIDUtil.getUUID() + ".zip";
+                //获取文件后缀
+                String[] split = dataFillData.getFileKey().split("\\.");
+                String x = "." + split[split.length - 1];
+                ZipParameters zipParameters = new ZipParameters();
+                zipParameters.setEncryptFiles(true);
+                zipParameters.setEncryptionMethod(EncryptionMethod.AES);
+                zipParameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
+                zipParameters.setFileNameInZip(dataFillForm.getName() + x);
+                try (ZipFile zipFile = new ZipFile(path, password.toCharArray())) {
+                    zipFile.addStream(inputStream, zipParameters);
+                    ExcelUtil.downloadZip(response, dataFillForm.getName());
+                    InputStream is = Files.newInputStream(Paths.get(path));
+                    byte[] content = IoUtil.readBytes(is);
+                    IoUtil.write(response.getOutputStream(), false, content);
+                    FileUtil.del(new File(path));
+                } catch (ZipException e) {
+                    FileUtil.del(new File(path));
+                    throw new RuntimeException(e);
+                }
+            } else {
+                ExcelUtil.responseHandle(response, "数据");
+                String waterMark = AuthUtils.getUser().getNickName();
+                ExcelUtil.addWaterMark(inputStream, response.getOutputStream(), password, waterMark);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             response.reset();
@@ -1355,7 +1446,14 @@ public class DataFillService {
                 }
                 List<String> parentNames = getParentNames(child, map);
                 String path;
-                String fileName = child.getName() + "_" + entry.getWaterMark() + ".xlsx";
+                String fileName = child.getName();
+                if (child.getNodeType().equals("selfReport_file")) {
+                    //自定义文件的文件格式要特殊处理
+                    DataFillData dataFillData = this.dataFillDataMapper.getMaxVersionByFormId(child.getId());
+                    fileName = fileName + "." + dataFillData.getFileKey().split("\\.")[1];
+                } else {
+                    fileName = fileName + ".xlsx";
+                }
                 if (parentNames.isEmpty()) {
                     path = fileName;
                 } else {
@@ -1370,8 +1468,8 @@ public class DataFillService {
                         List<List<String>> head = this.buildExcelHead(dataResponse.getFields());
                         List<Map<String, Object>> searchData = (List<Map<String, Object>>) dataResponse.getData();
                         List<List<Object>> data = this.buildExcelData(dataResponse.getFields(), searchData);
-                        //添加水印
-                        ExcelUtil.createExcelWithWaterMark(head, data, entry.getPassword(), os, entry.getWaterMark());
+                        //转换成excel
+                        ExcelUtil.createExcelWithWaterMark(head, data, os);
                         InputStream inputStream = new ByteArrayInputStream(os.toByteArray());
                         streams.add(inputStream);
                         paths.add(path);
@@ -1380,10 +1478,21 @@ public class DataFillService {
                         //首先查询自主填报最高版本的数据
                         DataFillData dataFillData = this.dataFillDataMapper.getMaxVersionByFormId(child.getId());
                         //从minio中获取文件流
-                        try (InputStream inputStream = minIOUtils.getObject(dataFillData.getFileKey())) {
-                            //添加水印
-                            ExcelUtil.addWaterMark(inputStream, os, entry.getPassword(), entry.getWaterMark());
-                            streams.add(new ByteArrayInputStream(os.toByteArray()));
+                        try {
+                            InputStream inputStream = minIOUtils.getObject(dataFillData.getFileKey());
+                            streams.add(inputStream);
+                            paths.add(path);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else if (child.getNodeType().equals("selfReport_file")) {
+                        //自定义文件导出逻辑
+                        //首先查询自定义文件最高版本的数据
+                        DataFillData dataFillData = this.dataFillDataMapper.getMaxVersionByFormId(child.getId());
+                        try {
+                            //不使用try防止自动关闭流
+                            InputStream inputStream = minIOUtils.getObject(dataFillData.getFileKey());
+                            streams.add(inputStream);
                             paths.add(path);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -1399,10 +1508,22 @@ public class DataFillService {
                     e.printStackTrace();
                 }
             }
-            String[] pathsArr = paths.toArray(new String[0]);
-            InputStream[] streamsArr = streams.toArray(new InputStream[0]);
-            //调用压缩方法，方法中会自动关闭流
-            ZipUtil.zip(FileUtil.newFile(entry.getZipPath()), pathsArr, streamsArr, StandardCharsets.UTF_8);
+//            String[] pathsArr = paths.toArray(new String[0]);
+//            InputStream[] streamsArr = streams.toArray(new InputStream[0]);
+            //进行加密压缩
+            try (ZipFile zipFile = new ZipFile(entry.getZipPath(), entry.getPassword().toCharArray())) {
+                for (int i = 0; i < streams.size(); i++) {
+                    ZipParameters zipParameters = new ZipParameters();
+                    zipParameters.setEncryptFiles(true);
+                    zipParameters.setEncryptionMethod(EncryptionMethod.AES);
+                    zipParameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
+                    zipParameters.setFileNameInZip(paths.get(i));
+                    zipFile.addStream(streams.get(i), zipParameters);
+                }
+            } catch (ZipException e) {
+                throw new RuntimeException(e);
+            }
+//            ZipUtil.zip(FileUtil.newFile(entry.getZipPath()), pathsArr, streamsArr, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1423,10 +1544,25 @@ public class DataFillService {
     }
 
     private List<DataFillForm> getAllChildren(String pid) {
+        //首先获取所有的表单数据
+        List<DataFillForm> list = getAllChildrenData(pid);
+        //然后进行权限过滤，只保留有导出权限的表单
+        List<DataFillForm> result = new ArrayList<>();
+        for (DataFillForm form : list) {
+            if (form.getNodeType().equals("folder")) {
+                result.add(form);
+            } else if (checkPrivileges(form.getId(), "export")) {
+                result.add(form);
+            }
+        }
+        return result;
+    }
+
+    private List<DataFillForm> getAllChildrenData(String pid) {
         List<DataFillForm> children = this.dataFillFormMapper.selectFormByPid(pid);
         List<DataFillForm> result = new ArrayList<>(children);
         for (DataFillForm child : children) {
-            result.addAll(getAllChildren(child.getId()));
+            result.addAll(getAllChildrenData(child.getId()));
         }
         return result;
     }

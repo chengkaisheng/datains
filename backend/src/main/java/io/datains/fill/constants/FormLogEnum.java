@@ -13,6 +13,7 @@ public enum FormLogEnum {
     INSERT("INSERT", "用户%s创建了表单%s"),
     UPDATE("UPDATE", "用户%s修改了表单%s"),
     DELETE("DELETE", "用户%s删除了表单%s"),
+    DOWNLOAD("DOWNLOAD", "用户%s下载了表单%s"),
     ;
 
     private final String code;

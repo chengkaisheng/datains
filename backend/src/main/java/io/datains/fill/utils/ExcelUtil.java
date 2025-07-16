@@ -68,7 +68,18 @@ public class ExcelUtil {
                 .doWrite(data);
     }
 
-    public static void createExcelWithWaterMark(List<List<String>> head, List<List<Object>> data, String password, String fileName, HttpServletResponse response, String waterMark) throws Exception {
+    public static void createExcelWithWaterMark(List<List<String>> head, List<List<Object>> data, OutputStream outputStream) {
+        EasyExcel.write(outputStream)
+                .head(head)
+                .automaticMergeHead(false)
+                .inMemory(true)
+                .autoCloseStream(Boolean.FALSE)
+                .sheet("数据")
+                .registerWriteHandler(new CustomCellWriteWidthConfig())
+                .doWrite(data);
+    }
+
+    public static void createExcelWithWaterMarkAndDownload(List<List<String>> head, List<List<Object>> data, String password, String fileName, HttpServletResponse response, String waterMark) throws Exception {
         responseHandle(response, fileName);
         EasyExcel.write(response.getOutputStream())
                 .head(head)

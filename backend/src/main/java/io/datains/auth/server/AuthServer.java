@@ -24,7 +24,6 @@ import io.datains.qyy.service.CertificationService;
 import io.datains.service.sys.SysUserService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -160,19 +159,15 @@ public class AuthServer implements AuthApi {
 
     @Override
     public CurrentUserDto userInfo() {
-        CurrentUserDto userDto = (CurrentUserDto) SecurityUtils.getSubject().getPrincipal();
-        if (ObjectUtils.isEmpty(userDto)) {
-            String token = ServletUtils.getToken();
-            Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
-            SysUserEntity user = authUserService.getUserById(userId);
-            CurrentUserDto currentUserDto = BeanUtils.copyBean(new CurrentUserDto(), user);
-            List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(user.getUserId());
-            List<String> permissions = authUserService.permissions(user.getUserId());
-            currentUserDto.setRoles(currentRoleDtos);
-            currentUserDto.setPermissions(permissions);
-            return currentUserDto;
-        }
-        return userDto;
+        String token = ServletUtils.getToken();
+        Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
+        SysUserEntity user = authUserService.getUserById(userId);
+        CurrentUserDto currentUserDto = BeanUtils.copyBean(new CurrentUserDto(), user);
+        List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(user.getUserId());
+        List<String> permissions = authUserService.permissions(user.getUserId());
+        currentUserDto.setRoles(currentRoleDtos);
+        currentUserDto.setPermissions(permissions);
+        return currentUserDto;
     }
 
     @Override

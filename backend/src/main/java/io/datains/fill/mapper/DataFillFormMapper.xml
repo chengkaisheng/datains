@@ -290,7 +290,7 @@
             AND data_fill_form.id = #{id}
         </if>
         <if test="name != null and name != ''">
-            AND data_fill_form.name LIKE CONCAT('%', #{name}, '%')
+            AND (data_fill_form.name LIKE CONCAT('%', #{name}, '%') or data_fill_form.id = #{name})
         </if>
         <if test="nodeType != null and nodeType != ''">
             AND data_fill_form.node_type = #{nodeType}
@@ -306,7 +306,6 @@
         select *
         from data_fill_form
         where pid = #{pid}
-          and node_type != 'folder'
     </select>
     <update id="updateByExampleSelective" parameterType="map">
         update data_fill_form

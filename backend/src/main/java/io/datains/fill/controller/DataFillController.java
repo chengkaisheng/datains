@@ -50,12 +50,18 @@ public class DataFillController {
     @ApiIgnore
     @PostMapping("/form/save")
     public ResultHolder saveForm(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
+        if (dataFillForm.getName() == null || dataFillForm.getName().isEmpty()){
+            return ResultHolder.error("表单名称不能为空");
+        }
         if ("selfReport".equals(dataFillForm.getNodeType()) || "selfReport_template".equals(dataFillForm.getNodeType())) {
             return dataFillService.saveCustomForm(dataFillForm);
+        } else if ("selfReport_file".equals(dataFillForm.getNodeType())) {
+            return dataFillService.saveCustomFile(dataFillForm);
+        } else {
+            dataFillForm.setTableName(UUIDUtil.getUUID().toString());
+            dataFillForm.setDatasource("default-built-in");
+            return dataFillService.saveForm(dataFillForm);
         }
-        dataFillForm.setTableName(UUIDUtil.getUUID().toString());
-        dataFillForm.setDatasource("default-built-in");
-        return dataFillService.saveForm(dataFillForm);
     }
 
     @ApiIgnore
