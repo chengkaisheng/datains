@@ -125,17 +125,19 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
                 auth.setUpdateTime(auth.getCreateTime());
                 auths.add(auth);
             }
-            this.sysDeptLeaderAuthMapper.insertBatch(auths);
+            if (!auths.isEmpty()) {
+                this.sysDeptLeaderAuthMapper.insertBatch(auths);
+            }
             //同步将权限添加到组织负责人身上
             List<Long> leaderIds = this.sysDeptLeaderMapper.selectUserIdsByDeptId(deptId);
             if (leaderIds != null && !leaderIds.isEmpty()) {
                 for (Long leaderId : leaderIds) {
                     //组装权限信息
                     List<AuthChangeForDeptLeaderDTO> a = new ArrayList<>();
-                    for (SysDeptLeaderAuth auth : auths) {
+                    for (String authSource : authSources) {
                         AuthChangeForDeptLeaderDTO tmp = new AuthChangeForDeptLeaderDTO();
-                        tmp.setAuthSource(auth.getAuthSource());
-                        tmp.setAuthSourceType(auth.getAuthSourceType());
+                        tmp.setAuthSource(authSource);
+                        tmp.setAuthSourceType(authSourceType);
                         a.add(tmp);
                     }
                     this.authXpackService.authAddForDeptLeader(leaderId, a);
@@ -225,16 +227,15 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
     }
 
     /**
-     * 修改用户的权限
+     * 用来判断组织负责人的权限是否需要移除，把不需要移除的资源从列表中去除
+     * 判断依据：
+     * 1 此组织关联的资源并没有从sys_dept_leader_auth表中删除
+     * 2 此组织关联的资源虽然从sys_dept_leader_auth表中删除，但是子组织依旧有此资源的权限
      *
-     * @param userId         用户id
-     * @param authSource     权限来源
-     * @param authSourceType 权限来源类型
-     * @param privilegeType  权限类型
-     * @param privilegeValue 权限值
+     * @param deptId      组织id
+     * @param authSources 待移除的资源列表
      */
-    private void changeAuthForUser(Long userId, String authSource, String authSourceType, Integer privilegeType, Integer privilegeValue) {
+    private void shouldRemoveAuth(Long deptId, List<String> authSources) {
 
-        this.authXpackService.authChangeForDeptLeader("dept", authSource, authSourceType, userId.toString(), "user", privilegeValue, privilegeType);
     }
 }

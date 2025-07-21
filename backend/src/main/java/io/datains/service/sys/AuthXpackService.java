@@ -20,17 +20,6 @@ public interface AuthXpackService {
 
     void authChangeBatch(List<XpackSysAuthRequest> list, Long paramLong, String paramString, Boolean paramBoolean);
 
-    /**
-     * @param user           授权人员
-     * @param authSource     权限来源
-     * @param authSourceType 权限来源类型
-     * @param authTarget     权限授予对象 一般为id
-     * @param authTargetType 权限授予对象类型 用户，角色等
-     * @param privilegeValue 权限值 1-授予权限 0-取消权限
-     * @param privilegeType  权限类型
-     */
-    void authChangeForDeptLeader(String user, String authSource, String authSourceType, String authTarget, String authTargetType, Integer privilegeValue, Integer privilegeType);
-
     void authAddForDeptLeader(Long userId, List<AuthChangeForDeptLeaderDTO> a);
 
     /**
