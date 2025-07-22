@@ -8,7 +8,7 @@
         </el-input>
       </div>
       <el-tabs v-model="targetActiveName" :class="{'de-search-header': showTargetSearchInput}" @tab-click="handleClick">
-        <el-tab-pane v-for="(targetInfo, index) in targetInfoArray" :key="index" :lazy="true" :label="targetInfo.tabName" :name="targetInfo.authType">
+        <el-tab-pane v-for="(targetInfo, index) in targetInfoArray1" :key="index" :lazy="true" :label="targetInfo.tabName" :name="targetInfo.authType">
           <lazy-tree
             v-if="targetActiveName===targetInfo.authType"
             :active-name="targetActiveName"
@@ -52,6 +52,7 @@ import DeContainer from '@/components/datains/DeContainer'
 import DeAsideContainer from '@/components/datains/DeAsideContainer'
 import DeMainContainer from '@/components/datains/DeMainContainer'
 import LazyTree from './components/LazyTree'
+import store from '@/store'
 
 export default {
   name: 'Authority',
@@ -134,11 +135,30 @@ export default {
     }
   },
   computed: {
+    targetInfoArray1() {
+      // 非管理员角色在权限管理页面无法查看角色栏
+      const isAdmin = store.getters.roles.findIndex(item => item.id === 1) !== -1
+      if(isAdmin) {
+        return this.targetInfoArray
+      } else {
+        const index = this.targetInfoArray.findIndex(item => item.authType === 'role')
+        this.targetInfoArray.splice(index, 1)
+        return this.targetInfoArray
+      }
+    },
     sourceInfoTabs () {
       const tabs = []
+      // 非管理员角色无法对“菜单和操作栏“做权限控制操作
+      const isAdmin = store.getters.roles.findIndex(item => item.id === 1) !== -1
       this.sourceInfoArray.forEach(item => {
         if (item.authTargets.indexOf(this.targetActiveName) > -1) {
-          tabs.push(item)
+          if(isAdmin) {
+            tabs.push(item)
+          } else {
+            if(item.authType !== 'menu') {
+              tabs.push(item)
+            }
+          }
         }
       })
       return tabs
