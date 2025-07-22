@@ -78,14 +78,14 @@
       </el-row>
     </div>
     <plugin-com v-if="loginTypes.includes(2) && loginForm.loginType === 2" ref="SSOComponent" component-name="SSOComponent" />
-    <div class="tip">
+    <!-- <div class="tip">
       <div>接上级单位通知，该登录页面将于2025年5月16日暂停登录功能，请通过统一门户登录。</div>
       <div>医保专网登录地址：<span style="cursor: pointer" @click="open('http://100.0.0.234:3000/intranet100/#/login')">http://100.0.0.234:3000/intranet100/#/login</span></div>
       <div>医保内网登录地址：<span style="cursor: pointer" @click="open('http://10.59.13.234:3000/intranet10/#/login')">http://10.59.13.234:3000/intranet10/#/login</span></div>
       <div>账号：身份证号</div>
       <div>初始密码：身份证号后6位+@xzyb</div>
       <div>若有问题，请联系应用厂商或统一门户工作人员：董偲楠，联系电话：17798828696。</div>
-    </div>
+    </div> -->
   </div>
 </template>
 
