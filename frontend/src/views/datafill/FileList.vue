@@ -573,10 +573,10 @@ export default {
       
     },
     batchDownloadVisible() {
-      // if(this.tableData && this.tableData.length === 0) {
-      //   this.$message.warning('暂无数据')
-      //   return
-      // }
+      if(this.tableData && this.tableData.length === 0) {
+        this.$message.warning('暂无数据')
+        return
+      }
       this.passwordDialogVisible = true
       this.batchDownloadFlag = true
     },
@@ -1089,7 +1089,9 @@ export default {
           lastModified: Date.now()
         })
         return file
-      }).catch(() => {
+      }).catch((error) => {
+        console.log('error', error);
+        
         this.$message.error('AI识别失败')
         this.templateUploadLoading = false
         this.selfUploadLoading = false
