@@ -36,7 +36,8 @@
 // import datafill from '@/api/datafill/datafill'
 import { getFormData, saveFormData, getFormDataData, deleteForm } from '@/views/dataFilling/form/dataFilling'
 import { exportExcel } from './export'
-import LuckyExcel from "luckyexcel"
+// import LuckyExcel from "luckyexcel"
+import TransformExcel from 'worker-loader!./transformExcel.worker.js';
 
 export default {
   name: 'EditExcel',
@@ -76,6 +77,7 @@ export default {
     if (this.msg.data) {
       this.init(this.msg.data, 'save')
     } else {
+      // 在线编辑进入，需要获取版本，再获取版本数据
       this.currentFormDataId = this.msg.id
       this.getFormData()
     }
@@ -116,43 +118,75 @@ export default {
       let formId = this.versionList.find(item => item.id === this.versionId).formId
       getFormDataData(formId, this.versionId).then(res => {
         // 返回文件流
+        const msg = this.$message({
+          type: 'info',
+          message: '数据加载中！',
+          duration: 0
+        })
         this.fileToData(new Blob([res], {
           type: 'application/vnd.ms-excel;charset=utf-8'
-        }))
+        }), msg)
       })
     },
-    fileToData(file) {
+    fileToData(file, msg) {
       file.name = this.msg.name + '.xlsx'
       let _this = this
+      
       try {
-        LuckyExcel.transformExcelToLucky(
-          file,
-          function(exportJson, luckysheetfile) {
-            try {
-              if (
-                !exportJson ||
-                !exportJson.sheets ||
-                exportJson.sheets.length === 0
-              ) {
-                _this.$message.error(
-                  '无法读取Excel文件的内容，目前不支持xls文件！'
-                )
-                return
-              }
-              _this.init(exportJson.sheets)
-            } catch (err) {
-              console.error('处理Excel数据错误:', err)
-              _this.$message.error('无法读取文件内容，请检查文件是否损坏')
-            }
-          },
-          function(err) {
-            console.error('Excel解析错误:', err)
-            _this.$message.error('无法读取文件内容，请检查文件是否损坏')
+        const worker = new TransformExcel()
+        // 直接传递File对象
+        worker.postMessage({ 
+          type: 'FILE', 
+          file: file 
+        });
+        
+        worker.onmessage = (e) => {
+          console.log('123', e);
+          
+          if(e.data.type === 'heart') {
+           console.log('heart');
+          } else {
+            msg.close()
+            worker.terminate();
           }
-        )
+          if(e.data.type === 'data') {
+            _this.init(e.data.data.sheets)
+          } else if (e.data.type === 'message') {
+            _this.$message.error(e.data.message)
+          }
+        };
+        // LuckyExcel.transformExcelToLucky(
+        //   file,
+        //   function(exportJson, luckysheetfile) {
+        //     try {
+        //       msg.close()
+        //       if (
+        //         !exportJson ||
+        //         !exportJson.sheets ||
+        //         exportJson.sheets.length === 0
+        //       ) {
+        //         _this.$message.error(
+        //           '无法读取Excel文件的内容，目前不支持xls文件！'
+        //         )
+        //         return
+        //       }
+        //       _this.init(exportJson.sheets)
+        //     } catch (err) {
+        //       msg.close()
+        //       console.error('处理Excel数据错误:', err)
+        //       _this.$message.error('文件解析失败！')
+        //     }
+        //   },
+        //   function(err) {
+        //     msg.close()
+        //     console.error('Excel解析错误:', err)
+        //     _this.$message.error('文件解析失败！')
+        //   }
+        // )
       } catch (err) {
+        msg.close()
         console.error('Excel转换错误:', err)
-        _this.$message.error('无法读取文件内容，请检查文件是否损坏')
+        _this.$message.error('文件解析失败！')
       }
     },
     selectVersion(value) {
@@ -320,5 +354,25 @@ a {
 }
 .luckysheet-rows-menu {
   z-index: 1000000 !important;
+}
+.luckysheet-scrollbars::-webkit-scrollbar {
+    width: 12px !important;
+    height: 12px !important;
+    background-color: #fff;
+}
+.luckysheet-icon-img-container.iconfont, .luckysheet-submenu-arrow .iconfont {
+    font-size: 24px !important;
+}
+.luckysheet-print {
+  p {
+    margin: 12px 0;
+  }
+  .luckysheet-modal-dialog-title-close {
+    width: 45px;
+    height: 45px;
+  }
+}
+#luckysheet-icon-morebtn-div {
+  z-index: 99999 !important;
 }
 </style>

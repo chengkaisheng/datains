@@ -93,7 +93,7 @@ service.interceptors.response.use(response => {
   checkAuth(response)
   return response.data
 }, error => {
-  console.log('error', error);
+  // console.error('error', error);
   
   const config = error.response && error.response.config || error.config
   const headers = error.response && error.response.headers || error.response || config.headers

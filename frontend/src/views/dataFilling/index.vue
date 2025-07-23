@@ -6,7 +6,7 @@
   >
     <de-container>
       <de-main-container
-        class="la-main-container full-height"
+        class="la-main-container"
       >
         <!-- <app-main /> -->
         <Fill></Fill>

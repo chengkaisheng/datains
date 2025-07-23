@@ -448,16 +448,16 @@ export default {
             _this.uploadDialogVisible = false
           } catch(err) {
             // console.error('处理Excel数据错误:', err)
-            _this.$message.error('无法读取文件内容，请检查文件是否损坏')
+            _this.$message.error('文件解析失败！')
           }
         }, 
         function(err) {
           console.error('Excel解析错误:', err) 
-          _this.$message.error('无法读取文件内容，请检查文件是否损坏')
+          _this.$message.error('文件解析失败！')
         })
       } catch(err) {
         // console.error('Excel转换错误:', err)
-        _this.$message.error('无法读取文件内容，请检查文件是否损坏')
+        _this.$message.error('文件解析失败！')
       }
     },
     addDataFill() {

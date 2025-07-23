@@ -5,10 +5,9 @@
         <el-button v-if="!isTemplate" type="primary" @click="handleFill">填报</el-button>
         <div style="margin-left: 20px;color: rgb(96, 98, 102);font-size: 14px;">名称：</div>
         <el-input v-model="searchName" placeholder="请输入" clearable style="width: 200px;margin-left: 10px;">
-          <!-- <el-button slot="append" icon="el-icon-search" @click="getDataFill()" /> -->
         </el-input>
-        <div style="margin-left: 10px;color: rgb(96, 98, 102);font-size: 14px;">类型：</div>
-        <el-select v-model="selectedNodeType" clearable placeholder="请选择">
+        <div v-if="!isTemplate" style="margin-left: 10px;color: rgb(96, 98, 102);font-size: 14px;">类型：</div>
+        <el-select v-if="!isTemplate" v-model="selectedNodeType" clearable placeholder="请选择">
           <el-option label="表单填报" value="form" />
           <el-option label="自主填报" value="selfReport" />
           <el-option label="其他" value="selfReport_file" />
@@ -151,6 +150,7 @@
             action="#"
             :auto-upload="false"
             :on-change="handleFileChange"
+            :on-remove="handleFileRemove"
             :limit="1"
             :file-list="fileList"
             :accept="fillForm.isAI || fillForm.type === 'selfReport_file' ? '.xlsx,.xls,.doc,.docx,.pdf,.jpg,.jpeg,.png' : '.xlsx'"
@@ -345,7 +345,8 @@ import {
 } from '@/views/dataFilling/template/template'
 import { getToken } from '@/utils/auth'
 import i18n from '@/lang'
-import LuckyExcel from "luckyexcel"
+// import LuckyExcel from "luckyexcel"
+import TransformExcel from 'worker-loader!./transformExcel.worker.js';
 
 const token = getToken()
 
@@ -501,6 +502,9 @@ export default {
         templateId: '',
         isAI: true
       }
+      this.$nextTick(() => {
+        this.$refs.fillForm.clearValidate()
+      })
       // 如果需要获取模板列表，可以在这里调用接口
       this.getTemplateList()
     },
@@ -508,19 +512,6 @@ export default {
       // TODO: 调用获取模板列表接口
       this.getDataFill('dialog-form')
     },
-    // submitFill() {
-    //   this.$refs.fillForm.validate((valid) => {
-    //     if (valid) {
-    //       if (this.fillForm.type === 'form' && !this.fillForm.templateId) {
-    //         this.$message.error('请选择模板')
-    //         return
-    //       }
-    //       // TODO: 调用填报提交接口
-    //       console.log('提交填报', this.fillForm)
-    //       this.fillDialogVisible = false
-    //     }
-    //   })
-    // },
     refresh() {
       this.goPage = 1
       this.getDataFill()
@@ -582,6 +573,10 @@ export default {
       
     },
     batchDownloadVisible() {
+      // if(this.tableData && this.tableData.length === 0) {
+      //   this.$message.warning('暂无数据')
+      //   return
+      // }
       this.passwordDialogVisible = true
       this.batchDownloadFlag = true
     },
@@ -707,7 +702,7 @@ export default {
         })
         .catch((_) => {})
     },
-    uploadExcel(file, res) {
+    uploadExcel(file) {
       const name = file.name
       const suffixArr = name.split('.')
       const suffix = suffixArr[suffixArr.length - 1]
@@ -719,48 +714,51 @@ export default {
       const _this = this
 
       try {
-        LuckyExcel.transformExcelToLucky(
-          file,
-          function(exportJson, luckysheetfile) {
-            try {
-              if (
-                !exportJson ||
-                !exportJson.sheets ||
-                exportJson.sheets.length === 0
-              ) {
-                _this.$message.error(
-                  '无法读取Excel文件的内容，目前不支持xls文件！'
-                )
-                return
-              }
-              _this.drawer = true
-              _this.msg = {
-                id: _this.nodeData.id,
-                name: _this.uploadForm.name,
-                data: exportJson.sheets,
-                file: _this.uploadForm.file,
-              }
-              _this.selfUploadLoading = false
-              _this.uploadDialogVisible = false
-              // _this.uploadDialogVisibleCancle()
-              _this.fillDialogVisible = false
-            } catch (err) {
-              // console.error('处理Excel数据错误:', err)
-              _this.$message.error('无法读取文件内容，请检查文件是否损坏')
-              _this.selfUploadLoading = false
-              _this.fillDialogVisible = false
+        const msg = this.$message({
+          type: 'info',
+          message: '数据加载中！',
+          duration: 0
+        })
+        const worker = new TransformExcel()
+        // 直接传递File对象
+        worker.postMessage({ 
+          type: 'FILE', 
+          file: file 
+        });
+        
+        worker.onmessage = (e) => {
+          console.log('123', e);
+          
+          if(e.data.type === 'heart') {
+           console.log('heart');
+          } else {
+            msg.close()
+            worker.terminate();
+          }
+           if(e.data.type === 'data') {
+            _this.drawer = true
+            _this.msg = {
+              id: _this.nodeData.id,
+              name: _this.uploadForm.name,
+              data: e.data.data.sheets,
+              file: _this.uploadForm.file,
             }
-          },
-          function(err) {
-            console.error('Excel解析错误:', err)
-            _this.$message.error('无法读取文件内容，请检查文件是否损坏')
+            _this.selfUploadLoading = false
+            _this.uploadDialogVisible = false
+            _this.fillDialogVisible = false
+          } else if (e.data.type === 'message') {
+            _this.$message.error(e.data.message)
             _this.selfUploadLoading = false
             _this.fillDialogVisible = false
           }
-        )
+        };
+        worker.onerror = (e) => {
+          console.error('Worker error:', e);
+        };
       } catch (err) {
+        msg.close()
         // console.error('Excel转换错误:', err)
-        _this.$message.error('无法读取文件内容，请检查文件是否损坏')
+        _this.$message.error('文件解析失败！')
         _this.selfUploadLoading = false
         _this.fillDialogVisible = false
       }
@@ -842,10 +840,15 @@ export default {
         } else {
           this.uploadForm.name = fileName
         }
+        this.$refs.uploadForm.clearValidate();
       } else {
         this.fileList = []
         this.uploadForm.file = null
       }
+    },
+    handleFileRemove(file, fileList) {
+      this.uploadForm.file = null
+      this.fileList = []
     },
     uploadDialogVisibleCancle() {
       this.uploadDialogVisible = false
@@ -856,22 +859,34 @@ export default {
       this.fileList = []
     },
     submitUpload() {
+      if (!this.uploadForm.file) {
+        this.$message.error('请选择要上传的文件')
+        return
+      }
       this.$refs.uploadForm.validate((valid) => {
         if (valid) {
           this.selfUploadLoading = true
-          if (!this.uploadForm.file) {
-            this.$message.error('请选择要上传的文件')
-            return
-          }
           // 选择‘其他’直接上传文件
           if(this.fillForm.type === 'selfReport_file') {
             this.otherFileUpload(this.uploadForm.file)
           } else {
             if (this.fillForm.isAI) {
               this.excelUploadAiHandle(this.uploadForm.file).then(file => {
-                this.uploadExcel(file)
+                if(file !== false) {
+                  // const msg = this.$message({
+                  //   type: 'info',
+                  //   message: '数据加载中！',
+                  //   duration: 0
+                  // })
+                  this.uploadExcel(file)
+                }
               })
             } else {
+              // const msg = this.$message({
+              //   type: 'info',
+              //   message: '数据加载中！',
+              //   duration: 0
+              // })
               this.uploadExcel(this.uploadForm.file)
             }
           }
