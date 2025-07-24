@@ -320,7 +320,11 @@ public class DataFillService {
         dataFillForm.setUpdateTime(current);
 
         dataFillFormMapper.insertSelective(dataFillForm);
-        dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.INSERT);
+        if (StringUtils.equals(dataFillForm.getNodeType(), "folder")) {
+            dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.INSERT_F);
+        } else {
+            dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.INSERT);
+        }
         // 清理权限缓存，应该不需要
         //clearPermissionCache();
 
@@ -643,7 +647,11 @@ public class DataFillService {
             DataFillCommitLogExample logExample = new DataFillCommitLogExample();
             logExample.createCriteria().andFormIdIn(ids);
             dataFillCommitLogMapper.deleteByExample(logExample);
-            dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.DELETE);
+            if (StringUtils.equals(dataFillForm.getNodeType(), "folder")) {
+                dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.DELETE_F);
+            } else {
+                dataFillFormLogService.insert(dataFillForm.getId(), dataFillForm.getName(), FormLogEnum.DELETE);
+            }
         }
         if (dataFillForm != null) {
             dataFillTaskService.deleteTaskByFormId(id);
@@ -1201,7 +1209,11 @@ public class DataFillService {
     }
 
     public List<DataFillData> getFormData(String formId) {
-        return this.dataFillDataMapper.getByFormId(formId);
+        List<DataFillData> data = this.dataFillDataMapper.getByFormId(formId);
+        if (data == null || data.isEmpty()) {
+            throw new RuntimeException("出错了，请删除重新创建");
+        }
+        return data;
     }
 
     public void getFormDataData(String formId, String id, HttpServletResponse response) {
@@ -1305,6 +1317,9 @@ public class DataFillService {
         entry.setWaterMark(waterMark);
         try {
             exportBatch(entry);
+            //记录导出日志
+            DataFillForm dataFillForm = this.dataFillFormMapper.selectByPrimaryKey(pid);
+            dataFillFormLogService.insert(pid, dataFillForm.getName(), FormLogEnum.DOWNLOAD_F);
             // 设置响应头
             ExcelUtil.downloadZip(response, finalTaskId);
             InputStream inputStream = Files.newInputStream(Paths.get(entry.getZipPath()));
