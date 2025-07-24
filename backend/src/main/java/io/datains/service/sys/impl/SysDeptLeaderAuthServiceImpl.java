@@ -8,6 +8,8 @@ import io.datains.base.mapper.SysDeptLeaderAuthMapper;
 import io.datains.base.mapper.SysDeptLeaderMapper;
 import io.datains.base.mapper.SysUserMapper;
 import io.datains.base.mapper.XpackSysDeptMapper;
+import io.datains.base.mapper.ext.ExtDeptMapper;
+import io.datains.controller.sys.request.SimpleTreeNode;
 import io.datains.dto.authModel.AuthChangeForDeptLeaderDTO;
 import io.datains.service.sys.AuthXpackService;
 import io.datains.service.sys.SysDeptLeaderAuthService;
@@ -151,20 +153,17 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
 
     @Override
     public void deleteAuthToLeadersByDeptId(Long deptId, Long userId, List<String> authSources, String authSourceType) {
-        while (deptId != null && deptId > 0) {
-            XpackSysDept dept = sysDeptMapper.selectByPrimaryKey(deptId);
-            //先查询出该组织下的负责人
-            List<Long> leaderIds = this.sysDeptLeaderMapper.selectUserIdsByDeptId(deptId);
-            if (leaderIds != null && !leaderIds.isEmpty()) {
-                for (Long leaderId : leaderIds) {
-                    //删除负责人的权限
-                    this.authXpackService.authBatchDelForDeptLeader(leaderId, authSources);
-                }
+        //删除组织权限记录
+        this.sysDeptLeaderAuthMapper.deleteByDeptIdAndSource(userId, deptId, authSources, authSourceType);
+        //先查询出该组织下的负责人
+        List<Long> leaderIds = this.sysDeptLeaderMapper.selectUserIdsByDeptId(deptId);
+        if (leaderIds != null && !leaderIds.isEmpty()) {
+            for (Long leaderId : leaderIds) {
+                //先判断应该删除哪些资源
+                List<String> shouldRemoveAuth = this.shouldRemoveAuth(deptId, userId, authSources, 2);
+                //删除负责人的权限
+                this.authXpackService.authBatchDelForDeptLeader(leaderId, shouldRemoveAuth);
             }
-            //最后删除组织权限记录
-            this.sysDeptLeaderAuthMapper.deleteByDeptIdAndSource(userId, deptId, authSources, authSourceType);
-            //获取上级组织id，循环删除权限信息
-            deptId = dept.getPid();
         }
     }
 
@@ -220,22 +219,125 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
                 this.authXpackService.authAddForDeptLeader(userId, a);
 
             } else if (type == 2) {
+                //先判断应该删除哪些资源
+                List<String> shouldRemoveAuth = this.shouldRemoveAuth(deptId, userId, auths.stream().map(SysDeptLeaderAuth::getAuthSource).collect(Collectors.toList()), 1);
+                if (shouldRemoveAuth.isEmpty()) {
+                    continue;
+                }
                 //删除负责人的权限
-                this.authXpackService.authBatchDelForDeptLeader(userId, auths.stream().map(SysDeptLeaderAuth::getAuthSource).collect(Collectors.toList()));
+                this.authXpackService.authBatchDelForDeptLeader(userId, shouldRemoveAuth);
             }
         }
     }
+
+    @Resource
+    private ExtDeptMapper extDeptMapper;
 
     /**
      * 用来判断组织负责人的权限是否需要移除，把不需要移除的资源从列表中去除
      * 判断依据：
      * 1 此组织关联的资源并没有从sys_dept_leader_auth表中删除
-     * 2 此组织关联的资源虽然从sys_dept_leader_auth表中删除，但是子组织依旧有此资源的权限
+     * 2 此组织关联的资源虽然从sys_dept_leader_auth表中删除，但是此用户其他负责的组织有此资源的权限
      *
      * @param deptId      组织id
+     * @param userId      用户id
      * @param authSources 待移除的资源列表
+     * @param type        1-删除组织负责人时 2-去除组织权限时
+     * @return 需要移除的资源列表
      */
-    private void shouldRemoveAuth(Long deptId, List<String> authSources) {
+    private List<String> shouldRemoveAuth(Long deptId, Long userId, List<String> authSources, int type) {
+        List<String> shouldRemoveAuth = new ArrayList<>();
+        if (authSources == null || authSources.isEmpty()) {
+            return shouldRemoveAuth;
+        }
+        //先获取所有的组织信息
+        List<SimpleTreeNode> deptNodes = extDeptMapper.allNodes();
+        //获取此人的所有负责的组织
+        List<Long> leaderDeptIds = this.sysDeptLeaderMapper.selectDeptIdsByUserId(userId);
 
+        if (leaderDeptIds == null || leaderDeptIds.isEmpty()) {
+            //此人没有其他组织的负责人身份，则全部移除
+            return authSources;
+        }
+        Map<Long, SimpleTreeNode> deptMap = deptNodes.stream().collect(Collectors.toMap(SimpleTreeNode::getId, SimpleTreeNode -> SimpleTreeNode));
+        if (type == 1) {
+            // 删除组织负责人时
+            // 判断依据:
+            // 如果此人还是父组织的负责人，则不删除权限；
+            // 如果此人不是父组织的负责人，但还有其他组织的负责人身份，则需要判断资源是否被其他组织使用，如果被其他组织使用，则不能删除
+
+            //这里需要去除一下参数中的组织
+            leaderDeptIds.remove(deptId);
+            //判断其中有没有父组织
+            if (hasAncestorInList(deptMap, deptId, leaderDeptIds)) {
+                //如果此人还是父组织的负责人，则不删除权限；
+                return shouldRemoveAuth;
+            } else {
+                //如果此人不是父组织的负责人，但还有其他组织的负责人身份
+                //继续判断待移除的资源是否被其他自己负责的组织使用
+                return shouldRemoveAuth(leaderDeptIds, authSources);
+            }
+        } else if (type == 2) {
+            // 删除组织资源时
+            return shouldRemoveAuth(leaderDeptIds, authSources);
+        } else {
+            return shouldRemoveAuth;
+        }
+    }
+
+    /**
+     * 检查 targetId 的祖先链是否存在于 idList 中
+     *
+     * @param deptMap  全部部门
+     * @param targetId 目标部门ID
+     * @param idList   待检查的ID列表
+     * @return 如果idList包含targetId或其任意祖先则返回true，否则返回false
+     */
+    private boolean hasAncestorInList(Map<Long, SimpleTreeNode> deptMap, Long targetId, List<Long> idList) {
+        // 边界检查：如果idList为空直接返回false
+        if (idList == null || idList.isEmpty()) {
+            return false;
+        }
+        // 将ID列表转为HashSet提高查询效率
+        Set<Long> idSet = new HashSet<>(idList);
+        // 从targetId开始向上遍历祖先链
+        Long currentId = targetId;
+        while (currentId != null) {
+            // 如果当前ID在集合中，返回true
+            if (idSet.contains(currentId)) {
+                return true;
+            }
+            // 获取当前部门对象
+            SimpleTreeNode dept = deptMap.get(currentId);
+            if (dept == null) {
+                break; // 数据不完整，终止遍历
+            }
+            // 移动到父节点
+            currentId = dept.getPid();
+        }
+        return false;
+    }
+
+    /**
+     * 判断待移除的资源列表中，是否被赋予了组织列表中的其他组织
+     *
+     * @param leaderDeptIds 组织列表
+     * @param authSources   待删除的资源
+     */
+    private List<String> shouldRemoveAuth(List<Long> leaderDeptIds, List<String> authSources) {
+        //首先查询一下这些资源在数据库中还存在多少
+        List<SysDeptLeaderAuth> leaderAuths = this.sysDeptLeaderAuthMapper.selectBySource(authSources);
+        if (leaderAuths == null || leaderAuths.isEmpty()) {
+            //没有一个还在数据库中，全部删除
+            return authSources;
+        }
+        //再一条一条的筛选这些数据的组织是否在组织列表中
+        for (SysDeptLeaderAuth leaderAuth : leaderAuths) {
+            if (leaderDeptIds.contains(leaderAuth.getDeptId())) {
+                //这个资源被其他组织使用，不可以删除
+                authSources.remove(leaderAuth.getAuthSource());
+            }
+        }
+        return authSources;
     }
 }

@@ -20,6 +20,8 @@ public interface SysDeptLeaderAuthMapper {
 
     List<SysDeptLeaderAuth> selectByDeptIdAndSource(@Param("deptId") Long deptId, @Param("authSource") String authSource, @Param("authSourceType") String authSourceType);
 
+    List<SysDeptLeaderAuth> selectBySource(@Param("authSources") List<String> authSources);
+
     void batchDeleteByDeptIds(@Param("deptIds") List<Long> deptIds);
 
     void deleteByDeptIdAndSource(@Param("userId") Long userId, @Param("deptId") Long deptId, @Param("authSources") List<String> authSources, @Param("authSourceType") String authSourceType);

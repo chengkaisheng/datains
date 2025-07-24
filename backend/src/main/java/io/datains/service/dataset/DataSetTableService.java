@@ -541,12 +541,45 @@ public class DataSetTableService {
         return map;
     }
 
+    public Map<String, Object> getPreviewDataWithoutSaveDatasetTable(DataSetTableRequest dataSetTableRequest, Integer page, Integer pageSize,
+                                                                     List<DatasetTableField> extFields) throws Exception {
+        //生成字段
+        if (extFields == null){
+            extFields = new ArrayList<>();
+        }
+        List<TableField> fields = getFields(dataSetTableRequest);
+        if (CollectionUtils.isEmpty(fields)) {
+            throw new RuntimeException("数据库表字段为空");
+        }
+        for (int i = 0; i < fields.size(); i++) {
+            TableField filed = fields.get(i);
+            DatasetTableField datasetTableField = DatasetTableField.builder().build();
+            datasetTableField.setOriginName(filed.getFieldName());
+            datasetTableField.setName(filed.getRemarks());
+            datasetTableField.setDatainsName(TableUtils.columnName(filed.getFieldName()));
+            datasetTableField.setType(filed.getFieldType());
+            datasetTableField.setDeType(transFieldType(filed.getFieldType()));
+            datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
+            datasetTableField.setSize(filed.getFieldSize());
+            datasetTableField.setChecked(true);
+            datasetTableField.setColumnIndex(i);
+            datasetTableField.setLastSyncTime(System.currentTimeMillis());
+            datasetTableField.setExtField(0);
+            datasetTableField.setGroupType((datasetTableField.getDeType() < 2 || datasetTableField.getDeType() == 6) ? "d" : "q");
+            extFields.add(datasetTableField);
+        }
+        return this.getPreviewData(dataSetTableRequest, page, pageSize, extFields);
+    }
+
     public Map<String, Object> getPreviewData(DataSetTableRequest dataSetTableRequest, Integer page, Integer pageSize,
                                               List<DatasetTableField> extFields) throws Exception {
         Map<String, Object> map = new HashMap<>();
-        DatasetTableField datasetTableField = DatasetTableField.builder().tableId(dataSetTableRequest.getId())
-                .checked(Boolean.TRUE).build();
-        List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
+        List<DatasetTableField> fields = new ArrayList<>();
+        if (dataSetTableRequest.getId() != null) {
+            DatasetTableField datasetTableField = DatasetTableField.builder().tableId(dataSetTableRequest.getId())
+                    .checked(Boolean.TRUE).build();
+            fields = dataSetTableFieldsService.list(datasetTableField);
+        }
         if (CollectionUtils.isNotEmpty(extFields)) {
             fields.addAll(extFields);
         }
@@ -556,12 +589,21 @@ public class DataSetTableService {
             map.put("page", new DataSetPreviewPage());
             return map;
         }
-        DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(dataSetTableRequest.getId());
+        DatasetTable datasetTable = new DatasetTable();
         // 行权限
-        List<ChartFieldCustomFilterDTO> customFilter = permissionService.getCustomFilters(fields, datasetTable, null);
+        List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
         // 列权限
         List<String> desensitizationList = new ArrayList<>();
-        fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), null);
+
+        if (dataSetTableRequest.getId() != null) {
+            datasetTable = datasetTableMapper.selectByPrimaryKey(dataSetTableRequest.getId());
+            customFilter = permissionService.getCustomFilters(fields, datasetTable, null);
+            fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), null);
+        } else {
+            datasetTable.setMode(0);
+            datasetTable.setType("db");
+            datasetTable.setInfo(dataSetTableRequest.getInfo());
+        }
         if (CollectionUtils.isEmpty(fields)) {
             map.put("fields", fields);
             map.put("data", new ArrayList<>());
@@ -622,9 +664,9 @@ public class DataSetTableService {
                     datasourceRequest.setPageable(false);
                     int total = 0;
                     String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP");
                     List<String[]> count = datasourceProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()){
+                    if (count != null && !count.isEmpty()) {
                         total = Integer.parseInt(count.get(0)[0]);
                     }
                     dataSetPreviewPage.setTotal(total);
@@ -658,9 +700,9 @@ public class DataSetTableService {
                             Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
                     int total = 0;
                     String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP");
                     List<String[]> count = jdbcProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()){
+                    if (count != null && !count.isEmpty()) {
                         total = Integer.parseInt(count.get(0)[0]);
                     }
                     dataSetPreviewPage.setTotal(total);
@@ -707,9 +749,9 @@ public class DataSetTableService {
                             Integer.valueOf(dataSetTableRequest.getRow()), false, customFilter));
                     int total = 0;
                     String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(sql, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(sql, fields, false, ds, customFilter) + ") COUNT_TEMP");
                     List<String[]> count = datasourceProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()){
+                    if (count != null && !count.isEmpty()) {
                         total = Integer.parseInt(count.get(0)[0]);
                     }
                     dataSetPreviewPage.setTotal(total);
@@ -743,9 +785,9 @@ public class DataSetTableService {
                             Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
                     int total = 0;
                     String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP");
                     List<String[]> count = jdbcProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()){
+                    if (count != null && !count.isEmpty()) {
                         total = Integer.parseInt(count.get(0)[0]);
                     }
                     dataSetPreviewPage.setTotal(total);
@@ -780,9 +822,9 @@ public class DataSetTableService {
                         Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
                 int total = 0;
                 String sqlTmp = datasourceRequest.getQuery();
-                datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP");
                 List<String[]> count = jdbcProvider.getData(datasourceRequest);
-                if (count != null && !count.isEmpty()){
+                if (count != null && !count.isEmpty()) {
                     total = Integer.parseInt(count.get(0)[0]);
                 }
                 dataSetPreviewPage.setTotal(total);
@@ -834,9 +876,9 @@ public class DataSetTableService {
                             Integer.valueOf(dataSetTableRequest.getRow()), false, customFilter));
                     int total = 0;
                     String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(sql, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(sql, fields, false, ds, customFilter) + ") COUNT_TEMP");
                     List<String[]> count = datasourceProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()){
+                    if (count != null && !count.isEmpty()) {
                         total = Integer.parseInt(count.get(0)[0]);
                     }
                     dataSetPreviewPage.setTotal(total);
@@ -867,9 +909,9 @@ public class DataSetTableService {
                             Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
                     int total = 0;
                     String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP");
                     List<String[]> count = jdbcProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()){
+                    if (count != null && !count.isEmpty()) {
                         total = Integer.parseInt(count.get(0)[0]);
                     }
                     dataSetPreviewPage.setTotal(total);
@@ -920,9 +962,9 @@ public class DataSetTableService {
                             Integer.valueOf(dataSetTableRequest.getRow()), false, customFilter));
                     int total = 0;
                     String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(sql, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(sql, fields, false, ds, customFilter) + ") COUNT_TEMP");
                     List<String[]> count = datasourceProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()){
+                    if (count != null && !count.isEmpty()) {
                         total = Integer.parseInt(count.get(0)[0]);
                     }
                     dataSetPreviewPage.setTotal(total);
@@ -953,9 +995,9 @@ public class DataSetTableService {
                             Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
                     int total = 0;
                     String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP" );
+                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP");
                     List<String[]> count = jdbcProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()){
+                    if (count != null && !count.isEmpty()) {
                         total = Integer.parseInt(count.get(0)[0]);
                     }
                     dataSetPreviewPage.setTotal(total);
@@ -1984,11 +2026,11 @@ public class DataSetTableService {
         String filename = file.getOriginalFilename();
         // parse file
         List<ExcelSheetData> excelSheetDataList = parseExcel2(filename, file.getInputStream(), true);
-        for (ExcelSheetData excelSheetData : excelSheetDataList){
-            if (excelSheetData.getFields()!= null && !excelSheetData.getFields().isEmpty()){
+        for (ExcelSheetData excelSheetData : excelSheetDataList) {
+            if (excelSheetData.getFields() != null && !excelSheetData.getFields().isEmpty()) {
                 String[] fieldArray = excelSheetData.getFields().stream().map(TableField::getFieldName)
                         .toArray(String[]::new);
-                if (checkIsRepeat(fieldArray)){
+                if (checkIsRepeat(fieldArray)) {
                     DataInsException.throwException(Translator.get("i18n_excel_field_repeat"));
                 }
             }

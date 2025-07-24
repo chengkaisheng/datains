@@ -20,6 +20,8 @@ public interface SysDeptLeaderMapper {
 
     List<Long> selectUserIdsByDeptIds(@Param("deptIds") List<Long> deptIds);
 
+    List<Long> selectDeptIdsByUserId(Long userId);
+
     void batchDelete(@Param("deptId") Long deptId, @Param("userIds") List<Long> userIds);
 
     void batchDeleteByDeptIds(@Param("deptIds") List<Long> deptIds);

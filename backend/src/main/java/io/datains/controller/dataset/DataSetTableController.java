@@ -73,6 +73,7 @@ public class DataSetTableController {
         }
         dataSetTableService.saveOnLineExcel(datasetTable);
     }
+
     @GetMapping("getOnLineExcelData")
     public void getOnLineExcelData(String fileId, HttpServletResponse response) {
         dataSetTableService.getOnLineExcelData(fileId, response);
@@ -141,6 +142,12 @@ public class DataSetTableController {
     @PostMapping("getPreviewData/{page}/{pageSize}")
     public Map<String, Object> getPreviewData(@RequestBody DataSetTableRequest dataSetTableRequest, @PathVariable Integer page, @PathVariable Integer pageSize) throws Exception {
         return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize, null);
+    }
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "id")
+    @ApiOperation("查询预览数据但不创建实际的数据集")
+    @PostMapping("getPreviewDataO/{page}/{pageSize}")
+    public Map<String, Object> getPreviewDataWithoutSaveDatasetTable(@RequestBody DataSetTableRequest datasetTable, @PathVariable Integer page, @PathVariable Integer pageSize) throws Exception {
+        return dataSetTableService.getPreviewDataWithoutSaveDatasetTable(datasetTable, page, pageSize, null);
     }
 
     @ApiOperation("根据sql查询预览数据")

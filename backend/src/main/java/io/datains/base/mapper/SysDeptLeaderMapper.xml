@@ -40,6 +40,11 @@
         </foreach>
 
     </select>
+    <select id="selectDeptIdsByUserId" resultType="java.lang.Long">
+        SELECT dept_id
+        FROM sys_dept_leader
+        WHERE user_id = #{userId}
+    </select>
     <delete id="batchDelete">
         DELETE FROM sys_dept_leader
         WHERE dept_id = #{deptId}
