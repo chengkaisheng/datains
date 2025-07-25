@@ -299,7 +299,8 @@ export default {
       // 创建一个隐藏的文件上传input
       const input = document.createElement('input')
       input.type = 'file'
-      input.accept = '.xlsx,.xls'
+      input.accept = '.xlsx,.xls,.doc,.docx,.pdf,.jpg,.jpeg,.png'
+      // input.accept = ''xlsx', 'xls', 'doc', 'docx', 'pdf', 'jpg', 'jpeg', 'png''
       input.style.display = 'none'
       
       input.onchange = (e) => {
@@ -309,7 +310,7 @@ export default {
         const formData = new FormData()
         formData.append('file', file)
         this.$message({
-          message: '正在导入Excel...',
+          message: '正在导入文件...',
           type: 'info',
           showClose: true
         })
@@ -322,7 +323,7 @@ export default {
           const formData1 = new FormData()
           formData1.append('file', file1)
           uploadExcelForm(data.id, formData1).then(res => {
-            this.$message.success('Excel导入成功')
+            this.$message.success('文件导入成功')
             // 刷新表单列表
             listForm({
               name: '',
@@ -659,7 +660,7 @@ export default {
                             />
                             <span>新建表单</span>
                           </el-dropdown-item>
-                          <el-dropdown-item
+                          <!-- <el-dropdown-item
                             v-if="hasPermission(data.privileges, 'create_form')"
                             :command="beforeData('selfReport_template',data)"
                           >
@@ -668,7 +669,7 @@ export default {
                               class="ds-icon-scene"
                             />
                             <span>新建自主填报模板</span>
-                          </el-dropdown-item>
+                          </el-dropdown-item> -->
                           <el-dropdown-item
                             v-if="hasPermission(data.privileges, 'create_form')"
                             :command="beforeData('excel',data)"

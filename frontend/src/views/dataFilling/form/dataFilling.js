@@ -115,7 +115,12 @@ export function exportBatch(id,password,taskId='') {
     url: `dataFilling/form/exportBatch/${id}?password=${password}&taskId=${taskId}`, // 批量下载
     method: 'get',
     loading: true,
-    responseType: 'blob'
+    responseType: 'blob',
+    hideMsg: true,
+    validateStatus: function (status) {
+      // 接受所有状态码
+      return true;
+    }
   })
 }
 export function getWithPrivileges(id) {
