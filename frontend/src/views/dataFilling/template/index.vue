@@ -440,12 +440,14 @@ export default {
 
             <div style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
               文件夹
-              <el-button
-                v-show="isAdmin"
-                icon="el-icon-plus"
-                type="text"
-                @click="createFolder({id: '0', level: 0, firstFolder: true})"
-              />
+              <el-tooltip class="item" effect="dark" content="新建文件夹" placement="top">
+                <el-button
+                  v-show="isAdmin"
+                  icon="el-icon-plus"
+                  type="text"
+                  @click="createFolder({id: '0', level: 0, firstFolder: true})"
+                />
+              </el-tooltip>
             </div>
 
             <div
@@ -504,11 +506,13 @@ export default {
                         @command="clickTreeAddBtn"
                       >
                         <span class="el-dropdown-link">
-                          <el-button
-                            icon="el-icon-plus"
-                            type="text"
-                            size="small"
-                          />
+                          <el-tooltip class="item" effect="dark" content="新建文件夹、表单" placement="top">
+                            <el-button
+                              icon="el-icon-plus"
+                              type="text"
+                              size="small"
+                            />
+                          </el-tooltip>
                         </span>
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item
@@ -574,11 +578,13 @@ export default {
                         @command="clickMore"
                       >
                         <span class="el-dropdown-link">
-                          <el-button
-                            icon="el-icon-more"
-                            type="text"
-                            size="small"
-                          />
+                          <el-tooltip class="item" effect="dark" content="重命名、删除文件夹" placement="top">
+                            <el-button
+                              icon="el-icon-more"
+                              type="text"
+                              size="small"
+                            />
+                          </el-tooltip>
                         </span>
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item

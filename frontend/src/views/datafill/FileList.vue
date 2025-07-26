@@ -157,7 +157,8 @@
           >
             <el-button slot="trigger" size="small" type="primary">选择文件</el-button>
             <div slot="tip" class="el-upload__tip">
-              {{ fillForm.isAI || fillForm.type === 'selfReport_file' ? '支持 Excel、PDF、Word、图片(jpg/png) 格式' : '目前只支持xlsx文件' }}
+              <div>{{ fillForm.isAI || fillForm.type === 'selfReport_file' ? '支持 Excel、PDF、Word、图片(jpg/png) 格式' : '目前只支持xlsx文件' }}</div>
+              <div>注：3MB以上或上万条数据的文件加载时间较长！</div>
             </div>
           </el-upload>
         </el-form-item>
@@ -347,6 +348,7 @@ import { getToken } from '@/utils/auth'
 import i18n from '@/lang'
 // import LuckyExcel from "luckyexcel"
 import TransformExcel from 'worker-loader!./transformExcel.worker.js';
+import axios from 'axios'
 
 const token = getToken()
 
@@ -573,10 +575,10 @@ export default {
       
     },
     batchDownloadVisible() {
-      if(this.tableData && this.tableData.length === 0) {
-        this.$message.warning('暂无数据')
-        return
-      }
+      // if(this.tableData && this.tableData.length === 0) {
+      //   this.$message.warning('暂无数据')
+      //   return
+      // }
       this.passwordDialogVisible = true
       this.batchDownloadFlag = true
     },
@@ -593,6 +595,7 @@ export default {
         return
       }
       if(this.batchDownloadFlag) {
+        // 批量下载
         // console.log('nodeData', this.nodeData)
         this.batchDownload(this.nodeData.id, this.passwordForm.password)
       } else {
@@ -618,18 +621,63 @@ export default {
         if (valid) {
           this.selectedVersionVisible = false;
           this.versionName = this.versionList.find(item => item.id == this.versionForm.versionId).version
-          let method = this.selectedRow.nodeType === 'selfReport' || this.selectedRow.nodeType === 'selfReport_file' ? exportFormDataData : getFormDataData
-          method(this.selectedRow.id, this.versionForm.versionId, this.versionForm.password).then((res) => {
-            const blob = new Blob([res])
-            const link = document.createElement('a')
-            link.style.display = 'none'
-            link.href = URL.createObjectURL(blob)
-            link.download = `${this.selectedRow.name}${this.selectedRow.nodeType !== 'selfReport_file' ? '.xlsx' : '.zip'}`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-            this.closeVersionDialog()
+          const loading = this.$loading({
+            lock: true,
+            text: '文件下载中，请稍后！',
+            spinner: 'el-icon-loading',
+            background: 'rgba(255, 255, 255, 0.8)',
+            customClass: 'upload_loading'
+          });
+          let url = this.selectedRow.nodeType === 'selfReport' || this.selectedRow.nodeType === 'selfReport_file' ? 
+          `dataFilling/form/exportFormDataData/${this.selectedRow.id}/${this.versionForm.versionId}?password=${this.versionForm.password}` : 
+          `dataFilling/form/getFormDataData/${this.selectedRow.id}/${this.versionForm.versionId}`;
+          let _this = this
+          axios({
+            url: url,
+            method: 'get',
+            headers: {
+              authorization: token,
+              // 'Content-Type': 'application/json; charset=utf-8'
+            },
+            hideMsg: true,
+            responseType: 'blob',
+            validateStatus: function (status) {
+              // 接受所有状态码
+              return true;
+            }
+          }).then(async (res) => {
+            if(res.status === 200) {
+              const blob = new Blob([res.data])
+              const link = document.createElement('a')
+              link.style.display = 'none'
+              link.href = URL.createObjectURL(blob)
+              link.download = this.nodeData.name + '.zip' // 下载的文件名
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+              this.closePasswordDialog()
+            } else {
+              const text = await res.data.text()
+              const json = JSON.parse(text)
+              if(json && json.success === false) {
+                _this.$message.error(json.message || '')
+              }
+            }
+          }).finally(() => {
+            loading.close()
           })
+          // let method = this.selectedRow.nodeType === 'selfReport' || this.selectedRow.nodeType === 'selfReport_file' ? exportFormDataData : getFormDataData;
+          // method(this.selectedRow.id, this.versionForm.versionId, this.versionForm.password).then((res) => {
+          //   const blob = new Blob([res])
+          //   const link = document.createElement('a')
+          //   link.style.display = 'none'
+          //   link.href = URL.createObjectURL(blob)
+          //   link.download = `${this.selectedRow.name}${this.selectedRow.nodeType !== 'selfReport_file' ? '.xlsx' : '.zip'}`
+          //   document.body.appendChild(link)
+          //   link.click()
+          //   document.body.removeChild(link)
+          //   this.closeVersionDialog()
+          // })
         }
       })
     },
@@ -714,11 +762,18 @@ export default {
       const _this = this
 
       try {
-        const msg = this.$message({
-          type: 'info',
-          message: '数据加载中！',
-          duration: 0
-        })
+        // const msg = this.$message({
+        //   type: 'info',
+        //   message: '数据加载中！',
+        //   duration: 0
+        // })
+        const loading = this.$loading({
+          lock: true,
+          text: '文件解析加载中，请稍后！',
+          spinner: 'el-icon-loading',
+          background: 'rgba(255, 255, 255, 0.8)',
+          customClass: 'upload_loading'
+        });
         const worker = new TransformExcel()
         // 直接传递File对象
         worker.postMessage({ 
@@ -727,12 +782,11 @@ export default {
         });
         
         worker.onmessage = (e) => {
-          console.log('123', e);
-          
           if(e.data.type === 'heart') {
            console.log('heart');
           } else {
-            msg.close()
+            // msg.close()
+            loading.close()
             worker.terminate();
           }
            if(e.data.type === 'data') {
@@ -756,7 +810,8 @@ export default {
           console.error('Worker error:', e);
         };
       } catch (err) {
-        msg.close()
+        loading.close()
+        // msg.close()
         // console.error('Excel转换错误:', err)
         _this.$message.error('文件解析失败！')
         _this.selfUploadLoading = false
@@ -790,19 +845,6 @@ export default {
           this.getDataFill()
         }
       })
-      // datafill
-      //   .addDataFill({
-      //     name: this.uploadForm.name,
-      //     pid: this.nodeData.id,
-      //     nodeType: 'selfReport',
-      //     formData: JSON.stringify(luckysheet.getAllSheets()),
-      //   })
-      //   .then((res) => {
-      //     this.$message({
-      //       type: "success",
-      //       message: "上传成功！",
-      //     });
-      //   });
     },
     handleFileChange(file, fileList) {
       
@@ -873,20 +915,10 @@ export default {
             if (this.fillForm.isAI) {
               this.excelUploadAiHandle(this.uploadForm.file).then(file => {
                 if(file !== false) {
-                  // const msg = this.$message({
-                  //   type: 'info',
-                  //   message: '数据加载中！',
-                  //   duration: 0
-                  // })
                   this.uploadExcel(file)
                 }
               })
             } else {
-              // const msg = this.$message({
-              //   type: 'info',
-              //   message: '数据加载中！',
-              //   duration: 0
-              // })
               this.uploadExcel(this.uploadForm.file)
             }
           }
@@ -943,6 +975,13 @@ export default {
       this.fileList = []
     },
     exportExcelDataPwd(id, password) {
+      const loading = this.$loading({
+        lock: true,
+        text: '文件下载中，请稍后！',
+        spinner: 'el-icon-loading',
+        background: 'rgba(255, 255, 255, 0.8)',
+        customClass: 'upload_loading'
+      });
       exportExcelData(id, password).then(res => {
         const blob = new Blob([res])
         const link = document.createElement('a')
@@ -953,6 +992,8 @@ export default {
         link.click()
         document.body.removeChild(link)
         this.closePasswordDialog()
+      }).finally(() => {
+        loading.close()
       })
     },
     downloadTemplate(id) {
@@ -970,17 +1011,59 @@ export default {
     },
     batchDownload(id, password) {
       this.closePasswordDialog()
-      exportBatch(id, password).then(res => {
-        const blob = new Blob([res])
-        const link = document.createElement('a')
-        link.style.display = 'none'
-        link.href = URL.createObjectURL(blob)
-        link.download = this.nodeData.name + '.zip' // 下载的文件名
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        this.closePasswordDialog()
+      let _this = this
+      const loading = this.$loading({
+        lock: true,
+        text: '文件下载中，请稍后！',
+        spinner: 'el-icon-loading',
+        background: 'rgba(255, 255, 255, 0.8)',
+        customClass: 'upload_loading'
+      });
+      axios({
+        url: `dataFilling/form/exportBatch/${id}?password=${password}&taskId=`,
+        method: 'get',
+        headers: {
+          authorization: token,
+          // 'Content-Type': 'application/json; charset=utf-8'
+        },
+        hideMsg: true,
+        responseType: 'blob',
+        validateStatus: function (status) {
+          // 接受所有状态码
+          return true;
+        }
+      }).then(async (res) => {
+        if(res.status === 200) {
+          const blob = new Blob([res.data])
+          const link = document.createElement('a')
+          link.style.display = 'none'
+          link.href = URL.createObjectURL(blob)
+          link.download = this.nodeData.name + '.zip' // 下载的文件名
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          this.closePasswordDialog()
+        } else {
+          const text = await res.data.text()
+          const json = JSON.parse(text)
+          if(json && json.success === false) {
+            _this.$message.error(json.message || '')
+          }
+        }
+      }).finally(() => {
+        loading.close()
       })
+      // exportBatch(id, password).then(res => {
+      //   const blob = new Blob([res])
+      //   const link = document.createElement('a')
+      //   link.style.display = 'none'
+      //   link.href = URL.createObjectURL(blob)
+      //   link.download = this.nodeData.name + '.zip' // 下载的文件名
+      //   document.body.appendChild(link)
+      //   link.click()
+      //   document.body.removeChild(link)
+      //   this.closePasswordDialog()
+      // })
     },
     beforeUpload(file) {
       if (!this.fillForm.templateId) {
@@ -1150,5 +1233,15 @@ export default {
     overflow: auto;
     padding: 0;
   }
+}
+</style>
+
+<style>
+.upload_loading .el-loading-spinner {
+  font-size: 18px;
+}
+
+.upload_loading .el-loading-text {
+  font-size: 18px;
 }
 </style>

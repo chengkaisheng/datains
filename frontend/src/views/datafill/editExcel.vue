@@ -38,6 +38,9 @@ import { getFormData, saveFormData, getFormDataData, deleteForm } from '@/views/
 import { exportExcel } from './export'
 // import LuckyExcel from "luckyexcel"
 import TransformExcel from 'worker-loader!./transformExcel.worker.js';
+import axios from 'axios'
+import { getToken } from '@/utils/auth'
+const token = getToken()
 
 export default {
   name: 'EditExcel',
@@ -99,11 +102,17 @@ export default {
           showinfobar: !this.isReadOnly, // 是否显示信息栏
           allowEdit: !this.isReadOnly, // 是否允许编辑
           enableAddRow: !this.isReadOnly, // 是否允许添加行
-          enableAddCol: !this.isReadOnly // 是否允许添加列
+          enableAddCol: !this.isReadOnly, // 是否允许添加列
+          workbookCreateBefore: () => {
+            // console.log('123before');
+          },
+          workbookCreateAfter: () => {
+            // console.log('123after');
+            if (type === 'save') {
+              this.$emit('addDataFill')
+            }
+          },
         })
-        if (type === 'save') {
-          this.$emit('addDataFill')
-        }
       })
     },
     getFormData(isInit) {
@@ -116,19 +125,56 @@ export default {
     // 获取不同版本的数据
     getDataVersion() {
       let formId = this.versionList.find(item => item.id === this.versionId).formId
-      getFormDataData(formId, this.versionId).then(res => {
-        // 返回文件流
-        const msg = this.$message({
-          type: 'info',
-          message: '数据加载中！',
-          duration: 0
-        })
-        this.fileToData(new Blob([res], {
-          type: 'application/vnd.ms-excel;charset=utf-8'
-        }), msg)
+      let _this = this
+      axios({
+        url: `dataFilling/form/getFormDataData/${formId}/${this.versionId}`,
+        method: 'get',
+        headers: {
+          authorization: token,
+          // 'Content-Type': 'application/json; charset=utf-8'
+        },
+        hideMsg: true,
+        responseType: 'blob',
+        validateStatus: function (status) {
+          // 接受所有状态码
+          return true;
+        }
+      }).then(async (res) => {
+        if(res.status === 200) {
+          // 返回文件流
+          const loading = _this.$loading({
+            lock: true,
+            text: '文件解析加载中，请稍后！',
+            spinner: 'el-icon-loading',
+            background: 'rgba(255, 255, 255, 0.8)',
+            customClass: 'upload_loading'
+          });
+          _this.fileToData(new Blob([res], {
+            type: 'application/vnd.ms-excel;charset=utf-8'
+          }), loading)
+        } else {
+          const text = await res.data.text()
+          const json = JSON.parse(text)
+          if(json && json.success === false) {
+            _this.$message.error(json.message || '')
+          }
+        }
       })
+      // getFormDataData(formId, this.versionId).then(res => {
+      //   // 返回文件流
+      //   const loading = this.$loading({
+      //     lock: true,
+      //     text: '文件解析加载中，请稍后！',
+      //     spinner: 'el-icon-loading',
+      //     background: 'rgba(255, 255, 255, 0.8)',
+      //     customClass: 'upload_loading'
+      //   });
+      //   this.fileToData(new Blob([res], {
+      //     type: 'application/vnd.ms-excel;charset=utf-8'
+      //   }), loading)
+      // })
     },
-    fileToData(file, msg) {
+    fileToData(file, loading) {
       file.name = this.msg.name + '.xlsx'
       let _this = this
       
@@ -141,12 +187,10 @@ export default {
         });
         
         worker.onmessage = (e) => {
-          console.log('123', e);
-          
           if(e.data.type === 'heart') {
            console.log('heart');
           } else {
-            msg.close()
+            loading.close()
             worker.terminate();
           }
           if(e.data.type === 'data') {
@@ -184,7 +228,7 @@ export default {
         //   }
         // )
       } catch (err) {
-        msg.close()
+        loading.close()
         console.error('Excel转换错误:', err)
         _this.$message.error('文件解析失败！')
       }

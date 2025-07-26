@@ -116,11 +116,11 @@ export function exportBatch(id,password,taskId='') {
     method: 'get',
     loading: true,
     responseType: 'blob',
-    hideMsg: true,
-    validateStatus: function (status) {
-      // 接受所有状态码
-      return true;
-    }
+    // hideMsg: true,
+    // validateStatus: function (status) {
+    //   // 接受所有状态码
+    //   return true;
+    // }
   })
 }
 export function getWithPrivileges(id) {

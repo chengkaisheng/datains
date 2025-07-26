@@ -60621,6 +60621,7 @@ field\u53EF\u4EE5\u662F\u8207database\u7B2C\u4E00\u884C\u4E2D\u67D0\u500B\u5217\
                           $t(),
                           l.scrollLeft != null && l.scrollLeft > 0 ? $("#luckysheet-scrollbar-x").scrollLeft(l.scrollLeft) : $("#luckysheet-scrollbar-x").scrollLeft(0),
                           l.scrollTop != null && l.scrollTop > 0 ? $("#luckysheet-scrollbar-y").scrollTop(l.scrollTop) : $("#luckysheet-scrollbar-y").scrollTop(0),
+                          typeof me.workbookCreateAfter == "function" && me.workbookCreateAfter(luckysheet),
                           Do(h.asyncLoad, "core"),
                           me.pointEdit ? setTimeout(function() {
                               h.loadingObj.close()
