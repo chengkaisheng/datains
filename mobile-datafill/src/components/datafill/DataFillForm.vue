@@ -61,9 +61,10 @@
           <van-button v-show="formData.type === '表单填报'" round block type="primary" native-type="button" @click="downloadTemplateFn">
             下载表单（模板）
           </van-button>
-          <van-button v-show="formData.type === '自主填报'" round block type="primary" native-type="button" @click="downloadSelfTemplateFn">
+          <!-- 自主填报关闭了上传模板 -->
+          <!-- <van-button v-show="formData.type === '自主填报'" round block type="primary" native-type="button" @click="downloadSelfTemplateFn">
             下载模板
-          </van-button>
+          </van-button> -->
           <van-button round block type="primary" native-type="button" style="margin-top: 16px" @click="handleUploadClick">
             上传
           </van-button>
@@ -91,7 +92,7 @@
     </van-popup>
 
     <!-- 文件夹选择弹窗 -->
-    <van-popup v-model:show="showTaskPopup" position="bottom" :style="{ height: '60%' }">
+    <van-popup v-model:show="showTaskPopup" @click-overlay="closeTaskPopup" position="bottom" :style="{ height: '60%' }">
       <div class="task-popup">
         <div class="task-popup-header">
           <van-nav-bar
@@ -121,7 +122,7 @@
     </van-popup>
 
     <!-- 表单选择弹窗 -->
-    <van-popup v-model:show="showTemplatePopup" position="bottom" :style="{ height: '60%' }">
+    <van-popup v-model:show="showTemplatePopup" @click-overlay="closeTemplatePopup" position="bottom" :style="{ height: '60%' }">
       <div class="template-popup">
         <div class="template-popup-header">
           <van-nav-bar
@@ -373,6 +374,7 @@ const getSelectedTaskFullName = () => {
 
 // 关闭文件夹选择弹窗
 const closeTaskPopup = () => {
+  taskSearchValue.value = ''
   showTaskPopup.value = false
   selectedTaskId.value = formData.value.taskId
 }
@@ -425,7 +427,7 @@ const confirmTemplateSelection = () => {
 // 选择表单
 const selectTemplate = (template) => {
   selectedTemplateId.value = template.id
-  formData.value.template = template.name
+  // formData.value.template = template.name
   // 保存表单的权限信息
   selectedTemplate.value = template
 }
