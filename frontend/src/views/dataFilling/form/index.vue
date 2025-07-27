@@ -345,6 +345,8 @@ export default {
             this.$nextTick(() => {
               this.$refs.fileListRef.getDataFill()
             })
+          }).catch(error => {
+            loading.close()
           })
         }).catch(error => {
           loading.close()
@@ -411,7 +413,6 @@ export default {
           })
         }).catch(error => {
           loading.close()
-          this.$message.error('Excel导入失败')
         })
       }
       

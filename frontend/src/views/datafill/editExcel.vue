@@ -15,7 +15,7 @@
             :value="item.id">
           </el-option>
         </el-select>
-        <el-button type="success" icon="el-icon-check" @click="handleSave">保存</el-button>
+        <el-button v-if="!isReadOnly" type="success" icon="el-icon-check" @click="handleSave">保存</el-button>
       </div>
     </div>
     <div
@@ -82,7 +82,7 @@ export default {
     } else {
       // 在线编辑进入，需要获取版本，再获取版本数据
       this.currentFormDataId = this.msg.id
-      this.getFormData()
+      this.getFormData(false)
     }
   },
   methods: {
@@ -149,7 +149,7 @@ export default {
             background: 'rgba(255, 255, 255, 0.8)',
             customClass: 'upload_loading'
           });
-          _this.fileToData(new Blob([res], {
+          _this.fileToData(new Blob([res.data], {
             type: 'application/vnd.ms-excel;charset=utf-8'
           }), loading)
         } else {
@@ -199,34 +199,6 @@ export default {
             _this.$message.error(e.data.message)
           }
         };
-        // LuckyExcel.transformExcelToLucky(
-        //   file,
-        //   function(exportJson, luckysheetfile) {
-        //     try {
-        //       msg.close()
-        //       if (
-        //         !exportJson ||
-        //         !exportJson.sheets ||
-        //         exportJson.sheets.length === 0
-        //       ) {
-        //         _this.$message.error(
-        //           '无法读取Excel文件的内容，目前不支持xls文件！'
-        //         )
-        //         return
-        //       }
-        //       _this.init(exportJson.sheets)
-        //     } catch (err) {
-        //       msg.close()
-        //       console.error('处理Excel数据错误:', err)
-        //       _this.$message.error('文件解析失败！')
-        //     }
-        //   },
-        //   function(err) {
-        //     msg.close()
-        //     console.error('Excel解析错误:', err)
-        //     _this.$message.error('文件解析失败！')
-        //   }
-        // )
       } catch (err) {
         loading.close()
         console.error('Excel转换错误:', err)

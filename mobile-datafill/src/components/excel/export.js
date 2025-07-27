@@ -4,7 +4,7 @@ import Excel from 'exceljs'
 
 import FileSaver from 'file-saver'
 
-export var exportExcel = function(luckysheet, value) {
+export var exportExcel = async function(luckysheet, value, isBlob) {
   // 参数为luckysheet.getluckysheetfile()获取的对象
   // 1.创建工作簿，可以为工作簿添加属性
   const workbook = new Excel.Workbook()
@@ -26,16 +26,23 @@ export var exportExcel = function(luckysheet, value) {
   })
 
   // return
-  // 4.写入 buffer
-  const buffer = workbook.xlsx.writeBuffer().then(data => {
-    // console.log('data', data)
-    const blob = new Blob([data], {
+  if(isBlob) {
+    let data = await workbook.xlsx.writeBuffer()
+    return new Blob([data], {
       type: 'application/vnd.ms-excel;charset=utf-8'
     })
-    console.log("导出成功！")
-    FileSaver.saveAs(blob, `${value}.xlsx`)
-  })
-  return buffer
+  } else {
+    // 4.写入 buffer
+    const buffer = workbook.xlsx.writeBuffer().then(data => {
+      // console.log('data', data)
+      const blob = new Blob([data], {
+        type: 'application/vnd.ms-excel;charset=utf-8'
+      })
+      console.log("导出成功！")
+      FileSaver.saveAs(blob, `${value}.xlsx`)
+    })
+    return buffer
+  }
 }
 
 var setMerge = function(luckyMerge = {}, worksheet) {

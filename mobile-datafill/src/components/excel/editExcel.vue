@@ -84,11 +84,18 @@ const init = (data, type) => {
       title: props.msg.name,
       lang: 'zh',
       plugins: [{name: 'chart'}],
-      data: data || []
+      data: data || [],
+      workbookCreateBefore: () => {
+        // console.log('123before');
+      },
+      workbookCreateAfter: () => {
+        // console.log('123after');
+        if(type === 'save') {
+          emit('saveSelfReport')
+        }
+      },
     })
-    if(type === 'save') {
-      emit('saveSelfReport')
-    }
+    
   })
 }
 

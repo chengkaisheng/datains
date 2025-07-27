@@ -193,7 +193,7 @@
       v-model:show="drawerVisible"
       position="right"
       :overlay="false"
-      style="width: 100%;height: 100%;"
+      style="width: 100%;height: 100%;opacity: 0;z-index: -10;"
     >
       <editExcel
         v-if="drawerVisible"
@@ -473,6 +473,11 @@ const downloadTemplateFn = () => {
     showToast('请先选择表单')
     return
   }
+  const loading = showLoadingToast({
+    message: '下载中...',
+    forbidClick: true,
+    duration: 0
+  })
   downloadTemplate(selectedTemplateId.value).then(res => {
     const blob = new Blob([res])
     const link = document.createElement('a')
@@ -482,6 +487,15 @@ const downloadTemplateFn = () => {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    showToast({
+      message: '下载成功',
+      type: 'success',
+      duration: 2
+    })
+  }).finally(() => {
+    setTimeout(() => {
+      loading.close()
+    }, 2000)
   })
 }
 
@@ -579,8 +593,18 @@ const handleFileChange = async (event) => {
      formData1.append('file', file)
      if(formData.value.enableAI) {
        const res = await getAIData(formData1)
-       console.log('res', res);
-       
+       if(!(res instanceof Blob)) {
+        showToast({
+          message: 'AI识别失败',
+          // overlay: true,
+          // forbidClick: false,
+          // closeOnClick: true,
+          // closeOnClickOverlay: true,
+          type: 'fail',
+          // duration: 0,
+        })
+        return
+       }
        const formData2 = new FormData()
        formData2.append('file', res)
        const res2 = await uploadData(selectedTemplateId.value, formData2)
@@ -588,7 +612,7 @@ const handleFileChange = async (event) => {
        if (res2.success) {
          showToast({
            type: 'success',
-           message: '上传成功'
+           message: '上传成功，请登录pc端查看具体详情'
          })
          // 清空文件选择
          event.target.value = ''
@@ -604,7 +628,7 @@ const handleFileChange = async (event) => {
        if (res.success) {
          showToast({
            type: 'success',
-           message: '上传成功'
+           message: '上传成功，请登录pc端查看具体详情'
          })
          // 清空文件选择
          event.target.value = ''
@@ -653,7 +677,7 @@ const handleUploadSubmit = async () => {
           if (res1.success) {
             closeUploadPopup()
             showToast({
-              message: '上传成功',
+              message: '上传成功，请登录pc端查看具体详情',
               type: 'success'
             })
           } else {
@@ -798,21 +822,21 @@ const saveSelfReportFn = async () => {
     nodeType: 'selfReport',
     pid: selectedTask.value.id
   }
-  // drawerVisible.value = false
   let res = await saveSelfReport(data)
   if(res.success) {
     formDataId.value = res.data
     saveFile(res.data)
   } 
 }
-// 保存 其他 自主填报文件
+// 保存  自主填报文件
 const saveFile = async (formId) => {
   const formData = new FormData()
-  formData.append('file', msg.value.file)
+  let blob = await exportExcel(luckysheet.getAllSheets(), msg.value.name, true)
+  formData.append('file', blob)
   saveFormData(formId, formData).then(res => {
     if (res.success) {
       showToast({
-        message: '上传成功',
+        message: '上传成功，请登录pc端查看具体详情',
         type: 'success'
       })
     } else {
@@ -821,6 +845,9 @@ const saveFile = async (formId) => {
         type: 'fail'
       })
     }
+  }).finally(() => {
+    luckysheet.destroy()
+    drawerVisible.value = false
   })
 }
 </script>

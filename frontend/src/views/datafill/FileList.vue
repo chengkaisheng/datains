@@ -452,7 +452,8 @@ export default {
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' }
         ]
-      }
+      },
+      formLoading: null,
     }
   },
   watch: {
@@ -575,10 +576,10 @@ export default {
       
     },
     batchDownloadVisible() {
-      // if(this.tableData && this.tableData.length === 0) {
-      //   this.$message.warning('暂无数据')
-      //   return
-      // }
+      if(this.tableData && this.tableData.length === 0) {
+        this.$message.warning('暂无数据')
+        return
+      }
       this.passwordDialogVisible = true
       this.batchDownloadFlag = true
     },
@@ -651,11 +652,11 @@ export default {
               const link = document.createElement('a')
               link.style.display = 'none'
               link.href = URL.createObjectURL(blob)
-              link.download = this.nodeData.name + '.zip' // 下载的文件名
+              link.download = `${_this.selectedRow.name}${_this.selectedRow.nodeType === 'selfReport_file' ? '.zip' : '.xlsx'}`
               document.body.appendChild(link)
               link.click()
               document.body.removeChild(link)
-              this.closePasswordDialog()
+              _this.closePasswordDialog()
             } else {
               const text = await res.data.text()
               const json = JSON.parse(text)
@@ -994,6 +995,13 @@ export default {
       })
     },
     downloadTemplate(id) {
+      const loading = this.$loading({
+        lock: true,
+        text: '文件下载中，请稍后！',
+        spinner: 'el-icon-loading',
+        background: 'rgba(255, 255, 255, 0.8)',
+        customClass: 'upload_loading'
+      });
       downloadTemplate(id).then(res => {
         const blob = new Blob([res])
         const link = document.createElement('a')
@@ -1004,6 +1012,9 @@ export default {
         link.click()
         document.body.removeChild(link)
         this.closePasswordDialog()
+        this.$message.success('下载成功')
+      }).finally(() => {
+        loading.close()
       })
     },
     batchDownload(id, password) {
@@ -1074,6 +1085,13 @@ export default {
       }
       this.templateUploadLoading = true
       if (this.fillForm.isAI) {
+        this.formLoading = this.$loading({
+          lock: true,
+          text: '文件解析加载中，请稍后！',
+          spinner: 'el-icon-loading',
+          background: 'rgba(255, 255, 255, 0.8)',
+          customClass: 'upload_loading'
+        });
         return new Promise((resolve, reject) => {
           this.excelUploadAiHandle(file).then(file => {
             if (file) {
@@ -1089,6 +1107,7 @@ export default {
     },
     uploadFail(response, file, fileList) {
       this.templateUploadLoading = false
+      this.formLoading.close()
       this.$message({
         type: 'error',
         message: JSON.parse(response.message).message,
@@ -1097,6 +1116,7 @@ export default {
     },
     uploadSuccess(response, file, fileList) {
       this.templateUploadLoading = false
+      this.formLoading.close()
       this.$message({
         type: 'success',
         message: '上传成功！'
