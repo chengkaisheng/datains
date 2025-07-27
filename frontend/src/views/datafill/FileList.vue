@@ -569,7 +569,9 @@ export default {
       if (this.selectedRow.nodeType === 'form') {
         this.passwordDialogVisible = true
       } else {
-        //  自主填报 需要去选择版本，输入密码然后下载  自主填报模板 不加密
+        //  自主填报 需要去选择版本，输入密码然后下载  
+        // 其他  默认选择版本，输入密码下载
+        // 自主填报模板 不加密
         this.selectedVersionVisible = true
         this.getVersionList(this.selectedRow.id)
       }
@@ -656,12 +658,13 @@ export default {
               document.body.appendChild(link)
               link.click()
               document.body.removeChild(link)
-              _this.closePasswordDialog()
+              _this.closeVersionDialog()
+              _this.$message.success('下载成功')
             } else {
               const text = await res.data.text()
               const json = JSON.parse(text)
               if(json && json.success === false) {
-                _this.$message.error(json.message || '')
+                _this.$message.error(json.message || '下载失败')
               }
             }
           }).finally(() => {
@@ -990,6 +993,7 @@ export default {
         link.click()
         document.body.removeChild(link)
         this.closePasswordDialog()
+        this.$message.success('下载成功')
       }).finally(() => {
         loading.close()
       })
@@ -1050,12 +1054,13 @@ export default {
           document.body.appendChild(link)
           link.click()
           document.body.removeChild(link)
-          this.closePasswordDialog()
+          _this.closePasswordDialog()
+          _this.$message.success('下载成功')
         } else {
           const text = await res.data.text()
           const json = JSON.parse(text)
           if(json && json.success === false) {
-            _this.$message.error(json.message || '')
+            _this.$message.error(json.message || '下载失败')
           }
         }
       }).finally(() => {
