@@ -153,7 +153,7 @@
     </van-popup>
 
     <!-- 其他 自主上传弹窗 -->
-    <van-popup v-model:show="showUploadPopup" position="center" round :style="{ width: '90%' }">
+    <van-popup v-model:show="showUploadPopup" @click-overlay="closeUploadPopup" position="center" round :style="{ width: '90%' }">
       <div class="upload-popup">
         <div class="upload-popup-header">
           <div class="upload-title">上传文件</div>
@@ -579,6 +579,8 @@ const handleFileChange = async (event) => {
      formData1.append('file', file)
      if(formData.value.enableAI) {
        const res = await getAIData(formData1)
+       console.log('res', res);
+       
        const formData2 = new FormData()
        formData2.append('file', res)
        const res2 = await uploadData(selectedTemplateId.value, formData2)
@@ -619,34 +621,6 @@ const handleFileChange = async (event) => {
     
   }
 
-  // 如果是 Excel 文件且未开启 AI，直接处理
-  // if (!formData.value.enableAI && file.name.toLowerCase().endsWith('.xlsx')) {
-  //   uploadExcel(file)
-  //   return
-  // }
-
-  // 如果开启了 AI，检查文件类型
-  // if (formData.value.enableAI) {
-  //   const validTypes = [
-  //     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
-  //     'application/vnd.ms-excel', // xls
-  //     'application/pdf', // pdf
-  //     'application/msword', // doc
-  //     'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
-  //     'image/jpeg',
-  //     'image/png'
-  //   ]
-
-  //   if (!validTypes.includes(file.type)) {
-  //     showToast('不支持的文件格式')
-  //     return
-  //   }
-
-  //   // 显示上传弹窗
-  //   showUploadPopup.value = true
-  // } else {
-  //   showToast('请选择 Excel 文件')
-  // }
 }
 
 // 处理上传提交
@@ -678,10 +652,18 @@ const handleUploadSubmit = async () => {
         saveFormData(res.data, formData).then(res1 => {
           if (res1.success) {
             closeUploadPopup()
-            showToast('上传成功')
+            showToast({
+              message: '上传成功',
+              type: 'success'
+            })
           } else {
-            showToast(res1.message || '上传失败')
+            showToast({
+              message: res1.message || '上传失败',
+              type: 'fail'
+            })
           }
+        }).finally(() => {
+          loading.close()
         })
       } 
     } else {
@@ -689,27 +671,35 @@ const handleUploadSubmit = async () => {
         const formData1 = new FormData()
         formData1.append('file', uploadForm.value.file)
         const res = await getAIData(formData1)
-
+        
         // 将 AI 处理后的数据转换为 Excel 文件
         let file = new File([res], '表单.xlsx', {
           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           lastModified: Date.now()
         })
-        uploadExcel(file)
+        uploadExcel(file, loading)
       } else {
-        uploadExcel(uploadForm.value.file)
+        uploadExcel(uploadForm.value.file, loading)
       }
     }
     
   } catch (error) {
     console.error('上传失败：', error)
-    showToast('AI识别失败')
+    showToast({
+      message: 'AI识别失败',
+      // overlay: true,
+      // forbidClick: false,
+      // closeOnClick: true,
+      // closeOnClickOverlay: true,
+      type: 'fail',
+      // duration: 0,
+    })
   } finally {
-    loading.close()
+    // loading.close()
   }
 }
 
-const uploadExcel = (file) => {
+const uploadExcel = (file, loading) => {
   let name = file.name;
   let suffixArr = name.split("."),
     suffix = suffixArr[suffixArr.length - 1];
@@ -728,9 +718,11 @@ const uploadExcel = (file) => {
             !exportJson.sheets ||
             exportJson.sheets.length === 0
           ) {
+            loading.close()
             showToast('无法读取文件内容，请检查文件是否损坏')
             return;
           }
+          loading.close()
           drawerVisible.value = true;
           msg.value = {
             id: formData.value.taskId,
@@ -740,18 +732,21 @@ const uploadExcel = (file) => {
           };
           closeUploadPopup()
         } catch (err) {
+          loading.close()
           // console.error('处理Excel数据错误:', err)
           showToast('无法读取文件内容，请检查文件是否损坏')
           closeUploadPopup()
         }
       },
       function (err) {
+        loading.close()
         console.error("Excel解析错误:", err);
         showToast('无法读取文件内容，请检查文件是否损坏')
         closeUploadPopup()
       }
     );
   } catch (err) {
+    loading.close()
     console.error('Excel转换错误:', err)
     showToast('无法读取文件内容，请检查文件是否损坏')
     closeUploadPopup()
@@ -816,9 +811,15 @@ const saveFile = async (formId) => {
   formData.append('file', msg.value.file)
   saveFormData(formId, formData).then(res => {
     if (res.success) {
-      showToast('保存成功')
+      showToast({
+        message: '上传成功',
+        type: 'success'
+      })
     } else {
-      showToast(res.message || '保存失败')
+      showToast({
+        message: res.message || '保存失败',
+        type: 'fail'
+      })
     }
   })
 }

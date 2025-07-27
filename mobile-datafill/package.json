@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite",
+    "build": "vite build"
   },
   "dependencies": {
     "FileSaver": "^0.10.0",

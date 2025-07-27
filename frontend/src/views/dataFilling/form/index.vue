@@ -309,11 +309,19 @@ export default {
         
         const formData = new FormData()
         formData.append('file', file)
-        this.$message({
-          message: '正在导入文件...',
-          type: 'info',
-          showClose: true
-        })
+        // const msg = this.$message({
+        //   message: '正在导入文件...',
+        //   type: 'info',
+        //   showClose: true,
+        //   duration: 0
+        // })
+        const loading = this.$loading({
+          lock: true,
+          text: '文件解析加载中，请稍后！',
+          spinner: 'el-icon-loading',
+          background: 'rgba(255, 255, 255, 0.8)',
+          customClass: 'upload_loading'
+        });
         
         excelUploadAiHandle(formData).then(res => {
           let file1 = new File([res], `${file.name}`, {
@@ -323,6 +331,7 @@ export default {
           const formData1 = new FormData()
           formData1.append('file', file1)
           uploadExcelForm(data.id, formData1).then(res => {
+            loading.close()
             this.$message.success('文件导入成功')
             // 刷新表单列表
             listForm({
@@ -336,6 +345,14 @@ export default {
             this.$nextTick(() => {
               this.$refs.fileListRef.getDataFill()
             })
+          })
+        }).catch(error => {
+          loading.close()
+          this.$message({
+            message: 'AI识别失败',
+            type: 'error',
+            showClose: true,
+            duration: 0
           })
         })
       }
@@ -369,14 +386,16 @@ export default {
         formData.append('file', file)
         
         // 调用上传API
-        // this.$message.loading('正在导入Excel...')
-        this.$message({
-          message: '正在导入Excel...',
-          type: 'info',
-          showClose: true
-        })
+        const loading = this.$loading({
+          lock: true,
+          text: '文件解析加载中，请稍后！',
+          spinner: 'el-icon-loading',
+          background: 'rgba(255, 255, 255, 0.8)',
+          customClass: 'upload_loading'
+        });
         // TODO: 替换为实际的上传API
         uploadExcelForm(data.id, formData).then(res => {
+          loading.close()
           this.$message.success('Excel导入成功')
           // 刷新表单列表
           listForm({
@@ -390,6 +409,9 @@ export default {
           this.$nextTick(() => {
             this.$refs.fileListRef.getDataFill()
           })
+        }).catch(error => {
+          loading.close()
+          this.$message.error('Excel导入失败')
         })
       }
       

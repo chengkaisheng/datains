@@ -750,7 +750,7 @@ export default {
         })
         .catch((_) => {})
     },
-    uploadExcel(file) {
+    uploadExcel(file, loading) {
       const name = file.name
       const suffixArr = name.split('.')
       const suffix = suffixArr[suffixArr.length - 1]
@@ -762,18 +762,6 @@ export default {
       const _this = this
 
       try {
-        // const msg = this.$message({
-        //   type: 'info',
-        //   message: '数据加载中！',
-        //   duration: 0
-        // })
-        const loading = this.$loading({
-          lock: true,
-          text: '文件解析加载中，请稍后！',
-          spinner: 'el-icon-loading',
-          background: 'rgba(255, 255, 255, 0.8)',
-          customClass: 'upload_loading'
-        });
         const worker = new TransformExcel()
         // 直接传递File对象
         worker.postMessage({ 
@@ -912,14 +900,23 @@ export default {
           if(this.fillForm.type === 'selfReport_file') {
             this.otherFileUpload(this.uploadForm.file)
           } else {
+            const loading = this.$loading({
+              lock: true,
+              text: '文件解析加载中，请稍后！',
+              spinner: 'el-icon-loading',
+              background: 'rgba(255, 255, 255, 0.8)',
+              customClass: 'upload_loading'
+            });
             if (this.fillForm.isAI) {
               this.excelUploadAiHandle(this.uploadForm.file).then(file => {
                 if(file !== false) {
-                  this.uploadExcel(file)
+                  this.uploadExcel(file, loading)
+                } else {
+                  loading.close()
                 }
               })
             } else {
-              this.uploadExcel(this.uploadForm.file)
+              this.uploadExcel(this.uploadForm.file, loading)
             }
           }
           
@@ -1174,8 +1171,12 @@ export default {
         return file
       }).catch((error) => {
         console.log('error', error);
-        
-        this.$message.error('AI识别失败')
+        this.$message({
+          message: 'AI识别失败',
+          type: 'error',
+          showClose: true,
+          duration: 0
+        })
         this.templateUploadLoading = false
         this.selfUploadLoading = false
         return false

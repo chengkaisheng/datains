@@ -47,8 +47,15 @@ service.interceptors.response.use(
   },
   error => {
     console.log('error', error)
+    if(error.config.hideMsg) {
+      return Promise.reject(error)
+    }
     if(error.status=== 500) {
       showToast(error.response.data.message)
+    } else {
+      if(error.status=== 504) {
+        showToast('请求超时')
+      }
     }
     if (error.response && error.response.status === 401) {
       // 清除所有相关数据
