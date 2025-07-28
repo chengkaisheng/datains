@@ -776,6 +776,11 @@ export default {
         worker.onmessage = (e) => {
           if(e.data.type === 'heart') {
            console.log('heart');
+          } else if(e.data.type === 'error') {
+            _this.$message.error('文件解析失败！')
+            _this.selfUploadLoading = false
+            loading.close()
+            worker.terminate();
           } else {
             // msg.close()
             loading.close()
