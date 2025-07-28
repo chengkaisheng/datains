@@ -269,6 +269,7 @@
       v-if="detailDrawer"
       :title="isTemplate ? '预览' : '详情'"
       :visible.sync="detailDrawer"
+      :destroy-on-close="true"
       size="100%"
       :wrapper-closable="false"
       direction="rtl"
@@ -712,11 +713,11 @@ export default {
       this.logDrawer = true
     },
     handleDetail(row) {
+      this.displayFormData = null
       this.detailDrawer = true
       let method = this.isTemplate ? getWithPrivilegesTemplate : getWithPrivileges
       method(row.id).then((res) => {
         this.displayFormData = res.data
-        console.log('this.displayFormData', this.displayFormData)
       })
     },
     handleDelete(row) {
