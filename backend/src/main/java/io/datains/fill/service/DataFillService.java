@@ -242,11 +242,11 @@ public class DataFillService {
             throw new RuntimeException("请检查用户权限");
         }
         String userName = AuthUtils.getUser().getUsername();
-        String uuid = UUIDUtil.getUUID().toString();
-
-        dataFillForm.setId(uuid);
-
-        checkName(uuid, dataFillForm.getName(), dataFillForm.getPid(), dataFillForm.getNodeType(), DataFillConstants.OPT_TYPE_INSERT);
+        if (dataFillForm.getId() == null) {
+            String uuid = UUIDUtil.getUUID().toString();
+            dataFillForm.setId(uuid);
+        }
+        checkName(dataFillForm.getId(), dataFillForm.getName(), dataFillForm.getPid(), dataFillForm.getNodeType(), DataFillConstants.OPT_TYPE_INSERT);
 
         if (StringUtils.equals(dataFillForm.getNodeType(), "form")) {
             dataFillForm.setTableName("fill_" + dataFillForm.getTableName());
@@ -330,10 +330,10 @@ public class DataFillService {
 
 //        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, SysLogConstants.SOURCE_TYPE.DATA_FILL_FORM, dataFillForm.getId(), dataFillForm.getPid(), null, null);
 
-        sysAuthService.copyAuth(uuid, SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING);
+        sysAuthService.copyAuth(dataFillForm.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING);
 
 
-        return ResultHolder.success(uuid);
+        return ResultHolder.success(dataFillForm.getId());
     }
 
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
@@ -950,56 +950,73 @@ public class DataFillService {
     }
 
     public void excelUploadToFrom(MultipartFile file, String pid) throws Exception {
-        DataFillFormWithBLOBs dataFillForm = this.excelToFrom(file, pid);
-        this.saveForm(dataFillForm);
-
+        List<DataFillFormWithBLOBs> dataFillForms = this.excelToFrom(file, pid);
+        //需要检查名称是否已经存在
+        for (DataFillFormWithBLOBs dataFillForm : dataFillForms) {
+            checkName(dataFillForm.getId(), dataFillForm.getName(), dataFillForm.getPid(), dataFillForm.getNodeType(), DataFillConstants.OPT_TYPE_INSERT);
+        }
+        for (DataFillFormWithBLOBs dataFillForm : dataFillForms) {
+            this.saveForm(dataFillForm);
+        }
     }
 
-    public DataFillFormWithBLOBs excelToFrom(MultipartFile file, String pid) throws Exception {
-        DataFillFormWithBLOBs dataFillForm = new DataFillFormWithBLOBs();
+    public List<DataFillFormWithBLOBs> excelToFrom(MultipartFile file, String pid) throws Exception {
         String filename = file.getOriginalFilename();
         // parse file
         List<ExcelSheetData> excelSheetDataList = parseExcel(filename, file.getInputStream(), true);
         if (excelSheetDataList.isEmpty()) {
             DataInsException.throwException("未解析出表格，请检查表格");
         }
-        List<TableField> fields = excelSheetDataList.get(0).getFields();
-        if (fields.isEmpty()) {
-            DataInsException.throwException("未解析出表格，请检查表格");
+        int index = 0;
+        List<DataFillFormWithBLOBs> forms = new ArrayList<>();
+        for (ExcelSheetData excelSheetData : excelSheetDataList) {
+            List<TableField> fields = excelSheetData.getFields();
+            if (fields.isEmpty()) {
+                continue;
+            }
+            //根据表格构建表单结构
+            List<ExtTableField> extFields = new ArrayList<>();
+            for (TableField tableField : fields) {
+                ExtTableField extTableField = new ExtTableField();
+                extTableField.setType("input");
+                extTableField.setTypeName("单行输入");
+                extTableField.setIcon("icon_single-line_outlined");
+                extTableField.setId(UUIDUtil.getUUID().toString());
+                extTableField.setSettings(ExtTableField.ExtTableFieldSetting.builder()
+                        .name(tableField.getFieldName())
+                        .placeholder("")
+                        .required(false)
+                        .unique(false)
+                        .inputType("text")
+                        .mapping(ExtTableField.ExtTableFieldMapping.builder()
+                                .columnName(UUIDUtil.getUUID().toString())
+                                .type(ExtTableField.BaseType.nvarchar)
+                                .build())
+                        .build());
+                extFields.add(extTableField);
+            }
+            String name = filename.substring(0, filename.lastIndexOf("."));
+            DataFillFormWithBLOBs dataFillForm = new DataFillFormWithBLOBs();
+            if (index != 0) {
+                dataFillForm.setName(name + "_" + index);
+            } else {
+                dataFillForm.setName(name);
+            }
+            String uuid = UUIDUtil.getUUID().toString();
+            dataFillForm.setId(uuid);
+            dataFillForm.setTableName(UUIDUtil.getUUID().toString());
+            dataFillForm.setDatasource("default-built-in");
+            dataFillForm.setPid(pid);
+            dataFillForm.setLevel(1);
+            dataFillForm.setForms(gson.toJson(extFields));
+            dataFillForm.setCreateIndex(false);
+            dataFillForm.setTableIndexes("[]");
+            dataFillForm.setCommitNewUpdate(false);
+            dataFillForm.setNodeType("form");
+            forms.add(dataFillForm);
+            index++;
         }
-        //根据表格构建表单结构
-        List<ExtTableField> extFields = new ArrayList<>();
-        for (TableField tableField : fields) {
-            ExtTableField extTableField = new ExtTableField();
-            extTableField.setType("input");
-            extTableField.setTypeName("单行输入");
-            extTableField.setIcon("icon_single-line_outlined");
-            extTableField.setId(UUIDUtil.getUUID().toString());
-            extTableField.setSettings(ExtTableField.ExtTableFieldSetting.builder()
-                    .name(tableField.getFieldName())
-                    .placeholder("")
-                    .required(false)
-                    .unique(false)
-                    .inputType("text")
-                    .mapping(ExtTableField.ExtTableFieldMapping.builder()
-                            .columnName(UUIDUtil.getUUID().toString())
-                            .type(ExtTableField.BaseType.nvarchar)
-                            .build())
-                    .build());
-            extFields.add(extTableField);
-        }
-        String name = filename.substring(0, filename.lastIndexOf("."));
-        dataFillForm.setName(name);
-        dataFillForm.setTableName(UUIDUtil.getUUID().toString());
-        dataFillForm.setDatasource("default-built-in");
-        dataFillForm.setPid(pid);
-        dataFillForm.setLevel(1);
-        dataFillForm.setForms(gson.toJson(extFields));
-        dataFillForm.setCreateIndex(false);
-        dataFillForm.setTableIndexes("[]");
-        dataFillForm.setCommitNewUpdate(false);
-        dataFillForm.setNodeType("form");
-        return dataFillForm;
+        return forms;
     }
 
     public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws

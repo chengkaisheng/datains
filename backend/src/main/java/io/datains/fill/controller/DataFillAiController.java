@@ -28,19 +28,11 @@ public class DataFillAiController {
     @ApiIgnore
     @PostMapping("/form/excel/excelUploadAiHandle")
     public void excelUploadAiHandle(@RequestParam("file") MultipartFile file, HttpServletResponse response) throws Exception {
-        try {
-            this.dataFillAiService.excelUploadAiHandle2(file, response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            // 重置response
-            response.reset();
-            response.setContentType("application/json");
-            response.setCharacterEncoding("utf-8");
-            throw new RuntimeException(e.getMessage());
-        }
+        this.dataFillAiService.excelUploadAiHandle2(file, response);
     }
+
     @PostMapping("/addRole")
-    public void addRole(@RequestBody AddRoleDTO roleDTO){
+    public void addRole(@RequestBody AddRoleDTO roleDTO) {
         this.addRoleService.addRoles(roleDTO.getRole(), roleDTO.getKey(), roleDTO.getScenId(), roleDTO.getUrl());
     }
 }

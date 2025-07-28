@@ -10,6 +10,7 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import io.datains.commons.utils.LogUtil;
 import io.datains.fill.service.DataFillAiService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -35,6 +36,7 @@ import java.util.List;
  * @author zhangzihang
  * @since 2025-03-05 15:45
  */
+@Slf4j
 @Service
 public class DataFillAiServiceImpl implements DataFillAiService {
     @Value("${ai.url}")
@@ -149,44 +151,53 @@ public class DataFillAiServiceImpl implements DataFillAiService {
     }
 
     @Override
-    public void excelUploadAiHandle2(MultipartFile file, HttpServletResponse response) throws IOException {
-        // 保存原始文件名
-        String filename = file.getOriginalFilename();
-        String originalFilename = filename == null ? "文件" : filename.substring(0, filename.lastIndexOf("."));
-        if (!"true".equals(aiEnable)) {
-            //ai未开启，直接返回原文件
-            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setCharacterEncoding("utf-8");
-            // 这里URLEncoder.encode可以防止中文乱码
-            String fileName = URLEncoder.encode(originalFilename, "UTF-8").replaceAll("\\+", "%20");
-            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-            // 将接口返回的文件流写入响应
-            throw new RuntimeException("ai解析失败xxxxxxxxxxxxxx");
-//            IoUtil.write(response.getOutputStream(), true, file.getBytes());
-
-        }else {
-            //获取文件类型
-            String type = getFileType(file);
-            // 1. 构建MultipartBody
-            HttpResponse apiResponse = HttpRequest.post(aiUrl)
-                    .header("Content-Type", "multipart/form-data")
-                    .form("file", file.getBytes(), file.getOriginalFilename())
-                    .form("fileType", type)
-                    .execute();
-            // 3. 处理响应
-            if (apiResponse.isOk()) {
-                byte[] fileBytes = apiResponse.bodyBytes();
+    public void excelUploadAiHandle2(MultipartFile file, HttpServletResponse response) {
+        try {
+            // 保存原始文件名
+            String filename = file.getOriginalFilename();
+            String originalFilename = filename == null ? "文件" : filename.substring(0, filename.lastIndexOf("."));
+            if (!"true".equals(aiEnable)) {
+                //ai未开启，直接返回原文件
                 response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                 response.setCharacterEncoding("utf-8");
                 // 这里URLEncoder.encode可以防止中文乱码
                 String fileName = URLEncoder.encode(originalFilename, "UTF-8").replaceAll("\\+", "%20");
                 response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
                 // 将接口返回的文件流写入响应
-                IoUtil.write(response.getOutputStream(), true, fileBytes);
+                IoUtil.write(response.getOutputStream(), true, file.getBytes());
             } else {
-                LogUtil.error(apiResponse.body());
-                throw new RuntimeException(apiResponse.body());
+                //获取文件类型
+                String type = getFileType(file);
+                // 1. 构建MultipartBody
+                log.info("开始进行AI识别");
+                HttpResponse apiResponse = HttpRequest.post(aiUrl)
+                        .header("Content-Type", "multipart/form-data")
+                        .form("file", file.getBytes(), file.getOriginalFilename())
+                        .form("fileType", type)
+                        .execute();
+                log.info("AI识别结束");
+                // 3. 处理响应
+                if (apiResponse.isOk()) {
+                    byte[] fileBytes = apiResponse.bodyBytes();
+                    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                    response.setCharacterEncoding("utf-8");
+                    // 这里URLEncoder.encode可以防止中文乱码
+                    String fileName = URLEncoder.encode(originalFilename, "UTF-8").replaceAll("\\+", "%20");
+                    response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+                    // 将接口返回的文件流写入响应
+                    IoUtil.write(response.getOutputStream(), true, fileBytes);
+                } else {
+                    LogUtil.error(apiResponse.body());
+                    throw new RuntimeException(apiResponse.body());
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 重置response
+            response.reset();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            throw new RuntimeException(e.getMessage());
         }
     }
 

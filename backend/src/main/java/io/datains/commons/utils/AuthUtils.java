@@ -25,11 +25,11 @@ import java.util.stream.Collectors;
 @Component
 public class AuthUtils {
 
-    private static final String[] defaultPanelPermissions = { "panel_list" };
-    private static final String[] defaultDataSetPermissions = { "0" };
-    private static final String[] defaultLinkPermissions = { "0" };
-    private static final String[] defaultDataFillingPermissions = { "0" };
-    private static final String[] defaultDataFillingTemplatePermissions = { "0" };
+    private static final String[] defaultPanelPermissions = {"panel_list"};
+    private static final String[] defaultDataSetPermissions = {"0"};
+    private static final String[] defaultLinkPermissions = {"0"};
+    private static final String[] defaultDataFillingPermissions = {"0"};
+    private static final String[] defaultDataFillingTemplatePermissions = {"0"};
 
     private static final ThreadLocal<CurrentUserDto> USER_INFO = new ThreadLocal<CurrentUserDto>();
 
@@ -46,6 +46,7 @@ public class AuthUtils {
                 .collect(Collectors.toList());
         return authSources;
     }
+
     @Autowired
     public void setExtAuthService(ExtAuthService extAuthService) {
         AuthUtils.extAuthService = extAuthService;
@@ -61,6 +62,19 @@ public class AuthUtils {
             return USER_INFO.get();
         CurrentUserDto userDto = (CurrentUserDto) SecurityUtils.getSubject().getPrincipal();
         return userDto;
+    }
+
+    /**
+     * 获取当前用户ID,管理员默认为1
+     *
+     * @return 用户id
+     */
+    public static Long getEffectiveUserId() {
+        CurrentUserDto userDto = (CurrentUserDto) SecurityUtils.getSubject().getPrincipal();
+        if (userDto.getIsAdmin()) {
+            return 1L;
+        }
+        return userDto.getUserId();
     }
 
     public static void setProxyUser(Long userId) {
@@ -104,9 +118,7 @@ public class AuthUtils {
                 result.add(new AuthItem(item, ResourceAuthLevel.LINK_LEVEL_MANAGE.getLevel()));
             });
             return result;
-        }
-
-        else if (StringUtils.equals(DePermissionType.DATASET.name().toLowerCase(), type)) {
+        } else if (StringUtils.equals(DePermissionType.DATASET.name().toLowerCase(), type)) {
             Set<AuthItem> userSet = extAuthService.dataSetIdByUser(userId).stream().collect(Collectors.toSet());
             Set<AuthItem> roleSet = roles.stream().map(role -> extAuthService.dataSetIdByRole(role.getId()))
                     .flatMap(Collection::stream).collect(Collectors.toSet());
@@ -130,7 +142,7 @@ public class AuthUtils {
                 result.add(new AuthItem(item, ResourceAuthLevel.PANNEL_LEVEL_MANAGE.getLevel()));
             });
             return result;
-        }else if (StringUtils.equals(DePermissionType.DATA_FILL.name().toLowerCase(), type)) {
+        } else if (StringUtils.equals(DePermissionType.DATA_FILL.name().toLowerCase(), type)) {
             Set<AuthItem> userSet = extAuthService.dataFillingIdByUser(userId).stream().collect(Collectors.toSet());
             Set<AuthItem> roleSet = roles.stream().map(role -> extAuthService.dataFillingIdByRole(role.getId()))
                     .flatMap(Collection::stream).collect(Collectors.toSet());
@@ -142,7 +154,7 @@ public class AuthUtils {
                 result.add(new AuthItem(item, ResourceAuthLevel.DATA_FILLING_LEVEL_MANAGE.getLevel()));
             });
             return result;
-        }else if (StringUtils.equals(DePermissionType.DATA_FILL_TEMPLATE.name().toLowerCase(), type)) {
+        } else if (StringUtils.equals(DePermissionType.DATA_FILL_TEMPLATE.name().toLowerCase(), type)) {
             Set<AuthItem> userSet = extAuthService.dataFillingTemplateIdByUser(userId).stream().collect(Collectors.toSet());
             Set<AuthItem> roleSet = roles.stream().map(role -> extAuthService.dataFillingTemplateIdByRole(role.getId()))
                     .flatMap(Collection::stream).collect(Collectors.toSet());
@@ -158,6 +170,7 @@ public class AuthUtils {
         return result;
 
     }
+
     public static List<String> parentResources(String resourceId, String type) {
         return extAuthService.parentResource(resourceId, type);
     }
