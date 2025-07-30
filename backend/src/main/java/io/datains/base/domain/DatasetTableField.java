@@ -1,12 +1,12 @@
 package io.datains.base.domain;
 
-import java.io.Serializable;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Data
 @Builder
@@ -43,6 +43,8 @@ public class DatasetTableField implements Serializable {
     private Integer columnIndex;
     @ApiModelProperty("上次同步时间")
     private Long lastSyncTime;
+    @ApiModelProperty("是否是默认排序字段")
+    private Integer defaultSort;
 
     private static final long serialVersionUID = 1L;
 }

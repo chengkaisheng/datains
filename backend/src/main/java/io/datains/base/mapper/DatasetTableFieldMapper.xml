@@ -78,7 +78,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, table_id, origin_name, `name`, datains_name, group_type, `type`, `size`, de_type,
-    de_type_format, de_extract_type, ext_field, `checked`, column_index, last_sync_time
+    de_type_format, de_extract_type, ext_field, `checked`, column_index, last_sync_time, default_sort
   </sql>
   <select id="selectByExample" parameterType="io.datains.base.domain.DatasetTableFieldExample" resultMap="BaseResultMap">
     select
@@ -95,7 +95,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from dataset_table_field
     where id = #{id,jdbcType=VARCHAR}
@@ -111,16 +111,16 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.datains.base.domain.DatasetTableField">
-    insert into dataset_table_field (id, table_id, origin_name, 
+    insert into dataset_table_field (id, table_id, origin_name,
       `name`, datains_name, group_type,
-      `type`, `size`, de_type, 
-      de_type_format, de_extract_type, ext_field, 
+      `type`, `size`, de_type,
+      de_type_format, de_extract_type, ext_field,
       `checked`, column_index, last_sync_time
       )
-    values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{originName,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{originName,jdbcType=VARCHAR},
       #{name,jdbcType=VARCHAR}, #{datainsName,jdbcType=VARCHAR}, #{groupType,jdbcType=VARCHAR},
-      #{type,jdbcType=VARCHAR}, #{size,jdbcType=INTEGER}, #{deType,jdbcType=INTEGER}, 
-      #{deTypeFormat,jdbcType=INTEGER}, #{deExtractType,jdbcType=INTEGER}, #{extField,jdbcType=INTEGER}, 
+      #{type,jdbcType=VARCHAR}, #{size,jdbcType=INTEGER}, #{deType,jdbcType=INTEGER},
+      #{deTypeFormat,jdbcType=INTEGER}, #{deExtractType,jdbcType=INTEGER}, #{extField,jdbcType=INTEGER},
       #{checked,jdbcType=BIT}, #{columnIndex,jdbcType=INTEGER}, #{lastSyncTime,jdbcType=BIGINT}
       )
   </insert>

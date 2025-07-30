@@ -235,9 +235,6 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
 
     /**
      * 用来判断组织负责人的权限是否需要移除，把不需要移除的资源从列表中去除
-     * 判断依据：
-     * 1 此组织关联的资源并没有从sys_dept_leader_auth表中删除
-     * 2 此组织关联的资源虽然从sys_dept_leader_auth表中删除，但是此用户其他负责的组织有此资源的权限
      *
      * @param deptId      组织id
      * @param userId      用户id

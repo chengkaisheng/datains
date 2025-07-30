@@ -377,6 +377,7 @@ public class OracleQueryProvider extends QueryProvider {
         boolean isPage = false;
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
+        List<SQLObj> xDefaultOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
@@ -407,8 +408,21 @@ public class OracleQueryProvider extends QueryProvider {
                             .orderAlias(fieldAlias)
                             .orderDirection(x.getSort())
                             .build());
+                } else if (x.getDefaultSort() == 1) {
+                    xDefaultOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection("asc")
+                            .build());
+                } else if (x.getDefaultSort() == 2) {
+                    xDefaultOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection("desc")
+                            .build());
                 }
             }
+            xOrders.addAll(xDefaultOrders);
         }
         // 处理视图中字段过滤
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
@@ -883,9 +897,9 @@ public class OracleQueryProvider extends QueryProvider {
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
                 originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             } else {
-                if ("ROWNUM".equals(field.getOriginName())){
+                if ("ROWNUM".equals(field.getOriginName())) {
                     originName = "\"DE_ROWNUM\"";
-                }else {
+                } else {
                     originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
                 }
             }
