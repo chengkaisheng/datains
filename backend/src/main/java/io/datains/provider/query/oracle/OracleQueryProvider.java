@@ -408,13 +408,13 @@ public class OracleQueryProvider extends QueryProvider {
                             .orderAlias(fieldAlias)
                             .orderDirection(x.getSort())
                             .build());
-                } else if (x.getDefaultSort() == 1) {
+                } else if (x.getDefaultSort() != null && x.getDefaultSort() == 1) {
                     xDefaultOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
                             .orderDirection("asc")
                             .build());
-                } else if (x.getDefaultSort() == 2) {
+                } else if (x.getDefaultSort() != null && x.getDefaultSort() == 2) {
                     xDefaultOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
