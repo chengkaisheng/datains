@@ -337,6 +337,21 @@ public class ChartViewService {
         if (fields == null || fields.isEmpty()) {
             return;
         }
+        for (ChartViewFieldDTO chartViewFieldDTO : fields) {
+            //处理默认排序字段
+            if (!"none".equals(chartViewFieldDTO.getSort())) {
+                //默认排序
+                chartViewFieldDTO.setSortIndex(1);
+            } else if (chartViewFieldDTO.getDefaultSort() != null && chartViewFieldDTO.getDefaultSort() == 1 && chartViewFieldDTO.getSortIndex() == null) {
+                chartViewFieldDTO.setSort("asc");
+                //最后排序
+                chartViewFieldDTO.setSortIndex(999);
+            } else if (chartViewFieldDTO.getDefaultSort() != null && chartViewFieldDTO.getDefaultSort() == 2 && chartViewFieldDTO.getSortIndex() == null) {
+                chartViewFieldDTO.setSort("desc");
+                //最后排序
+                chartViewFieldDTO.setSortIndex(999);
+            }
+        }
         List<FieldOrder> fieldOrders = request.getFieldOrder();
         if (fieldOrders == null || fieldOrders.isEmpty()) {
             return;
@@ -345,10 +360,11 @@ public class ChartViewService {
             for (ChartViewFieldDTO chartViewFieldDTO : fields) {
                 if (fieldOrder.getId().equals(chartViewFieldDTO.getId())) {
                     chartViewFieldDTO.setSort(fieldOrder.getSort());
+                    //优先排序
+                    chartViewFieldDTO.setSortIndex(0);
                 }
             }
         }
-
     }
 
     public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest requestList, boolean cache) throws Exception {

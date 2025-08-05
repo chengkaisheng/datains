@@ -114,7 +114,6 @@ public class DataSetTableFieldController {
     public void batchEdit(@RequestBody List<DatasetTableField> list) {
         dataSetTableFieldsService.batchEdit(list);
     }
-
     @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("保存")
     @PostMapping("save")

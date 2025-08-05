@@ -544,7 +544,7 @@ public class DataSetTableService {
     public Map<String, Object> getPreviewDataWithoutSaveDatasetTable(DataSetTableRequest dataSetTableRequest, Integer page, Integer pageSize,
                                                                      List<DatasetTableField> extFields) throws Exception {
         //生成字段
-        if (extFields == null){
+        if (extFields == null) {
             extFields = new ArrayList<>();
         }
         List<TableField> fields = getFields(dataSetTableRequest);
@@ -1804,6 +1804,7 @@ public class DataSetTableService {
         if (!ObjectUtils.isEmpty(ds)) {
             qp = ProviderFactory.getQueryProvider(ds.getType());
         }
+        boolean q = true;// 用来判断是否需要给一个指标字段添加默认排序
         if (CollectionUtils.isNotEmpty(fields)) {
             List<String> originNameList = new ArrayList<>();
             for (int i = 0; i < fields.size(); i++) {
@@ -1850,6 +1851,11 @@ public class DataSetTableService {
                     datasetTableField.setLastSyncTime(syncTime);
                     datasetTableField.setExtField(0);
                     datasetTableField.setGroupType((datasetTableField.getDeType() < 2 || datasetTableField.getDeType() == 6) ? "d" : "q");
+                }
+                //设置默认的排序字段
+                if ("q".equals(datasetTableField.getGroupType()) && q) {
+                    datasetTableField.setDefaultSort(1);
+                    q = false;
                 }
                 dataSetTableFieldsService.save(datasetTableField);
             }

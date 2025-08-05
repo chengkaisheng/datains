@@ -13,4 +13,6 @@ import java.util.List;
 public class ChartViewFieldDTO extends ChartViewFieldBaseDTO implements Serializable {
     private List<ChartViewFieldFilterDTO> filter;
     private Integer defaultSort;
+    //排序字段的次序
+    private Integer sortIndex;
 }

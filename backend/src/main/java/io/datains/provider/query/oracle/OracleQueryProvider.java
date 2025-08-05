@@ -10,6 +10,7 @@ import io.datains.controller.request.chart.ChartExtFilterRequest;
 import io.datains.dto.chart.ChartCustomFilterItemDTO;
 import io.datains.dto.chart.ChartFieldCustomFilterDTO;
 import io.datains.dto.chart.ChartViewFieldDTO;
+import io.datains.dto.chart.ChartViewFieldOrderDTO;
 import io.datains.dto.datasource.JdbcConfiguration;
 import io.datains.dto.datasource.OracleConfiguration;
 import io.datains.dto.sqlObj.SQLObj;
@@ -377,7 +378,7 @@ public class OracleQueryProvider extends QueryProvider {
         boolean isPage = false;
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
-        List<SQLObj> xDefaultOrders = new ArrayList<>();
+        List<ChartViewFieldOrderDTO> xOrdersFields = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
@@ -403,26 +404,22 @@ public class OracleQueryProvider extends QueryProvider {
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
-                    xOrders.add(SQLObj.builder()
-                            .orderField(originField)
-                            .orderAlias(fieldAlias)
-                            .orderDirection(x.getSort())
-                            .build());
-                } else if (x.getDefaultSort() != null && x.getDefaultSort() == 1) {
-                    xDefaultOrders.add(SQLObj.builder()
-                            .orderField(originField)
-                            .orderAlias(fieldAlias)
-                            .orderDirection("asc")
-                            .build());
-                } else if (x.getDefaultSort() != null && x.getDefaultSort() == 2) {
-                    xDefaultOrders.add(SQLObj.builder()
-                            .orderField(originField)
-                            .orderAlias(fieldAlias)
-                            .orderDirection("desc")
-                            .build());
+                    //收集排序字段
+                    ChartViewFieldOrderDTO xC = new ChartViewFieldOrderDTO();
+                    xC.setOriginField(originField);
+                    xC.setFieldAlias(fieldAlias);
+                    xC.setSort(x.getSort());
+                    xC.setSortIndex(x.getSortIndex());
+                    xOrdersFields.add(xC);
                 }
             }
-            xOrders.addAll(xDefaultOrders);
+            //处理排序字段
+            xOrdersFields.stream().sorted(Comparator.comparing(ChartViewFieldOrderDTO::getSortIndex)).forEach(x ->
+                    xOrders.add(SQLObj.builder()
+                            .orderField(x.getOriginField())
+                            .orderAlias(x.getFieldAlias())
+                            .orderDirection(x.getSort())
+                            .build()));
         }
         // 处理视图中字段过滤
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
