@@ -1,6 +1,9 @@
 package io.datains.service.dataset;
 
 import cn.hutool.core.io.IoUtil;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.datains.auth.annotation.DeCleaner;
 import io.datains.auth.api.dto.CurrentUserDto;
@@ -114,6 +117,8 @@ public class DataSetTableService {
     private SysAuthService sysAuthService;
     @Resource
     private MinIOUtils minIOUtils;
+    @Resource
+    private ChartViewMapper chartViewMapper;
 
     private static boolean isUpdatingDatasetTableStatus = false;
     private static final String lastUpdateTime = "${__last_update_time__}";
@@ -698,15 +703,7 @@ public class DataSetTableService {
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
-                    int total = 0;
-                    String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP");
-                    List<String[]> count = jdbcProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()) {
-                        total = Integer.parseInt(count.get(0)[0]);
-                    }
-                    dataSetPreviewPage.setTotal(total);
-                    datasourceRequest.setQuery(sqlTmp);
+                    dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -747,15 +744,7 @@ public class DataSetTableService {
                     datasourceRequest.setPageable(false);
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, customFilter));
-                    int total = 0;
-                    String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(sql, fields, false, ds, customFilter) + ") COUNT_TEMP");
-                    List<String[]> count = datasourceProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()) {
-                        total = Integer.parseInt(count.get(0)[0]);
-                    }
-                    dataSetPreviewPage.setTotal(total);
-                    datasourceRequest.setQuery(sqlTmp);
+                    dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -820,15 +809,7 @@ public class DataSetTableService {
             try {
                 datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
                         Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
-                int total = 0;
-                String sqlTmp = datasourceRequest.getQuery();
-                datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP");
-                List<String[]> count = jdbcProvider.getData(datasourceRequest);
-                if (count != null && !count.isEmpty()) {
-                    total = Integer.parseInt(count.get(0)[0]);
-                }
-                dataSetPreviewPage.setTotal(total);
-                datasourceRequest.setQuery(sqlTmp);
+                dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -874,15 +855,7 @@ public class DataSetTableService {
                     datasourceRequest.setPageable(false);
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, customFilter));
-                    int total = 0;
-                    String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(sql, fields, false, ds, customFilter) + ") COUNT_TEMP");
-                    List<String[]> count = datasourceProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()) {
-                        total = Integer.parseInt(count.get(0)[0]);
-                    }
-                    dataSetPreviewPage.setTotal(total);
-                    datasourceRequest.setQuery(sqlTmp);
+                    dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -907,15 +880,7 @@ public class DataSetTableService {
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
-                    int total = 0;
-                    String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP");
-                    List<String[]> count = jdbcProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()) {
-                        total = Integer.parseInt(count.get(0)[0]);
-                    }
-                    dataSetPreviewPage.setTotal(total);
-                    datasourceRequest.setQuery(sqlTmp);
+                    dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -960,15 +925,7 @@ public class DataSetTableService {
                     datasourceRequest.setPageable(false);
                     datasourceRequest.setQuery(qp.createQuerySqlWithLimit(sql, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, customFilter));
-                    int total = 0;
-                    String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(sql, fields, false, ds, customFilter) + ") COUNT_TEMP");
-                    List<String[]> count = datasourceProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()) {
-                        total = Integer.parseInt(count.get(0)[0]);
-                    }
-                    dataSetPreviewPage.setTotal(total);
-                    datasourceRequest.setQuery(sqlTmp);
+                    dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -993,15 +950,7 @@ public class DataSetTableService {
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
                             Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
-                    int total = 0;
-                    String sqlTmp = datasourceRequest.getQuery();
-                    datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP");
-                    List<String[]> count = jdbcProvider.getData(datasourceRequest);
-                    if (count != null && !count.isEmpty()) {
-                        total = Integer.parseInt(count.get(0)[0]);
-                    }
-                    dataSetPreviewPage.setTotal(total);
-                    datasourceRequest.setQuery(sqlTmp);
+                    dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
@@ -1640,6 +1589,8 @@ public class DataSetTableService {
 
     public List<DatasetTableField> saveExcelTableField(String datasetTableId, List<TableField> fields, boolean insert) {
         List<DatasetTableField> datasetTableFields = new ArrayList<>();
+        boolean q = true;// 用来判断是否需要给一个指标字段添加默认排序
+        boolean d = true;// 用来判断是否需要给一个维度字段添加默认排序
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 TableField filed = fields.get(i);
@@ -1657,6 +1608,14 @@ public class DataSetTableService {
                 datasetTableField.setLastSyncTime(System.currentTimeMillis());
                 datasetTableField.setExtField(0);
                 datasetTableField.setGroupType(datasetTableField.getDeType() < 2 ? "d" : "q");
+                //设置默认的排序字段
+                if ("q".equals(datasetTableField.getGroupType()) && q) {
+                    datasetTableField.setDefaultSort(1);
+                    q = false;
+                } else if ("d".equals(datasetTableField.getGroupType()) && d) {
+                    datasetTableField.setDefaultSort(1);
+                    d = false;
+                }
                 if (insert) {
                     dataSetTableFieldsService.save(datasetTableField);
                 }
@@ -1805,6 +1764,7 @@ public class DataSetTableService {
             qp = ProviderFactory.getQueryProvider(ds.getType());
         }
         boolean q = true;// 用来判断是否需要给一个指标字段添加默认排序
+        boolean d = true;// 用来判断是否需要给一个维度字段添加默认排序
         if (CollectionUtils.isNotEmpty(fields)) {
             List<String> originNameList = new ArrayList<>();
             for (int i = 0; i < fields.size(); i++) {
@@ -1856,6 +1816,9 @@ public class DataSetTableService {
                 if ("q".equals(datasetTableField.getGroupType()) && q) {
                     datasetTableField.setDefaultSort(1);
                     q = false;
+                } else if ("d".equals(datasetTableField.getGroupType()) && d) {
+                    datasetTableField.setDefaultSort(1);
+                    d = false;
                 }
                 dataSetTableFieldsService.save(datasetTableField);
             }
@@ -2484,5 +2447,30 @@ public class DataSetTableService {
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(id);
         saveTableField(datasetTable);
         return datasetTable;
+    }
+
+    public void updateDefaultSort(String id, Integer type) {
+        //首先更新数据集中字段的默认排序状态
+        datasetTableFieldMapper.updateDefaultSort(Collections.singletonList(id), type);
+        //然后更新仪表板视图中字段
+        List<DatasetTableField> fields = dataSetTableFieldsService.getListByIds(Collections.singletonList(id));
+        List<String> tableIds = fields.stream().map(DatasetTableField::getTableId).collect(Collectors.toList());
+        List<ChartViewWithBLOBs> chartViews = chartViewMapper.selectByTableId(tableIds);
+        for (ChartViewWithBLOBs chartView : chartViews) {
+            if ("table-info".equals(chartView.getType())) {
+                if (chartView.getXAxis() != null && chartView.getXAxis().contains(id)) {
+                    JSONArray xAxis = JSON.parseArray(chartView.getXAxis());
+                    for (int i = 0; i < xAxis.size(); i++) {
+                        JSONObject jsonObject = xAxis.getJSONObject(i);
+                        if (jsonObject.getString("id").equals(id)) {
+                            jsonObject.put("defaultSort", type);
+                        }
+                    }
+                    //更新到数据库中
+                    chartView.setXAxis(xAxis.toJSONString());
+                    chartViewMapper.updateXAxis(chartView);
+                }
+            }
+        }
     }
 }

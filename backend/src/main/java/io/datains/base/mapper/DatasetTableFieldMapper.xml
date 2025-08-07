@@ -370,4 +370,12 @@
       last_sync_time = #{lastSyncTime,jdbcType=BIGINT}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+    <update id="updateDefaultSort">
+        update dataset_table_field
+        set default_sort = #{type,jdbcType=INTEGER}
+        where id in
+        <foreach item="id" index="index" collection="ids" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

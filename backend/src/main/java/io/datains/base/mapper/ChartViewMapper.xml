@@ -92,11 +92,11 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, title, scene_id, table_id, `type`, render, result_count, result_mode, 
+    id, `name`, title, scene_id, table_id, `type`, render, result_count, result_mode,
     create_by, create_time, update_time, style_priority, chart_type, is_plugin, data_from
   </sql>
   <sql id="Blob_Column_List">
-    x_axis, x_axis_ext, y_axis, y_axis_ext, ext_stack, ext_bubble, custom_attr, custom_style, 
+    x_axis, x_axis_ext, y_axis, y_axis_ext, ext_stack, ext_bubble, custom_attr, custom_style,
     custom_filter, drill_fields, senior, snapshot
   </sql>
   <select id="selectByExampleWithBLOBs" parameterType="io.datains.base.domain.ChartViewExample" resultMap="ResultMapWithBLOBs">
@@ -130,7 +130,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
-    select 
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
@@ -148,25 +148,25 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.datains.base.domain.ChartViewWithBLOBs">
-    insert into chart_view (id, `name`, title, 
-      scene_id, table_id, `type`, 
-      render, result_count, result_mode, 
-      create_by, create_time, update_time, 
-      style_priority, chart_type, is_plugin, 
-      data_from, x_axis, x_axis_ext, 
-      y_axis, y_axis_ext, ext_stack, 
-      ext_bubble, custom_attr, custom_style, 
-      custom_filter, drill_fields, senior, 
+    insert into chart_view (id, `name`, title,
+      scene_id, table_id, `type`,
+      render, result_count, result_mode,
+      create_by, create_time, update_time,
+      style_priority, chart_type, is_plugin,
+      data_from, x_axis, x_axis_ext,
+      y_axis, y_axis_ext, ext_stack,
+      ext_bubble, custom_attr, custom_style,
+      custom_filter, drill_fields, senior,
       snapshot)
-    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
-      #{sceneId,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
-      #{render,jdbcType=VARCHAR}, #{resultCount,jdbcType=INTEGER}, #{resultMode,jdbcType=VARCHAR}, 
-      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
-      #{stylePriority,jdbcType=VARCHAR}, #{chartType,jdbcType=VARCHAR}, #{isPlugin,jdbcType=BIT}, 
-      #{dataFrom,jdbcType=VARCHAR}, #{xAxis,jdbcType=LONGVARCHAR}, #{xAxisExt,jdbcType=LONGVARCHAR}, 
-      #{yAxis,jdbcType=LONGVARCHAR}, #{yAxisExt,jdbcType=LONGVARCHAR}, #{extStack,jdbcType=LONGVARCHAR}, 
-      #{extBubble,jdbcType=LONGVARCHAR}, #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, 
-      #{customFilter,jdbcType=LONGVARCHAR}, #{drillFields,jdbcType=LONGVARCHAR}, #{senior,jdbcType=LONGVARCHAR}, 
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR},
+      #{sceneId,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
+      #{render,jdbcType=VARCHAR}, #{resultCount,jdbcType=INTEGER}, #{resultMode,jdbcType=VARCHAR},
+      #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT},
+      #{stylePriority,jdbcType=VARCHAR}, #{chartType,jdbcType=VARCHAR}, #{isPlugin,jdbcType=BIT},
+      #{dataFrom,jdbcType=VARCHAR}, #{xAxis,jdbcType=LONGVARCHAR}, #{xAxisExt,jdbcType=LONGVARCHAR},
+      #{yAxis,jdbcType=LONGVARCHAR}, #{yAxisExt,jdbcType=LONGVARCHAR}, #{extStack,jdbcType=LONGVARCHAR},
+      #{extBubble,jdbcType=LONGVARCHAR}, #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR},
+      #{customFilter,jdbcType=LONGVARCHAR}, #{drillFields,jdbcType=LONGVARCHAR}, #{senior,jdbcType=LONGVARCHAR},
       #{snapshot,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.datains.base.domain.ChartViewWithBLOBs">
@@ -350,7 +350,13 @@
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
+    <select id="selectByTableId" resultMap="ResultMapWithBLOBs">
+        select * from chart_view where table_id in
+        <foreach item="tableId" index="index" collection="tableIds" separator="," open="(" close=")">
+            #{tableId}
+        </foreach>
+    </select>
+    <update id="updateByExampleSelective" parameterType="map">
     update chart_view
     <set>
       <if test="record.id != null">
@@ -635,4 +641,9 @@
       data_from = #{dataFrom,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
+    <update id="updateXAxis">
+        update chart_view
+        set x_axis = #{xAxis,jdbcType=LONGVARCHAR}
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
 </mapper>

@@ -17,6 +17,8 @@ import io.datains.dto.datasource.TableField;
 import io.datains.service.dataset.DataSetTableService;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.Logical;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +36,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("dataset/table")
 public class DataSetTableController {
+    private static final Logger log = LoggerFactory.getLogger(DataSetTableController.class);
     @Resource
     private DataSetTableService dataSetTableService;
 
@@ -143,6 +146,7 @@ public class DataSetTableController {
     public Map<String, Object> getPreviewData(@RequestBody DataSetTableRequest dataSetTableRequest, @PathVariable Integer page, @PathVariable Integer pageSize) throws Exception {
         return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize, null);
     }
+
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "id")
     @ApiOperation("查询预览数据但不创建实际的数据集")
     @PostMapping("getPreviewDataO/{page}/{pageSize}")
@@ -219,5 +223,14 @@ public class DataSetTableController {
     @PostMapping("unionPreview")
     public Map<String, Object> unionPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
         return dataSetTableService.getUnionPreview(dataSetTableRequest);
+    }
+
+    @ApiOperation("更新字段的默认排序状态")
+    @GetMapping("updateDefaultSort/{id}")
+    public void updateDefaultSort(@PathVariable String id, @RequestParam Integer type) {
+        if (type != 0 && type != 1 && type != 2) {
+            throw new RuntimeException("type参数错误");
+        }
+        dataSetTableService.updateDefaultSort(id, type);
     }
 }

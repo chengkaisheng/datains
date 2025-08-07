@@ -1,5 +1,6 @@
 package io.datains.provider.engine.doris;
 
+import cn.hutool.core.bean.BeanUtil;
 import io.datains.base.domain.ChartViewWithBLOBs;
 import io.datains.base.domain.DatasetTableField;
 import io.datains.base.domain.DatasetTableFieldExample;
@@ -9,6 +10,7 @@ import io.datains.controller.request.chart.ChartExtFilterRequest;
 import io.datains.dto.chart.ChartCustomFilterItemDTO;
 import io.datains.dto.chart.ChartFieldCustomFilterDTO;
 import io.datains.dto.chart.ChartViewFieldDTO;
+import io.datains.dto.chart.ChartViewFieldOrderDTO;
 import io.datains.dto.sqlObj.SQLObj;
 import io.datains.plugins.common.constants.DorisConstants;
 import io.datains.plugins.common.constants.SQLConstants;
@@ -292,7 +294,7 @@ public class DorisQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
-        return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, extFilterRequestList, ds, view,false), view);
+        return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, extFilterRequestList, ds, view, false), view);
     }
 
     public String originalTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder) {
@@ -300,8 +302,12 @@ public class DorisQueryProvider extends QueryProvider {
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(DorisConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
+        // 仪表盘中原有字段
         List<SQLObj> xFields = new ArrayList<>();
+        // 包含仪表盘中原有字段和数据集中的默认字段
+        List<SQLObj> xFieldsWith = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
+        List<ChartViewFieldOrderDTO> xOrdersFields = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
@@ -323,14 +329,81 @@ public class DorisQueryProvider extends QueryProvider {
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                    //收集排序字段
+                    ChartViewFieldOrderDTO xC = new ChartViewFieldOrderDTO();
+                    xC.setOriginName(x.getOriginName());
+                    xC.setOriginField(originField);
+                    xC.setFieldAlias(fieldAlias);
+                    xC.setSort(x.getSort());
+                    xC.setSortIndex(x.getSortIndex());
+                    xOrdersFields.add(xC);
+                }
+            }
+            //处理排序字段
+            xOrdersFields.stream().sorted(Comparator.comparing(ChartViewFieldOrderDTO::getSortIndex)).forEach(x ->
                     xOrders.add(SQLObj.builder()
-                            .orderField(originField)
-                            .orderAlias(fieldAlias)
+                            .orderField(x.getOriginField())
+                            .orderAlias(x.getFieldAlias())
                             .orderDirection(x.getSort())
-                            .build());
+                            .build()));
+        }
+        // 开始处理是默认排序字段但是仪表盘中没有选择的
+        if (CollectionUtils.isNotEmpty(xAxis)) {
+            //首先把原有的字段加入进去
+            xFieldsWith.addAll(xFields);
+            List<DatasetTableField> tableFieldList = this.getTableFieldListByIds(xAxis.get(0).getTableId());
+            if (CollectionUtils.isNotEmpty(tableFieldList)) {
+                //筛选出默认排序字段，且不在xAxis中
+                List<DatasetTableField> defaultFields = new ArrayList<>();
+                for (DatasetTableField field : tableFieldList) {
+                    if (field.getDefaultSort() != null && field.getDefaultSort() != 0) {
+                        if (xAxis.stream().noneMatch(x -> x.getId().equals(field.getId()))) {
+                            defaultFields.add(field);
+                        }
+                    }
+                }
+                if (CollectionUtils.isNotEmpty(defaultFields)) {
+                    //加入到xFieldsWith中作为内层的查询字段
+                    for (int i = 0; i < defaultFields.size(); i++) {
+                        DatasetTableField f = defaultFields.get(i);
+                        ChartViewFieldDTO x = new ChartViewFieldDTO();
+                        BeanUtil.copyProperties(f, x);
+                        x.setFilter(new ArrayList<>());
+                        x.setSort("");
+                        String originField;
+                        if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
+                            // 解析origin name中有关联的字段生成sql表达式
+                            originField = calcFieldRegex(x.getOriginName(), tableObj);
+                        } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
+                            originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDatainsName());
+                        } else {
+                            if (x.getDeType() == 2 || x.getDeType() == 3) {
+                                originField = String.format(DorisConstants.CAST, String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDatainsName()), DorisConstants.DEFAULT_FLOAT_FORMAT);
+                            } else {
+                                originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDatainsName());
+                            }
+                        }
+                        String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i + xAxis.size());
+                        // 处理横轴字段
+                        xFieldsWith.add(getXFields(x, originField, fieldAlias));
+                        if (x.getDefaultSort() == 1) {
+                            xOrders.add(SQLObj.builder()
+                                    .orderField(originField)
+                                    .orderAlias(fieldAlias)
+                                    .orderDirection("asc")
+                                    .build());
+                        } else if (x.getDefaultSort() == 2) {
+                            xOrders.add(SQLObj.builder()
+                                    .orderField(originField)
+                                    .orderAlias(fieldAlias)
+                                    .orderDirection("desc")
+                                    .build());
+                        }
+                    }
                 }
             }
         }
+
         // 处理视图中字段过滤
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
@@ -357,13 +430,22 @@ public class DorisQueryProvider extends QueryProvider {
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", false);
-        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        if (CollectionUtils.isNotEmpty(xFieldsWith)) st_sql.add("groups", xFieldsWith);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String sql = st_sql.render();
 
         ST st = stg.getInstanceOf("previewSql");
         st.add("isGroup", false);
+        if (CollectionUtils.isNotEmpty(fields)) {
+            for (SQLObj field : fields) {
+                if (field.getFieldAlias() != null) {
+                    field.setFieldName(field.getFieldAlias());
+                }
+            }
+            st_sql.add("groups", xFields);
+        }
+        if (CollectionUtils.isNotEmpty(fields)) st.add("groups", fields);
         SQLObj tableSQL = SQLObj.builder()
                 .tableName(String.format(DorisConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
@@ -1133,5 +1215,17 @@ public class DorisQueryProvider extends QueryProvider {
         } else {
             return sql;
         }
+    }
+
+    /**
+     * 获取数据集中表的所有字段
+     *
+     * @param tableId 表id
+     * @return 字段
+     */
+    private List<DatasetTableField> getTableFieldListByIds(String tableId) {
+        DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+        datasetTableFieldExample.createCriteria().andTableIdEqualTo(tableId);
+        return datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
     }
 }

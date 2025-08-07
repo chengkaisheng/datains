@@ -421,6 +421,24 @@ public class OracleQueryProvider extends QueryProvider {
                             .orderDirection(x.getSort())
                             .build()));
         }
+        if (CollectionUtils.isNotEmpty(xAxis)) {
+            //把数据中的默认字段加入到排序中
+            List<DatasetTableField> tableFieldList = this.getTableFieldListByIds(xAxis.get(0).getTableId());
+            if (CollectionUtils.isNotEmpty(tableFieldList)) {
+                //筛选出默认排序字段，且不在xAxis中
+                for (DatasetTableField field : tableFieldList) {
+                    if (field.getDefaultSort() != null && field.getDefaultSort() != 0) {
+                        if (xAxis.stream().noneMatch(x -> x.getId() != null && x.getId().equals(field.getId()))) {
+                            xOrders.add(SQLObj.builder()
+                                    .orderField("\"" + field.getOriginName() + "\"")
+                                    .orderAlias("\"" + field.getOriginName() + "\"")
+                                    .orderDirection(field.getDefaultSort() == 1 ? "asc" : "desc")
+                                    .build());
+                        }
+                    }
+                }
+            }
+        }
         // 处理视图中字段过滤
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤
@@ -1258,5 +1276,17 @@ public class OracleQueryProvider extends QueryProvider {
         } else {
             return sql;
         }
+    }
+
+    /**
+     * 获取数据集中表的所有字段
+     *
+     * @param tableId 表id
+     * @return 字段
+     */
+    private List<DatasetTableField> getTableFieldListByIds(String tableId) {
+        DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+        datasetTableFieldExample.createCriteria().andTableIdEqualTo(tableId);
+        return datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
     }
 }

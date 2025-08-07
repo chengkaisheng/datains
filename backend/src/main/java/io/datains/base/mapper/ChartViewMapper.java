@@ -3,8 +3,9 @@ package io.datains.base.mapper;
 import io.datains.base.domain.ChartView;
 import io.datains.base.domain.ChartViewExample;
 import io.datains.base.domain.ChartViewWithBLOBs;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface ChartViewMapper {
     long countByExample(ChartViewExample example);
@@ -34,4 +35,8 @@ public interface ChartViewMapper {
     int updateByPrimaryKeyWithBLOBs(ChartViewWithBLOBs record);
 
     int updateByPrimaryKey(ChartView record);
+
+    List<ChartViewWithBLOBs> selectByTableId(@Param("tableIds") List<String> tableIds);
+
+    void updateXAxis(ChartViewWithBLOBs chartView);
 }

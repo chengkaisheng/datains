@@ -2,8 +2,9 @@ package io.datains.base.mapper;
 
 import io.datains.base.domain.DatasetTableField;
 import io.datains.base.domain.DatasetTableFieldExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface DatasetTableFieldMapper {
     long countByExample(DatasetTableFieldExample example);
@@ -27,4 +28,6 @@ public interface DatasetTableFieldMapper {
     int updateByPrimaryKeySelective(DatasetTableField record);
 
     int updateByPrimaryKey(DatasetTableField record);
+
+    void updateDefaultSort(@Param("ids") List<String> ids,@Param("type") Integer type);
 }
