@@ -91,6 +91,12 @@
         <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
         and privilege_name != 'i18n_auth_export'
     </update>
+    <update id="authDetailsChange5">
+        UPDATE sys_auth_detail
+        SET privilege_value = #{privilegeValue}
+        where auth_id in
+        <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
+    </update>
     <update id="authBatchDelForDeptLeader">
         UPDATE sys_auth_detail sad
         SET sad.privilege_value = #{privilegeValue}

@@ -20,6 +20,8 @@ public interface AuthXpackService {
 
     void authChangeBatch(List<XpackSysAuthRequest> list, Long paramLong, String paramString, Boolean paramBoolean);
 
+    void authAddForRole(String roleId, List<AuthChangeForDeptLeaderDTO> a);
+
     void authAddForDeptLeader(Long userId, List<AuthChangeForDeptLeaderDTO> a);
 
     /**

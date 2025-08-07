@@ -180,6 +180,78 @@ public class AuthXpackDefaultService implements AuthXpackService {
     }
 
     /**
+     * 为管理员添加权限
+     *
+     * @param roleId 管理员id
+     * @param a      权限列表
+     */
+    @Override
+    public void authAddForRole(String roleId, List<AuthChangeForDeptLeaderDTO> a) {
+        if (a == null || a.isEmpty()) {
+            return;
+        }
+        //储存全部的authId
+        List<String> authIds = new ArrayList<>();
+        //首先需要根据用户和资源id查询出已经存在的权限
+        List<XpackSysAuthDetailDTO> sysAuthByAuthSourceList = B.getAllByAuthSource(roleId.toString(), "role", a.stream().map(AuthChangeForDeptLeaderDTO::getAuthSource).collect(Collectors.toList()));
+        authIds.addAll(sysAuthByAuthSourceList.stream().map(XpackSysAuthDetailDTO::getId).collect(Collectors.toList()));
+        Map<String, XpackSysAuthDetailDTO> sysAuthByAuthSourceMap = sysAuthByAuthSourceList.stream().collect(Collectors.toMap(XpackSysAuthDetailDTO::getAuthSource, item -> item));
+        //筛选出需要新创建的
+        List<AuthChangeForDeptLeaderDTO> needAdd = new ArrayList<>();
+        for (AuthChangeForDeptLeaderDTO item : a) {
+            if (!sysAuthByAuthSourceMap.containsKey(item.getAuthSource()) || !sysAuthByAuthSourceMap.get(item.getAuthSource()).getAuthSourceType().equals(item.getAuthSourceType())) {
+                needAdd.add(item);
+            }
+        }
+        //进行权限的批量创建
+        if (!needAdd.isEmpty()) {
+            Map<String, List<XpackSysAuthDetail>> authDetailMap = new HashMap<>();
+            List<XpackSysAuthDetailDTO> addAuth = new ArrayList<>();
+            List<XpackSysAuthDetail> addAuthDetail = new ArrayList<>();
+            for (AuthChangeForDeptLeaderDTO item : needAdd) {
+                //新建权限
+                XpackSysAuthDetailDTO auth = new XpackSysAuthDetailDTO();
+                auth.setId(IdUtil.randomUUID());
+                auth.setAuthSource(item.getAuthSource());
+                auth.setAuthSourceType(item.getAuthSourceType());
+                auth.setAuthTarget(roleId.toString());
+                auth.setAuthTargetType("role");
+                auth.setAuthUser("auto");
+                addAuth.add(auth);
+                authIds.add(auth.getId());
+                //新建权限详情
+                if (!authDetailMap.containsKey(auth.getAuthSourceType())) {
+                    List<XpackSysAuthDetail> authDetails = this.authDetailsModel(auth.getAuthSourceType());
+                    authDetailMap.put(auth.getAuthSourceType(), authDetails);
+                }
+                for (XpackSysAuthDetail sysAuthDetail : authDetailMap.get(auth.getAuthSourceType())) {
+                    XpackSysAuthDetail authDetail = new XpackSysAuthDetail();
+                    authDetail.setId(IdUtil.randomUUID());
+                    authDetail.setAuthId(auth.getId());
+                    authDetail.setPrivilegeName(sysAuthDetail.getPrivilegeName());
+                    authDetail.setPrivilegeType(sysAuthDetail.getPrivilegeType());
+                    authDetail.setPrivilegeValue(sysAuthDetail.getPrivilegeValue());
+                    authDetail.setPrivilegeExtend(sysAuthDetail.getPrivilegeExtend());
+                    authDetail.setRemark(sysAuthDetail.getRemark());
+                    authDetail.setCreateUser("auto");
+                    authDetail.setCreateTime(System.currentTimeMillis());
+                    addAuthDetail.add(authDetail);
+                }
+            }
+            //批量创建
+            if (!addAuth.isEmpty()) {
+                B.insertSysAuthBatch(addAuth);
+            }
+            if (!addAuthDetail.isEmpty()) {
+                xpackSysAuthDetailMapper.insertDetailBatch(addAuthDetail);
+            }
+        }
+        if (!authIds.isEmpty()) {
+            this.i.authDetailsChange5(1, authIds);
+        }
+    }
+
+    /**
      * 为权限负责人批量添加权限
      *
      * @param a AuthChangeForDeptLeaderDTO
@@ -192,7 +264,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
         //储存全部的authId
         List<String> authIds = new ArrayList<>();
         //首先需要根据用户和资源id查询出已经存在的权限
-        List<XpackSysAuthDetailDTO> sysAuthByAuthSourceList = B.getAllByAuthSource(userId, a.stream().map(AuthChangeForDeptLeaderDTO::getAuthSource).collect(Collectors.toList()));
+        List<XpackSysAuthDetailDTO> sysAuthByAuthSourceList = B.getAllByAuthSource(userId.toString(), "user", a.stream().map(AuthChangeForDeptLeaderDTO::getAuthSource).collect(Collectors.toList()));
         authIds.addAll(sysAuthByAuthSourceList.stream().map(XpackSysAuthDetailDTO::getId).collect(Collectors.toList()));
         Map<String, XpackSysAuthDetailDTO> sysAuthByAuthSourceMap = sysAuthByAuthSourceList.stream().collect(Collectors.toMap(XpackSysAuthDetailDTO::getAuthSource, item -> item));
         //筛选出需要新创建的

@@ -29,5 +29,5 @@ public interface XpackExtSysAuthMapper {
 
     int insertSysAuthBatch(List<XpackSysAuthDetailDTO> list);
 
-    List<XpackSysAuthDetailDTO> getAllByAuthSource(@Param("userId") Long userId, @Param("authSources") List<String> authSources);
+    List<XpackSysAuthDetailDTO> getAllByAuthSource(@Param("authTarget") String authTarget ,@Param("authTargetType") String authTargetType, @Param("authSources") List<String> authSources);
 }

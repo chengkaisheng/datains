@@ -115,8 +115,8 @@
         where auth_source = #{authSource}
     </select>
     <select id="getAllByAuthSource" resultType="io.datains.base.domain.XpackSysAuthDetailDTO">
-        select * from sys_auth where auth_target_type = 'user'
-        and auth_target = #{userId}
+        select * from sys_auth where auth_target_type = #{authTargetType}
+        and auth_target = #{authTarget}
         and auth_source in
         <foreach collection="authSources" item="item" open="(" separator="," close=")">
             #{item}
