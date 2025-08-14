@@ -31,7 +31,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -170,7 +169,6 @@ public class SysUserController {
 
     @ApiOperation("更新用户状态")
     @RequiresPermissions("user:edit")
-    @RequiresRoles("1")
     @PostMapping("/updateStatus")
     public void updateStatus(@RequestBody SysUserStateRequest request) {
         sysUserService.updateStatus(request);
