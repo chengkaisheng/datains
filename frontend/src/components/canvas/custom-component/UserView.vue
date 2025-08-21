@@ -598,6 +598,8 @@ export default {
           // if (this.chart.type !== 'roll-elemnt') {  //阻止滚动表格文本搜索
           //   this.getData(this.element.propValue.viewId)
           // }
+          // 修复问题232 监听到过滤搜索 将页码 重置
+          this.currentPage.page = 1;
           this.getData(this.element.propValue.viewId)
         }
       },
