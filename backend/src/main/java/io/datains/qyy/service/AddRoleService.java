@@ -56,13 +56,13 @@ public class AddRoleService {
     }
 
     public static void main(String[] args) {
+        Request request = Request.builder().scenId("pcsjtb_001").build();
         List<Role> roles = new ArrayList<>();
-        roles.add(Role.builder().name("超级管理员").describe("超级管理员").key("1").build());
-        roles.add(Role.builder().name("A单位管理员").describe("能够管理A单位的填报信息和权限信息").key("3").build());
-        roles.add(Role.builder().name("A单位填报用户").describe("").key("4").build());
-        roles.add(Role.builder().name("B单位管理员").describe("能够管理B单位的填报信息和权限信息").key("5").build());
-        roles.add(Role.builder().name("B单位填报用户").describe("").key("6").build());
-        addRoles(roles);
+        roles.add(Role.builder().name("杨浦区商务委三方填报人员").describe("杨浦区商务委三方填报人员").key("51").build());
+        String encryptedData = SecureUtil.aes("25EC1AD1F1658FF49E73B801B3B332C7".getBytes())
+                .encryptBase64(JSONUtil.parse(roles).toString());
+        request.setEncryptedData(encryptedData);
+        System.out.println(JSONUtil.toJsonStr(request));
     }
 
     @Data

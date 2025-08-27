@@ -33,4 +33,6 @@ public interface XpackSysAuthDetailMapper {
     long countByExample(XpackSysAuthDetail paramXpackSysAuthDetailExample);
 
     int insertDetail(XpackSysAuthDetail xpackSysAuthDetail);
+
+    int insertDetailBatch(List<XpackSysAuthDetail> list);
 }

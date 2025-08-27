@@ -1,6 +1,7 @@
 package io.datains.service.sys;
 
 import io.datains.base.domain.*;
+import io.datains.dto.authModel.AuthChangeForDeptLeaderDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ public interface AuthXpackService {
     List<XpackSysAuthDetail> searchAuthDetailsModel(String paramString);
 
     void authChange(XpackSysAuthRequest paramXpackSysAuthRequest, Long paramLong, String paramString, Boolean paramBoolean);
+
+    void authAddForRole(String roleId, List<AuthChangeForDeptLeaderDTO> a);
 
     /**
      * @param user           授权人员

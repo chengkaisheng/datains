@@ -104,10 +104,10 @@ public class AuthServer implements AuthApi {
         //先去获取用户信息
         CertificationService.QyyUser qyyUser = certificationService.certification(qyyToken);
         String username = null;
-        if (qyyUser.getSysRoleScenarios().getKey().equals("1")) {
-            //超级管理员特殊处理
-            username = "admin";
-        }
+//        if (qyyUser.getSysRoleScenarios().getKey().equals("1")) {
+//            //超级管理员特殊处理
+//            username = "admin";
+//        }
         //判断账号
         qyyAutoCreateUser(qyyUser);
         //登录用户

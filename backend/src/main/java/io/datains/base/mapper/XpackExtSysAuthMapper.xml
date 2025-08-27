@@ -110,5 +110,21 @@ INSERT INTO `sys_auth`
 	#{authUser}
 	);
     </insert>
+    <insert id="insertSysAuthBatch" parameterType="java.util.List">
+        INSERT INTO `sys_auth`
+        (`id`,`auth_source`,`auth_source_type`,`auth_target`,`auth_target_type`,`auth_user`)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},#{item.authSource},#{item.authSourceType},#{item.authTarget},#{item.authTargetType},#{item.authUser})
+        </foreach>
+    </insert>
 
+    <select id="getAllByAuthSource" resultType="io.datains.base.domain.XpackSysAuthDetailDTO">
+        select * from sys_auth where auth_target_type = #{authTargetType}
+        and auth_target = #{authTarget}
+        and auth_source in
+        <foreach collection="authSources" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

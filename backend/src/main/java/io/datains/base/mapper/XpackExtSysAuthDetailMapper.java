@@ -18,4 +18,7 @@ public interface XpackExtSysAuthDetailMapper {
     List<XpackSysAuthDetail> searchAuthTypeModel(@Param("authTypeModel") String paramString);
 
     void copyAuthModel(@Param("authTypeModel") String paramString1, @Param("authId") String paramString2, @Param("createUser") String paramString3);
+
+    void authDetailsChange5(@Param("privilegeValue") Integer paramInteger1, @Param("authIds") List<String> paramList);
+
 }
