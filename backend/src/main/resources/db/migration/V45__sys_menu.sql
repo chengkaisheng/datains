@@ -1,4 +1,4 @@
-ALTER TABLE `datains`.`sys_menu`
+ALTER TABLE `sys_menu`
     ADD COLUMN `is_plugin` bit(1) NULL DEFAULT b'0' AFTER `hidden`;
 
 INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `is_plugin`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (4, 1, 0, 1, '组织管理', 'system-dept', 'system/dept/index', 3, 'dept', 'dept', b'1', b'0', b'0', b'0', 'dept:read', NULL, NULL, NULL, NULL);
