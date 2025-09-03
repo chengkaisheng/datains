@@ -137,7 +137,7 @@ export default {
   computed: {
     targetInfoArray1() {
       // 非管理员角色在权限管理页面无法查看角色栏
-      const isAdmin = store.getters.roles.findIndex(item => item.id === 1) !== -1
+      const isAdmin = store.getters.roles.findIndex(item => item.id === 1 || item.id === 4 || item.id === 13) !== -1
       if(isAdmin) {
         return this.targetInfoArray
       } else {
@@ -149,7 +149,7 @@ export default {
     sourceInfoTabs () {
       const tabs = []
       // 非管理员角色无法对“菜单和操作栏“做权限控制操作
-      const isAdmin = store.getters.roles.findIndex(item => item.id === 1) !== -1
+      const isAdmin = store.getters.roles.findIndex(item => item.id === 1 || item.id === 4 || item.id === 13) !== -1
       this.sourceInfoArray.forEach(item => {
         if (item.authTargets.indexOf(this.targetActiveName) > -1) {
           if(isAdmin) {
