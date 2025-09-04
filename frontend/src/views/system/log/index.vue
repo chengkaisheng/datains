@@ -61,7 +61,7 @@
       </el-table-column>
       <!-- <el-table-column show-overflow-tooltip prop="operatorType" label="操作类别" /> -->
       <el-table-column show-overflow-tooltip prop="operName" label="操作人员" width="150" />
-      <el-table-column show-overflow-tooltip prop="deptName" label="部门名称" width="200" />
+      <!-- <el-table-column show-overflow-tooltip prop="deptName" label="部门名称" width="200" /> -->
       <el-table-column show-overflow-tooltip prop="operUrl" label="请求url" width="200" />
       <el-table-column show-overflow-tooltip prop="operIp" label="操作地址" width="200" />
       <!-- <el-table-column show-overflow-tooltip prop="operLocation" label="操作地点" /> -->
