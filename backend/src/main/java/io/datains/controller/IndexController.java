@@ -7,11 +7,13 @@ import io.datains.commons.utils.CodingUtil;
 import io.datains.commons.utils.LogUtil;
 import io.datains.commons.utils.ServletUtils;
 import io.datains.service.panel.PanelLinkService;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -30,16 +32,19 @@ public class IndexController {
     private PanelLinkService panelLinkService;
 
     @GetMapping(value = "/")
+    @ApiOperation("获取首页")
     public String index() {
         return "index.html";
     }
 
     @GetMapping(value = "/login")
+    @ApiOperation("获取首页")
     public String login() {
         return "index.html";
     }
 
     @GetMapping("/deApi")
+    @ApiOperation("获取首页")
     public String deApi() {
         F2CLicenseResponse f2CLicenseResponse = defaultLicenseService.validateLicense();
         switch (f2CLicenseResponse.getStatus()) {
@@ -52,6 +57,7 @@ public class IndexController {
     }
 
     @GetMapping("/link/{index}")
+    @ApiOperation("获取首页")
     public void link(@PathVariable(value = "index", required = true) String index) {
         String url;
         if (CodingUtil.isNumeric(index)) {
@@ -75,6 +81,7 @@ public class IndexController {
     }
 
     @GetMapping("/tempMobileLink/{id}/{token}")
+    @ApiOperation("获取首页")
     public void tempMobileLink(@PathVariable("id") String id, @PathVariable("token") String token) {
         String url = "/#preview/" + id;
         HttpServletResponse response = ServletUtils.response();

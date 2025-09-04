@@ -3,6 +3,8 @@ package io.datains.auth.server;
 import io.datains.auth.api.DynamicMenuApi;
 import io.datains.auth.api.dto.DynamicMenuDto;
 import io.datains.auth.service.DynamicMenuService;
+import io.datains.operLog.annotation.Log;
+import io.datains.operLog.enums.BusinessType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +17,7 @@ public class DynamicMenuServer implements DynamicMenuApi {
     private DynamicMenuService dynamicMenuService;
 
     @Override
+    @Log(title = "动态菜单：获取动态菜单", businessType = BusinessType.SELECT)
     public List<DynamicMenuDto> menus() throws IOException {
         return dynamicMenuService.load(null);
     }

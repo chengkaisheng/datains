@@ -13,6 +13,8 @@ import io.datains.commons.utils.MacUtil;
 import io.datains.controller.ResultHolder;
 import io.datains.controller.sys.response.LicenseVo;
 import io.datains.exception.DataInsException;
+import io.datains.operLog.annotation.Log;
+import io.datains.operLog.enums.BusinessType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,6 +54,7 @@ public class LicenseController {
     private static String mac = "/opt/datains/hostinfo/address";
 
     @GetMapping(value = "anonymous/license/validate")
+    @Log(title = "License: 验证License", businessType = BusinessType.SELECT)
     public ResultHolder validateLicense() throws Exception {
         if (!need_validate_lic) {
             return ResultHolder.success(null);

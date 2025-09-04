@@ -1,6 +1,8 @@
 package io.datains.plugins.server;
 
 import io.datains.commons.utils.ServletUtils;
+import io.datains.operLog.annotation.Log;
+import io.datains.operLog.enums.BusinessType;
 import io.datains.plugins.common.dto.PluginSysMenu;
 import io.datains.plugins.common.dto.StaticResource;
 import io.datains.plugins.common.service.PluginComponentService;
@@ -77,6 +79,7 @@ public class PluginCommonServer {
     }*/
 
     @GetMapping("/async/{menuId}")
+    @Log(title = "插件：异步加载菜单", businessType = BusinessType.SELECT)
     public void menuInfo(@PathVariable Long menuId) throws IOException {
             AtomicReference<PluginSysMenu> atomicReference = new AtomicReference<>();
             List<PluginSysMenu> menus = PluginUtils.getMenus();
@@ -156,6 +159,7 @@ public class PluginCommonServer {
 
 
     @GetMapping("/component/{componentName}")
+    @Log(title = "插件：异步加载组件", businessType = BusinessType.SELECT)
     public void componentInfo(@PathVariable String componentName) {
                 HttpServletResponse response = ServletUtils.response();
                 BufferedInputStream bis = null;
@@ -190,6 +194,7 @@ public class PluginCommonServer {
 
 
     @GetMapping("/staticInfo/{name}/{suffix}")
+    @Log(title = "插件：异步加载静态资源", businessType = BusinessType.SELECT)
     public void staticInfo(@PathVariable("name") String name, @PathVariable("suffix") String suffix) {
         Map<String, PluginComponentService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType(PluginComponentService.class);
         beansOfType.values().stream().forEach(service -> {

@@ -16,6 +16,8 @@ import io.datains.commons.utils.*;
 import io.datains.controller.sys.request.LdapAddRequest;
 import io.datains.exception.DataInsException;
 import io.datains.i18n.Translator;
+import io.datains.operLog.annotation.Log;
+import io.datains.operLog.enums.BusinessType;
 import io.datains.plugins.common.entity.XpackLdapUserEntity;
 import io.datains.plugins.config.SpringContextUtil;
 import io.datains.plugins.util.PluginUtils;
@@ -58,6 +60,7 @@ public class AuthServer implements AuthApi {
     Integer userId = null;
 
     @Override
+    @Log(title = "登录", businessType = BusinessType.LOGIN)
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
         String username = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getUsername());
         String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getPassword());
@@ -157,6 +160,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    @Log(title = "权限：权限管理-获取用户信息", businessType = BusinessType.SELECT)
     public CurrentUserDto userInfo() {
         CurrentUserDto userDto = (CurrentUserDto) SecurityUtils.getSubject().getPrincipal();
         if (ObjectUtils.isEmpty(userDto)) {
@@ -174,6 +178,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    @Log(title = "权限：权限管理-是否使用初始密码", businessType = BusinessType.SELECT)
     public Boolean useInitPwd() {
         CurrentUserDto user = AuthUtils.getUser();
         if (null == user || 0 != user.getFrom()) {
@@ -185,6 +190,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    @Log(title = "权限：权限管理-登出", businessType = BusinessType.LOGOUT)
     public String logout() {
         String token = ServletUtils.getToken();
         Long userId = null;
@@ -215,6 +221,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    @Log(title = "权限：权限管理-验证账号", businessType = BusinessType.SELECT)
     public Boolean validateName(@RequestBody Map<String, String> nameDto) {
         String userName = nameDto.get("userName");
         if (StringUtils.isEmpty(userName))
@@ -224,6 +231,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    @Log(title = "权限：权限管理-是否开启ldap", businessType = BusinessType.SELECT)
     public boolean isOpenLdap() {
         Boolean licValid = PluginUtils.licValid();
         if (!licValid)
@@ -232,6 +240,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    @Log(title = "权限：权限管理-是否开启oidc", businessType = BusinessType.SELECT)
     public boolean isOpenOidc() {
         Boolean licValid = PluginUtils.licValid();
         if (!licValid)
@@ -240,6 +249,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    @Log(title = "权限：权限管理-是否开启oidc", businessType = BusinessType.SELECT)
     public boolean isPluginLoaded() {
         /*Boolean licValid = PluginUtils.licValid();
         if (!licValid)
@@ -253,6 +263,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    @Log(title = "权限：权限管理-获取公钥", businessType = BusinessType.SELECT)
     public String getPublicKey() {
         return RsaProperties.publicKey;
     }
