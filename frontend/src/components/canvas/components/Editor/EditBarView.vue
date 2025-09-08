@@ -3,7 +3,7 @@
     <div v-if="hasDataPermission('export',panelInfo.privileges) && show && type.includes('table')" class="download" @click.stop="exportDetailData">
       <i class="el-icon-download" ></i>
     </div>
-    <div v-if="hasDataPermission('export',panelInfo.privileges) && show && type.includes('table')" class="download print" @click.stop="printDetailData">
+    <div v-if="hasDataPermission('print',panelInfo.privileges) && show && type.includes('table')" :class="[hasDataPermission('export',panelInfo.privileges) ? 'print' : '']" class="download" @click.stop="printDetailData">
       <i class="el-icon-printer" ></i>
     </div>
     <div v-if="show" :class="['bar-main', hasDataPermission('export',panelInfo.privileges) && type.includes('table') ? 'bar-main-right' : '']">
