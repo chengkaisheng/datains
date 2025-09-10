@@ -83,7 +83,8 @@ export default {
       rules: {
         frontTimeOut: [
           {
-            pattern: '^([0-9]{1,2}|100)$',
+            // pattern: '^([0-9]{1,2}|100)$',
+            pattern: /^[1-9]\d*$/,
             message: this.$t('system_parameter_setting.front_error'),
             trigger: 'blur'
           }
