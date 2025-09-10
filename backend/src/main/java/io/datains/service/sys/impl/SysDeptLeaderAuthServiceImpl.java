@@ -114,15 +114,6 @@ public class SysDeptLeaderAuthServiceImpl implements SysDeptLeaderAuthService {
                 auth.setUserId(userId);
                 auth.setAuthSource(authSource);
                 auth.setAuthSourceType(authSourceType);
-                String privilegeType = null;
-                if ("dataset".equals(authSourceType)) {
-                    privilegeType = "15,3,1,20";
-                } else if ("link".equals(authSourceType)) {
-                    privilegeType = "15,3,1";
-                } else if ("panel".equals(authSourceType)) {
-                    privilegeType = "15,3,1,5";
-                }
-                auth.setPrivilegeType(privilegeType);
                 auth.setCreateTime(System.currentTimeMillis());
                 auth.setUpdateTime(auth.getCreateTime());
                 auths.add(auth);

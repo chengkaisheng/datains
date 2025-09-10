@@ -1,3 +1,4 @@
+drop table if exists sys_oper_log;
 create table sys_oper_log
 (
     oper_id        bigint(20) not null auto_increment comment '日志主键',
@@ -11,7 +12,7 @@ create table sys_oper_log
     oper_url       varchar(255)  default '' comment '请求URL',
     oper_ip        varchar(128)  default '' comment '主机地址',
     oper_location  varchar(255)  default '' comment '操作地点',
-    oper_param     Longtext default '' comment '请求参数',
+    oper_param     Longtext comment '请求参数',
     json_result    varchar(2000) default '' comment '返回参数',
     status         int(1)        default 0 comment '操作状态（0正常 1异常）',
     error_msg      varchar(2000) default '' comment '错误消息',
