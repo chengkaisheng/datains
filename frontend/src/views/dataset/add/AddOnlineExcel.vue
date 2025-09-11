@@ -44,10 +44,10 @@
             数据库创建
           </el-button> -->
           <div style="width: 95px;margin-left: 30px;font-size: 12px;">数据集名称：</div>
-          <el-input style="width: 200px" size="mini" v-model="name"></el-input>
+          <el-input v-model="name" style="width: 200px" size="mini" />
         </div>
 
-        <div class="excel" >
+        <div class="excel">
           <div v-if="showLuckysheet" id="luckysheet" class="luckysheet-container" />
 
           <!-- <div v-show="isMaskShow" class="download-mask">
@@ -124,8 +124,7 @@
                     text-overflow: ellipsis;
                   "
                   :title="data.name"
-                  >{{ data.name }}</span
-                >
+                >{{ data.name }}</span>
               </span>
             </span>
             <span
@@ -139,7 +138,7 @@
                   <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
                   <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
                   <!-- <svg-icon v-if="data.modelInnerType === 'onLineExcel'" icon-class="ds-excel" class="ds-icon-excel" /> -->
-                  <i v-if="data.modelInnerType === 'onLineExcel'"  class="el-icon-edit-outline ds-icon-excel"></i>
+                  <i v-if="data.modelInnerType === 'onLineExcel'" class="el-icon-edit-outline ds-icon-excel" />
                   <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
                   <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
                   <svg-icon v-if="data.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
@@ -158,8 +157,11 @@
         <el-button size="mini" @click="close()">{{
           $t("dataset.cancel")
         }}</el-button>
-        <el-button type="primary" size="mini" @click="confirm"
-          >{{ $t("dataset.confirm") }}
+        <el-button
+          type="primary"
+          size="mini"
+          @click="confirm"
+        >{{ $t("dataset.confirm") }}
         </el-button>
       </div>
     </el-dialog>
@@ -170,13 +172,16 @@
       width="50%"
       @close="closeDatabase"
     >
-      <AddDB style="height: 400px;overflow: auto;" :isOnlineExcel="true"></AddDB>
+      <AddDB style="height: 400px;overflow: auto;" :is-online-excel="true" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeDatabase()">{{
           $t("dataset.cancel")
         }}</el-button>
-        <el-button type="primary" size="mini" @click="confirmDatabase"
-          >{{ $t("dataset.confirm") }}
+        <el-button
+          type="primary"
+          size="mini"
+          @click="confirmDatabase"
+        >{{ $t("dataset.confirm") }}
         </el-button>
       </div>
     </el-dialog>
@@ -184,43 +189,43 @@
 </template>
 
 <script>
-import { post, getOnlineExcelFile } from "@/api/dataset/dataset";
+import { post, getOnlineExcelFile } from '@/api/dataset/dataset'
 // import { getToken } from "@/utils/auth";
 // import i18n from "@/lang";
 // import { $alert } from "@/utils/message";
-import store from "@/store";
+import store from '@/store'
 import AddDB from './AddDB'
 import { basicInfo } from '@/api/system/basic'
 import { queryAuthModel } from '@/api/authModel/authModel'
-import { exportExcel } from "../data/export";
+import { exportExcel } from '../data/export'
 import { dataToExcelBlob } from '@/utils/dataToExcelBlob'
-import LuckyExcel from "luckyexcel";
+import LuckyExcel from 'luckyexcel'
 import html2canvas from 'html2canvasde'
 // const token = getToken();
 
 export default {
-  name: "AddExcel",
-  components: {AddDB},
+  name: 'AddExcel',
+  components: { AddDB },
   props: {
     param: {
       type: Object,
-      default: null,
+      default: null
     },
     tableId: {
       type: String,
-      default: "",
+      default: ''
     },
     editType: {
       type: Number,
-      default: 0,
-    },
+      default: 0
+    }
   },
   data() {
     return {
       // sheetObj: { datasetName: ' ', fields: [] },
       // sheets: [],
       // data: [],
-      mode: "1",
+      mode: '1',
       // height: 600,
       filterText: '',
       searchPids: [], // 查询命中的pid
@@ -232,7 +237,7 @@ export default {
       uploading: false,
       isMaskShow: false,
       showLuckysheet: false,
-      name: "",
+      name: '',
       file: null,
       visible: false,
       visibleDatabase: false,
@@ -252,7 +257,7 @@ export default {
         row: 5000
       },
       _unhandledRejectionHandler: null
-    };
+    }
   },
   watch: {
     filterText(val) {
@@ -264,22 +269,22 @@ export default {
       this.$refs.datasetTreeRef.filter(this.filterText)
     }
   },
-  
+
   created() {
     if (!this.param.tableId) {
-      this.param.tableId = "";
+      this.param.tableId = ''
     }
     if (!this.param.editType) {
-      this.param.editType = 0;
+      this.param.editType = 0
     }
-    let _this = this
-    this._unhandledRejectionHandler = function (event) {
-      if(event.reason.stack.includes('luckysheet.umd.js')) {
+    const _this = this
+    this._unhandledRejectionHandler = function(event) {
+      if (event.reason.stack.includes('luckysheet.umd.js')) {
         _this.$message.error('导入失败，此表格可能引用其他表格数据，请断开表格链接后再尝试导入。')
         _this.refresh()
       }
     }
-    window.addEventListener("unhandledrejection", this._unhandledRejectionHandler);
+    window.addEventListener('unhandledrejection', this._unhandledRejectionHandler)
   },
   mounted() {
     this.queryBasicInfo()
@@ -287,7 +292,7 @@ export default {
   beforeDestroy() {
     document.getElementById('luckysheet-icon-morebtn-div').style.display = 'none'
     this.showLuckysheet = false
-    window.removeEventListener("unhandledrejection", this._unhandledRejectionHandler)
+    window.removeEventListener('unhandledrejection', this._unhandledRejectionHandler)
   },
   methods: {
     queryBasicInfo() {
@@ -308,15 +313,15 @@ export default {
     },
     init(data) {
       this.showLuckysheet = true
-      this.isMaskShow = true;
+      this.isMaskShow = true
       this.$nextTick(() => {
-        this.isMaskShow = false;
-        luckysheet.destroy();
+        this.isMaskShow = false
+        luckysheet.destroy()
         luckysheet.create({
-          container: "luckysheet", // 设定DOM容器的id
+          container: 'luckysheet', // 设定DOM容器的id
           title: this.name, // 设定表格名称
-          lang: "zh", // 设定表格语言
-          plugins: [{name: 'chart'}],
+          lang: 'zh', // 设定表格语言
+          plugins: [{ name: 'chart' }],
           data: data || [],
           // 添加只读模式配置
           showtoolbar: !this.isReadOnly, // 是否显示工具栏
@@ -325,27 +330,25 @@ export default {
           enableAddRow: !this.isReadOnly, // 是否允许添加行
           enableAddCol: !this.isReadOnly, // 是否允许添加列
           allowCopy: false
-        });
+        })
         this.exportXlsx()
-      });
+      })
     },
     exportXlsx() {
-      let _this = this
+      const _this = this
       setTimeout(() => {
         // 管理员角色可以导出，所有角色均可打印
-        let index = store.getters.roles.findIndex(item => item.id == 1)
-        let exportXlsxDom = document.getElementById('luckysheet-exportXlsx-btn-title')
-        let printDom = document.getElementById('luckysheet-icon-print')
+        const index = store.getters.roles.findIndex(item => item.id == 1)
+        const exportXlsxDom = document.getElementById('luckysheet-exportXlsx-btn-title')
+        const printDom = document.getElementById('luckysheet-icon-print')
         printDom.addEventListener('click', async function() {
-          var selectHtml = luckysheet.getRangeHtml();
+          var selectHtml = luckysheet.getRangeHtml()
           _this.printWithIframe(selectHtml)
         })
-        if(index !== -1) {
-          
+        if (index !== -1) {
           exportXlsxDom.addEventListener('click', async function() {
             await exportExcel(luckysheet.getAllSheets(), _this.param.name, false)
           })
-          
         } else {
           exportXlsxDom.style.display = 'none'
           // printDom.style.display = 'none'
@@ -354,86 +357,86 @@ export default {
     },
     printWithIframe(selectHtml) {
       // 第一步：创建用于渲染的隐藏 iframe
-      const renderIframe = document.createElement('iframe');
-      renderIframe.style.position = 'fixed';
-      renderIframe.style.right = '0';
-      renderIframe.style.bottom = '0';
-      renderIframe.style.width = '100%';
-      renderIframe.style.height = '100%';
-      renderIframe.style.border = '0';
-      renderIframe.style.visibility = 'hidden';
-      document.body.appendChild(renderIframe);
+      const renderIframe = document.createElement('iframe')
+      renderIframe.style.position = 'fixed'
+      renderIframe.style.right = '0'
+      renderIframe.style.bottom = '0'
+      renderIframe.style.width = '100%'
+      renderIframe.style.height = '100%'
+      renderIframe.style.border = '0'
+      renderIframe.style.visibility = 'hidden'
+      document.body.appendChild(renderIframe)
 
-      renderIframe.srcdoc = selectHtml;
+      renderIframe.srcdoc = selectHtml
 
-      renderIframe.onload = function () {
-        const renderDoc = renderIframe.contentDocument || renderIframe.contentWindow.document;
+      renderIframe.onload = function() {
+        const renderDoc = renderIframe.contentDocument || renderIframe.contentWindow.document
 
         // 等待渲染完成再截图
         setTimeout(() => {
           html2canvas(renderDoc.body).then(canvas => {
-            const imgData = canvas.toDataURL();
-            const html = `<html><head><style>body{margin:0}</style></head><body><img src="${imgData}" /></body></html>`;
+            const imgData = canvas.toDataURL()
+            const html = `<html><head><style>body{margin:0}</style></head><body><img src="${imgData}" /></body></html>`
 
             // 第二步：创建打印用 iframe
-            const printIframe = document.createElement('iframe');
-            printIframe.style.position = 'fixed';
-            printIframe.style.right = '0';
-            printIframe.style.bottom = '0';
-            printIframe.style.width = '0';
-            printIframe.style.height = '0';
-            printIframe.style.border = '0';
-            printIframe.style.visibility = 'hidden';
-            document.body.appendChild(printIframe);
+            const printIframe = document.createElement('iframe')
+            printIframe.style.position = 'fixed'
+            printIframe.style.right = '0'
+            printIframe.style.bottom = '0'
+            printIframe.style.width = '0'
+            printIframe.style.height = '0'
+            printIframe.style.border = '0'
+            printIframe.style.visibility = 'hidden'
+            document.body.appendChild(printIframe)
 
-            printIframe.srcdoc = html;
+            printIframe.srcdoc = html
 
-            printIframe.onload = function () {
-              printIframe.contentWindow.focus();
-              printIframe.contentWindow.print();
+            printIframe.onload = function() {
+              printIframe.contentWindow.focus()
+              printIframe.contentWindow.print()
 
               // 打印后清理两个 iframe
               setTimeout(() => {
-                document.body.removeChild(renderIframe);
-                document.body.removeChild(printIframe);
-              }, 1000);
-            };
-          });
-        }, 300); // 给 DOM 和样式一点渲染时间
-      };
+                document.body.removeChild(renderIframe)
+                document.body.removeChild(printIframe)
+              }, 1000)
+            }
+          })
+        }, 300) // 给 DOM 和样式一点渲染时间
+      }
     },
     uploadFile() {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = ".xlsx"; // 可指定类型，如 ',.csv,.txt'
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = '.xlsx' // 可指定类型，如 ',.csv,.txt'
 
       input.onchange = () => {
-        const file = input.files[0];
+        const file = input.files[0]
         if (file) {
-          console.log("用户选择的文件:", file);
+          console.log('用户选择的文件:', file)
           // 可上传或读取内容
-          this.file = file;
-          this.uploadExcel(file);
+          this.file = file
+          this.uploadExcel(file)
         }
-      };
+      }
 
-      input.click(); // 打开文件选择对话框
+      input.click() // 打开文件选择对话框
     },
     uploadExcel(file) {
-      const name = file.name;
-      const suffixArr = name.split(".");
-      this.name = suffixArr[0];
-      const suffix = suffixArr[suffixArr.length - 1];
-      if (suffix != "xlsx") {
-        this.$message.error("目前只支持xlsx文件");
-        return;
+      const name = file.name
+      const suffixArr = name.split('.')
+      this.name = suffixArr[0]
+      const suffix = suffixArr[suffixArr.length - 1]
+      if (suffix != 'xlsx') {
+        this.$message.error('目前只支持xlsx文件')
+        return
       }
-      const _this = this;
+      const _this = this
 
       try {
         LuckyExcel.transformExcelToLucky(
           file,
-          function (exportJson, luckysheetfile) {
+          function(exportJson, luckysheetfile) {
             try {
               if (
                 !exportJson ||
@@ -441,66 +444,66 @@ export default {
                 exportJson.sheets.length === 0
               ) {
                 _this.$message.error(
-                  "无法读取Excel文件的内容，目前不支持xls文件！"
-                );
-                return;
+                  '无法读取Excel文件的内容，目前不支持xls文件！'
+                )
+                return
               }
-              _this.init(exportJson.sheets);
+              _this.init(exportJson.sheets)
               // _this.excelJson = exportJson
             } catch (err) {
               // console.error('处理Excel数据错误:', err)
-              _this.$message.error("无法读取文件内容，请检查文件是否损坏1");
+              _this.$message.error('无法读取文件内容，请检查文件是否损坏1')
             }
           },
-          function (err) {
-            console.error("Excel解析错误:", err);
-            _this.$message.error("无法读取文件内容，请检查文件是否损坏2");
+          function(err) {
+            console.error('Excel解析错误:', err)
+            _this.$message.error('无法读取文件内容，请检查文件是否损坏2')
           }
-        );
+        )
       } catch (err) {
         // console.error('Excel转换错误:', err)
-        _this.$message.error("无法读取文件内容，请检查文件是否损坏3");
+        _this.$message.error('无法读取文件内容，请检查文件是否损坏3')
       }
     },
     async save() {
       // let blob = await exportExcel(luckysheet.getAllSheets(), this.name, true)
       // console.log('blob', blob)
-      const formData = new FormData();
+      const formData = new FormData()
       // formData.append('file', blob)
-      formData.append('file', new Blob([JSON.stringify(luckysheet.getAllSheets())], { type: "text/plain" }))
+      formData.append('file', new Blob([JSON.stringify(luckysheet.getAllSheets())], { type: 'text/plain' }))
       // formData.append(
       //   "info",
       //   this.toBase64(JSON.stringify(luckysheet.getAllSheets()))
       // );
-      formData.append("id", this.param.tableId || "");
-      formData.append("name", this.name || "");
-      formData.append("sceneId", this.param.id || "");
-      formData.append("type", "onLineExcel");
-      post("/dataset/table/save/onLineExcel", formData).then((response) => {
-        this.$emit("saveSuccess", {});
-        this.cancel();
-      });
+      formData.append('id', this.param.tableId || '')
+      formData.append('name', this.name || '')
+      formData.append('sceneId', this.param.id || '')
+      formData.append('type', 'onLineExcel')
+      post('/dataset/table/save/onLineExcel', formData).then((response) => {
+        this.$emit('saveSuccess', {})
+        this.cancel()
+      })
     },
     toBase64(str) {
-      const bytes = new TextEncoder().encode(str); // UTF-8 编码
+      const bytes = new TextEncoder().encode(str) // UTF-8 编码
       const binary = Array.from(bytes)
         .map((b) => String.fromCharCode(b))
-        .join("");
-      return btoa(binary);
+        .join('')
+      return btoa(binary)
     },
     cancel() {
-      this.dataReset();
+      this.dataReset()
       if (this.param.tableId) {
-        this.$emit("switchComponent", {
-          name: "ViewTable",
-          param: this.param.table,
-        });
+        this.$emit('switchComponent', {
+          name: 'ViewTable',
+          param: this.param.table
+        })
       } else {
-        this.$emit("switchComponent", { name: "" });
+        this.$emit('switchComponent', { name: '' })
       }
     },
     dataReset() {
-      this.name = "";
+      this.name = ''
     },
     close() {
       this.visible = false
@@ -511,33 +514,31 @@ export default {
       this.searchType = 'all'
     },
     confirm() {
-      if(!this.selectedData) {
+      if (!this.selectedData) {
         this.$message.warning('请选择数据集！')
         return
       }
       this.visible = false
       // 获取 数据集 数据
       this.initTable(this.selectedData.id)
-      
     },
     closeDatabase() {
       this.visibleDatabase = false
-      
     },
     confirmDatabase() {
-      
+
     },
     initTable(id) {
       this.tableViewRowForm.row = this.pageShow
       if (id !== null) {
         post('/dataset/table/getWithPermission/' + id, null).then(response => {
-          if(this.selectedData.modelInnerType === 'onLineExcel') {
+          if (this.selectedData.modelInnerType === 'onLineExcel') {
             getOnlineExcelFile(response.data.info).then((res) => {
               res.text().then(text => {
                 this.name = response.data.name
-                this.init(JSON.parse(text));
-              });
-            });
+                this.init(JSON.parse(text))
+              })
+            })
           } else {
             this.table = response.data
             this.initPreviewData(this.page)
@@ -549,9 +550,9 @@ export default {
       if (this.table.id) {
         this.table.row = this.tableViewRowForm.row
         post('/dataset/table/getPreviewData/' + page.page + '/' + page.pageSize, this.table, true, 30000).then(response => {
-          if(response.success) {
+          if (response.success) {
             // 如果总条数大于需要加载的条数，弹出提示
-            if(response.data.page.total > this.pageShow) {
+            if (response.data.page.total > this.pageShow) {
               this.$message({
                 message: `导入的数据集超过设定的阈值‘${this.pageShow}’,仅加载阈值数量的数据条数。`,
                 type: 'warning',
@@ -586,11 +587,11 @@ export default {
       // 提取字段标题和字段映射顺序（按 columnIndex 排序）
       const visibleFields = fields
         .filter(f => f.checked)
-        .sort((a, b) => a.columnIndex - b.columnIndex);
-      const headerRow = visibleFields.map(f => f.name); // 表头
-      const keys = visibleFields.map(f => f.datainsName);     // 用于读取 data 的 key
-      const tableData = data.map(item => keys.map(k => item[k]));
-      return [headerRow, ...tableData];
+        .sort((a, b) => a.columnIndex - b.columnIndex)
+      const headerRow = visibleFields.map(f => f.name) // 表头
+      const keys = visibleFields.map(f => f.datainsName) // 用于读取 data 的 key
+      const tableData = data.map(item => keys.map(k => item[k]))
+      return [headerRow, ...tableData]
     },
     openDialog() {
       this.visible = true
@@ -662,9 +663,9 @@ export default {
     },
     searchTypeClick(searchTypeInfo) {
       this.searchType = searchTypeInfo
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style scoped>
