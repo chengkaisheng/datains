@@ -45,6 +45,9 @@ public class DatasetTableField implements Serializable {
     private Long lastSyncTime;
     @ApiModelProperty("是否是默认排序字段")
     private Integer defaultSort;
+    @ApiModelProperty("数值精度")
+    private Integer precision;
+
 
     private static final long serialVersionUID = 1L;
 }

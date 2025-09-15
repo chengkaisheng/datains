@@ -78,7 +78,8 @@
   </sql>
   <sql id="Base_Column_List">
     id, table_id, origin_name, `name`, datains_name, group_type, `type`, `size`, de_type,
-    de_type_format, de_extract_type, ext_field, `checked`, column_index, last_sync_time, default_sort
+    de_type_format, de_extract_type, ext_field, `checked`, column_index, last_sync_time, default_sort,
+    `precision`
   </sql>
   <select id="selectByExample" parameterType="io.datains.base.domain.DatasetTableFieldExample" resultMap="BaseResultMap">
     select
@@ -111,115 +112,128 @@
     </if>
   </delete>
   <insert id="insert" parameterType="io.datains.base.domain.DatasetTableField">
-    insert into dataset_table_field (id, table_id, origin_name,
-      `name`, datains_name, group_type,
-      `type`, `size`, de_type,
-      de_type_format, de_extract_type, ext_field,
-      `checked`, column_index, last_sync_time, default_sort
-      )
-    values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{originName,jdbcType=VARCHAR},
-      #{name,jdbcType=VARCHAR}, #{datainsName,jdbcType=VARCHAR}, #{groupType,jdbcType=VARCHAR},
-      #{type,jdbcType=VARCHAR}, #{size,jdbcType=INTEGER}, #{deType,jdbcType=INTEGER},
-      #{deTypeFormat,jdbcType=INTEGER}, #{deExtractType,jdbcType=INTEGER}, #{extField,jdbcType=INTEGER},
-      #{checked,jdbcType=BIT}, #{columnIndex,jdbcType=INTEGER}, #{lastSyncTime,jdbcType=BIGINT}, #{defaultSort,jdbcType=INTEGER}
-      )
+      insert into dataset_table_field (id, table_id, origin_name,
+                                       `name`, datains_name, group_type,
+                                       `type`, `size`, de_type,
+                                       de_type_format, de_extract_type, ext_field,
+                                       `checked`, column_index, last_sync_time, default_sort,
+                                       `precision`)
+      values (#{id,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{originName,jdbcType=VARCHAR},
+              #{name,jdbcType=VARCHAR}, #{datainsName,jdbcType=VARCHAR}, #{groupType,jdbcType=VARCHAR},
+              #{type,jdbcType=VARCHAR}, #{size,jdbcType=INTEGER}, #{deType,jdbcType=INTEGER},
+              #{deTypeFormat,jdbcType=INTEGER}, #{deExtractType,jdbcType=INTEGER}, #{extField,jdbcType=INTEGER},
+              #{checked,jdbcType=BIT}, #{columnIndex,jdbcType=INTEGER}, #{lastSyncTime,jdbcType=BIGINT},
+              #{defaultSort,jdbcType=INTEGER},
+              #{precision,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="io.datains.base.domain.DatasetTableField">
-    insert into dataset_table_field
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        id,
-      </if>
-      <if test="tableId != null">
-        table_id,
-      </if>
-      <if test="originName != null">
-        origin_name,
-      </if>
-      <if test="name != null">
-        `name`,
-      </if>
-      <if test="datainsName != null">
-        datains_name,
-      </if>
-      <if test="groupType != null">
-        group_type,
-      </if>
-      <if test="type != null">
-        `type`,
-      </if>
-      <if test="size != null">
-        `size`,
-      </if>
-      <if test="deType != null">
-        de_type,
-      </if>
-      <if test="deTypeFormat != null">
-        de_type_format,
-      </if>
-      <if test="deExtractType != null">
-        de_extract_type,
-      </if>
-      <if test="extField != null">
-        ext_field,
-      </if>
-      <if test="checked != null">
-        `checked`,
-      </if>
-      <if test="columnIndex != null">
-        column_index,
-      </if>
-      <if test="lastSyncTime != null">
-        last_sync_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="id != null">
-        #{id,jdbcType=VARCHAR},
-      </if>
-      <if test="tableId != null">
-        #{tableId,jdbcType=VARCHAR},
-      </if>
-      <if test="originName != null">
-        #{originName,jdbcType=VARCHAR},
-      </if>
-      <if test="name != null">
-        #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="datainsName != null">
-        #{datainsName,jdbcType=VARCHAR},
-      </if>
-      <if test="groupType != null">
-        #{groupType,jdbcType=VARCHAR},
-      </if>
-      <if test="type != null">
-        #{type,jdbcType=VARCHAR},
-      </if>
-      <if test="size != null">
-        #{size,jdbcType=INTEGER},
-      </if>
-      <if test="deType != null">
-        #{deType,jdbcType=INTEGER},
-      </if>
-      <if test="deTypeFormat != null">
-        #{deTypeFormat,jdbcType=INTEGER},
-      </if>
-      <if test="deExtractType != null">
-        #{deExtractType,jdbcType=INTEGER},
-      </if>
-      <if test="extField != null">
-        #{extField,jdbcType=INTEGER},
-      </if>
-      <if test="checked != null">
-        #{checked,jdbcType=BIT},
-      </if>
-      <if test="columnIndex != null">
-        #{columnIndex,jdbcType=INTEGER},
-      </if>
-      <if test="lastSyncTime != null">
-        #{lastSyncTime,jdbcType=BIGINT},
-      </if>
-    </trim>
+      insert into dataset_table_field
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+              id,
+          </if>
+          <if test="tableId != null">
+              table_id,
+          </if>
+          <if test="originName != null">
+              origin_name,
+          </if>
+          <if test="name != null">
+              `name`,
+          </if>
+          <if test="datainsName != null">
+              datains_name,
+          </if>
+          <if test="groupType != null">
+              group_type,
+          </if>
+          <if test="type != null">
+              `type`,
+          </if>
+          <if test="size != null">
+              `size`,
+          </if>
+          <if test="deType != null">
+              de_type,
+          </if>
+          <if test="deTypeFormat != null">
+              de_type_format,
+          </if>
+          <if test="deExtractType != null">
+              de_extract_type,
+          </if>
+          <if test="extField != null">
+              ext_field,
+          </if>
+          <if test="checked != null">
+              `checked`,
+          </if>
+          <if test="columnIndex != null">
+              column_index,
+          </if>
+          <if test="lastSyncTime != null">
+              last_sync_time,
+          </if>
+          <if test="defaultSort != null">
+              default_sort,
+          </if>
+          <if test="precision != null">
+              `precision`,
+          </if>
+      </trim>
+      <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+              #{id,jdbcType=VARCHAR},
+          </if>
+          <if test="tableId != null">
+              #{tableId,jdbcType=VARCHAR},
+          </if>
+          <if test="originName != null">
+              #{originName,jdbcType=VARCHAR},
+          </if>
+          <if test="name != null">
+              #{name,jdbcType=VARCHAR},
+          </if>
+          <if test="datainsName != null">
+              #{datainsName,jdbcType=VARCHAR},
+          </if>
+          <if test="groupType != null">
+              #{groupType,jdbcType=VARCHAR},
+          </if>
+          <if test="type != null">
+              #{type,jdbcType=VARCHAR},
+          </if>
+          <if test="size != null">
+              #{size,jdbcType=INTEGER},
+          </if>
+          <if test="deType != null">
+              #{deType,jdbcType=INTEGER},
+          </if>
+          <if test="deTypeFormat != null">
+              #{deTypeFormat,jdbcType=INTEGER},
+          </if>
+          <if test="deExtractType != null">
+              #{deExtractType,jdbcType=INTEGER},
+          </if>
+          <if test="extField != null">
+              #{extField,jdbcType=INTEGER},
+          </if>
+          <if test="checked != null">
+              #{checked,jdbcType=BIT},
+          </if>
+          <if test="columnIndex != null">
+              #{columnIndex,jdbcType=INTEGER},
+          </if>
+          <if test="lastSyncTime != null">
+              #{lastSyncTime,jdbcType=BIGINT},
+          </if>
+          <if test="defaultSort != null">
+              #{defaultSort,jdbcType=INTEGER},
+          </if>
+          <if test="precision != null">
+              #{precision,jdbcType=INTEGER},
+          </if>
+      </trim>
   </insert>
   <select id="countByExample" parameterType="io.datains.base.domain.DatasetTableFieldExample" resultType="java.lang.Long">
     select count(*) from dataset_table_field
@@ -302,55 +316,58 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="io.datains.base.domain.DatasetTableField">
-    update dataset_table_field
-    <set>
-      <if test="tableId != null">
-        table_id = #{tableId,jdbcType=VARCHAR},
-      </if>
-      <if test="originName != null">
-        origin_name = #{originName,jdbcType=VARCHAR},
-      </if>
-      <if test="name != null">
-        `name` = #{name,jdbcType=VARCHAR},
-      </if>
-      <if test="datainsName != null">
-        datains_name = #{datainsName,jdbcType=VARCHAR},
-      </if>
-      <if test="groupType != null">
-        group_type = #{groupType,jdbcType=VARCHAR},
-      </if>
-      <if test="type != null">
-        `type` = #{type,jdbcType=VARCHAR},
-      </if>
-      <if test="size != null">
-        `size` = #{size,jdbcType=INTEGER},
-      </if>
-      <if test="deType != null">
-        de_type = #{deType,jdbcType=INTEGER},
-      </if>
-      <if test="deTypeFormat != null">
-        de_type_format = #{deTypeFormat,jdbcType=INTEGER},
-      </if>
-      <if test="deExtractType != null">
-        de_extract_type = #{deExtractType,jdbcType=INTEGER},
-      </if>
-      <if test="extField != null">
-        ext_field = #{extField,jdbcType=INTEGER},
-      </if>
-      <if test="checked != null">
-        `checked` = #{checked,jdbcType=BIT},
-      </if>
-      <if test="columnIndex != null">
-        column_index = #{columnIndex,jdbcType=INTEGER},
-      </if>
-      <if test="lastSyncTime != null">
-        last_sync_time = #{lastSyncTime,jdbcType=BIGINT},
-      </if>
-      <if test="defaultSort != null">
-        default_sort = #{defaultSort,jdbcType=INTEGER},
-      </if>
-    </set>
-    where id = #{id,jdbcType=VARCHAR}
+      update dataset_table_field
+      <set>
+          <if test="tableId != null">
+              table_id = #{tableId,jdbcType=VARCHAR},
+          </if>
+          <if test="originName != null">
+              origin_name = #{originName,jdbcType=VARCHAR},
+          </if>
+          <if test="name != null">
+              `name` = #{name,jdbcType=VARCHAR},
+          </if>
+          <if test="datainsName != null">
+              datains_name = #{datainsName,jdbcType=VARCHAR},
+          </if>
+          <if test="groupType != null">
+              group_type = #{groupType,jdbcType=VARCHAR},
+          </if>
+          <if test="type != null">
+              `type` = #{type,jdbcType=VARCHAR},
+          </if>
+          <if test="size != null">
+              `size` = #{size,jdbcType=INTEGER},
+          </if>
+          <if test="deType != null">
+              de_type = #{deType,jdbcType=INTEGER},
+          </if>
+          <if test="deTypeFormat != null">
+              de_type_format = #{deTypeFormat,jdbcType=INTEGER},
+          </if>
+          <if test="deExtractType != null">
+              de_extract_type = #{deExtractType,jdbcType=INTEGER},
+          </if>
+          <if test="extField != null">
+              ext_field = #{extField,jdbcType=INTEGER},
+          </if>
+          <if test="checked != null">
+              `checked` = #{checked,jdbcType=BIT},
+          </if>
+          <if test="columnIndex != null">
+              column_index = #{columnIndex,jdbcType=INTEGER},
+          </if>
+          <if test="lastSyncTime != null">
+              last_sync_time = #{lastSyncTime,jdbcType=BIGINT},
+          </if>
+          <if test="defaultSort != null">
+              default_sort = #{defaultSort,jdbcType=INTEGER},
+          </if>
+          <if test="precision != null">
+              `precision` = #{precision,jdbcType=INTEGER},
+          </if>
+      </set>
+      where id = #{id,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="io.datains.base.domain.DatasetTableField">
     update dataset_table_field

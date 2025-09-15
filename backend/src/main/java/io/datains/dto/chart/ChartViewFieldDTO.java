@@ -15,4 +15,5 @@ public class ChartViewFieldDTO extends ChartViewFieldBaseDTO implements Serializ
     private Integer defaultSort;
     //排序字段的次序
     private Integer sortIndex;
+    private Integer precision;
 }

@@ -6,6 +6,7 @@ import io.datains.base.domain.DatasetTableFieldExample;
 import io.datains.base.domain.Datasource;
 import io.datains.base.mapper.DatasetTableFieldMapper;
 import io.datains.commons.constants.DeTypeConstants;
+import io.datains.constants.HiveCusConstants;
 import io.datains.controller.request.chart.ChartExtFilterRequest;
 import io.datains.dto.chart.ChartCustomFilterItemDTO;
 import io.datains.dto.chart.ChartFieldCustomFilterDTO;
@@ -26,11 +27,7 @@ import org.stringtemplate.v4.STGroupFile;
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -110,7 +107,7 @@ public class HiveQueryProvider extends QueryProvider {
                     if (f.getDeType() == DeTypeConstants.DE_INT) {
                         fieldName = String.format(HiveConstants.CAST, originField, HiveConstants.DEFAULT_INT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                        fieldName = String.format(HiveConstants.CAST, originField, HiveConstants.DEFAULT_FLOAT_FORMAT);
+                        fieldName = String.format(HiveConstants.CAST, originField, HiveCusConstants.getFloatFormat(f.getPrecision()));
                     } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
                         fieldName = String.format(HiveConstants.STR_TO_DATE, originField, HiveConstants.DEFAULT_DATE_FORMAT);
                     } else {
@@ -305,7 +302,7 @@ public class HiveQueryProvider extends QueryProvider {
                     originField = String.format(HiveConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(HiveConstants.CAST, String.format(HiveConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), HiveConstants.DEFAULT_FLOAT_FORMAT);
+                        originField = String.format(HiveConstants.CAST, String.format(HiveConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), HiveCusConstants.getFloatFormat(x.getPrecision()));
                     } else {
                         originField = String.format(HiveConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                     }
@@ -781,7 +778,7 @@ public class HiveQueryProvider extends QueryProvider {
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(HiveConstants.CAST, originName, HiveConstants.DEFAULT_FLOAT_FORMAT);
+                    whereName = String.format(HiveConstants.CAST, originName, HiveCusConstants.getFloatFormat(field.getPrecision()));
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = String.format(HiveConstants.UNIX_TIMESTAMP, originName) + "*1000";
@@ -873,7 +870,7 @@ public class HiveQueryProvider extends QueryProvider {
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(HiveConstants.CAST, originName, HiveConstants.DEFAULT_FLOAT_FORMAT);
+                    whereName = String.format(HiveConstants.CAST, originName, HiveCusConstants.getFloatFormat(field.getPrecision()));
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = String.format(HiveConstants.UNIX_TIMESTAMP, originName) + "*1000";
@@ -1028,11 +1025,11 @@ public class HiveQueryProvider extends QueryProvider {
             fieldName = String.format(HiveConstants.AGG_FIELD, y.getSummary(), originField);
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = String.format(HiveConstants.CAST, originField, y.getDeType() == 2 ? HiveConstants.DEFAULT_INT_FORMAT : HiveConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(HiveConstants.CAST, originField, y.getDeType() == 2 ? HiveConstants.DEFAULT_INT_FORMAT : HiveCusConstants.getFloatFormat(y.getPrecision()));
                 String agg = String.format(HiveConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(HiveConstants.CAST, agg, HiveConstants.DEFAULT_FLOAT_FORMAT);
+                fieldName = String.format(HiveConstants.CAST, agg, HiveCusConstants.getFloatFormat(y.getPrecision()));
             } else {
-                String cast = String.format(HiveConstants.CAST, originField, y.getDeType() == 2 ? HiveConstants.DEFAULT_INT_FORMAT : HiveConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(HiveConstants.CAST, originField, y.getDeType() == 2 ? HiveConstants.DEFAULT_INT_FORMAT : HiveCusConstants.getFloatFormat(y.getPrecision()));
                 fieldName = String.format(HiveConstants.AGG_FIELD, y.getSummary(), cast);
             }
         }

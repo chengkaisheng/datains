@@ -8,6 +8,7 @@ import io.datains.base.domain.DatasetTableFieldExample;
 import io.datains.base.domain.Datasource;
 import io.datains.base.mapper.DatasetTableFieldMapper;
 import io.datains.commons.constants.DeTypeConstants;
+import io.datains.constants.PgCusConstants;
 import io.datains.controller.request.chart.ChartExtFilterRequest;
 import io.datains.dto.chart.ChartCustomFilterItemDTO;
 import io.datains.dto.chart.ChartFieldCustomFilterDTO;
@@ -136,7 +137,7 @@ public class PgQueryProvider extends QueryProvider {
                     if (f.getDeType() == DeTypeConstants.DE_INT) {
                         fieldName = String.format(PgConstants.CAST, originField, PgConstants.DEFAULT_INT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                        fieldName = String.format(PgConstants.CAST, originField, PgConstants.DEFAULT_FLOAT_FORMAT);
+                        fieldName = String.format(PgConstants.CAST, originField, PgCusConstants.getFloatFormat(f.getPrecision()));
                     } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
                         fieldName = String.format(PgConstants.CAST, originField, "timestamp");
                     } else {
@@ -337,7 +338,7 @@ public class PgQueryProvider extends QueryProvider {
                     originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(PgConstants.CAST, String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), PgConstants.DEFAULT_FLOAT_FORMAT);
+                        originField = String.format(PgConstants.CAST, String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), PgCusConstants.getFloatFormat(x.getPrecision()));
                     } else {
                         originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                     }
@@ -395,7 +396,7 @@ public class PgQueryProvider extends QueryProvider {
                             originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                         } else {
                             if (x.getDeType() == 2 || x.getDeType() == 3) {
-                                originField = String.format(PgConstants.CAST, String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), PgConstants.DEFAULT_FLOAT_FORMAT);
+                                originField = String.format(PgConstants.CAST, String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), PgCusConstants.getFloatFormat(f.getPrecision()));
                             } else {
                                 originField = String.format(PgConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                             }
@@ -891,7 +892,7 @@ public class PgQueryProvider extends QueryProvider {
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(PgConstants.CAST, originName, PgConstants.DEFAULT_FLOAT_FORMAT);
+                    whereName = String.format(PgConstants.CAST, originName, PgCusConstants.getFloatFormat(field.getPrecision()));
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = String.format(PgConstants.UNIX_TIMESTAMP, originName);
@@ -983,7 +984,7 @@ public class PgQueryProvider extends QueryProvider {
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(PgConstants.CAST, originName, PgConstants.DEFAULT_FLOAT_FORMAT);
+                    whereName = String.format(PgConstants.CAST, originName, PgCusConstants.getFloatFormat(field.getPrecision()));
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = String.format(PgConstants.UNIX_TIMESTAMP, originName);
@@ -1099,11 +1100,11 @@ public class PgQueryProvider extends QueryProvider {
             fieldName = String.format(PgConstants.AGG_FIELD, y.getSummary(), originField);
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = String.format(PgConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? PgConstants.DEFAULT_INT_FORMAT : PgConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(PgConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? PgConstants.DEFAULT_INT_FORMAT : PgCusConstants.getFloatFormat(y.getPrecision()));
                 String agg = String.format(PgConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(PgConstants.CAST, agg, PgConstants.DEFAULT_FLOAT_FORMAT);
+                fieldName = String.format(PgConstants.CAST, agg, PgCusConstants.getFloatFormat(y.getPrecision()));
             } else {
-                String cast = String.format(PgConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? PgConstants.DEFAULT_INT_FORMAT : PgConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(PgConstants.CAST, originField, y.getDeType() == DeTypeConstants.DE_INT ? PgConstants.DEFAULT_INT_FORMAT : PgCusConstants.getFloatFormat(y.getPrecision()));
                 fieldName = String.format(PgConstants.AGG_FIELD, y.getSummary(), cast);
             }
         }

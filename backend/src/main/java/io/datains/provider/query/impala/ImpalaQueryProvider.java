@@ -7,6 +7,7 @@ import io.datains.base.domain.DatasetTableFieldExample;
 import io.datains.base.domain.Datasource;
 import io.datains.base.mapper.DatasetTableFieldMapper;
 import io.datains.commons.constants.DeTypeConstants;
+import io.datains.constants.ImpalaCusConstants;
 import io.datains.controller.request.chart.ChartExtFilterRequest;
 import io.datains.dto.chart.ChartCustomFilterItemDTO;
 import io.datains.dto.chart.ChartFieldCustomFilterDTO;
@@ -105,7 +106,7 @@ public class ImpalaQueryProvider extends QueryProvider {
                     if (f.getDeType() == DeTypeConstants.DE_INT) {
                         fieldName = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_INT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                        fieldName = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_FLOAT_FORMAT);
+                        fieldName = String.format(ImpalaConstants.CAST, originField, ImpalaCusConstants.getFloatFormat(f.getPrecision()));
                     } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
                         fieldName = String.format(ImpalaConstants.DATE_FORMAT, originField, ImpalaConstants.DEFAULT_DATE_FORMAT);
                     } else {
@@ -118,7 +119,7 @@ public class ImpalaQueryProvider extends QueryProvider {
                     } else if (f.getDeType() == 2) {
                         fieldName = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_INT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                        fieldName = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_FLOAT_FORMAT);
+                        fieldName = String.format(ImpalaConstants.CAST, originField, ImpalaCusConstants.getFloatFormat(f.getPrecision()));
                     } else {
                         fieldName = originField;
                     }
@@ -313,7 +314,7 @@ public class ImpalaQueryProvider extends QueryProvider {
                     originField = String.format(ImpalaConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(ImpalaConstants.CAST, String.format(ImpalaConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), ImpalaConstants.DEFAULT_FLOAT_FORMAT);
+                        originField = String.format(ImpalaConstants.CAST, String.format(ImpalaConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), ImpalaCusConstants.getFloatFormat(x.getPrecision()));
                     } else {
                         originField = String.format(ImpalaConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                     }
@@ -372,7 +373,7 @@ public class ImpalaQueryProvider extends QueryProvider {
                             originField = String.format(ImpalaConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                         } else {
                             if (x.getDeType() == 2 || x.getDeType() == 3) {
-                                originField = String.format(ImpalaConstants.CAST, String.format(ImpalaConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), ImpalaConstants.DEFAULT_FLOAT_FORMAT);
+                                originField = String.format(ImpalaConstants.CAST, String.format(ImpalaConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), ImpalaCusConstants.getFloatFormat(f.getPrecision()));
                             } else {
                                 originField = String.format(ImpalaConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                             }
@@ -871,7 +872,7 @@ public class ImpalaQueryProvider extends QueryProvider {
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(ImpalaConstants.CAST, originName, ImpalaConstants.DEFAULT_FLOAT_FORMAT);
+                    whereName = String.format(ImpalaConstants.CAST, originName, ImpalaCusConstants.getFloatFormat(field.getPrecision()));
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = String.format(ImpalaConstants.UNIX_TIMESTAMP, originName) + "*1000";
@@ -967,7 +968,7 @@ public class ImpalaQueryProvider extends QueryProvider {
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(ImpalaConstants.CAST, originName, ImpalaConstants.DEFAULT_FLOAT_FORMAT);
+                    whereName = String.format(ImpalaConstants.CAST, originName, ImpalaCusConstants.getFloatFormat(field.getPrecision()));
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = String.format(ImpalaConstants.UNIX_TIMESTAMP, originName) + "*1000";
@@ -1098,11 +1099,11 @@ public class ImpalaQueryProvider extends QueryProvider {
             fieldName = String.format(ImpalaConstants.AGG_FIELD, y.getSummary(), originField);
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = String.format(ImpalaConstants.CAST, originField, y.getDeType() == 2 ? ImpalaConstants.DEFAULT_INT_FORMAT : ImpalaConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(ImpalaConstants.CAST, originField, y.getDeType() == 2 ? ImpalaConstants.DEFAULT_INT_FORMAT : ImpalaCusConstants.getFloatFormat(y.getPrecision()));
                 String agg = String.format(ImpalaConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(ImpalaConstants.CAST, agg, ImpalaConstants.DEFAULT_FLOAT_FORMAT);
+                fieldName = String.format(ImpalaConstants.CAST, agg, ImpalaCusConstants.getFloatFormat(y.getPrecision()));
             } else {
-                String cast = String.format(ImpalaConstants.CAST, originField, y.getDeType() == 2 ? ImpalaConstants.DEFAULT_INT_FORMAT : ImpalaConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(ImpalaConstants.CAST, originField, y.getDeType() == 2 ? ImpalaConstants.DEFAULT_INT_FORMAT : ImpalaCusConstants.getFloatFormat(y.getPrecision()));
                 fieldName = String.format(ImpalaConstants.AGG_FIELD, y.getSummary(), cast);
             }
         }

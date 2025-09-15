@@ -6,6 +6,7 @@ import io.datains.base.domain.DatasetTableField;
 import io.datains.base.domain.DatasetTableFieldExample;
 import io.datains.base.domain.Datasource;
 import io.datains.base.mapper.DatasetTableFieldMapper;
+import io.datains.constants.MySQLCusConstants;
 import io.datains.controller.request.chart.ChartExtFilterRequest;
 import io.datains.dto.chart.ChartCustomFilterItemDTO;
 import io.datains.dto.chart.ChartFieldCustomFilterDTO;
@@ -14,7 +15,6 @@ import io.datains.dto.chart.ChartViewFieldOrderDTO;
 import io.datains.dto.sqlObj.SQLObj;
 import io.datains.plugins.common.constants.MySQLConstants;
 import io.datains.plugins.common.constants.SQLConstants;
-import io.datains.plugins.common.constants.engine.MysqlConstants;
 import io.datains.plugins.util.PageInfo;
 import io.datains.provider.QueryProvider;
 import org.apache.commons.collections4.CollectionUtils;
@@ -117,7 +117,7 @@ public class MysqlQueryProvider extends QueryProvider {
                     if (f.getDeType() == 2) {
                         fieldName = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_INT_FORMAT);
                     } else if (f.getDeType() == 3) {
-                        fieldName = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_FLOAT_FORMAT);
+                        fieldName = String.format(MySQLConstants.CAST, originField, MySQLCusConstants.getFloatFormat(f.getPrecision()));
                     } else if (f.getDeType() == 1) {
                         fieldName = String.format(MySQLConstants.STR_TO_DATE, originField, MySQLConstants.DEFAULT_DATE_FORMAT);
                     } else {
@@ -130,7 +130,7 @@ public class MysqlQueryProvider extends QueryProvider {
                     } else if (f.getDeType() == 2) {
                         fieldName = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_INT_FORMAT);
                     } else if (f.getDeType() == 3) {
-                        fieldName = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_FLOAT_FORMAT);
+                        fieldName = String.format(MySQLConstants.CAST, originField, MySQLCusConstants.getFloatFormat(f.getPrecision()));
                     } else {
                         fieldName = originField;
                     }
@@ -326,7 +326,7 @@ public class MysqlQueryProvider extends QueryProvider {
                     originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(MySQLConstants.CAST, String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), MysqlConstants.DEFAULT_FLOAT_FORMAT);
+                        originField = String.format(MySQLConstants.CAST, String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), MySQLCusConstants.getFloatFormat(x.getPrecision()));
                     } else {
                         originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                     }
@@ -385,7 +385,7 @@ public class MysqlQueryProvider extends QueryProvider {
                             originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                         } else {
                             if (x.getDeType() == 2 || x.getDeType() == 3) {
-                                originField = String.format(MySQLConstants.CAST, String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), MysqlConstants.DEFAULT_FLOAT_FORMAT);
+                                originField = String.format(MySQLConstants.CAST, String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), MySQLCusConstants.getFloatFormat(f.getPrecision()));
                             } else {
                                 originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                             }
@@ -874,7 +874,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(MySQLConstants.CAST, originName, MySQLConstants.DEFAULT_FLOAT_FORMAT);
+                    whereName = String.format(MySQLConstants.CAST, originName, MySQLCusConstants.getFloatFormat(field.getPrecision()));
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = String.format(MySQLConstants.UNIX_TIMESTAMP, originName);
@@ -965,7 +965,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(MySQLConstants.CAST, originName, MySQLConstants.DEFAULT_FLOAT_FORMAT);
+                    whereName = String.format(MySQLConstants.CAST, originName, MySQLCusConstants.getFloatFormat(field.getPrecision()));
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = String.format(MySQLConstants.UNIX_TIMESTAMP, originName);
@@ -1128,11 +1128,11 @@ public class MysqlQueryProvider extends QueryProvider {
             fieldName = String.format(MySQLConstants.AGG_FIELD, y.getSummary(), originField);
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = String.format(MySQLConstants.CAST, originField, y.getDeType() == 2 ? MySQLConstants.DEFAULT_INT_FORMAT : MySQLConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(MySQLConstants.CAST, originField, y.getDeType() == 2 ? MySQLConstants.DEFAULT_INT_FORMAT : MySQLCusConstants.getFloatFormat(y.getPrecision()));
                 String agg = String.format(MySQLConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(MySQLConstants.CAST, agg, MySQLConstants.DEFAULT_FLOAT_FORMAT);
+                fieldName = String.format(MySQLConstants.CAST, agg, MySQLCusConstants.getFloatFormat(y.getPrecision()));
             } else {
-                String cast = String.format(MySQLConstants.CAST, originField, y.getDeType() == 2 ? MySQLConstants.DEFAULT_INT_FORMAT : MySQLConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(MySQLConstants.CAST, originField, y.getDeType() == 2 ? MySQLConstants.DEFAULT_INT_FORMAT : MySQLCusConstants.getFloatFormat(y.getPrecision()));
                 fieldName = String.format(MySQLConstants.AGG_FIELD, y.getSummary(), cast);
             }
         }

@@ -44,6 +44,9 @@ public class DataSetTableFieldsService {
             if (ObjectUtils.isEmpty(datasetTableField.getDefaultSort())) {
                 datasetTableField.setDefaultSort(0);
             }
+            if (ObjectUtils.isEmpty(datasetTableField.getPrecision())) {
+                datasetTableField.setPrecision(2);
+            }
             datasetTableFieldMapper.insert(datasetTableField);
         } else {
             datasetTableFieldMapper.updateByPrimaryKeySelective(datasetTableField);
