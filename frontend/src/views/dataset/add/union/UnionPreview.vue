@@ -1,12 +1,18 @@
 <template>
   <div>
-    <div class="text item">
+    <div
+      class="text item no-copy"
+      @copy.prevent
+      @cut.prevent
+      @contextmenu.prevent
+      @keydown="blockKey"
+    >
       <ux-grid
         ref="plxTable"
         size="mini"
-        style="width: 100%;"
+        style="width: 100%"
         :height="height"
-        :checkbox-config="{highlight: true}"
+        :checkbox-config="{ highlight: true }"
         :width-resize="true"
       >
         <ux-table-column
@@ -20,75 +26,92 @@
       </ux-grid>
     </div>
     <span class="table-count">
-      {{ $t('dataset.preview_show') }}
+      {{ $t("dataset.preview_show") }}
       <span class="span-number">1000</span>
-      {{ $t('dataset.preview_item') }}
+      {{ $t("dataset.preview_item") }}
     </span>
   </div>
 </template>
 
 <script>
-import { post } from '@/api/dataset/dataset'
+import { post } from "@/api/dataset/dataset";
 
 export default {
-  name: 'UnionPreview',
+  name: "UnionPreview",
   props: {
     table: {
       type: Object,
-      required: true
+      required: true,
     },
     dataset: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      height: 'auto',
+      height: "auto",
       fields: [],
-      data: []
-    }
+      data: [],
+    };
   },
   watch: {
-    'table': function() {
-      this.initPreview()
-    }
+    table: function () {
+      this.initPreview();
+    },
   },
   mounted() {
-    this.initHeight()
-    this.initPreview()
+    this.initHeight();
+    this.initPreview();
   },
   methods: {
+    blockKey(e) {
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        ["c", "s", "u", "a"].includes(e.key.toLowerCase())
+      ) {
+        e.preventDefault();
+      }
+    },
     initHeight() {
-      this.height = (document.getElementsByClassName('el-drawer__body')[0].clientHeight - 40) + 'px'
+      this.height =
+        document.getElementsByClassName("el-drawer__body")[0].clientHeight -
+        40 +
+        "px";
     },
     initPreview() {
       if (this.dataset && this.dataset.length > 0) {
-        post('/dataset/table/unionPreview', this.table).then(response => {
-          this.fields = response.data.fields
-          this.data = response.data.data
-          const datas = this.data
-          this.$refs.plxTable.reloadData(datas)
-        })
+        post("/dataset/table/unionPreview", this.table).then((response) => {
+          this.fields = response.data.fields;
+          this.data = response.data.data;
+          const datas = this.data;
+          this.$refs.plxTable.reloadData(datas);
+        });
       } else {
-        this.fields = []
-        this.data = []
-        const datas = this.data
-        this.$refs.plxTable.reloadData(datas)
+        this.fields = [];
+        this.data = [];
+        const datas = this.data;
+        this.$refs.plxTable.reloadData(datas);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
-.span-number{
+.span-number {
   color: #0a7be0;
 }
-.table-count{
+.table-count {
   color: #606266;
 }
-span{
+span {
   font-size: 12px;
+}
+.no-copy {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 </style>
