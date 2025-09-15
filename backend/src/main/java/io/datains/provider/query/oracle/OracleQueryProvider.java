@@ -6,6 +6,7 @@ import io.datains.base.domain.DatasetTableField;
 import io.datains.base.domain.DatasetTableFieldExample;
 import io.datains.base.domain.Datasource;
 import io.datains.base.mapper.DatasetTableFieldMapper;
+import io.datains.constants.OracleCusConstants;
 import io.datains.controller.request.chart.ChartExtFilterRequest;
 import io.datains.dto.chart.ChartCustomFilterItemDTO;
 import io.datains.dto.chart.ChartFieldCustomFilterDTO;
@@ -158,7 +159,7 @@ public class OracleQueryProvider extends QueryProvider {
                     if (f.getDeType() == 2) {
                         fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT);
                     } else if (f.getDeType() == 3) {
-                        fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_FLOAT_FORMAT);
+                        fieldName = String.format(OracleConstants.CAST, originField, OracleCusConstants.getFloatFormat(f.getPrecision()));
                     } else if (f.getDeType() == 1) {
                         fieldName = String.format(OracleConstants.DATE_FORMAT, originField, OracleConstants.DEFAULT_DATE_FORMAT);
                     } else {
@@ -171,7 +172,7 @@ public class OracleQueryProvider extends QueryProvider {
                     } else if (f.getDeType() == 2) {
                         fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT);
                     } else if (f.getDeType() == 3) {
-                        fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_FLOAT_FORMAT);
+                        fieldName = String.format(OracleConstants.CAST, originField, OracleCusConstants.getFloatFormat(f.getPrecision()));
                     } else {
                         fieldName = originField;
                     }
@@ -394,7 +395,7 @@ public class OracleQueryProvider extends QueryProvider {
                     originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(OracleConstants.CAST, String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), OracleConstants.DEFAULT_FLOAT_FORMAT);
+                        originField = String.format(OracleConstants.CAST, String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), OracleCusConstants.getFloatFormat(x.getPrecision()));
                     } else {
                         originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                     }
@@ -932,7 +933,7 @@ public class OracleQueryProvider extends QueryProvider {
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_FLOAT_FORMAT);
+                    whereName = String.format(OracleConstants.CAST, originName, OracleCusConstants.getFloatFormat(field.getPrecision()));
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = String.format(OracleConstants.UNIX_TIMESTAMP, originName) + "*1000";
@@ -1028,7 +1029,7 @@ public class OracleQueryProvider extends QueryProvider {
                 }
             } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_FLOAT_FORMAT);
+                    whereName = String.format(OracleConstants.CAST, originName, OracleCusConstants.getFloatFormat(field.getPrecision()));
                 }
                 if (field.getDeExtractType() == 1) {
                     whereName = String.format(OracleConstants.UNIX_TIMESTAMP, originName) + "*1000";
@@ -1198,11 +1199,11 @@ public class OracleQueryProvider extends QueryProvider {
             fieldName = String.format(OracleConstants.AGG_FIELD, y.getSummary(), originField);
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = String.format(OracleConstants.CAST, originField, y.getDeType() == 2 ? OracleConstants.DEFAULT_INT_FORMAT : OracleConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(OracleConstants.CAST, originField, y.getDeType() == 2 ? OracleConstants.DEFAULT_INT_FORMAT : OracleCusConstants.getFloatFormat(y.getPrecision()));
                 String agg = String.format(OracleConstants.AGG_FIELD, y.getSummary(), cast);
-                fieldName = String.format(OracleConstants.CAST, agg, OracleConstants.DEFAULT_FLOAT_FORMAT);
+                fieldName = String.format(OracleConstants.CAST, agg, OracleCusConstants.getFloatFormat(y.getPrecision()));
             } else {
-                String cast = String.format(OracleConstants.CAST, originField, y.getDeType() == 2 ? OracleConstants.DEFAULT_INT_FORMAT : OracleConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(OracleConstants.CAST, originField, y.getDeType() == 2 ? OracleConstants.DEFAULT_INT_FORMAT : OracleCusConstants.getFloatFormat(y.getPrecision()));
                 fieldName = String.format(OracleConstants.AGG_FIELD, y.getSummary(), cast);
             }
         }
