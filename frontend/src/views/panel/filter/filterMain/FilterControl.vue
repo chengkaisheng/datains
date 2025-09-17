@@ -18,7 +18,7 @@
           </el-checkbox>
           <el-popover v-model="titlePopovervisible" placement="bottom-end" :disabled="!attrs.showTitle" width="200">
             <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
-              <el-input v-model="attrs.title" :placeholder="$t('panel.input_title')" type="textarea" maxlength="15" show-word-limit />
+              <el-input v-model="attrs.title" :placeholder="$t('panel.input_title')" type="textarea" maxlength="15" show-word-limit @input="onTitleInput" />
             </div>
 
             <i
@@ -111,9 +111,14 @@ export default {
   watch: {
     'element.options.attrs.dragItems': {
       handler(newVal) {
-        if (newVal && newVal.length > 0 && this.attrs.showTitle) {
-          this.attrs.title = newVal[0].name
+        if (!this.attrs) return
+        if (typeof this.attrs.title === 'undefined') {
+          this.$set(this.attrs, 'title', '')
         }
+        if (!this.attrs.showTitle) return
+        const nextTitle = newVal && newVal.length > 0 && newVal[0] && newVal[0].name ? newVal[0].name : ''
+        this.$set(this.attrs, 'title', nextTitle)
+        this.fillAttrs2Filter()
       },
       deep: true,
       immediate: true
@@ -122,8 +127,15 @@ export default {
   created() {
     // console.log('filtercontrol,,,',this.childViews);
     this.attrs = this.controlAttrs
+    if (this.attrs && typeof this.attrs.title === 'undefined') {
+      this.$set(this.attrs, 'title', '')
+    }
   },
   methods: {
+    onTitleInput(value) {
+      this.attrs.title = value
+      this.fillAttrs2Filter()
+    },
     multipleChange(value) {
       this.fillAttrs2Filter()
     },
@@ -138,9 +150,14 @@ export default {
     },
     showTitleChange(value) {
       if (!value) {
-        this.attrs.title = ''
+        this.$set(this.attrs, 'title', '')
         this.element.style.backgroundColor = ''
+        this.fillAttrs2Filter()
+        return
       }
+      const hasDragItems = this.element && this.element.options && this.element.options.attrs && this.element.options.attrs.dragItems && this.element.options.attrs.dragItems.length > 0
+      const fromDragName = hasDragItems ? this.element.options.attrs.dragItems[0].name : ''
+      this.$set(this.attrs, 'title', fromDragName || '')
       this.fillAttrs2Filter()
     },
 
