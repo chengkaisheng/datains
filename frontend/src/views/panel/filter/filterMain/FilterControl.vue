@@ -78,8 +78,6 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
-
 export default {
   name: 'FilterControl',
   props: {
@@ -110,6 +108,17 @@ export default {
     }
   },
 
+  watch: {
+    'element.options.attrs.dragItems': {
+      handler(newVal) {
+        if (newVal && newVal.length > 0 && this.attrs.showTitle) {
+          this.attrs.title = newVal[0].name
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   created() {
     // console.log('filtercontrol,,,',this.childViews);
     this.attrs = this.controlAttrs
