@@ -1,7 +1,7 @@
 <template>
   <layout-content :header="formType=='add' ? $t('datasource.create') : $t('datasource.modify')">
     <template v-slot:header>
-      <el-icon name="back" class="back-button" @click.native="backToList"/>
+      <el-icon name="back" class="back-button" @click.native="backToList" />
       {{
         params && params.id && params.showModel && params.showModel === 'show' && !canEdit ? $t('datasource.show_info') : formType == 'add' ? $t('datasource.create') : $t('datasource.modify')
       }}
@@ -18,10 +18,10 @@
         label-position="right"
       >
         <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="form.name" autocomplete="off"/>
+          <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('commons.description')" prop="desc">
-          <el-input v-model="form.desc" autocomplete="off"/>
+          <el-input v-model="form.desc" autocomplete="off" />
         </el-form-item>
         <el-form-item :label="$t('datasource.type')" prop="type">
           <el-select
@@ -29,8 +29,8 @@
             :placeholder="$t('datasource.please_choose_type')"
             class="select-width"
             :disabled="formType=='modify' || (formType==='add' && params && !!params.type)"
-            @change="changeType()"
             filterable
+            @change="changeType()"
           >
             <el-option
               v-for="item in allTypes"
@@ -43,14 +43,26 @@
 
         <el-form-item v-if="form.type == 'api'" :label="$t('datasource.data_table')">
           <el-col>
-            <el-button size="mini" icon="el-icon-plus" type="text" @click="addApiItem(undefined)"/>
+            <el-button size="mini" icon="el-icon-plus" type="text" @click="addApiItem(undefined)" />
             <el-table :data="form.apiConfiguration" class="my_table" max-height="300" height="300">
-              <el-table-column prop="name" :label="$t('datasource.data_table_name')" width="150"
-                               show-overflow-tooltip></el-table-column>
-              <el-table-column prop="method" :label="$t('datasource.method')" width="150"
-                               show-overflow-tooltip></el-table-column>
-              <el-table-column prop="url" :label="$t('datasource.url')" width="150"
-                               show-overflow-tooltip></el-table-column>
+              <el-table-column
+                prop="name"
+                :label="$t('datasource.data_table_name')"
+                width="150"
+                show-overflow-tooltip
+              />
+              <el-table-column
+                prop="method"
+                :label="$t('datasource.method')"
+                width="150"
+                show-overflow-tooltip
+              />
+              <el-table-column
+                prop="url"
+                :label="$t('datasource.url')"
+                width="150"
+                show-overflow-tooltip
+              />
               <el-table-column prop="status" :label="$t('commons.status')" width="150">
                 <template slot-scope="scope">
                   <span v-if="scope.row.status === 'Success'" style="color: green">
@@ -62,22 +74,27 @@
                 </template>
               </el-table-column>
 
-
               <el-table-column :label="$t('dataset.operate')">
                 <template slot-scope="scope" style="float: right">
-                  <el-button size="mini" type="primary" icon="el-icon-edit" circle @click="addApiItem(scope.row)"/>
-                  <el-button size="mini" type="danger" icon="el-icon-delete" circle @click="deleteItem(scope.row)"/>
+                  <el-button size="mini" type="primary" icon="el-icon-edit" circle @click="addApiItem(scope.row)" />
+                  <el-button size="mini" type="danger" icon="el-icon-delete" circle @click="deleteItem(scope.row)" />
                 </template>
               </el-table-column>
             </el-table>
           </el-col>
         </el-form-item>
 
-        <el-dialog :title="api_table_title" :visible="edit_api_item" :before-close="closeEditItem" width="60%"
-                   class="dialog-css" append-to-body>
+        <el-dialog
+          :title="api_table_title"
+          :visible="edit_api_item"
+          :before-close="closeEditItem"
+          width="60%"
+          class="dialog-css"
+          append-to-body
+        >
           <el-steps :active="active" align-center>
-            <el-step title="步骤 1"></el-step>
-            <el-step title="步骤 2"></el-step>
+            <el-step title="步骤 1" />
+            <el-step title="步骤 2" />
           </el-steps>
 
           <el-row v-show="active === 1">
@@ -85,14 +102,18 @@
               <p class="tip">{{ $t('datasource.base_info') }} </p>
 
               <el-form-item :label="$t('commons.name')" prop="name">
-                <el-input v-model="apiItem.name" autocomplete="off"/>
+                <el-input v-model="apiItem.name" autocomplete="off" />
               </el-form-item>
 
               <el-form-item :label="$t('datasource.request')" prop="url">
-                <el-input :placeholder="$t('datasource.path_all_info')" v-model="apiItem.url" class="ms-http-input"
-                          size="small">
-                  <el-select v-model="apiItem.method" slot="prepend" style="width: 100px" size="small">
-                    <el-option v-for="item in reqOptions" :key="item.id" :label="item.label" :value="item.id"/>
+                <el-input
+                  v-model="apiItem.url"
+                  :placeholder="$t('datasource.path_all_info')"
+                  class="ms-http-input"
+                  size="small"
+                >
+                  <el-select slot="prepend" v-model="apiItem.method" style="width: 100px" size="small">
+                    <el-option v-for="item in reqOptions" :key="item.id" :label="item.label" :value="item.id" />
                   </el-select>
                 </el-input>
               </el-form-item>
@@ -101,13 +122,16 @@
                 <p class="tip">{{ $t('datasource.req_param') }} </p>
                 <!-- HTTP 请求参数 -->
                 <el-form-item>
-                  <api-http-request-form :headers="apiItem.request.headers" :request="apiItem.request"
-                                         :response="responseData"/>
+                  <api-http-request-form
+                    :headers="apiItem.request.headers"
+                    :request="apiItem.request"
+                    :response="responseData"
+                  />
                 </el-form-item>
               </div>
 
               <el-form-item :label="$t('datasource.data_path')" prop="dataPath">
-                <el-input :placeholder="$t('datasource.data_path_desc')" v-model="apiItem.dataPath" autocomplete="off"/>
+                <el-input v-model="apiItem.dataPath" :placeholder="$t('datasource.data_path_desc')" autocomplete="off" />
               </el-form-item>
               <!--              <el-button style="margin-top: 12px;" @click="validateApi(undefined)" v-show="active === 1">{{ $t('commons.validate') }}</el-button>-->
             </el-form>
@@ -115,17 +139,34 @@
           <el-row v-show="active === 2">
             <el-tabs v-model="api_step2_active_name" @tab-click="handleClick">
               <el-tab-pane :label="$t('dataset.data_preview')" name="first">
-                <ux-grid ref="plxTable" size="mini" style="width: 100%;" :height="height"
-                         :checkbox-config="{highlight: true}" :width-resize="true">
-                  <ux-table-column v-for="field in apiItem.fields" :key="field.originName" min-width="200px"
-                                   :field="field.originName" :resizable="true">
+                <ux-grid
+                  ref="plxTable"
+                  size="mini"
+                  style="width: 100%;"
+                  :height="height"
+                  :checkbox-config="{highlight: true}"
+                  :width-resize="true"
+                >
+                  <ux-table-column
+                    v-for="field in apiItem.fields"
+                    :key="field.originName"
+                    min-width="200px"
+                    :field="field.originName"
+                    :resizable="true"
+                  >
                     <template slot="header">
-                      <svg-icon v-if="field.deExtractType === 0" icon-class="field_text" class="field-icon-text"/>
-                      <svg-icon v-if="field.deExtractType === 1" icon-class="field_time" class="field-icon-time"/>
-                      <svg-icon v-if="field.deExtractType === 2 || field.deExtractType === 3" icon-class="field_value"
-                                class="field-icon-value"/>
-                      <svg-icon v-if="field.deExtractType === 5" icon-class="field_location"
-                                class="field-icon-location"/>
+                      <svg-icon v-if="field.deExtractType === 0" icon-class="field_text" class="field-icon-text" />
+                      <svg-icon v-if="field.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
+                      <svg-icon
+                        v-if="field.deExtractType === 2 || field.deExtractType === 3"
+                        icon-class="field_value"
+                        class="field-icon-value"
+                      />
+                      <svg-icon
+                        v-if="field.deExtractType === 5"
+                        icon-class="field_location"
+                        class="field-icon-location"
+                      />
                       <span>{{ field.name }}</span>
                     </template>
                   </ux-table-column>
@@ -187,111 +228,161 @@
             </el-tabs>
           </el-row>
           <div slot="footer" class="dialog-footer">
-            <el-button @click="next" :disabled="disabledNext" v-show="active === 1">{{ $t('fu.steps.next') }}</el-button>
-            <el-button @click="before" v-show="active === 2">{{ $t('fu.steps.prev') }}</el-button>
-            <el-button @click="saveItem" v-show="active === 2">{{ $t('commons.save') }}</el-button>
+            <el-button v-show="active === 1" :disabled="disabledNext" @click="next">{{ $t('fu.steps.next') }}</el-button>
+            <el-button v-show="active === 2" @click="before">{{ $t('fu.steps.prev') }}</el-button>
+            <el-button v-show="active === 2" @click="saveItem">{{ $t('commons.save') }}</el-button>
           </div>
 
         </el-dialog>
 
-
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
-                      :label="$t('datasource.host')" prop="configuration.host">
-          <el-input v-model="form.configuration.host" autocomplete="off"/>
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
+          :label="$t('datasource.host')"
+          prop="configuration.host"
+        >
+          <el-input v-model="form.configuration.host" autocomplete="off" />
         </el-form-item>
 
-        <el-form-item v-if="form.configuration.dataSourceType=='es' && form.type !== 'api'"
-                      :label="$t('datasource.datasource_url')" prop="configuration.url">
-          <el-input v-model="form.configuration.url" :placeholder="$t('datasource.please_input_datasource_url')"
-                    autocomplete="off"/>
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='es' && form.type !== 'api'"
+          :label="$t('datasource.datasource_url')"
+          prop="configuration.url"
+        >
+          <el-input
+            v-model="form.configuration.url"
+            :placeholder="$t('datasource.please_input_datasource_url')"
+            autocomplete="off"
+          />
         </el-form-item>
 
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
-                      :label="$t('datasource.data_base')" prop="configuration.dataBase">
-          <el-input v-model="form.configuration.dataBase" autocomplete="off"/>
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
+          :label="$t('datasource.data_base')"
+          prop="configuration.dataBase"
+        >
+          <el-input v-model="form.configuration.dataBase" autocomplete="off" />
         </el-form-item>
 
-        <el-form-item v-if="form.type=='oracle' && form.type !== 'api'" :label="$t('datasource.oracle_connection_type')"
-                      prop="configuration.connectionType">
+        <el-form-item
+          v-if="form.type=='oracle' && form.type !== 'api'"
+          :label="$t('datasource.oracle_connection_type')"
+          prop="configuration.connectionType"
+        >
           <el-radio v-model="form.configuration.connectionType" label="sid">{{ $t('datasource.oracle_sid') }}</el-radio>
           <el-radio v-model="form.configuration.connectionType" label="serviceName">
             {{ $t('datasource.oracle_service_name') }}
           </el-radio>
         </el-form-item>
 
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
-                      :label="$t('datasource.user_name')">
-          <el-input v-model="form.configuration.username" autocomplete="off"/>
-        </el-form-item>
-
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
-                      :label="$t('datasource.password')">
-          <el-input v-model="form.configuration.password" autocomplete="off" show-password/>
-        </el-form-item>
-
-        <el-form-item v-if="form.configuration.dataSourceType=='es' && form.type !== 'api'"
-                      :label="$t('datasource.user_name')">
-          <el-input v-model="form.configuration.esUsername" autocomplete="off"/>
-        </el-form-item>
-
-        <el-form-item v-if="form.configuration.dataSourceType=='es' && form.type !== 'api'"
-                      :label="$t('datasource.password')">
-          <el-input v-model="form.configuration.esPassword" autocomplete="off" show-password/>
-        </el-form-item>
-
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type!=='oracle' && form.type !== 'api'"
-                      :label="$t('datasource.extra_params')">
-          <el-input v-model="form.configuration.extraParams" autocomplete="off"/>
-        </el-form-item>
-
-        <el-form-item v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
-                      :label="$t('datasource.port')" prop="configuration.port">
-          <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0"/>
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
+          :label="$t('datasource.user_name')"
+        >
+          <el-input v-model="form.configuration.username" autocomplete="off" />
         </el-form-item>
 
         <el-form-item
-          v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'">
+          v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
+          :label="$t('datasource.password')"
+        >
+          <!-- show-password -->
+          <el-input v-model="form.configuration.password" autocomplete="off" type="password" />
+        </el-form-item>
+
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='es' && form.type !== 'api'"
+          :label="$t('datasource.user_name')"
+        >
+          <el-input v-model="form.configuration.esUsername" autocomplete="off" />
+        </el-form-item>
+
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='es' && form.type !== 'api'"
+          :label="$t('datasource.password')"
+        >
+          <!-- show-password -->
+          <el-input v-model="form.configuration.esPassword" autocomplete="off" type="password" />
+        </el-form-item>
+
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='jdbc' && form.type!=='oracle' && form.type !== 'api'"
+          :label="$t('datasource.extra_params')"
+        >
+          <el-input v-model="form.configuration.extraParams" autocomplete="off" />
+        </el-form-item>
+
+        <el-form-item
+          v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api'"
+          :label="$t('datasource.port')"
+          prop="configuration.port"
+        >
+          <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0" />
+        </el-form-item>
+
+        <el-form-item
+          v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'"
+        >
           <el-button icon="el-icon-plus" size="mini" @click="getSchema()">{{ $t('datasource.get_schema') }}</el-button>
         </el-form-item>
 
         <el-form-item
           v-if="form.type=='oracle' || form.type=='sqlServer' || form.type=='pg' || form.type=='redshift' || form.type=='db2'"
-          :label="$t('datasource.schema')">
-          <el-select v-model="form.configuration.schema" filterable :placeholder="$t('datasource.please_choose_schema')"
-                     class="select-width">
-            <el-option v-for="item in schemas" :key="item" :label="item" :value="item"/>
+          :label="$t('datasource.schema')"
+        >
+          <el-select
+            v-model="form.configuration.schema"
+            filterable
+            :placeholder="$t('datasource.please_choose_schema')"
+            class="select-width"
+          >
+            <el-option v-for="item in schemas" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
 
         <el-collapse v-if="form.configuration.dataSourceType=='jdbc' && form.type !== 'api' && form.type !== 'mongo'">
           <el-collapse-item :title="$t('datasource.priority')" name="1">
             <el-form-item :label="$t('datasource.initial_pool_size')" prop="configuration.initialPoolSize">
-              <el-input v-model="form.configuration.initialPoolSize" autocomplete="off" type="number" min="0"
-                        size="small"/>
+              <el-input
+                v-model="form.configuration.initialPoolSize"
+                autocomplete="off"
+                type="number"
+                min="0"
+                size="small"
+              />
             </el-form-item>
             <el-form-item :label="$t('datasource.min_pool_size')" prop="configuration.minPoolSize">
-              <el-input v-model="form.configuration.minPoolSize" autocomplete="off" type="number" min="0"/>
+              <el-input v-model="form.configuration.minPoolSize" autocomplete="off" type="number" min="0" />
             </el-form-item>
             <el-form-item :label="$t('datasource.max_pool_size')" prop="configuration.maxPoolSize">
-              <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0"/>
+              <el-input v-model="form.configuration.maxPoolSize" autocomplete="off" type="number" min="0" />
             </el-form-item>
           </el-collapse-item>
         </el-collapse>
       </el-form>
       <div v-if="canEdit" slot="footer" class="dialog-footer">
-        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
-                   @click="validaDatasource">{{ $t('commons.validate') }}
+        <el-button
+          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+          @click="validaDatasource"
+        >{{ $t('commons.validate') }}
         </el-button>
-        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" type="primary"
-                   @click="save">{{ $t('commons.save') }}
+        <el-button
+          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+          type="primary"
+          @click="save"
+        >{{ $t('commons.save') }}
         </el-button>
       </div>
       <div v-else slot="footer" class="dialog-footer">
-        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
-                   @click="validaDatasource">{{ $t('commons.validate') }}
+        <el-button
+          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+          @click="validaDatasource"
+        >{{ $t('commons.validate') }}
         </el-button>
-        <el-button v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)" type="primary"
-                   @click="changeEdit">{{ $t('commons.edit') }}
+        <el-button
+          v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
+          type="primary"
+          @click="changeEdit"
+        >{{ $t('commons.edit') }}
         </el-button>
       </div>
     </div>
@@ -300,8 +391,8 @@
 
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
-import {addDs, editDs, getSchema, validateDs, validateDsById, checkApiDatasource} from '@/api/system/datasource'
-import {$confirm} from '@/utils/message'
+import { addDs, editDs, getSchema, validateDs, validateDsById, checkApiDatasource } from '@/api/system/datasource'
+import { $confirm } from '@/utils/message'
 import i18n from '@/lang/index'
 import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
 
@@ -337,10 +428,10 @@ export default {
         apiConfiguration: []
       },
       rule: {
-        name: [{required: true, message: i18n.t('datasource.input_name'), trigger: 'blur'},
-          {min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur'}],
-        desc: [{min: 2, max: 50, message: i18n.t('datasource.input_limit_2_50'), trigger: 'blur'}],
-        type: [{required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur'}],
+        name: [{ required: true, message: i18n.t('datasource.input_name'), trigger: 'blur' },
+          { min: 2, max: 25, message: i18n.t('datasource.input_limit_2_25', [2, 25]), trigger: 'blur' }],
+        desc: [{ min: 2, max: 50, message: i18n.t('datasource.input_limit_2_50'), trigger: 'blur' }],
+        type: [{ required: true, message: i18n.t('datasource.please_choose_type'), trigger: 'blur' }],
         'configuration.dataBase': [{
           required: true,
           message: i18n.t('datasource.please_input_data_base'),
@@ -361,9 +452,9 @@ export default {
           message: i18n.t('datasource.please_input_password'),
           trigger: 'blur'
         }],
-        'configuration.host': [{required: true, message: i18n.t('datasource.please_input_host'), trigger: 'blur'}],
-        'configuration.url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'blur'}],
-        'configuration.port': [{required: true, message: i18n.t('datasource.please_input_port'), trigger: 'blur'}],
+        'configuration.host': [{ required: true, message: i18n.t('datasource.please_input_host'), trigger: 'blur' }],
+        'configuration.url': [{ required: true, message: i18n.t('datasource.please_input_url'), trigger: 'blur' }],
+        'configuration.port': [{ required: true, message: i18n.t('datasource.please_input_port'), trigger: 'blur' }],
         'configuration.initialPoolSize': [{
           required: true,
           message: i18n.t('datasource.please_input_initial_pool_size'),
@@ -394,26 +485,26 @@ export default {
           message: i18n.t('datasource.please_input_connect_timeout'),
           trigger: 'blur'
         }],
-        'url': [{required: true, message: i18n.t('datasource.please_input_url'), trigger: 'blur'}],
-        'dataPath': [{required: true, message: i18n.t('datasource.please_input_dataPath'), trigger: 'blur'}]
+        'url': [{ required: true, message: i18n.t('datasource.please_input_url'), trigger: 'blur' }],
+        'dataPath': [{ required: true, message: i18n.t('datasource.please_input_dataPath'), trigger: 'blur' }]
       },
       allTypes: [
-        {name: 'mysql', label: 'MySQL', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
-        {name: 'TiDB', label: 'TiDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
-        {name: 'hive', label: 'Apache Hive', type: 'jdbc', extraParams: ''},
-        {name: 'impala', label: 'Apache Impala', type: 'jdbc', extraParams: 'AuthMech=0'},
-        {name: 'oracle', label: 'Oracle', type: 'jdbc'},
-        {name: 'sqlServer', label: 'SQL Server', type: 'jdbc', extraParams: ''},
-        {name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: ''},
-        {name: 'es', label: 'Elasticsearch', type: 'es'},
-        {name: 'mariadb', label: 'MariaDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
-        {name: 'StarRocks', label: 'StarRocks', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
-        {name: 'ds_doris', label: 'Doris', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'},
-        {name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: ''},
-        {name: 'redshift', label: 'AWS Redshift', type: 'jdbc'},
-        {name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: 'rebuildschema=true&authSource=admin'},
-        {name: 'db2', label: 'Db2', type: 'jdbc', extraParams: ''},
-        {name: 'api', label: 'API', type: 'api', extraParams: ''}
+        { name: 'mysql', label: 'MySQL', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
+        { name: 'TiDB', label: 'TiDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
+        { name: 'hive', label: 'Apache Hive', type: 'jdbc', extraParams: '' },
+        { name: 'impala', label: 'Apache Impala', type: 'jdbc', extraParams: 'AuthMech=0' },
+        { name: 'oracle', label: 'Oracle', type: 'jdbc' },
+        { name: 'sqlServer', label: 'SQL Server', type: 'jdbc', extraParams: '' },
+        { name: 'pg', label: 'PostgreSQL', type: 'jdbc', extraParams: '' },
+        { name: 'es', label: 'Elasticsearch', type: 'es' },
+        { name: 'mariadb', label: 'MariaDB', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
+        { name: 'StarRocks', label: 'StarRocks', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
+        { name: 'ds_doris', label: 'Doris', type: 'jdbc', extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true' },
+        { name: 'ck', label: 'ClickHouse', type: 'jdbc', extraParams: '' },
+        { name: 'redshift', label: 'AWS Redshift', type: 'jdbc' },
+        { name: 'mongo', label: 'MongoDB', type: 'jdbc', extraParams: 'rebuildschema=true&authSource=admin' },
+        { name: 'db2', label: 'Db2', type: 'jdbc', extraParams: '' },
+        { name: 'api', label: 'API', type: 'api', extraParams: '' }
       ],
       schemas: [],
       canEdit: false,
@@ -428,9 +519,9 @@ export default {
         request: {
           headers: [{}],
           body: {
-            "type": "",
-            "raw": "",
-            "kvs": []
+            'type': '',
+            'raw': '',
+            'kvs': []
           }
         },
         fields: []
@@ -444,25 +535,25 @@ export default {
         request: {
           headers: [],
           body: {
-            "type": "",
-            "raw": "",
-            "kvs": []
+            'type': '',
+            'raw': '',
+            'kvs': []
           },
           authManager: {}
         },
         fields: []
       },
-      reqOptions: [{id: 'GET', label: 'GET'}, {id: 'POST', label: 'POST'}],
+      reqOptions: [{ id: 'GET', label: 'GET' }, { id: 'POST', label: 'POST' }],
       loading: false,
-      responseData: {type: 'HTTP', responseResult: {}, subRequestResults: []},
+      responseData: { type: 'HTTP', responseResult: {}, subRequestResults: [] },
       api_table_title: '',
       api_step2_active_name: 'first',
       fieldTypes: [
-        {label: this.$t('dataset.text'), value: 0},
-        {label: this.$t('dataset.time'), value: 1},
-        {label: this.$t('dataset.value'), value: 2},
-        {label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3},
-        {label: this.$t('dataset.location'), value: 5}
+        { label: this.$t('dataset.text'), value: 0 },
+        { label: this.$t('dataset.time'), value: 1 },
+        { label: this.$t('dataset.value'), value: 2 },
+        { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3 },
+        { label: this.$t('dataset.location'), value: 5 }
       ],
       height: 500,
       disabledNext: false
@@ -532,15 +623,15 @@ export default {
         return
       }
       let repeat = false
-      let repeatDsName = []
+      const repeatDsName = []
       this.tData.forEach(item => {
         if (item.id === this.form.type) {
           item.children.forEach(child => {
             if (this.formType === 'modify' && child.id === this.form.id) {
               return
             }
-            let configuration = JSON.parse(child.configuration)
-            if(!configuration){
+            const configuration = JSON.parse(child.configuration)
+            if (!configuration) {
               return
             }
             switch (this.form.type) {
@@ -721,7 +812,7 @@ export default {
             }
           })
         } else {
-          let index = this.form.apiConfiguration.indexOf(this.apiItem)
+          const index = this.form.apiConfiguration.indexOf(this.apiItem)
           for (let i = 0; i < this.form.apiConfiguration.length; i++) {
             if (i !== index && this.form.apiConfiguration[i].name === this.apiItem.name) {
               hasRepeatName = true
