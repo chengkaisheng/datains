@@ -1,6 +1,8 @@
 package io.datains.commons.utils;
-import io.datains.dto.datasource.TableField;
+
+import cn.hutool.core.util.NumberUtil;
 import io.datains.dto.dataset.ExcelSheetData;
+import io.datains.dto.datasource.TableField;
 import io.datains.i18n.Translator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -18,7 +20,10 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author y
@@ -408,15 +413,18 @@ public class ExcelXlsxReader extends DefaultHandler {
                 } else {
                     thisStr = value;
                 }
-                thisStr = thisStr.replace("_", "").trim();
-
-                if(isDateFormat ){
-                    type = "DATETIME";isDateFormat = false;
-                    if(formatString != null && formatString.contains("%")){
+                if (NumberUtil.isNumber(thisStr)){
+                    type = getType(thisStr);
+                }else {
+                    thisStr = thisStr.replace("_", "").trim();
+                    if(isDateFormat ){
+                        type = "DATETIME";isDateFormat = false;
+                        if(formatString != null && formatString.contains("%")){
+                            type = getType(thisStr);
+                        }
+                    }else {
                         type = getType(thisStr);
                     }
-                }else {
-                    type = getType(thisStr);
                 }
                 break;
             case DATE: //日期

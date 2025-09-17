@@ -211,6 +211,11 @@
               <el-input-number v-model="scope.row.precision" :min="0" :max="9" style="display: inline-block;width: 100px;" controls-position="right" @change="saveEdit(scope.row)" @blur="saveEdit(scope.row)" @keyup.enter.native="saveEdit(scope.row)" />
             </template>
           </el-table-column>
+          <el-table-column property="deType" label="小数位数" width="140">
+            <template v-if="scope.row.deType === 3" slot-scope="scope">
+              <el-input-number v-model="scope.row.precision" :min="0" :max="9" style="display: inline-block;width: 100px;" controls-position="right" @change="saveEdit(scope.row)" @blur="saveEdit(scope.row)" @keyup.enter.native="saveEdit(scope.row)" />
+            </template>
+          </el-table-column>
           <el-table-column property="deExtractType" :label="$t('dataset.origin_field_type')" width="100">
             <template slot-scope="scope">
               <span v-if="scope.row.extField === 0">
