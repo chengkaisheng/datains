@@ -368,6 +368,20 @@ export default {
       this.loading = true
       this.$refs['mRightForm'].validate((valid) => {
         if (valid) {
+          // this.formData.forms  uuid 设置数据库字段表名称  没有设置columnName的需要生成
+          this.formData.forms.map(item => {
+            if(!item.settings.mapping.columnName) {
+              item.settings.mapping.columnName = uuid.v4()
+            }
+            if(item.type === 'dateRange') {
+              if(!item.settings.mapping.columnName1) {
+                item.settings.mapping.columnName1 = uuid.v4()
+              }
+              if(!item.settings.mapping.columnName2) {
+                item.settings.mapping.columnName2 = uuid.v4()
+              }
+            }
+          })
           const data = {
             id: this.formData.id,
             name: this.formData.name,
