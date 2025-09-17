@@ -40,6 +40,7 @@ Vue.use(VueClipboard)
 Vue.use(widgets)
 Vue.component('draggable', draggable)
 Vue.prototype.$api = api
+Vue.prototype.$utils = require('@/utils/index.js')
 
 import * as echarts from 'echarts'
 import 'echarts-gl'

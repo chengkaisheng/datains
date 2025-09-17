@@ -40,24 +40,9 @@ export default {
     })
   },
   methods: {
+    // 使用utils中的getQueryVariable函数，避免重复代码
     getQueryVariable(variable) {
-      // let query = window.location.search.substring(1)
-      let query = window.location.href.split('?')[1]
-      console.log('query',query)
-      let vars = []
-      if (!query) {
-        query = document.cookie
-        vars = query.split(';')
-      } else {
-        vars = query.split('&')
-      }
-      for (var i = 0; i < vars.length; i++) {
-        const pair = vars[i].split('=')
-        if (pair[0].trim() === variable) {
-          return pair[1]
-        }
-      }
-      return (null)
+      return this.$utils.getQueryVariable(variable)
     }
   }
 }

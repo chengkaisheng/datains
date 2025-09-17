@@ -115,6 +115,8 @@ export default {
   watch: {
     data() {
       const datas = this.data
+      console.log(datas)
+
       this.$refs.plxTable.reloadData(datas)
     },
     page() {
