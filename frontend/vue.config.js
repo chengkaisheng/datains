@@ -20,31 +20,8 @@ module.exports = {
     port: port,
     proxy: {
       '^(?!/login)': {
-        // target: 'http://localhost:8081/',
-        // target: 'http://ofmfa31n5roz.ngrok2.xiaomiqiu.cn/',
-        // target: 'http://localhost:9528/',
-        // target: 'http://ew5nffth3rvv.ngrok2.xiaomiqiu.cn/', 192.168.3.223
-        // target: 'http://172.16.226.133/',
-        // target: 'http://122.9.188.217:8082/',
-        // target: 'http://183.194.64.166:10080/',
-        // target: 'http://192.168.3.223/',
-        // target: 'http://183.194.65.250:9091/',
-        // http://183.194.64.166:9091/
-        //  target: 'http://192.168.3.67/',
-        //  target: 'http://183.194.64.166:9527/',
-        // target: 'http://183.194.65.250:9091/',
-        // target: 'http://183.194.64.166:9091/',  // 服务器
-        // target: 'http://192.168.3.223/',
-        // target: 'http://106.54.52.9:9530', // 张庆
-        // target: 'http://192.168.3.14:8081', // 张庆
-        // target: 'http://192.168.3.16:17303', // 张子航
-        // target: 'http://192.168.3.67:8081', // 线上
-        // target: 'http://183.194.64.166:40142', // 线上
-        target: 'http://183.194.64.166:40142', // 张子航
-        // target: 'http://106.54.52.9:8081', // 张子航
-        // target: 'http://183.194.64.166:9527', // 张庆
-        // target: 'http://106.54.52.9:9533', // 张庆
-        // target: 'https://wp2sewslcjhe.ngrok.xiaomiqiu123.top',
+        target: 'http://192.168.3.16:8081', // 张子航
+        // target: 'http://183.194.64.166:40147', // 线上
         ws: false
       }
     },

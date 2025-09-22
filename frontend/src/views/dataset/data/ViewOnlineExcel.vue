@@ -20,7 +20,7 @@
           <!-- <el-button size="mini" @click="cancel">
             {{ $t("dataset.cancel") }}
           </el-button> -->
-          <el-button size="mini" type="primary" @click="save">
+          <el-button v-if="param.type !== 'datasetShare'" size="mini" type="primary" @click="save">
             <!-- {{ $t("dataset.confirm") }} -->保存
           </el-button>
         </el-row>
@@ -72,7 +72,6 @@ export default {
   },
   data() {
     return {
-      isReadOnly: false,
       isMaskShow: false,
       name: '',
       file: null,
@@ -147,10 +146,14 @@ export default {
           // 添加只读模式配置
           showtoolbar: !this.isReadOnly, // 是否显示工具栏
           showinfobar: !this.isReadOnly, // 是否显示信息栏
-          allowEdit: !this.isReadOnly, // 是否允许编辑
-          enableAddRow: !this.isReadOnly, // 是否允许添加行
-          enableAddCol: !this.isReadOnly, // 是否允许添加列
-          allowCopy: 0
+          allowEdit: this.param.type === 'datasetShare' ? false : !this.isReadOnly, // 是否允许编辑
+          enableAddRow: this.param.type === 'datasetShare' ? false : !this.isReadOnly, // 是否允许添加行
+          enableAddCol: this.param.type === 'datasetShare' ? false : !this.isReadOnly, // 是否允许添加列
+          allowCopy: 0,
+          authority: this.param.type === 'datasetShare' ? { // 权限配置 只读模式下可以使用 工具栏的筛选排序功能 单元格不可配置
+            sheet: true,
+            filter: 1
+          } : null
         })
         this.exportXlsx()
       })

@@ -224,3 +224,55 @@ export function checkCustomDs() {
 }
 export const disabledSyncDs = ['es', 'ck', 'mongo', 'redshift', 'hive', 'impala']
 export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs }
+
+// 数据集 分享
+export function fineSave(data) {
+  return request({
+    url: '/api/datasetShare/fineSave',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export function loadTree(data) {
+  return request({
+    url: '/api/datasetShare/treeList',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export function loadShareOutTree() {
+  return request({
+    url: '/api/datasetShare/shareOut',
+    method: 'post',
+    loading: true
+  })
+}
+
+export function removeShares(data) {
+  return request({
+    url: '/api/datasetShare/removeShares/',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
+export function loadShares(data) {
+  return request({
+    url: '/api/datasetShare/queryWithResourceId',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+export function shareTargets(panelId) {
+  return request({
+    url: '/api/datasetShare/queryTargets/' + panelId,
+    method: 'post',
+    loading: true
+  })
+}
