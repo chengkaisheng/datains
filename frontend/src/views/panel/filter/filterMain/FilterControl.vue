@@ -126,7 +126,9 @@ export default {
   },
   created() {
     // console.log('filtercontrol,,,',this.childViews);
+    console.log('filtercontrol,,,', this.controlAttrs)
     this.attrs = this.controlAttrs
+    this.attrs.showTitle = this.attrs.showTitle || true
     if (this.attrs && typeof this.attrs.title === 'undefined') {
       this.$set(this.attrs, 'title', '')
     }

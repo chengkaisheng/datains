@@ -289,7 +289,7 @@
                     <!-- <el-button size="mini" @click="calcData(true)">数据加载</el-button> -->
                     <div style="display: flex;justify-content: end;width: 100%;">
                       <!-- table-info明细表，roll-elemnt滚动表，（table-normal汇总表尝试做） 【透视表暂时不做】 -->
-                      <el-tooltip class="item" effect="dark" content="一键导入" placement="top">
+                      <el-tooltip v-if="view.type === 'table-info' || view.type === 'roll-elemnt' || view.type === 'table-normal' || view.type === 'vertical-ele'" class="item" effect="dark" content="一键导入" placement="top">
                         <div
                           class="button-div-class"
                           style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 0px auto 0px;"
@@ -297,7 +297,7 @@
                           <el-button circle class="el-icon-position" size="mini" @click="importData()" />
                         </div>
                       </el-tooltip>
-                      <el-tooltip class="item" effect="dark" content="一键清空" placement="top">
+                      <el-tooltip v-if="view.type === 'table-info' || view.type === 'roll-elemnt' || view.type === 'table-normal' || view.type === 'vertical-ele'" class="item" effect="dark" content="一键清空" placement="top">
                         <div
                           class="button-div-class"
                           style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 0px auto 0px;"
@@ -2830,6 +2830,9 @@ export default {
         // 汇总表
         this.view.xaxis = [...this.dimensionData]
         this.view.yaxis = [...this.quotaData]
+      } else if (this.view.type === 'vertical-ele') {
+        this.view.xaxis = [...this.dimensionData]
+        this.view.yaxis = [...this.quotaData]
       }
       console.log('importData111::', this.view)
     },
@@ -2841,6 +2844,9 @@ export default {
         this.view.xaxis = []
         this.view.yaxis = []
       } else if (this.view.type === 'table-normal') {
+        this.view.xaxis = []
+        this.view.yaxis = []
+      } else if (this.view.type === 'vertical-ele') {
         this.view.xaxis = []
         this.view.yaxis = []
       } else {

@@ -346,7 +346,7 @@ export default {
     }
   },
   created() {
-    // console.log('这是？',this.widgetInfo)
+    console.log('这是？', this.widgetInfo)
     this.widget = this.widgetInfo
     this.currentElement = JSON.parse(JSON.stringify(this.element))
     this.myAttrs = this.currentElement.options.attrs
