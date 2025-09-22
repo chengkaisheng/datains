@@ -120,7 +120,7 @@ public class DataSetTableController {
         return dataSetTableService.get(id);
     }
 
-    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE)
+//    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE)
     @ApiOperation("带权限查询")
     @PostMapping("getWithPermission/{id}")
     public DataSetTableDTO getWithPermission(@PathVariable String id) {
@@ -140,7 +140,7 @@ public class DataSetTableController {
         return dataSetTableService.getFieldsFromDE(dataSetTableRequest);
     }
 
-    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "id")
+//    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE, value = "id")
     @ApiOperation("查询预览数据")
     @PostMapping("getPreviewData/{page}/{pageSize}")
     public Map<String, Object> getPreviewData(@RequestBody DataSetTableRequest dataSetTableRequest, @PathVariable Integer page, @PathVariable Integer pageSize) throws Exception {
@@ -180,7 +180,7 @@ public class DataSetTableController {
         dataSetTableService.saveIncrementalConfig(datasetTableIncrementalConfig);
     }
 
-    @DePermission(type = DePermissionType.DATASET)
+//    @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("数据集详息")
     @PostMapping("datasetDetail/{id}")
     public DataSetDetail datasetDetail(@PathVariable String id) {

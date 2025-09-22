@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.datains.base.mapper.ext.ExtDatasetShareMapper">
+
+    <resultMap id="treeNodeMap" type="io.datains.dto.dataset.DatasetSharePo">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="creator" property="creator"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="dataset_type" jdbcType="VARCHAR"  property="datasetType"/>
+    </resultMap>
+    <resultMap id="BaseResultMap" type="io.datains.base.domain.DatasetShare">
+        <id column="share_id" jdbcType="BIGINT" property="shareId"/>
+        <result column="dataset_id" jdbcType="VARCHAR" property="datasetId"/>
+        <result column="dataset_type" jdbcType="VARCHAR"  property="datasetType"/>
+        <result column="target_id" jdbcType="BIGINT" property="targetId"/>
+        <result column="create_time" jdbcType="BIGINT" property="createTime"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+    </resultMap>
+    <resultMap id="targetMap" type="io.datains.dto.dataset.DatasetShareOutDTO">
+        <result column="dataset_id" property="datasetId"/>
+        <result column="dataset_type" property="datasetType"/>
+        <result column="share_id" property="shareId"/>
+        <result column="type" property="type"/>
+        <result column="target_Id" property="targetId"/>
+        <result column="target_Name" property="targetName"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <insert id="batchInsert" parameterType="io.datains.base.domain.DatasetShare">
+        INSERT INTO dataset_share (dataset_id,dataset_type,target_id,granter,create_time,type)
+        VALUES
+        <foreach collection="shares" item="share" separator=",">
+            (#{share.datasetId}, #{share.datasetType}, #{share.targetId}, #{userName}, #{share.createTime}, #{share.type})
+        </foreach>
+    </insert>
+
+    <delete id="batchDelete" parameterType="java.lang.Long">
+        delete from dataset_share
+        where share_id in
+        <foreach collection="shareIds" item="shareId" open="(" separator="," close=")">
+            #{shareId}
+        </foreach>
+    </delete>
+
+    <select id="query" resultMap="treeNodeMap">
+        select distinct s.dataset_id as id, u.nick_name as creator, dt.name, u.user_id , s.dataset_type
+        from dataset_share s
+        left join dataset_table dt on dt.id = s.dataset_id
+        left join sys_user u on u.username = IFNULL(s.granter,dt.create_by)
+        where
+        ( s.target_id = #{userId} and s.type = 0 ) or
+        ( s.target_id = #{deptId} and s.type = 2 ) or
+        ( s.target_id in
+        <foreach collection="roleIds" item="roleId" open='(' separator=',' close=')'>
+            #{roleId}
+        </foreach>
+        and s.type = 1 )
+        <if test="orderByClause == null">
+            order by s.create_time desc
+        </if>
+
+    </select>
+
+    <select id="queryOut" resultMap="treeNodeMap">
+        select distinct s.dataset_id as id, dt.name, s.dataset_type
+        from dataset_share s
+                 left join dataset_table dt on dt.id = s.dataset_id
+        where (s.granter is not null and s.granter = #{userName})
+           or (s.granter is null and dt.create_by = #{userName})
+        order by s.create_time desc
+
+    </select>
+
+    <select id="queryWithResource" parameterType="io.datains.controller.request.dataset.DatasetShareSearchRequest"
+            resultMap="BaseResultMap">
+        select s.*
+        from dataset_share s
+        left join dataset_table dt on dt.id = s.dataset_id
+        where
+        s.dataset_id = #{resourceId}
+        <if test="type != null">
+            and s.type = #{type}
+        </if>
+        and (( s.granter is not null and s.granter = #{currentUserName} ) or ( s.granter is null and dt.create_by =
+        #{currentUserName} ))
+        order by s.create_time desc
+
+
+    </select>
+
+    <select id="queryTargets" resultMap="targetMap">
+        select s.share_id,
+               s.dataset_id,
+               s.dataset_type,
+               s.type,
+               s.target_id,
+               s.create_time,
+               (
+                   CASE s.type
+                       WHEN 0 THEN (select nick_name from sys_user where user_id = s.target_id)
+                       WHEN 1 THEN (select name from sys_role where role_id = s.target_id)
+                       WHEN 2 THEN (select name from sys_dept where dept_id = s.target_id)
+                       END
+                   )        as target_name
+        from dataset_share s
+        where s.dataset_id = #{datasetId}
+          and s.granter = #{userName}
+
+
+    </select>
+
+    <select id="queryUserIdWithRoleIds" resultType="java.lang.Long">
+        select user_id
+        from sys_users_roles
+        where role_id in
+        <foreach collection="roleIds" item="roleId" open='(' separator=',' close=')'>
+            #{roleId}
+        </foreach>
+    </select>
+
+
+    <select id="queryUserIdWithDeptIds" resultType="java.lang.Long">
+        select user_id
+        from sys_user
+        where dept_id in
+        <foreach collection="deptIds" item="deptId" open='(' separator=',' close=')'>
+            #{deptId}
+        </foreach>
+    </select>
+
+    <delete id="removeShares" parameterType="io.datains.controller.request.dataset.DatasetShareRemoveRequest">
+        delete from dataset_share
+        where dataset_id = #{request.datasetId}
+        <if test="request.shareId != null">
+            and share_id = #{request.shareId}
+        </if>
+    </delete>
+    <delete id="deleteById">
+        delete from dataset_share
+        where dataset_id = #{datasetId}
+        <if test="type != null">
+            and type = #{type}
+        </if>
+    </delete>
+
+
+</mapper>
