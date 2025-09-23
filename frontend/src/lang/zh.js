@@ -649,7 +649,7 @@ export default {
     special_characters_are_not_supported: '格式错误(不支持特殊字符，且不能以\'-\'开头结尾)',
     select: '选择组织',
     manager_org: '组织负责人',
-    select_manager: '选择负责人',
+    select_manager: '选择负责人'
   },
   system_parameter_setting: {
     mailbox_service_settings: '邮件设置',
@@ -2002,6 +2002,8 @@ export default {
     i18n_msg_type_dataset_sync_success: '数据集同步成功',
     i18n_msg_type_dataset_sync_faild: '数据集同步失败',
     i18n_msg_type_ds_invalid: '数据源失效',
+    i18n_msg_type_dataset_share: '数据集分享',
+    i18n_msg_type_dataset_share_cacnel: '数据集取消分享',
     i18n_msg_type_all: '全部类型',
     channel_inner_msg: '站内消息',
     channel_email_msg: '邮件'

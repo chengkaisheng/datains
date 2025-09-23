@@ -111,6 +111,20 @@ export default {
         this.refreshShare()
       }
     },
+    msg2Current(panelIds) {
+      this.refreshShare()
+      this.$nextTick(() => {
+        if (panelIds) {
+          try {
+            panelIds = JSON.parse(panelIds)
+            this.msgPanelIds = panelIds
+            this.activeName = 'panels_share'
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      })
+    },
 
     refreshShare() {
       this.showShare = false
@@ -122,6 +136,7 @@ export default {
     },
 
     toMsgShare(routerParam) {
+      console.log('routerParam', routerParam)
       if (routerParam !== null && routerParam.msgNotification) {
         const panelShareTypeIds = [4, 5, 6]
         // 说明是从消息通知跳转过来的
@@ -138,6 +153,14 @@ export default {
               console.error(error)
             }
           }
+        } else if (routerParam.msgType === 10) { // 是分享
+          // this.msg2Current(routerParam.sourceParam)
+          this.activeName = 'shareTree'
+          this.showShare = true
+          this.component = DataHome
+          this.$nextTick(() => {
+            this.$refs.shareTree && this.$refs.shareTree.msg2Current(routerParam.sourceParam)
+          })
         }
       }
     }

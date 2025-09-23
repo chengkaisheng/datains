@@ -1813,6 +1813,8 @@ export default {
     i18n_msg_type_dataset_sync: 'Data set synchronization',
     i18n_msg_type_dataset_sync_success: 'Dataset synchronization successful',
     i18n_msg_type_dataset_sync_faild: 'Dataset synchronization failed',
+    i18n_msg_type_dataset_share: 'Data set sharing',
+    i18n_msg_type_dataset_share_cacnel: 'Data set unshared',
     i18n_msg_type_all: 'All type',
     i18n_msg_type_ds_invalid: 'Datasource invalid',
     channel_inner_msg: 'On site news'
