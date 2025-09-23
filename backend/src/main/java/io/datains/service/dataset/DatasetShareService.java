@@ -127,13 +127,13 @@ public class DatasetShareService {
         msgParam.add(datasetId);
         addUserIdSet.forEach(userId -> {
             if (!redUserIdSet.contains(userId) && !user.getUserId().equals(userId)) {
-                DeMsgutil.sendMsg(userId, 2L, user.getNickName() + " 分享了数据集【" + msg + "】，请查收!", gson.toJson(msgParam));
+                DeMsgutil.sendMsg(userId, 10L, user.getNickName() + " 分享了数据集【" + msg + "】，请查收!", gson.toJson(msgParam));
             }
         });
 
         redUserIdSet.forEach(userId -> {
             if (!addUserIdSet.contains(userId) && !user.getUserId().equals(userId)) {
-                DeMsgutil.sendMsg(userId, 3L, user.getNickName() + " 取消分享了数据集【" + msg + "】，请查收!",
+                DeMsgutil.sendMsg(userId, 11L, user.getNickName() + " 取消分享了数据集【" + msg + "】，请查收!",
                         gson.toJson(msgParam));
             }
         });
