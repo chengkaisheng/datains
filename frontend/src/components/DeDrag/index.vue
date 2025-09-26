@@ -34,7 +34,7 @@
     >
       <edit-bar
         :show="editBarShow"
-        :currentComponentType="element.currentComponentType"
+        :current-component-type="element.currentComponentType"
         style="transform: translateZ(10px)"
         :active-model="'edit'"
         :element="element"
@@ -174,7 +174,7 @@ export default {
     },
     w: {
       type: [Number, String],
-      default: 200,
+      default: 100,
       validator: val => {
         if (typeof val === 'number') {
           return val > 0
@@ -184,7 +184,7 @@ export default {
     },
     h: {
       type: [Number, String],
-      default: 200,
+      default: 100,
       validator: val => {
         if (typeof val === 'number') {
           return val > 0
@@ -524,7 +524,7 @@ export default {
           return 'auto'
         }
       }
-      if(!this.resizing) {
+      if (!this.resizing) {
         this.width = this.width === 0 ? 300 : this.width
       }
       return this.width + 'px'
@@ -536,7 +536,7 @@ export default {
           return 'auto'
         }
       }
-      if(!this.resizing) {
+      if (!this.resizing) {
         this.height = this.height === 0 ? 200 : this.height
       }
       return this.height + 'px'
@@ -644,7 +644,7 @@ export default {
     // 'width': {
     //   handler: function(val1, val2) {
     //     console.log('val1, val2', val1, val2, this.resizing);
-        
+
     //   }
     // },
     'boxWidth': {
@@ -905,7 +905,7 @@ export default {
     },
     // 元素按下
     elementDown(e) {
-      console.log('元素按下',e)
+      console.log('元素按下', e)
       if (e instanceof MouseEvent && e.which !== 1) {
         return
       }

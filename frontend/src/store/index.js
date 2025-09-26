@@ -129,7 +129,7 @@ const data = {
     // 仪表板视图明细
     panelViewDetailsInfo: {},
     // 全屏状态
-    screenStatus: false,
+    screenStatus: false
   },
   mutations: {
     ...animation.mutations,
@@ -145,7 +145,7 @@ const data = {
       state.isClickComponent = status
     },
 
-    setCopyToPaste(state,status) {
+    setCopyToPaste(state, status) {
       state.isCopyToPaste = status
     },
 
@@ -162,14 +162,14 @@ const data = {
       state.canvasStyleData = style
     },
 
-    setScreenStatus(state,status) {
+    setScreenStatus(state, status) {
       state.screenStatus = status
     },
 
-    setPanelStatus(state,status) {
+    setPanelStatus(state, status) {
       state.isPanelStyle = status
     },
-    setPanelStyleData(state,style) {
+    setPanelStyleData(state, style) {
       state.panelStyleData = style
     },
 
@@ -196,14 +196,13 @@ const data = {
       state.curComponentIndex = index
     },
 
-    
     setDetailsViews(state, data) {
-      let arr = state.detailsViews.map(item => {return item.id})
+      const arr = state.detailsViews.map(item => { return item.id })
       // console.log('已有哪些',arr,data)
-      if(arr.indexOf(data.id) !== -1) {
-        for(let i=0;i<state.detailsViews.length;i++) {
+      if (arr.indexOf(data.id) !== -1) {
+        for (let i = 0; i < state.detailsViews.length; i++) {
           const el = state.detailsViews[i]
-          if(el.id === data.id) {
+          if (el.id === data.id) {
             state.detailsViews[i] = data
             // console.log('11111111',state.detailsViews[i])
           }
@@ -222,7 +221,7 @@ const data = {
       state.scrollVisible = status
     },
 
-    setScrollFilters(state,data) {
+    setScrollFilters(state, data) {
       state.scrollFilters = data
     },
 
@@ -245,7 +244,7 @@ const data = {
         if (height || height === 0) curComponent.style.height = (height / curCanvasScale.scalePointHeight) + 0.0000001
         if (rotate || rotate === 0) curComponent.style.rotate = rotate
       }
-      // console.log('宽高处理出？？？？？？', width, height, curComponent, curCanvasScale)
+      console.log('宽高处理出？？？？？？', width, height, curComponent, curCanvasScale)
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {
@@ -339,7 +338,7 @@ const data = {
         console.log('5---------------点', element, data)
         state.componentData[index] = {}
         state.componentData[index] = element
-        
+
         // this.$set(state.componentData[index], 'newKey', data.value)
       }
       console.log('state.componentData', state.componentData)
@@ -365,7 +364,7 @@ const data = {
         console.log('3---------------点', condition)
         // const currentFilters = element.filters || []
         const currentFilters = state.currentFilters_save[index] || element.filters || []
-        
+
         const vidMatch = viewIdMatch(condition.viewIds, element.propValue.viewId)
 
         let j = currentFilters.length
@@ -379,7 +378,7 @@ const data = {
         // 不存在该条件 且 条件有效 直接保存该条件
         // !filterExist && vValid && currentFilters.push(condition)
         vidMatch && vValid && currentFilters.push(condition)
-        
+
         console.log('5---------------点', element, data)
         // save_only改造 通过watch监听的标识 save_only ，只保存currentFilters，不进行更新
         state.currentFilters_save[index] = currentFilters
@@ -560,7 +559,7 @@ const data = {
       state.isUniformity = status
     },
     setNowPanelTrackInfo(state, trackInfo) {
-      console.log('联动信息，，',trackInfo)
+      console.log('联动信息，，', trackInfo)
       state.nowPanelTrackInfo = trackInfo
     },
     setNowPanelJumpInfo(state, jumpInfo) {

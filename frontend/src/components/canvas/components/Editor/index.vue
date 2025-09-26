@@ -151,7 +151,7 @@
         :id="'component' + item.id"
         ref="wrapperChild"
         class="component"
-        :currentComponentType.sync="item.currentComponentType"
+        :current-component-type.sync="item.currentComponentType"
         :filters="filterMap[item.propValue && item.propValue.viewId]"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
@@ -1275,7 +1275,7 @@ export default {
     },
     componentData: {
       handler(newVal, oldVla) {
-        // console.log('++++++this.componentData', this.componentData)
+        console.log('++++++this.componentData', this.componentData)
         // console.log('组件：', newVal)
         // 初始化时componentData 加载可能出现慢的情况 此时重新初始化一下matrix
         if (newVal.length !== this.lastComponentDataLength) {
@@ -1673,7 +1673,7 @@ export default {
       }
     },
     getShapeStyleIntDeDrag(style, prop) {
-      // console.log('什么问题啊？',style,prop)
+      // console.log('什么问题啊？', style, prop)
       if (prop === 'rotate') {
         return style['rotate']
       }
@@ -1725,7 +1725,7 @@ export default {
       this.chartDetailsVisible = true
     },
     exportExcel() {
-      console.log(123123);
+      console.log(123123)
       this.$refs.wrapperChild[this.selectedIndex].exportDetailData()
     },
     // exportExcel() {

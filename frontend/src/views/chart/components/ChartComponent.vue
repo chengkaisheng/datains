@@ -81,10 +81,10 @@ import {
   heatMapOption
 } from '../chart/line/line'
 import {
-  candlestickOption,
+  candlestickOption
 } from '../chart/other/candlestick'
 import {
-  baseBoxPlotOption,
+  baseBoxPlotOption
 } from '../chart/other/boxPlot'
 import {
   baseSankeyOption
@@ -257,7 +257,6 @@ export default {
       let chart_option = {}
       // type
 
-      // console.log(this.$store.state.canvasStyleData)
       // bar-contrast 对比
       // bar-double
       if (chart.type === 'bar') {
@@ -285,7 +284,7 @@ export default {
       } else if (chart.type === 'bar-stack-part') {
         chart_option = stackBarPartOption(JSON.parse(JSON.stringify(BASE_BAR_PART)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-rate') {
-        chart_option = barRateOption(JSON.parse(JSON.stringify(BASE_BAR_RATE)),chart,this.$store.state.canvasStyleData)
+        chart_option = barRateOption(JSON.parse(JSON.stringify(BASE_BAR_RATE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-polarStack') {
         chart_option = polarStackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-horizontal') {
@@ -365,7 +364,7 @@ export default {
           return
         }
         const cCode = this.dynamicAreaCode || customAttr.areaCode
-        console.log('选择区域，',cCode)
+        console.log('选择区域，', cCode)
         if (this.$store.getters.geoMap[cCode]) {
           const json = this.$store.getters.geoMap[cCode]
           this.initMapChart(json, chart)
@@ -517,7 +516,7 @@ export default {
     padding: 2px;
     border-radius: 5px
   }
-  
+
   /* 去掉百度地图的logo */
   .anchorBL {
     display: none !important;

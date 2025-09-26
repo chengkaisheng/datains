@@ -14,13 +14,14 @@ const name = defaultSettings.title || 'vue Admin Template' // page title
 
 const port = process.env.port || process.env.npm_config_port || 9528 // dev port
 module.exports = {
-  productionSourceMap: true,
+  productionSourceMap: false,
   // 使用mock-server
   devServer: {
     port: port,
     proxy: {
       '^(?!/login)': {
-        target: 'http://192.168.3.16:8081', // 张子航
+        // target: 'http://192.168.3.16:8081', // 张子航
+        target: 'http://192.168.3.67:80', // 张子航
         // target: 'http://183.194.64.166:40147', // 线上
         ws: false
       }
@@ -42,7 +43,7 @@ module.exports = {
   },
   configureWebpack: {
     name: name,
-    devtool: 'source-map',
+    devtool: process.env.NODE_ENV === 'production' ? false : 'source-map',
     resolve: {
       alias: {
         '@': resolve('src')
