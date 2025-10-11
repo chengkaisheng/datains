@@ -30,7 +30,6 @@
       size="mini"
       style="width: 100%"
       :height="height"
-      sortable
       :checkbox-config="{ highlight: true }"
       :width-resize="true"
     >
@@ -40,8 +39,6 @@
         min-width="200px"
         :field="field.datainsName"
         :resizable="true"
-        :filters="field.filters"
-        :filter-method="filterMethod"
       >
         <template slot="header">
           <svg-icon
@@ -66,25 +63,14 @@
           />
           <span>{{ field.name }}</span>
         </template>
-        <!--自定义筛选模板-->
-        <template v-slot:filter="{ $panel, column }">
-          <!--column.filters就是去渲染的这个东西:filters="[{ data: '' }]，然后v-model绑定到了这个data属性啦-->
-          <el-input
-            type="type"
-            v-for="(option, index) in column.filters"
-            :key="index"
-            v-model="option[column.field]"
-            @input="$panel.changeOption($event, option[column.field], option)"
-          />
-        </template>
       </ux-table-column>
     </ux-grid>
     <el-row style="margin-top: 4px">
       <span
         v-if="
           table.type === 'excel' ||
-          table.type === 'custom' ||
-          table.type === 'union'
+            table.type === 'custom' ||
+            table.type === 'union'
         "
         class="table-count"
       >
@@ -111,6 +97,7 @@
         {{ $t("dataset.preview_item") }}
       </span>
       <el-pagination
+        v-show="false"
         :current-page="currentPage.page"
         :page-sizes="[parseInt(form.row)]"
         :page-size="parseInt(form.row)"
@@ -125,32 +112,32 @@
 
 <script>
 export default {
-  name: "TabDataPreview",
+  name: 'TabDataPreview',
   props: {
     table: {
       type: Object,
-      required: true,
+      required: true
     },
     param: {
       type: Object,
-      required: true,
+      required: true
     },
     fields: {
       type: Array,
-      required: true,
+      required: true
     },
     data: {
       type: Array,
-      required: true,
+      required: true
     },
     form: {
       type: Object,
-      required: true,
+      required: true
     },
     page: {
       type: Object,
-      required: false,
-    },
+      required: false
+    }
   },
   data() {
     return {
@@ -158,74 +145,71 @@ export default {
       currentPage: {
         page: 1,
         pageSize: parseInt(this.form.row),
-        show: parseInt(this.form.row),
-      },
-    };
+        show: parseInt(this.form.row)
+      }
+    }
   },
   computed: {},
   watch: {
     data() {
-      const datas = this.data;
-      this.$refs.plxTable.reloadData(datas);
+      const datas = this.data
+      this.$refs.plxTable.reloadData(datas)
     },
     page() {
       if (this.page.total < parseInt(this.form.row)) {
-        this.currentPage.show = this.page.total;
+        this.currentPage.show = this.page.total
       } else {
-        this.currentPage.show = parseInt(this.form.row);
+        this.currentPage.show = parseInt(this.form.row)
       }
-    },
+    }
   },
   mounted() {
-    this.init();
+    this.init()
   },
   methods: {
     init() {
-      this.calHeight();
+      this.calHeight()
     },
     blockKey(e) {
       if (
         (e.ctrlKey || e.metaKey) &&
-        ["c", "s", "u", "a"].includes(e.key.toLowerCase())
+        ['c', 's', 'u', 'a'].includes(e.key.toLowerCase())
       ) {
-        e.preventDefault();
+        e.preventDefault()
       }
     },
     calHeight() {
-      const that = this;
-      setTimeout(function () {
-        const currentHeight = document.documentElement.clientHeight;
-        that.height = currentHeight - 56 - 30 - 26 - 25 - 55 - 38 - 28 - 10;
-      }, 10);
+      const that = this
+      setTimeout(function() {
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 56 - 30 - 26 - 25 - 55 - 38 - 28 - 10
+      }, 10)
     },
     reSearch() {
       if (
         !this.form.row ||
-        this.form.row === "" ||
+        this.form.row === '' ||
         this.form.row.length > 5 ||
         isNaN(Number(this.form.row)) ||
-        String(this.form.row).includes(".") ||
+        String(this.form.row).includes('.') ||
         parseInt(this.form.row) < 1
       ) {
         this.$message({
-          message: this.$t("dataset.pls_input_less_5"),
-          type: "error",
-          showClose: true,
-        });
-        return;
+          message: this.$t('dataset.pls_input_less_5'),
+          type: 'error',
+          showClose: true
+        })
+        return
       }
-      this.currentPage.show = parseInt(this.form.row);
-      this.currentPage.pageSize = parseInt(this.form.row);
-      this.currentPage.page = 1;
-      this.$emit("reSearch", { form: this.form, page: this.currentPage });
+      this.currentPage.show = parseInt(this.form.row)
+      this.currentPage.pageSize = parseInt(this.form.row)
+      this.currentPage.page = 1
+      this.$emit('reSearch', { form: this.form, page: this.currentPage })
     },
     pageChange(val) {
-      this.currentPage.page = val;
+      this.currentPage.page = val
       // console.log(this.currentPage)
-      this.$emit("reSearch", { form: this.form, page: this.currentPage });
-    },
-    filterMethod({ option, row }) {
-      return row.C_531aadcd96c4f39b3e50e482e8dbd087 === option.checked
+      this.$emit('reSearch', { form: this.form, page: this.currentPage })
     }
   }
 }

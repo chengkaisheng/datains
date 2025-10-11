@@ -20,8 +20,8 @@ module.exports = {
     port: port,
     proxy: {
       '^(?!/login)': {
-        // target: 'http://192.168.3.16:8081', // 张子航
-        target: 'http://192.168.3.67:80', // 张子航
+        target: 'http://192.168.3.16:8081', // 张子航
+        // target: 'http://192.168.3.67:80', // 公司环境
         // target: 'http://183.194.64.166:40147', // 线上
         ws: false
       }

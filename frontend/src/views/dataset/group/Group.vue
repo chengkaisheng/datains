@@ -300,7 +300,8 @@ export default {
       expandedArray: [],
       groupForm: {
         name: '',
-        pid: '0',
+        // pid: '0',
+        pid: 'dataset_list',
         level: 0,
         type: '',
         children: [],

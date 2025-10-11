@@ -198,7 +198,16 @@ export default {
       if (this.table.id) {
         this.table.row = this.tableViewRowForm.row
         post('/dataset/table/getPreviewData/' + page.page + '/' + page.pageSize, this.table, true, 30000).then(response => {
-          this.fields = response.data.fields
+          this.fields = response.data.fields.map(row => {
+            return {
+              ...row,
+              filters: [{
+                [row.datainsName]: ''
+              }]
+            }
+          })
+          console.log(this.fields);
+          
           this.data = response.data.data
           this.page = response.data.page
           if (response.data.status === 'warnning') {
