@@ -91,6 +91,7 @@
         on datasource.id = authInfo.auth_source
         <where>
             FIND_IN_SET(datasource.id,cids)
+            and id != 'datasource_list'
         <if test="id != null">
             id = #{id,jdbcType=VARCHAR}
         </if>

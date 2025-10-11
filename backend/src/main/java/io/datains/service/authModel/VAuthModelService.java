@@ -37,6 +37,9 @@ public class VAuthModelService {
             removeEmptyDir(vAuthModelDTOS);
             return vAuthModelDTOS;
         }
+        if ("dataset".equals(request.getModelType())) {
+            return TreeUtils.mergeTree(result, "dataset_list");
+        }
         return TreeUtils.mergeTree(result);
     }
 

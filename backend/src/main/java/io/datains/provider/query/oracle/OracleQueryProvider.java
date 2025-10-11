@@ -250,6 +250,9 @@ public class OracleQueryProvider extends QueryProvider {
                 xFields.add(getXFields(x, originField, fieldAlias));
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && !StringUtils.equalsIgnoreCase(x.getSort(), "none")) {
+                    if (isDefaultSort(x)) {
+                        continue;
+                    }
                     xOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)
@@ -280,6 +283,9 @@ public class OracleQueryProvider extends QueryProvider {
                 yWheres.add(getYWheres(y, originField, fieldAlias));
                 // 处理纵轴排序
                 if (StringUtils.isNotEmpty(y.getSort()) && !StringUtils.equalsIgnoreCase(y.getSort(), "none")) {
+                    if (isDefaultSort(y)) {
+                        continue;
+                    }
                     yOrders.add(SQLObj.builder()
                             .orderField(originField)
                             .orderAlias(fieldAlias)

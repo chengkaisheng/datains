@@ -105,4 +105,11 @@ public abstract class QueryProvider {
         }
         return "AND";
     }
+
+    public boolean isDefaultSort(ChartViewFieldDTO sortField) {
+        if (sortField.getSortIndex() == null) {
+            return true;
+        }
+        return sortField.getSortIndex() == 999;
+    }
 }
