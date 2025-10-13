@@ -6,7 +6,13 @@
         <span class="title-text">
           {{ $t('dataset.datalist') }}
         </span>
-        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="add('group')" />
+        <el-button
+          icon="el-icon-plus"
+          type="text"
+          size="mini"
+          style="float: right;"
+          @click="add('group', 'dataset_list')"
+        />
       </el-row>
       <el-divider />
 
@@ -264,7 +270,12 @@
     </el-dialog>
     <!-- 分享 -->
     <el-dialog v-dialogDrag :title="authTitle" :visible.sync="authVisible" width="800px" class="dialog-css">
-      <grant-auth v-if="authVisible" :resource-id="authResourceId" :dataset-type="datasetType" @close-grant="closeGrant" />
+      <grant-auth
+        v-if="authVisible"
+        :resource-id="authResourceId"
+        :dataset-type="datasetType"
+        @close-grant="closeGrant"
+      />
     </el-dialog>
   </el-col>
 </template>
@@ -300,8 +311,7 @@ export default {
       expandedArray: [],
       groupForm: {
         name: '',
-        // pid: '0',
-        pid: 'dataset_list',
+        pid: '0',
         level: 0,
         type: '',
         children: [],
@@ -391,6 +401,8 @@ export default {
   },
   methods: {
     clickAdd(param) {
+      console.log(param)
+
       this.add(param.type)
       this.groupForm.pid = param.data.id
       this.groupForm.level = param.data.level + 1
@@ -409,9 +421,10 @@ export default {
       })
     },
     clickMore(param) {
+      console.log(param)
       switch (param.type) {
         case 'rename':
-          this.add(param.data.modelInnerType)
+          this.add(param.data.modelInnerType, param.data.pid)
           this.groupForm = JSON.parse(JSON.stringify(param.data))
           break
         case 'share':
@@ -448,10 +461,14 @@ export default {
       }
     },
 
-    add(type) {
+    add(type, pid) {
       switch (type) {
         case 'group':
           this.dialogTitle = this.$t('dataset.group')
+          if (pid) {
+            this.groupForm.pid = pid
+          }
+          console.log(this.groupForm.pid)
           break
         case 'scene':
           this.dialogTitle = this.$t('dataset.scene')
@@ -686,6 +703,8 @@ export default {
     },
 
     moveTo(data) {
+      this.tGroup = {}
+      this.groupMoveConfirmDisabled = true
       this.moveGroup = true
       this.moveDialogTitle = this.$t('dataset.m1') + (data.name.length > 10 ? (data.name.substr(0, 10) + '...') : data.name) + this.$t('dataset.m2')
     },
@@ -708,6 +727,11 @@ export default {
       })
     },
     targetGroup(val) {
+      if (val.id === '0') {
+        this.tGroup = {}
+        this.groupMoveConfirmDisabled = true
+        return
+      }
       this.tGroup = val
       this.groupMoveConfirmDisabled = false
     },

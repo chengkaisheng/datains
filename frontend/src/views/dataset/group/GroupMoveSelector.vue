@@ -12,7 +12,10 @@
           <span v-if="data.type === 'scene'">
             <svg-icon icon-class="scene" class="ds-icon-scene" />
           </span>
-          <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+          <span
+            style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+            :title="data.name"
+          >{{ data.name }}</span>
         </span>
       </span>
     </el-tree>
@@ -46,7 +49,7 @@ export default {
     }
   },
   watch: {
-    'item': function() {
+    item() {
       this.tree(this.groupForm)
     }
   },
@@ -62,18 +65,18 @@ export default {
           pid: '0',
           privileges: 'grant,manage,use',
           type: 'group',
+          disabled: true, // 根节点禁用
           children: res.data
         }]
       })
     },
     nodeClick(data, node) {
+      // if (data.id === '0') return // 禁止选中根节点
       this.targetGroup = data
       this.$emit('targetGroup', data)
     },
-    treeClass(data, node) {
-      if (data.id === this.item.id) {
-        node.visible = false
-      }
+    treeClass(data) {
+      if (data.id === '0') return 'custom-tree-node root-disabled'
       return 'custom-tree-node'
     }
   }
@@ -81,12 +84,17 @@ export default {
 </script>
 
 <style scoped>
-  .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding-right:8px;
-  }
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
+.root-disabled {
+  color: #999;
+  cursor: not-allowed;
+  pointer-events: none; /* 禁止点击 */
+}
 </style>
