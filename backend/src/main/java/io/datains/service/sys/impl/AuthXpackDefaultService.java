@@ -94,17 +94,17 @@ public class AuthXpackDefaultService implements AuthXpackService {
     }
 
     @Override
-    public void authChangeBatch(List<XpackSysAuthRequest> list, Long long_, String str, Boolean bool) {
+    public synchronized void authChangeBatch(List<XpackSysAuthRequest> list, Long long_, String str, Boolean bool) {
         if (list == null || list.isEmpty()) {
             return;
         }
-        //储存全部的authId
-        List<String> authIds = new ArrayList<>();
+
         //查出数据库中已有的权限信息
         List<XpackSysAuthDetailDTO> sysAuthByAuthSource = B.getSysAuthByAuthSources(
                 list.stream().map(XpackSysAuthRequest::getAuthSource).collect(Collectors.toList()),
                 list.get(0).getAuthTarget(), list.get(0).getAuthSourceType(), list.get(0).getAuthTargetType());
-        authIds.addAll(sysAuthByAuthSource.stream().map(XpackSysAuthDetailDTO::getId).collect(Collectors.toList()));
+        //储存全部的authId
+        List<String> authIds = sysAuthByAuthSource.stream().map(XpackSysAuthDetailDTO::getId).collect(Collectors.toList());
         Map<String, XpackSysAuthDetailDTO> sysAuthByAuthSourceMap = sysAuthByAuthSource.stream().collect(Collectors.toMap(XpackSysAuthDetailDTO::getAuthSource, item -> item));
         //筛选出需要新创建的
         List<XpackSysAuthRequest> needAdd = new ArrayList<>();
@@ -143,7 +143,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
                     authDetail.setPrivilegeValue(sysAuthDetail.getPrivilegeValue());
                     authDetail.setPrivilegeExtend(sysAuthDetail.getPrivilegeExtend());
                     authDetail.setRemark(sysAuthDetail.getRemark());
-                    authDetail.setCreateUser("dept");
+                    authDetail.setCreateUser(str);
                     authDetail.setCreateTime(System.currentTimeMillis());
                     addAuthDetail.add(authDetail);
                 }
