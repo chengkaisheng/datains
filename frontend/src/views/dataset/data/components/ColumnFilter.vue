@@ -33,23 +33,32 @@ export default {
   data() {
     return {
       visible: false,
-      localValue: this.value || ''
+      localValue: this.value || '', // 临时值（输入框显示）
+      lastConfirmedValue: this.value || '' // 正式值（上次确定或重置）
     }
   },
   watch: {
     // 父组件重置后同步
     value(val) {
       this.localValue = val || ''
+    },
+    visible(val) {
+      if (!val) {
+      // 弹窗关闭 → 丢弃临时输入，恢复正式值
+        this.localValue = this.lastConfirmedValue
+      }
     }
   },
   methods: {
     ok() {
+      this.lastConfirmedValue = this.localValue
       this.$emit('input', this.localValue)
       this.$emit('change', this.localValue, this.columnKey)
       this.visible = false
     },
     reset() {
       this.localValue = ''
+      this.lastConfirmedValue = ''
       this.$emit('input', '')
       this.$emit('change', '', this.columnKey)
     }
