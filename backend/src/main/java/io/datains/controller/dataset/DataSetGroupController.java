@@ -2,7 +2,6 @@ package io.datains.controller.dataset;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.datains.auth.annotation.DePermission;
-import io.datains.auth.annotation.DePermissions;
 import io.datains.base.domain.DatasetGroup;
 import io.datains.commons.constants.DePermissionType;
 import io.datains.commons.constants.ResourceAuthLevel;
@@ -12,7 +11,6 @@ import io.datains.service.dataset.DataSetGroupService;
 import io.datains.service.kettle.KettleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.Logical;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -33,10 +31,10 @@ public class DataSetGroupController {
     @Resource
     private KettleService kettleService;
 
-    @DePermissions(value = {
-            @DePermission(type = DePermissionType.DATASET, value = "id"),
-            @DePermission(type = DePermissionType.DATASET, value = "pid", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
-    }, logical = Logical.AND)
+//    @DePermissions(value = {
+//            @DePermission(type = DePermissionType.DATASET, value = "id"),
+//            @DePermission(type = DePermissionType.DATASET, value = "pid", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+//    }, logical = Logical.AND)
     @ApiOperation("保存")
     @PostMapping("/save")
     public DataSetGroupDTO save(@RequestBody DatasetGroup datasetGroup) throws Exception {
