@@ -1,12 +1,6 @@
 <template>
-  <el-col
-    class="no-copy"
-    @copy.prevent
-    @cut.prevent
-    @contextmenu.prevent
-    @keydown="blockKey"
-  >
-    <el-row>
+  <el-col class="no-copy" @copy.prevent @cut.prevent @contextmenu.prevent @keydown="blockKey">
+    <!-- <el-row>
       <el-col style="width: 300px">
         <el-form ref="form" :model="form" size="mini" class="row-style">
           <el-form-item>
@@ -14,17 +8,12 @@
               $t("dataset.showRow")
             }}</span>
             <el-input v-model="form.row" class="main-area-input">
-              <el-button
-                slot="append"
-                size="mini"
-                icon="el-icon-search"
-                @click="reSearch"
-              />
+              <el-button slot="append" size="mini" icon="el-icon-search" @click="reSearch" />
             </el-input>
           </el-form-item>
         </el-form>
       </el-col>
-    </el-row>
+    </el-row> -->
     <ux-grid
       ref="plxTable"
       size="mini"
@@ -34,48 +23,26 @@
       :checkbox-config="{ highlight: true }"
       :width-resize="true"
     >
+      <!-- :key="field.id" -->
       <ux-table-column
         v-for="field in fields"
-        :key="field.id"
+        :key="field.id + '|' + sortField + '|' + sortType"
         min-width="200px"
         :field="field.datainsName"
         :resizable="true"
       >
-        <!-- :filters="field.filters"
-        :filter-method="filterMethod" -->
         <template slot="header">
-          <svg-icon
-            v-if="field.deType === 0"
-            icon-class="field_text"
-            class="field-icon-text"
-          />
-          <svg-icon
-            v-if="field.deType === 1"
-            icon-class="field_time"
-            class="field-icon-time"
-          />
-          <svg-icon
-            v-if="field.deType === 2 || field.deType === 3"
-            icon-class="field_value"
-            class="field-icon-value"
-          />
-          <svg-icon
-            v-if="field.deType === 5"
-            icon-class="field_location"
-            class="field-icon-location"
-          />
+          <svg-icon v-if="field.deType === 0" icon-class="field_text" class="field-icon-text" />
+          <svg-icon v-if="field.deType === 1" icon-class="field_time" class="field-icon-time" />
+          <svg-icon v-if="field.deType === 2 || field.deType === 3" icon-class="field_value" class="field-icon-value" />
+          <svg-icon v-if="field.deType === 5" icon-class="field_location" class="field-icon-location" />
           <span>{{ field.name }}</span>
+          <span class="caret-wrapper" @click="toggleSort(field.datainsName)">
+            <i class="sort-caret ascending" :class="{ active: sortField === field.datainsName && sortType === 'asc' }" />
+            <i class="sort-caret descending" :class="{ active: sortField === field.datainsName && sortType === 'desc' }" />
+          </span>
+          <column-filter :value="getFilterValue(field.id)" :column-key="field" @change="onFilterChange" />
         </template>
-        <!--自定义筛选模板-->
-        <!-- <template v-slot:filter="{ $panel, column }">
-          <el-input
-            v-for="(option, index) in column.filters"
-            :key="index"
-            v-model="option[column.field]"
-            type="type"
-            @input="$panel.changeOption($event, option[column.field], option)"
-          />
-        </template> -->
       </ux-table-column>
     </ux-grid>
     <el-row style="margin-top: 4px">
@@ -101,15 +68,12 @@
           {{ $t("dataset.preview_item") }}
         </span>
       </span>
-      <span
-        v-if="table.type === 'db' || table.type === 'sql'"
-        class="table-count"
-      >
+      <span v-if="table.type === 'db' || table.type === 'sql'" class="table-count">
         {{ $t("dataset.preview_show") }}
         <span class="span-number">{{ page.total }}</span>
         {{ $t("dataset.preview_item") }}
       </span>
-      <el-pagination
+      <!-- <el-pagination
         :current-page="currentPage.page"
         :page-sizes="[parseInt(form.row)]"
         :page-size="parseInt(form.row)"
@@ -117,14 +81,26 @@
         layout="sizes, prev, pager, next"
         :total="currentPage.show"
         @current-change="pageChange"
+      /> -->
+      <el-pagination
+        :current-page="currentPageforms.currentPage"
+        :page-sizes="[100, 200, 500, 1000]"
+        :page-size="currentPageforms.pageSize"
+        :pager-count="5"
+        layout="sizes, prev, pager, next"
+        :total="currentPageforms.total"
+        @current-change="pageChange"
+        @size-change="sizeChange"
       />
     </el-row>
   </el-col>
 </template>
 
 <script>
+import ColumnFilter from './components/ColumnFilter.vue'
 export default {
   name: 'TabDataPreview',
+  components: { ColumnFilter },
   props: {
     table: {
       type: Object,
@@ -149,6 +125,10 @@ export default {
     page: {
       type: Object,
       required: false
+    },
+    currentPageform: {
+      type: Object,
+      required: false
     }
   },
   data() {
@@ -158,7 +138,15 @@ export default {
         page: 1,
         pageSize: parseInt(this.form.row),
         show: parseInt(this.form.row)
-      }
+      },
+      currentPageforms: {
+        pagesize: this.currentPageform.pageSize, // 🔹 每页条数
+        currentPage: this.currentPageform.currentPage, // 🔹 当前页
+        total: this.currentPageform.total // 🔹 总条数
+      },
+      filterArray: [], // 🔹 保存当前所有列的筛选条件
+      sortField: '', // 🔹 当前排序的字段
+      sortType: '' // 🔹 当前排序的类型{asc,desc}
     }
   },
   computed: {},
@@ -173,6 +161,17 @@ export default {
       } else {
         this.currentPage.show = parseInt(this.form.row)
       }
+    },
+    currentPageform: {
+      handler(newVal) {
+        this.currentPageforms = {
+          pageSize: newVal.pageSize,
+          currentPage: newVal.currentPage,
+          total: newVal.total
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   mounted() {
@@ -197,34 +196,93 @@ export default {
         that.height = currentHeight - 56 - 30 - 26 - 25 - 55 - 38 - 28 - 10
       }, 10)
     },
-    reSearch() {
-      if (
-        !this.form.row ||
-        this.form.row === '' ||
-        this.form.row.length > 5 ||
-        isNaN(Number(this.form.row)) ||
-        String(this.form.row).includes('.') ||
-        parseInt(this.form.row) < 1
-      ) {
-        this.$message({
-          message: this.$t('dataset.pls_input_less_5'),
-          type: 'error',
-          showClose: true
-        })
-        return
-      }
-      this.currentPage.show = parseInt(this.form.row)
-      this.currentPage.pageSize = parseInt(this.form.row)
-      this.currentPage.page = 1
-      this.$emit('reSearch', { form: this.form, page: this.currentPage })
-    },
+    // reSearch() {
+    //   if (
+    //     !this.form.row ||
+    //     this.form.row === '' ||
+    //     this.form.row.length > 5 ||
+    //     isNaN(Number(this.form.row)) ||
+    //     String(this.form.row).includes('.') ||
+    //     parseInt(this.form.row) < 1
+    //   ) {
+    //     this.$message({
+    //       message: this.$t('dataset.pls_input_less_5'),
+    //       type: 'error',
+    //       showClose: true
+    //     })
+    //     return
+    //   }
+    //   this.currentPage.show = parseInt(this.form.row)
+    //   this.currentPage.pageSize = parseInt(this.form.row)
+    //   this.currentPage.page = 1
+    //   this.$emit('reSearch', { form: this.form, page: this.currentPage })
+    // },
     pageChange(val) {
-      this.currentPage.page = val
-      // console.log(this.currentPage)
-      this.$emit('reSearch', { form: this.form, page: this.currentPage })
+      this.currentPageforms.currentPage = val
+      this.emitSearch()
     },
-    filterMethod({ option, row }) {
-      return row.C_531aadcd96c4f39b3e50e482e8dbd087 === option.checked
+    sizeChange(val) {
+      this.currentPageforms.pageSize = val
+      this.currentPageforms.currentPage = 1
+      this.emitSearch()
+    },
+    getFilterValue(fieldId) {
+      const item = this.filterArray.find(f => f.fieldId === fieldId)
+      return item ? item.value : ''
+    },
+    onFilterChange(value, keyObj) {
+      // keyObj 就是 columnKey（field 对象）
+      const { id: fieldId } = keyObj
+      // 1. 找到是否已存在该字段的筛选
+      const index = this.filterArray.findIndex(f => f.field.id === fieldId)
+      // 2. 空值 => 删除
+      if (!value || value.trim() === '') {
+        if (index !== -1) this.filterArray.splice(index, 1)
+      } else {
+        // 3. 有值 => 新增 or 覆盖
+        const item = {
+          field: keyObj,
+          filter: [
+            {
+              fieldId, term: 'like', value
+            }
+          ]
+        }
+        index === -1
+          ? this.filterArray.push(item)
+          : this.$set(this.filterArray, index, item)
+      }
+      this.emitSearch()
+    },
+    toggleSort(fieldKey) {
+      const map = { '': 'asc', 'asc': 'desc', 'desc': '' }
+      if (this.sortField !== fieldKey) {
+        this.sortField = fieldKey
+        this.sortType = 'asc'
+      } else {
+        this.sortType = map[this.sortType]
+        if (!this.sortType) this.sortField = ''
+      }
+      this.emitSearch()
+    },
+    // 统一触发父组件方法（合并筛选 + 排序 + 分页）
+    emitSearch() {
+      const sortFielditem = this.fields.find(f => f.datainsName === this.sortField)
+      const mergedForm = {
+        ...this.form,
+        filterArray: this.filterArray,
+        sortFields: [
+          {
+            id: sortFielditem && sortFielditem.id || '',
+            sort: this.sortType || ''
+          }
+        ],
+        currentPageforms: { ...this.currentPageforms }
+      }
+      this.$emit('reSearch', {
+        form: mergedForm,
+        page: { page: this.currentPageforms.currentPage, pageSize: this.currentPageforms.pageSize }
+      })
     }
   }
 }
@@ -237,27 +295,80 @@ export default {
   -moz-user-select: none;
   -ms-user-select: none;
 }
-.row-style >>> .el-form-item__label {
+
+.row-style>>>.el-form-item__label {
   font-size: 12px;
 }
-.row-style >>> .el-form-item--mini.el-form-item {
+
+.row-style>>>.el-form-item--mini.el-form-item {
   margin-bottom: 10px;
 }
-.row-style >>> .el-form-item__content {
+
+.row-style>>>.el-form-item__content {
   display: flex;
   flex-direction: row;
   width: 250px;
 }
+
 .el-pagination {
   float: right;
 }
+
 span {
   font-size: 12px;
 }
+
 .span-number {
   color: #0a7be0;
 }
+
 .table-count {
   color: #606266;
+}
+
+/* 双箭头排序图标 */
+.caret-wrapper {
+  position: relative;
+  display: inline-flex;
+  /* 横向排列，不叠加 */
+  flex-direction: column;
+  align-items: center;
+  width: 14px;
+  height: 18px;
+  margin-left: 4px;
+  cursor: pointer;
+  vertical-align: middle;
+  user-select: none;
+  margin-top: -2px;
+  /* 微调位置 */
+}
+
+/* 公共三角 */
+.sort-caret {
+  width: 0;
+  height: 0;
+  border: 4px solid transparent;
+  transition: border-color .2s;
+}
+
+/* 上三角 */
+.sort-caret.ascending {
+  border-bottom-color: #c0c4cc;
+  margin-bottom: 2px;
+  /* 上下分开 */
+}
+
+/* 下三角 */
+.sort-caret.descending {
+  border-top-color: #c0c4cc;
+}
+
+/* 高亮状态 */
+.sort-caret.ascending.active {
+  border-bottom-color: #409eff;
+}
+
+.sort-caret.descending.active {
+  border-top-color: #409eff;
 }
 </style>

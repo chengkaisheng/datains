@@ -61,6 +61,7 @@
           :data="data"
           :page="page"
           :form="tableViewRowForm"
+          :current-pageform="currentPageform"
           @reSearch="reSearch"
         />
       </el-tab-pane>
@@ -142,8 +143,13 @@ export default {
         row: 1000
       },
       tabStatus: false,
-      isPluginLoaded: false
+      isPluginLoaded: false,
       // type: 1 // 类型变量，等于1时只显示dataPreview页签
+      currentPageform: {
+        pageSize: 100, // 🔹 每页条数
+        currentPage: 1, // 🔹 当前页
+        total: 0 // 🔹 总条数
+      }
     }
   },
   computed: {
@@ -176,8 +182,11 @@ export default {
   },
   methods: {
     initTable(id) {
-      this.resetPage()
-      this.tableViewRowForm.row = 1000
+      // this.resetPage()
+      // this.tableViewRowForm.row = 1000
+      this.tableViewRowForm.row = this.currentPageform.pageSize
+      this.page.pageSize = this.currentPageform.pageSize
+      this.page.page = this.currentPageform.currentPage
       if (id !== null) {
         this.fields = []
         this.data = []
@@ -197,19 +206,17 @@ export default {
     initPreviewData(page) {
       if (this.table.id) {
         this.table.row = this.tableViewRowForm.row
-        post('/dataset/table/getPreviewData/' + page.page + '/' + page.pageSize, this.table, true, 30000).then(response => {
-          this.fields = response.data.fields.map(row => {
-            return {
-              ...row,
-              filters: [{
-                [row.datainsName]: ''
-              }]
-            }
-          })
-          console.log(this.fields);
-          
+        this.table.filter = this.tableViewRowForm.filterArray
+        this.table.sortFields = this.tableViewRowForm.sortFields
+        // 改为带分页筛选排序的接口
+        // post('/dataset/table/getPreviewData/' + page.page + '/' + page.pageSize, this.table, true, 30000).then(response => {
+        post('/dataset/table/getPreviewDataWithPage/' + page.page + '/' + page.pageSize, this.table, true, 30000).then(response => {
+          this.fields = response.data.fields
           this.data = response.data.data
           this.page = response.data.page
+          this.currentPageform.pageSize = response.data.page.pageSize
+          this.currentPageform.currentPage = response.data.page.page
+          this.currentPageform.total = response.data.page.total
           if (response.data.status === 'warnning') {
             this.$warning(response.data.msg, 3000)
           }
@@ -223,6 +230,11 @@ export default {
             page: 1,
             pageSize: 1000,
             show: 0
+          }
+          this.currentPageform = {
+            pageSize: 100,
+            currentPage: 1,
+            total: 0
           }
         })
       }
