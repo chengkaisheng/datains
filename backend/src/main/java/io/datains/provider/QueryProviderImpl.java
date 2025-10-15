@@ -36,7 +36,16 @@ public class QueryProviderImpl extends QueryProvider {
     }
 
     @Override
+    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
+        return null;
+    }
+
+    @Override
     public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
+        return null;
+    }
+
+    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
         return null;
     }
 

@@ -1,8 +1,10 @@
 package io.datains.controller.request.dataset;
 
 import io.datains.base.domain.DatasetTable;
-import io.datains.dto.datasource.TableField;
+import io.datains.base.domain.DatasetTableField;
+import io.datains.dto.chart.ChartFieldCustomFilterDTO;
 import io.datains.dto.dataset.ExcelSheetData;
+import io.datains.dto.datasource.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,4 +40,8 @@ public class DataSetTableRequest extends DatasetTable {
     private List<ExcelSheetData> sheets;
     @ApiModelProperty("是否合并sheet")
     private boolean mergeSheet = false;
+    @ApiModelProperty("过滤条件集合")
+    private List<ChartFieldCustomFilterDTO> filter;
+    @ApiModelProperty("排序条件集合")
+    private List<DatasetTableField> sortFields;
 }

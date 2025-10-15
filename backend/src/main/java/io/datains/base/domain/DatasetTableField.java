@@ -47,6 +47,8 @@ public class DatasetTableField implements Serializable {
     private Integer defaultSort;
     @ApiModelProperty("数值精度")
     private Integer precision;
+    @ApiModelProperty("排序")
+    private String sort;
 
 
     private static final long serialVersionUID = 1L;
