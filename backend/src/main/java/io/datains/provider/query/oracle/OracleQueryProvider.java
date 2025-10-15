@@ -119,7 +119,7 @@ public class OracleQueryProvider extends QueryProvider {
         if (customWheres != null) wheres.add(customWheres);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (CollectionUtils.isNotEmpty(xFields.get(1))) {
-            if (CollectionUtils.isNotEmpty(xFields.get(1))) st_sql.add("orders", xFields.get(1));
+            st_sql.add("orders", xFields.get(1));
         }
         return st_sql.render();
     }
@@ -256,6 +256,7 @@ public class OracleQueryProvider extends QueryProvider {
         }
         return ListUtil.toList(xFields, xOrders);
     }
+
     private String sqlColumn(List<SQLObj> xFields) {
         String[] array = xFields.stream().map(f -> {
             return f.getFieldAlias();

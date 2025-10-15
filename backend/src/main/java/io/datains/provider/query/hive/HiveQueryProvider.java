@@ -149,7 +149,7 @@ public class HiveQueryProvider extends QueryProvider {
         if (customWheres != null) wheres.add(customWheres);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (CollectionUtils.isNotEmpty(xOrders)) {
-            if (CollectionUtils.isNotEmpty(xOrders)) st_sql.add("orders", xOrders);
+            st_sql.add("orders", xOrders);
         }
         return st_sql.render();
     }
@@ -291,6 +291,7 @@ public class HiveQueryProvider extends QueryProvider {
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
         return sqlLimit(st.render(), view);
     }
+
     @Override
     public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
         String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " , " + pageInfo.getPageSize() : "");

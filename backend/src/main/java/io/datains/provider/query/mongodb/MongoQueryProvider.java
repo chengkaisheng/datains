@@ -134,7 +134,7 @@ public class MongoQueryProvider extends QueryProvider {
         if (customWheres != null) wheres.add(customWheres);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (CollectionUtils.isNotEmpty(xOrders)) {
-            if (CollectionUtils.isNotEmpty(xOrders)) st_sql.add("orders", xOrders);
+            st_sql.add("orders", xOrders);
         }
         return st_sql.render();
     }
