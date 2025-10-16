@@ -30,7 +30,11 @@ public abstract class QueryProvider {
 
     public abstract String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter);
 
+    public abstract String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter);
+
     public abstract String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter);
+
+    public abstract String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter);
 
     public abstract String createQueryTableWithLimit(String table, List<DatasetTableField> fields, Integer limit, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter);
 
@@ -49,6 +53,7 @@ public abstract class QueryProvider {
             return getSQLAsTmpTableInfo(table, xAxis, fieldCustomFilter, extFilterRequestList, ds, view);
         }
     }
+
     public String getResultCount(boolean isTable, String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
         if (isTable) {
             return "SELECT COUNT(*) from (" + getSQLTableInfo(table, xAxis, fieldCustomFilter, extFilterRequestList, ds, view) + ") COUNT_TEMP";
@@ -56,6 +61,7 @@ public abstract class QueryProvider {
             return "SELECT COUNT(*) from (" + getSQLAsTmpTableInfo(table, xAxis, fieldCustomFilter, extFilterRequestList, ds, view) + ") COUNT_TEMP";
         }
     }
+
     public abstract String getSQLAsTmpTableInfo(String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view);
 
     public abstract String getSQLStack(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, Datasource ds, ChartViewWithBLOBs view);

@@ -609,6 +609,37 @@ public class DataSetTableService {
             datasetTable.setType("db");
             datasetTable.setInfo(dataSetTableRequest.getInfo());
         }
+        //拼装页面筛选
+        if (dataSetTableRequest.getFilter() != null && !dataSetTableRequest.getFilter().isEmpty()) {
+            for (ChartFieldCustomFilterDTO filter : dataSetTableRequest.getFilter()) {
+                boolean isExist = false;
+                //先判断是否已经存在此字段的筛选
+                for (ChartFieldCustomFilterDTO custom : customFilter) {
+                    if (custom.getId().equals(filter.getField().getId())) {
+                        //如果已经存在则直接添加条件到已有的筛选字段中
+                        custom.getFilter().addAll(filter.getFilter());
+                        isExist = true;
+                        break;
+                    }
+                }
+                if (!isExist) {
+                    //如果不存在则添加新的字段
+                    filter.setId(filter.getField().getId());
+                    customFilter.add(filter);
+                }
+            }
+        }
+        //拼装页面排序
+        if (dataSetTableRequest.getSortFields() != null && !dataSetTableRequest.getSortFields().isEmpty()) {
+            for (DatasetTableField sortField : dataSetTableRequest.getSortFields()) {
+                for (DatasetTableField field : fields) {
+                    if (field.getId().equals(sortField.getId())) {
+                        field.setSort(sortField.getSort());
+                        break;
+                    }
+                }
+            }
+        }
         if (CollectionUtils.isEmpty(fields)) {
             map.put("fields", fields);
             map.put("data", new ArrayList<>());
@@ -625,12 +656,12 @@ public class DataSetTableService {
         dataSetPreviewPage.setShow(Integer.valueOf(dataSetTableRequest.getRow()));
         dataSetPreviewPage.setPage(page);
         dataSetPreviewPage.setPageSize(pageSize);
-        int realSize = Integer.parseInt(dataSetTableRequest.getRow()) < pageSize
-                ? Integer.parseInt(dataSetTableRequest.getRow())
-                : pageSize;
-        if (page == Integer.parseInt(dataSetTableRequest.getRow()) / pageSize + 1) {
-            realSize = Integer.parseInt(dataSetTableRequest.getRow()) % pageSize;
-        }
+//        int realSize = Integer.parseInt(dataSetTableRequest.getRow()) < pageSize
+//                ? Integer.parseInt(dataSetTableRequest.getRow())
+//                : pageSize;
+//        if (page == Integer.parseInt(dataSetTableRequest.getRow()) / pageSize + 1) {
+//            realSize = Integer.parseInt(dataSetTableRequest.getRow()) % pageSize;
+//        }
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "db") || StringUtils.equalsIgnoreCase(datasetTable.getType(), "api")) {
             if (datasetTable.getMode() == 0) {
                 Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
@@ -647,13 +678,13 @@ public class DataSetTableService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
 
                 datasourceRequest.setQuery(
-                        qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, customFilter));
+                        qp.createQueryTableWithPage(table, fields, page, pageSize, false, ds, customFilter));
 
                 map.put("sql", datasourceRequest.getQuery());
                 datasourceRequest.setPage(page);
                 datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
                 datasourceRequest.setPageSize(pageSize);
-                datasourceRequest.setRealSize(realSize);
+                datasourceRequest.setRealSize(pageSize);
                 datasourceRequest.setPreviewData(true);
                 try {
                     datasourceRequest.setPageable(true);
@@ -692,7 +723,7 @@ public class DataSetTableService {
                 String table = TableUtils.tableName(dataSetTableRequest.getId());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
-                        qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, customFilter));
+                        qp.createQueryTableWithPage(table, fields, page, pageSize, false, ds, customFilter));
                 map.put("sql", datasourceRequest.getQuery());
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
@@ -726,12 +757,12 @@ public class DataSetTableService {
                 String sql = dataTableInfoDTO.getSql();
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
-                        qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false, customFilter));
+                        qp.createQuerySQLWithPage(sql, fields, page, pageSize, false, customFilter));
                 map.put("sql", datasourceRequest.getQuery());
                 datasourceRequest.setPage(page);
                 datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
                 datasourceRequest.setPageSize(pageSize);
-                datasourceRequest.setRealSize(realSize);
+                datasourceRequest.setRealSize(pageSize);
                 datasourceRequest.setPreviewData(true);
                 try {
                     datasourceRequest.setPageable(true);
@@ -761,7 +792,7 @@ public class DataSetTableService {
                 String table = TableUtils.tableName(dataSetTableRequest.getId());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
-                        qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, customFilter));
+                        qp.createQueryTableWithPage(table, fields, page, pageSize, false, ds, customFilter));
                 map.put("sql", datasourceRequest.getQuery());
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
@@ -798,7 +829,7 @@ public class DataSetTableService {
             String table = TableUtils.tableName(dataSetTableRequest.getId());
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             datasourceRequest.setQuery(
-                    qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, customFilter));
+                    qp.createQueryTableWithPage(table, fields, page, pageSize, false, ds, customFilter));
             map.put("sql", datasourceRequest.getQuery());
             try {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
@@ -837,12 +868,12 @@ public class DataSetTableService {
                 }
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
-                        qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false, customFilter));
+                        qp.createQuerySQLWithPage(sql, fields, page, pageSize, false, customFilter));
                 map.put("sql", datasourceRequest.getQuery());
                 datasourceRequest.setPage(page);
                 datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
                 datasourceRequest.setPageSize(pageSize);
-                datasourceRequest.setRealSize(realSize);
+                datasourceRequest.setRealSize(pageSize);
                 datasourceRequest.setPreviewData(true);
                 try {
                     datasourceRequest.setPageable(true);
@@ -868,7 +899,7 @@ public class DataSetTableService {
                 String table = TableUtils.tableName(dataSetTableRequest.getId());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
-                        qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, customFilter));
+                        qp.createQueryTableWithPage(table, fields, page, pageSize, false, ds, customFilter));
                 map.put("sql", datasourceRequest.getQuery());
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
@@ -907,12 +938,12 @@ public class DataSetTableService {
                 }
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
-                        qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false, customFilter));
+                        qp.createQuerySQLWithPage(sql, fields, page, pageSize, false, customFilter));
                 map.put("sql", datasourceRequest.getQuery());
                 datasourceRequest.setPage(page);
                 datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
                 datasourceRequest.setPageSize(pageSize);
-                datasourceRequest.setRealSize(realSize);
+                datasourceRequest.setRealSize(pageSize);
                 datasourceRequest.setPreviewData(true);
                 try {
                     datasourceRequest.setPageable(true);
@@ -938,7 +969,7 @@ public class DataSetTableService {
                 String table = TableUtils.tableName(dataSetTableRequest.getId());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
-                        qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, customFilter));
+                        qp.createQueryTableWithPage(table, fields, page, pageSize, false, ds, customFilter));
                 map.put("sql", datasourceRequest.getQuery());
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));

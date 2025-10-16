@@ -1,5 +1,6 @@
 package io.datains.provider.query.oracle;
 
+import cn.hutool.core.collection.ListUtil;
 import com.google.gson.Gson;
 import io.datains.base.domain.ChartViewWithBLOBs;
 import io.datains.base.domain.DatasetTableField;
@@ -106,17 +107,20 @@ public class OracleQueryProvider extends QueryProvider {
                 .build();
 
         setSchema(tableObj, ds);
-        List<SQLObj> xFields = xFields(table, fields);
+        List<List<SQLObj>> xFields = xFieldsAndXOrders(table, fields);
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", isGroup);
-        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        if (CollectionUtils.isNotEmpty(xFields.get(0))) st_sql.add("groups", xFields.get(0));
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
+        if (CollectionUtils.isNotEmpty(xFields.get(1))) {
+            st_sql.add("orders", xFields.get(1));
+        }
         return st_sql.render();
     }
 
@@ -186,6 +190,73 @@ public class OracleQueryProvider extends QueryProvider {
         return xFields;
     }
 
+    private List<List<SQLObj>> xFieldsAndXOrders(String table, List<DatasetTableField> fields) {
+        SQLObj tableObj = SQLObj.builder()
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
+                .build();
+        List<SQLObj> xFields = new ArrayList<>();
+        List<SQLObj> xOrders = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(fields)) {
+            for (int i = 0; i < fields.size(); i++) {
+                DatasetTableField f = fields.get(i);
+                String originField;
+                if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(f.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                } else {
+                    originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                }
+                String fieldAlias = String.format(OracleConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i));
+                String fieldName = "";
+                // 处理横轴字段
+                if (f.getDeExtractType() == 1) {
+                    if (f.getDeType() == 2 || f.getDeType() == 3) {
+                        fieldName = String.format(OracleConstants.UNIX_TIMESTAMP, originField) + "*1000";
+                    } else {
+                        fieldName = originField;
+                    }
+                } else if (f.getDeExtractType() == 0) {
+                    if (f.getDeType() == 2) {
+                        fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT);
+                    } else if (f.getDeType() == 3) {
+                        fieldName = String.format(OracleConstants.CAST, originField, OracleCusConstants.getFloatFormat(f.getPrecision()));
+                    } else if (f.getDeType() == 1) {
+                        fieldName = String.format(OracleConstants.DATE_FORMAT, originField, OracleConstants.DEFAULT_DATE_FORMAT);
+                    } else {
+                        fieldName = originField;
+                    }
+                } else {
+                    if (f.getDeType() == 1) {
+                        String cast = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
+                        fieldName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                    } else if (f.getDeType() == 2) {
+                        fieldName = String.format(OracleConstants.CAST, originField, OracleConstants.DEFAULT_INT_FORMAT);
+                    } else if (f.getDeType() == 3) {
+                        fieldName = String.format(OracleConstants.CAST, originField, OracleCusConstants.getFloatFormat(f.getPrecision()));
+                    } else {
+                        fieldName = originField;
+                    }
+                }
+                xFields.add(SQLObj.builder()
+                        .fieldName(fieldName)
+                        .fieldAlias(fieldAlias)
+                        .build());
+                // 处理排序
+                if (StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none")) {
+                    xOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection(f.getSort())
+                            .build());
+                }
+            }
+        }
+        return ListUtil.toList(xFields, xOrders);
+    }
+
     private String sqlColumn(List<SQLObj> xFields) {
         String[] array = xFields.stream().map(f -> {
             return f.getFieldAlias();
@@ -207,10 +278,25 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
+    public String createQueryTableWithPage(String table, List<DatasetTableField> fields, Integer page, Integer pageSize, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
+        List<SQLObj> xFields = xFields(table, fields);
+
+        return MessageFormat.format("SELECT {0} FROM ( SELECT DE_TMP.*, rownum r FROM ( {1} ) DE_TMP WHERE rownum <= {2} ) WHERE r > {3} ",
+                sqlColumn(xFields), createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter), Integer.valueOf(page * pageSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
+    }
+
+    @Override
     public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, Integer realSize, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
         List<SQLObj> xFields = xFields("(" + sqlFix(sql) + ")", fields);
         return MessageFormat.format("SELECT {0} FROM ( SELECT DE_TMP.*, rownum r FROM ( {1} ) DE_TMP WHERE rownum <= {2} ) WHERE r > {3} ",
                 sqlColumn(xFields), createQuerySQLAsTmp(sql, fields, isGroup, fieldCustomFilter), Integer.valueOf(page * realSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
+    }
+
+    @Override
+    public String createQuerySQLWithPage(String sql, List<DatasetTableField> fields, Integer page, Integer pageSize, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter) {
+        List<SQLObj> xFields = xFields("(" + sqlFix(sql) + ")", fields);
+        return MessageFormat.format("SELECT {0} FROM ( SELECT DE_TMP.*, rownum r FROM ( {1} ) DE_TMP WHERE rownum <= {2} ) WHERE r > {3} ",
+                sqlColumn(xFields), createQuerySQLAsTmp(sql, fields, isGroup, fieldCustomFilter), Integer.valueOf(page * pageSize).toString(), Integer.valueOf((page - 1) * pageSize).toString());
     }
 
     @Override
