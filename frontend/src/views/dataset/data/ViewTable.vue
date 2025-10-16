@@ -19,7 +19,7 @@
           style="margin-left: 4px;cursor: pointer;font-size: 14px;"
         />
       </el-popover>
-      <el-row v-if="!showOnlyDataPreview && hasDataPermission('manage',param.privileges)" style="float: right">
+      <el-row v-if="hasDataPermission('manage',param.privileges)" style="float: right">
         <el-dropdown
           v-if="table.type ==='excel'"
           style="margin-right: 10px;"
@@ -65,25 +65,25 @@
           @reSearch="reSearch"
         />
       </el-tab-pane>
-      <el-tab-pane v-if="!showOnlyDataPreview" :label="$t('dataset.field_manage')" :lazy="true" name="fieldEdit">
+      <el-tab-pane :label="$t('dataset.field_manage')" :lazy="true" name="fieldEdit">
         <field-edit v-if="tabActive === 'fieldEdit'" :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane
-        v-if="!showOnlyDataPreview && !hideCustomDs && table.type !== 'union' && table.type !== 'custom' && !(table.type === 'sql' && table.mode === 0)"
+        v-if="!hideCustomDs && table.type !== 'union' && table.type !== 'custom' && !(table.type === 'sql' && table.mode === 0)"
         :label="$t('dataset.join_view')"
         name="joinView"
       >
         <union-view :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane
-        v-if="!showOnlyDataPreview && table.mode === 1 && (table.type === 'excel' || table.type === 'db' || table.type === 'sql' || table.type === 'api')"
+        v-if="table.mode === 1 && (table.type === 'excel' || table.type === 'db' || table.type === 'sql' || table.type === 'api')"
         :label="$t('dataset.update_info')"
         name="updateInfo"
       >
         <update-info v-if="tabActive=='updateInfo'" :param="param" :table="table" />
       </el-tab-pane>
       <el-tab-pane
-        v-if="!showOnlyDataPreview && isPluginLoaded && hasDataPermission('manage',param.privileges)"
+        v-if="isPluginLoaded && hasDataPermission('manage',param.privileges)"
         :lazy="true"
         :label="$t('dataset.row_permissions')"
         name="rowPermissions"
@@ -93,7 +93,7 @@
         <RowPermissions v-if="isPluginLoaded && tabActive=='rowPermissions'" ref="RowPermissions" :param="param" :obj="table" />
       </el-tab-pane>
       <el-tab-pane
-        v-if="!showOnlyDataPreview && isPluginLoaded && hasDataPermission('manage',param.privileges)"
+        v-if="isPluginLoaded && hasDataPermission('manage',param.privileges)"
         :label="$t('dataset.column_permissions')"
         name="columnPermissions"
       >
@@ -155,13 +155,13 @@ export default {
   computed: {
     hideCustomDs: function() {
       return this.$store.getters.hideCustomDs
-    },
+    }
     // 判断是否只显示dataPreview页签  采用传入的param 中的type变量判断
     // 这里是为了兼容分享的数据集查看数据时，不显示其他页签
-    showOnlyDataPreview: function() {
-      console.log('this.param', this.param)
-      return this.param.type === 'datasetShare'
-    }
+    // showOnlyDataPreview: function() {
+    //   console.log('this.param', this.param)
+    //   return this.param.type === 'datasetShare'
+    // }
   },
   watch: {
     'param': function() {

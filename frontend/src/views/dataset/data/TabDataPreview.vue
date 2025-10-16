@@ -26,7 +26,7 @@
       <!-- :key="field.id" -->
       <ux-table-column
         v-for="field in fields"
-        :key="field.id + '|' + sortField + '|' + sortType"
+        :key="field.id + '|' + sortField + '|' + sortType + '|' + filterArray.findIndex(f => f.field.id === field.id && f.field.datainsName === field.datainsName && f.field.name === field.name)"
         min-width="200px"
         :field="field.datainsName"
         :resizable="true"
@@ -36,7 +36,7 @@
           <svg-icon v-if="field.deType === 1" icon-class="field_time" class="field-icon-time" />
           <svg-icon v-if="field.deType === 2 || field.deType === 3" icon-class="field_value" class="field-icon-value" />
           <svg-icon v-if="field.deType === 5" icon-class="field_location" class="field-icon-location" />
-          <span>{{ field.name }}</span>
+          <span :class="{ 'highlight-field': isFieldFiltered(field) }">{{ field.name }}</span>
           <span class="caret-wrapper" @click="toggleSort(field.datainsName)">
             <i class="sort-caret ascending" :class="{ active: sortField === field.datainsName && sortType === 'asc' }" />
             <i class="sort-caret descending" :class="{ active: sortField === field.datainsName && sortType === 'desc' }" />
@@ -149,7 +149,18 @@ export default {
       sortType: '' // 🔹 当前排序的类型{asc,desc}
     }
   },
-  computed: {},
+  computed: {
+    // 判断字段是否在filterArray中
+    isFieldFiltered() {
+      return (field) => {
+        return this.filterArray.some(filter =>
+          filter.field.id === field.id &&
+          filter.field.datainsName === field.datainsName &&
+          filter.field.name === field.name
+        )
+      }
+    }
+  },
   watch: {
     data() {
       const datas = this.data
@@ -252,6 +263,8 @@ export default {
           ? this.filterArray.push(item)
           : this.$set(this.filterArray, index, item)
       }
+      console.log(this.filterArray)
+      this.currentPageforms.currentPage = 1
       this.emitSearch()
     },
     toggleSort(fieldKey) {
@@ -370,5 +383,11 @@ span {
 
 .sort-caret.descending.active {
   border-top-color: #409eff;
+}
+
+/* 字段高亮样式 */
+::v-deep .highlight-field {
+  color: #409eff !important;
+  font-weight: bold;
 }
 </style>

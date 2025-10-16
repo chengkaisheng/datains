@@ -3,8 +3,10 @@
   <el-popover
     v-model="visible"
     placement="bottom-start"
-    width="200"
+    width="220"
     trigger="click"
+    :append-to-body="true"
+    popper-class="column-filter-popper"
   >
     <el-input
       :value="localValue"
@@ -19,6 +21,8 @@
     </div>
 
     <!-- 触发图标 -->
+    <!-- <i slot="reference" class="el-icon-search" style="cursor:pointer;margin-left:4px;color:#909399;" /> -->
+     <!-- 触发图标 -->
     <i slot="reference" class="el-icon-arrow-down" style="cursor:pointer;margin-left:4px;" />
   </el-popover>
 </template>
@@ -65,3 +69,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.column-filter-popper {
+  z-index: 3000 !important;
+}
+</style>

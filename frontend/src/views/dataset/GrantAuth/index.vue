@@ -1,25 +1,41 @@
 <template>
   <div>
-    <el-button v-show="!showSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showSearchWidget" />
-    <div v-show="showSearchInput" class="de-input">
-      <el-input v-model="key" class="main-area-input">
-        <el-button slot="append" icon="el-icon-close" @click="closeSearchWidget" />
-      </el-input>
-    </div>
+    <div v-if="step === 1">
+      <el-button v-show="!showSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showSearchWidget" />
+      <div v-show="showSearchInput" class="de-input">
+        <el-input v-model="key" class="main-area-input">
+          <el-button slot="append" icon="el-icon-close" @click="closeSearchWidget" />
+        </el-input>
+      </div>
 
-    <el-tabs v-model="activeName" :class="{'de-search-header': showSearchInput}" @tab-click="handleClick">
-      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.organization')" :name="tabNames[0]"><grant-dept :ref="tabNames[0]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
-      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.role')" :name="tabNames[1]"><grant-role :ref="tabNames[1]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
-      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.user')" :name="tabNames[2]"><grant-user :ref="tabNames[2]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
-    </el-tabs>
-    <div class="auth-root-class">
-      <span slot="footer">
-        <el-button size="mini" @click="cancel">{{ $t('commons.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="save">{{ $t('commons.confirm') }}</el-button>
-      </span>
+      <el-tabs v-model="activeName" :class="{'de-search-header': showSearchInput}" @tab-click="handleClick">
+        <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.organization')" :name="tabNames[0]"><grant-dept :ref="tabNames[0]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
+        <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.role')" :name="tabNames[1]"><grant-role :ref="tabNames[1]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
+        <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.user')" :name="tabNames[2]"><grant-user :ref="tabNames[2]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
+      </el-tabs>
+      <div class="auth-root-class">
+        <span slot="footer">
+          <el-button size="mini" @click="cancel">{{ $t('commons.cancel') }}</el-button>
+          <el-button type="primary" size="mini" @click="save">{{ $t('commons.confirm') }}</el-button>
+          <!-- <el-button type="primary" size="mini" @click="next">下一步</el-button> -->
+        </span>
+      </div>
+    </div>
+    <div v-else>
+      <div class="step-header">
+        <span>{{ $t('dataset.share_step', [step, 2]) }}</span>
+        <span class="selected-info">{{ selectedInfo }}</span>
+      </div>
+      <PermissionConfig :resource-id="resourceId" :dataset-type="datasetType" />
+      <!-- 下一步 展示分享人权限 和 被分享人权限设置 -->
+      <div class="auth-root-class">
+        <span slot="footer">
+          <el-button size="mini" @click="cancel">{{ $t('commons.cancel') }}</el-button>
+          <el-button type="primary" size="mini" @click="save">{{ $t('commons.confirm') }}</el-button>
+        </span>
+      </div>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -27,9 +43,10 @@ import GrantDept from './dept'
 import GrantRole from './role'
 import GrantUser from './user'
 import { fineSave } from '@/api/dataset/dataset'
+import PermissionConfig from '@/views/system/auth/components/PermissionConfig.vue'
 export default {
   name: 'GrantAuth',
-  components: { GrantDept, GrantRole, GrantUser },
+  components: { GrantDept, GrantRole, GrantUser, PermissionConfig },
   props: {
     resourceId: {
       type: String,
@@ -45,7 +62,9 @@ export default {
       tabNames: ['grantDept', 'grantRole', 'grantUser'],
       activeName: null,
       showSearchInput: false,
-      key: ''
+      key: '',
+      authCondition: null,
+      step: 1
     }
   },
   created() {
@@ -61,6 +80,24 @@ export default {
     closeSearchWidget() {
       this.key = ''
       this.showSearchInput = false
+    },
+    // 下一步
+    next() {
+      // if (!this.authCondition) {
+      //   this.$message.warning(this.$t('dataset.please_select_target'))
+      //   return
+      // }
+      // // 设置选中的源权限信息
+      // this.selectedSourceInfo = this.sourceInfoTabs.find(tab => tab.authType === this.sourceActiveName)
+      // if (!this.selectedSourceInfo) {
+      //   this.$message.warning(this.$t('dataset.please_select_source'))
+      //   return
+      // }
+      this.step = 2
+    },
+    // 上一步
+    prev() {
+      this.step = 1
     },
     save() {
       this.fineSave()
