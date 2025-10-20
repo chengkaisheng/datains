@@ -92,6 +92,6 @@ export default {
 
 <style>
 .column-filter-popper {
-  z-index: 1000 !important;
+  /* z-index: 1000 !important; */
 }
 </style>
