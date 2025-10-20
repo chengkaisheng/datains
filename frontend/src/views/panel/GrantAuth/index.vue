@@ -8,9 +8,9 @@
     </div>
 
     <el-tabs v-model="activeName" :class="{'de-search-header': showSearchInput}" @tab-click="handleClick">
-      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.organization')" :name="tabNames[0]"><grant-dept :ref="tabNames[0]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
-      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.role')" :name="tabNames[1]"><grant-role :ref="tabNames[1]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
-      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.user')" :name="tabNames[2]"><grant-user :ref="tabNames[2]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
+      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.organization')" :name="tabNames[0]"><grant-dept :ref="tabNames[0]" :resource-id="resourceId" :key-word="key" :authPrivileges="authPrivileges" /></el-tab-pane>
+      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.role')" :name="tabNames[1]"><grant-role :ref="tabNames[1]" :resource-id="resourceId" :key-word="key" :authPrivileges="authPrivileges" /></el-tab-pane>
+      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.user')" :name="tabNames[2]"><grant-user :ref="tabNames[2]" :resource-id="resourceId" :key-word="key" :authPrivileges="authPrivileges" /></el-tab-pane>
     </el-tabs>
     <div class="auth-root-class">
       <span slot="footer">
@@ -32,6 +32,10 @@ export default {
   components: { GrantDept, GrantRole, GrantUser },
   props: {
     resourceId: {
+      type: String,
+      default: null
+    },
+    authPrivileges: {
       type: String,
       default: null
     }
@@ -62,17 +66,25 @@ export default {
       this.fineSave()
     },
     fineSave() {
-      let targetDto = {}
+      // let targetDto = {}
+      // this.tabNames.forEach(tabName => {
+      //   if (this.$refs[tabName] && this.$refs[tabName].getSelected) {
+      //     const tempSelected = this.$refs[tabName].getSelected()
+      //     targetDto = Object.assign({}, targetDto, tempSelected)
+      //   }
+      // })
+      const targetDto = []
       this.tabNames.forEach(tabName => {
         if (this.$refs[tabName] && this.$refs[tabName].getSelected) {
           const tempSelected = this.$refs[tabName].getSelected()
-          targetDto = Object.assign({}, targetDto, tempSelected)
+          // targetDto = Object.assign({}, targetDto, tempSelected)
+          targetDto.push(...tempSelected)
         }
       })
       const resourceId = this.resourceId
       const param = {
         resourceId,
-        authURD: targetDto
+        shareAuthInfos: targetDto
       }
       fineSave(param).then(res => {
         this.$success(this.$t('commons.share_success'))

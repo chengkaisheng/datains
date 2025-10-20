@@ -8,31 +8,24 @@
     :append-to-body="true"
     popper-class="column-filter-popper"
   >
+    <el-select>
+      <el-option label="等于" value="equal" />
+    </el-select>
     <el-input
-      v-if="columnKey.deType !== 1"
       :value="localValue"
       size="mini"
       placeholder="输入筛选值"
       clearable
       @input="val => localValue = val"
     />
-    <el-date-picker
-      v-if="columnKey.deType === 1"
-      :value="localValue"
-      style="width:100%;"
-      clearable
-      size="mini"
-      type="daterange"
-      range-separator="至"
-      start-placeholder="开始日期"
-      end-placeholder="结束日期"
-      @change="val => localValue = val"
-    />
     <div style="text-align:right;margin-top:6px;">
       <el-button size="mini" type="primary" @click="ok">确定</el-button>
       <el-button size="mini" @click="reset">重置</el-button>
     </div>
+
     <!-- 触发图标 -->
+    <!-- <i slot="reference" class="el-icon-search" style="cursor:pointer;margin-left:4px;color:#909399;" /> -->
+     <!-- 触发图标 -->
     <i slot="reference" class="el-icon-arrow-down" style="cursor:pointer;margin-left:4px;" />
   </el-popover>
 </template>
@@ -82,6 +75,6 @@ export default {
 
 <style>
 .column-filter-popper {
-  z-index: 1000 !important;
+  z-index: 3000 !important;
 }
 </style>

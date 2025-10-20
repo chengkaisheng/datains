@@ -23,7 +23,7 @@
       :checkbox-config="{ highlight: true }"
       :width-resize="true"
     >
-      <!-- :key="field.id" -->
+      <!-- :key="field.id"  排序和筛选后更新表头-->
       <ux-table-column
         v-for="field in fields"
         :key="field.id + '|' + sortField + '|' + sortType + '|' + filterArray.findIndex(f => f.field.id === field.id && f.field.datainsName === field.datainsName && f.field.name === field.name)"
@@ -243,7 +243,7 @@ export default {
     },
     onFilterChange(value, keyObj) {
       // keyObj 就是 columnKey（field 对象）
-      const { id: fieldId } = keyObj
+      const { id: fieldId, deType: deType } = keyObj
       // 1. 找到是否已存在该字段的筛选
       const index = this.filterArray.findIndex(f => f.field.id === fieldId)
       // 2. 空值 => 删除
@@ -251,17 +251,34 @@ export default {
         if (index !== -1) this.filterArray.splice(index, 1)
       } else {
         // 3. 有值 => 新增 or 覆盖
-        const item = {
-          field: keyObj,
-          filter: [
-            {
-              fieldId, term: 'like', value
-            }
-          ]
+        if (deType !== 1) {
+          // 非日期类型 => 模糊查询
+          const item = {
+            field: keyObj,
+            filter: [
+              {
+                fieldId, term: 'like', value
+              }
+            ]
+          }
+          index === -1
+            ? this.filterArray.push(item)
+            : this.$set(this.filterArray, index, item)
+        } else {
+          // 日期类型 => 范围查询
+          console.log(value)
+          const item = {
+            field: keyObj,
+            filter: [
+              {
+                fieldId, term: 'between', value
+              }
+            ]
+          }
+          index === -1
+            ? this.filterArray.push(item)
+            : this.$set(this.filterArray, index, item)
         }
-        index === -1
-          ? this.filterArray.push(item)
-          : this.$set(this.filterArray, index, item)
       }
       console.log(this.filterArray)
       this.currentPageforms.currentPage = 1

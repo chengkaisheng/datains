@@ -192,7 +192,7 @@
         width="800px"
         class="dialog-css"
       >
-        <grant-auth v-if="authVisible" :resource-id="authResourceId" @close-grant="closeGrant" />
+        <grant-auth v-if="authVisible" :authPrivileges="authPrivileges" :resource-id="authResourceId" @close-grant="closeGrant" />
       </el-dialog>
 
       <el-dialog
@@ -291,6 +291,7 @@ export default {
       authTitle: null,
       authResourceId: null,
       authVisible: false,
+      authPrivileges: null,
       defaultData: [],
       dialogTitle: '',
       search: '',
@@ -678,11 +679,14 @@ export default {
     },
 
     share(data) {
+      console.log(data)
+      this.authPrivileges = data.privileges
       this.authResourceId = data.id
       this.authTitle = '把[' + data.label + ']分享给'
       this.authVisible = true
     },
     closeGrant() {
+      this.authPrivileges = null
       this.authResourceId = null
       this.authVisible = false
     },

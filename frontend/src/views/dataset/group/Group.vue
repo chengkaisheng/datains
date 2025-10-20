@@ -272,6 +272,7 @@
     <el-dialog v-dialogDrag :title="authTitle" :visible.sync="authVisible" width="800px" class="dialog-css">
       <grant-auth
         v-if="authVisible"
+        :authPrivileges="authPrivileges"
         :resource-id="authResourceId"
         :dataset-type="datasetType"
         @close-grant="closeGrant"
@@ -367,6 +368,7 @@ export default {
         folder: this.$t('commons.folder')
       },
       authTitle: null,
+      authPrivileges: null,
       authResourceId: null,
       authVisible: false
     }
@@ -479,6 +481,7 @@ export default {
     },
 
     share(data) {
+      this.authPrivileges = data.privileges
       this.authResourceId = data.id
       this.datasetType = data.modelInnerType
       this.authTitle = '把[' + data.label + ']分享给'
@@ -486,6 +489,7 @@ export default {
     },
 
     closeGrant() {
+      this.authPrivileges = null
       this.authResourceId = null
       this.datasetType = null
       this.authVisible = false

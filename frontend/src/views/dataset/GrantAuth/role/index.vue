@@ -3,15 +3,62 @@
     <el-table
       ref="table"
       :data="tableData"
-      :show-header="true"
       style="width: 100%"
-      :row-style="{height: '35px'}"
+      :row-style="{ height: '35px' }"
       @select="selectOne"
       @select-all="selectAll"
     >
-      <el-table-column :column-key="fieldName" :label="columnLabel" :prop="fieldName" filter-placement="right-start" :filters="filter_options" :filter-multiple="false" :filter-method="filterHandler" />
-      <el-table-column type="selection" fixd />
+      <el-table-column
+        :column-key="fieldName"
+        :label="columnLabel"
+        :prop="fieldName"
+        filter-placement="right-start"
+        :filters="filter_options"
+        :filter-multiple="false"
+        :filter-method="filterHandler"
+      >
+        <template #default="{ row }">
+          <span>{{ row.name }}</span>
+          <el-button
+            v-if="shares.some(s => s.authTarget === row.roleId)"
+            type="text"
+            size="mini"
+            icon="el-icon-setting"
+            style="margin-left:8px;color:#409EFF;"
+            @click.stop="openAuthDialog(row)"
+          />
+        </template>
+      </el-table-column>
+
+      <el-table-column type="selection" fixed />
     </el-table>
+
+    <!-- 权限配置弹窗 -->
+    <el-dialog
+      title="权限配置"
+      :visible="authDialogVisible"
+      width="400px"
+      append-to-body
+    >
+      <div class="auth-line">
+        <label>授权权限：</label>
+      </div>
+      <el-checkbox-group v-model="currentAuth">
+        <el-checkbox
+          v-for="opt in optionsData"
+          :key="opt.privilegeExtend"
+          :label="opt.privilegeExtend"
+          :disabled="opt.privilegeExtend === 'use'"
+        >
+          {{ opt.privilegeName || opt.label }}
+        </el-checkbox>
+      </el-checkbox-group>
+
+      <template #footer>
+        <el-button size="mini" @click="authDialogVisible = false">取消</el-button>
+        <el-button size="mini" type="primary" @click="saveAuth">确定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -19,14 +66,14 @@
 import { roleGrid } from '@/api/system/user'
 import { formatCondition } from '@/utils/index'
 import { loadShares } from '@/api/dataset/dataset'
+import { execute } from '@/api/system/dynamic'
+
 export default {
   name: 'GrantRole',
   props: {
-    resourceId: {
-      type: String,
-      default: null
-    },
-    keyWord: {
+    resourceId: String,
+    keyWord: String,
+    authPrivileges: {
       type: String,
       default: ''
     }
@@ -36,131 +83,209 @@ export default {
       data: [],
       defaultHeadName: this.$t('commons.all'),
       columnLabel: null,
-      filter_options: [{ text: this.$t('panel.no_auth_role'), value: 0 }, { text: this.$t('panel.auth_role'), value: 1 }],
+      filter_options: [
+        { text: this.$t('panel.no_auth_role'), value: 0 },
+        { text: this.$t('panel.auth_role'), value: 1 }
+      ],
       fieldName: 'name',
-      type: 1, // 类型1代表角色
+      type: 1, // 1 = 角色授权
       shares: [],
-
-      tableData: []
+      tableData: [],
+      authDialogVisible: false,
+      currentNode: null,
+      currentAuth: [],
+      optionsTemplate: [],
+      optionsData: [],
+      authAlreadyExists: []
     }
   },
   watch: {
-    'keyWord': function(val) {
-      this.tableData = this.data.filter(node => !val || node[this.fieldName].toLowerCase().includes(val.toLowerCase()))
+    keyWord(val) {
+      this.tableData = this.data.filter(node =>
+        !val || node[this.fieldName].toLowerCase().includes(val.toLowerCase())
+      )
       this.setCheckNodes()
     }
   },
   created() {
     this.initColumnLabel()
+    this.executeAxios('/plugin/auth/authDetailsModel/' + 'dataset', 'get', {}, () => {})
     this.search()
   },
   methods: {
     initColumnLabel() {
       this.columnLabel = this.defaultHeadName
     },
-
     search(condition) {
       const temp = formatCondition(condition)
       const param = temp || {}
       roleGrid(1, 0, param).then(response => {
-        const data = response.data
-        this.data = data.listObject
-        this.tableData = data.listObject
+        const data = response.data.listObject
+        this.data = data
+        this.tableData = data
         this.queryShareNodeIds()
       })
     },
-    filterHandler(value, row, column) {
-      const roleId = row['roleId']
-      return !(value ^ this.shares.includes(roleId))
-    },
-
     getSelected() {
-      return {
-        roleIds: this.shares
-      }
+      return this.shares
     },
-
-    cancel() {
+    filterHandler(value, row) {
+      return !(value ^ this.shares.some(s => s.authTarget === row.roleId))
     },
-    buildRequest(rows) {
-      const targetIds = rows.map(row => row.roleId)
-      const panelIds = [this.resourceId]
-      return {
-        targetIds: targetIds,
-        panelIds: panelIds,
-        type: this.type
-      }
-    },
-
     queryShareNodeIds(callBack) {
       const param = { resourceId: this.resourceId, type: this.type }
       loadShares(param).then(res => {
-        const shares = res.data
-        const nodeIds = shares.map(share => share.targetId)
-        this.shares = nodeIds
-        this.$nextTick(() => {
-          this.setCheckNodes()
-        })
+        this.authAlreadyExists = res.data
+        this.$nextTick(() => this.setCheckNodes())
         callBack && callBack()
       })
     },
-
     setCheckNodes() {
       this.$nextTick(() => {
         this.$refs.table.store.states.data.forEach(node => {
           const nodeId = node.roleId
-          this.shares.includes(nodeId) && this.$refs.table.toggleRowSelection(node, true)
+          const shares = this.authAlreadyExists.map(share => share.targetId)
+          this.authAlreadyExists.forEach(share => {
+            if (share.targetId === nodeId) {
+              const privileges = share.privileges.split(',').filter(Boolean) || []
+              privileges.forEach(privilege => {
+                const useItem = this.optionsTemplate.find(i => i.privilegeExtend === privilege)
+                const exists = this.shares.some(s =>
+                  s.authTarget === nodeId &&
+                  s.privilegeType === (useItem && useItem.privilegeType || 1)
+                )
+                if (!exists) {
+                  this.shares.push({
+                    authTarget: nodeId,
+                    authTargetType: 'role',
+                    privilegeType: (useItem && useItem.privilegeType) || 1,
+                    privilegeValue: 1
+                  })
+                }
+              })
+            }
+          })
+          if (shares.includes(nodeId)) {
+            this.$refs.table.toggleRowSelection(node, true)
+          }
         })
       })
     },
     selectOne(selection, row) {
-      if (selection.some(node => node.roleId === row.roleId)) {
-        // 如果选中了 且 已有分享数据不包含当前节点则添加
-        if (!this.shares.includes(row.roleId)) {
-          this.shares.push(row.roleId)
+      const roleId = row.roleId
+      const useItem = this.optionsTemplate.find(i => i.privilegeExtend === 'use')
+      if (selection.some(node => node.roleId === roleId)) {
+        if (!this.shares.some(s => s.authTarget === roleId)) {
+          this.shares.push({
+            authTarget: roleId,
+            authTargetType: 'role',
+            privilegeType: (useItem && useItem.privilegeType) || 1,
+            privilegeValue: 1
+          })
         }
       } else {
-        // 如果取消选中 则移除
-        this.shares = this.shares.filter(nodeId => row.roleId !== nodeId)
-        // this.shares.splice(this.shares.findIndex(item => item.roleId === row.roleId), 1)
+        this.shares = this.shares.filter(s => s.authTarget !== roleId)
       }
     },
     selectAll(selection) {
-      // 1.全选
-      if (selection && selection.length > 0) {
+      const useItem = this.optionsTemplate.find(i => i.privilegeExtend === 'use')
+      if (selection.length > 0) {
         selection.forEach(node => {
-          if (!this.shares.includes(node.roleId)) {
-            this.shares.push(node.roleId)
+          const roleId = node.roleId
+          if (!this.shares.some(s => s.authTarget === roleId)) {
+            this.shares.push({
+              authTarget: roleId,
+              authTargetType: 'role',
+              privilegeType: (useItem && useItem.privilegeType) || 1,
+              privilegeValue: 1
+            })
           }
         })
       } else {
-        // 2.全部取消
         const currentNodes = this.$refs.table.store.states.data
-        const currentNodeIds = currentNodes.map(node => node.roleId)
-        this.shares = this.shares.filter(nodeId => !currentNodeIds.includes(nodeId))
+        const currentIds = currentNodes.map(n => n.roleId)
+        this.shares = this.shares.filter(s => !currentIds.includes(s.authTarget))
       }
-    }
+    },
+    executeAxios(url, type, data, callBack) {
+      execute({ url, type, data, callBack }).then(res => {
+        this.optionsTemplate = res.data
+      })
+    },
+    openAuthDialog(row) {
+      this.currentNode = row
+      this.optionsData = this.authPrivileges
+        .split(',')
+        .map(v => this.optionsTemplate.find(i => i.privilegeExtend === v))
+        .filter(Boolean)
+      const hasUse = this.optionsData.some(o => o.privilegeExtend === 'use')
+      if (!hasUse) {
+        const useTpl = this.optionsTemplate.find(i => i.privilegeExtend === 'use')
+        if (useTpl) this.optionsData.unshift(useTpl)
+      }
+      const share = this.authAlreadyExists.find(s => s.targetId === row.roleId)
+      const arr = share ? share.privileges.split(',').filter(Boolean) : []
+      if (!arr.includes('use')) arr.push('use')
+      this.currentAuth = arr
+      this.authDialogVisible = true
+    },
+    saveAuth() {
+      const node = this.currentNode
+      const newShares = this.currentAuth.map(ext => {
+        const opt = this.optionsTemplate.find(i => i.privilegeExtend === ext)
+        return {
+          authTarget: node.roleId,
+          authTargetType: 'role',
+          privilegeType: opt ? opt.privilegeType : 1,
+          privilegeValue: 1
+        }
+      })
+      const oldSharesList = this.shares.filter(s => s.authTarget === newShares[0].authTarget)
+      const removedShares = oldSharesList.filter(oldItem =>
+        !newShares.some(newItem =>
+          newItem.authTargetType === oldItem.authTargetType &&
+          newItem.privilegeType === oldItem.privilegeType &&
+          newItem.privilegeValue === oldItem.privilegeValue
+        )
+      )
+      const removedSharesWithZero = removedShares.map(item => ({
+        ...item,
+        privilegeValue: 0
+      }))
+      const mergedShares = [...newShares, ...removedSharesWithZero]
 
+      const targetAuths = mergedShares.map(item => item.authTarget)
+      const targetSet = new Set(targetAuths)
+      this.shares = this.shares.filter(s => !targetSet.has(s.authTarget))
+      this.shares.push(...mergedShares)
+
+      this.authDialogVisible = false
+      this.$message.success('权限配置已保存')
+    }
   }
 }
 </script>
 
 <style scoped>
-
-.my_table >>> .el-table__row>td{
-  /* 去除表格线 */
+.my_table >>> .el-table__row>td {
   border: none;
   padding: 0 0;
 }
 .my_table >>> .el-table th.is-leaf {
-  /* 去除上边框 */
-    border: none;
+  border: none;
 }
-.my_table >>> .el-table::before{
-  /* 去除下边框 */
+.my_table >>> .el-table::before {
   height: 0;
 }
-.my_table>>>.el-table-column--selection .cell{
+.my_table>>>.el-table-column--selection .cell {
   text-align: center;
+}
+.auth-line {
+  margin-bottom: 10px;
+}
+.el-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 </style>

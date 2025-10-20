@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="step === 1">
+    <div>
       <el-button v-show="!showSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showSearchWidget" />
       <div v-show="showSearchInput" class="de-input">
         <el-input v-model="key" class="main-area-input">
@@ -9,29 +9,15 @@
       </div>
 
       <el-tabs v-model="activeName" :class="{'de-search-header': showSearchInput}" @tab-click="handleClick">
-        <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.organization')" :name="tabNames[0]"><grant-dept :ref="tabNames[0]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
-        <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.role')" :name="tabNames[1]"><grant-role :ref="tabNames[1]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
-        <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.user')" :name="tabNames[2]"><grant-user :ref="tabNames[2]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
+        <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.organization')" :name="tabNames[0]"><grant-dept :ref="tabNames[0]" :resource-id="resourceId" :key-word="key" :authPrivileges="authPrivileges" /></el-tab-pane>
+        <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.role')" :name="tabNames[1]"><grant-role :ref="tabNames[1]" :resource-id="resourceId" :key-word="key" :authPrivileges="authPrivileges" /></el-tab-pane>
+        <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.user')" :name="tabNames[2]"><grant-user :ref="tabNames[2]" :resource-id="resourceId" :key-word="key" :authPrivileges="authPrivileges" /></el-tab-pane>
       </el-tabs>
       <div class="auth-root-class">
         <span slot="footer">
           <el-button size="mini" @click="cancel">{{ $t('commons.cancel') }}</el-button>
           <el-button type="primary" size="mini" @click="save">{{ $t('commons.confirm') }}</el-button>
           <!-- <el-button type="primary" size="mini" @click="next">下一步</el-button> -->
-        </span>
-      </div>
-    </div>
-    <div v-else>
-      <div class="step-header">
-        <span>{{ $t('dataset.share_step', [step, 2]) }}</span>
-        <span class="selected-info">{{ selectedInfo }}</span>
-      </div>
-      <PermissionConfig :resource-id="resourceId" :dataset-type="datasetType" />
-      <!-- 下一步 展示分享人权限 和 被分享人权限设置 -->
-      <div class="auth-root-class">
-        <span slot="footer">
-          <el-button size="mini" @click="cancel">{{ $t('commons.cancel') }}</el-button>
-          <el-button type="primary" size="mini" @click="save">{{ $t('commons.confirm') }}</el-button>
         </span>
       </div>
     </div>
@@ -43,16 +29,19 @@ import GrantDept from './dept'
 import GrantRole from './role'
 import GrantUser from './user'
 import { fineSave } from '@/api/dataset/dataset'
-import PermissionConfig from '@/views/system/auth/components/PermissionConfig.vue'
 export default {
   name: 'GrantAuth',
-  components: { GrantDept, GrantRole, GrantUser, PermissionConfig },
+  components: { GrantDept, GrantRole, GrantUser },
   props: {
     resourceId: {
       type: String,
       default: null
     },
     datasetType: {
+      type: String,
+      default: null
+    },
+    authPrivileges: {
       type: String,
       default: null
     }
@@ -103,11 +92,12 @@ export default {
       this.fineSave()
     },
     fineSave() {
-      let targetDto = {}
+      const targetDto = []
       this.tabNames.forEach(tabName => {
         if (this.$refs[tabName] && this.$refs[tabName].getSelected) {
           const tempSelected = this.$refs[tabName].getSelected()
-          targetDto = Object.assign({}, targetDto, tempSelected)
+          // targetDto = Object.assign({}, targetDto, tempSelected)
+          targetDto.push(...tempSelected)
         }
       })
       const resourceId = this.resourceId
@@ -115,7 +105,7 @@ export default {
       const param = {
         resourceId,
         datasetType,
-        authURD: targetDto
+        shareAuthInfos: targetDto
       }
       fineSave(param).then(res => {
         this.$success(this.$t('commons.share_success'))
@@ -123,7 +113,7 @@ export default {
       })
     },
     cancel() {
-      this.$refs[this.activeName].cancel()
+      // this.$refs[this.activeName].cancel()
       this.$emit('close-grant', 0)
     }
   }

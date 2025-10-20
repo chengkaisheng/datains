@@ -1007,66 +1007,138 @@ export default {
     },
     // 权限修改
     async clickAuth(node, data, auth) {
-      let authChangeCondition = this.getAuthChangeCondition(data, auth);
+      console.log(node, data, auth)
+      if (auth && auth.isShared) {
+        this.$confirm('权限变更将同步修改分享授权, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async() => {
+          let authChangeCondition = this.getAuthChangeCondition(data, auth);
+          if (!node.isLeaf) {
+            this.loading = true;
+            try {
+              // 获取所有子节点
+              const allChildren = await this.getChildrenNodes(node);
 
-      if (!node.isLeaf) {
-        this.loading = true;
-        try {
-          // 获取所有子节点
-          const allChildren = await this.getChildrenNodes(node);
+              const list = [authChangeCondition];
+              allChildren.forEach((item) => {
+                let auth1 = null;
+                if (this.authDetails[item.id]) {
+                  auth1 = this.authDetails[item.id].find((authDetail) => {
+                    if (authDetail.privilegeExtend && auth.privilegeExtend) {
+                      return authDetail.privilegeExtend === auth.privilegeExtend;
+                    } else {
+                      return authDetail.privilegeName === auth.privilegeName;
+                    }
+                  });
+                } else {
+                  auth1 = this.defaultAuthDetails.find((authDetail) => {
+                    if (authDetail.privilegeExtend && auth.privilegeExtend) {
+                      return authDetail.privilegeExtend === auth.privilegeExtend;
+                    } else {
+                      return auth.privilegeName.includes(
+                        authDetail.privilegeExtend
+                      );
+                    }
+                  });
+                }
+                auth1.privilegeValue = auth.privilegeValue;
+                list.push(this.getAuthChangeCondition(item, auth1));
+              });
 
-          const list = [authChangeCondition];
-          allChildren.forEach((item) => {
-            let auth1 = null;
-            if (this.authDetails[item.id]) {
-              auth1 = this.authDetails[item.id].find((authDetail) => {
-                if (authDetail.privilegeExtend && auth.privilegeExtend) {
-                  return authDetail.privilegeExtend === auth.privilegeExtend;
-                } else {
-                  return authDetail.privilegeName === auth.privilegeName;
+              // 批量更新权限
+              this.executeAxios(
+                "/plugin/auth/authChangeBatch",
+                "post",
+                { auths: list },
+                (res) => {
+                  this.loadAuth();
+                  this.loading = false;
                 }
-              });
-            } else {
-              auth1 = this.defaultAuthDetails.find((authDetail) => {
-                if (authDetail.privilegeExtend && auth.privilegeExtend) {
-                  return authDetail.privilegeExtend === auth.privilegeExtend;
-                } else {
-                  return auth.privilegeName.includes(
-                    authDetail.privilegeExtend
-                  );
-                }
-              });
+              );
+            } catch (error) {
+              console.error("获取子节点失败:", error);
+              this.loading = false;
             }
-            auth1.privilegeValue = auth.privilegeValue;
-            list.push(this.getAuthChangeCondition(item, auth1));
-          });
-
-          // 批量更新权限
+          } else {
+            this.loading = true;
+            this.executeAxios(
+              "/plugin/auth/authChange",
+              "post",
+              authChangeCondition,
+              (res) => {
+                // 重新加载权限
+                this.loadAuth();
+                this.loading = false;
+              }
+            );
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消操作'
+          })
+        })
+      } else {
+        let authChangeCondition = this.getAuthChangeCondition(data, auth);
+        if (!node.isLeaf) {
+          this.loading = true;
+          try {
+            // 获取所有子节点
+            const allChildren = await this.getChildrenNodes(node);
+            const list = [authChangeCondition];
+            allChildren.forEach((item) => {
+              let auth1 = null;
+              if (this.authDetails[item.id]) {
+                auth1 = this.authDetails[item.id].find((authDetail) => {
+                  if (authDetail.privilegeExtend && auth.privilegeExtend) {
+                    return authDetail.privilegeExtend === auth.privilegeExtend;
+                  } else {
+                    return authDetail.privilegeName === auth.privilegeName;
+                  }
+                });
+              } else {
+                auth1 = this.defaultAuthDetails.find((authDetail) => {
+                  if (authDetail.privilegeExtend && auth.privilegeExtend) {
+                    return authDetail.privilegeExtend === auth.privilegeExtend;
+                  } else {
+                    return auth.privilegeName.includes(
+                      authDetail.privilegeExtend
+                    );
+                  }
+                });
+              }
+              auth1.privilegeValue = auth.privilegeValue;
+              list.push(this.getAuthChangeCondition(item, auth1));
+            });
+            // 批量更新权限
+            this.executeAxios(
+              "/plugin/auth/authChangeBatch",
+              "post",
+              { auths: list },
+              (res) => {
+                this.loadAuth();
+                this.loading = false;
+              }
+            );
+          } catch (error) {
+            console.error("获取子节点失败:", error);
+            this.loading = false;
+          }
+        } else {
+          this.loading = true;
           this.executeAxios(
-            "/plugin/auth/authChangeBatch",
+            "/plugin/auth/authChange",
             "post",
-            { auths: list },
+            authChangeCondition,
             (res) => {
+              // 重新加载权限
               this.loadAuth();
               this.loading = false;
             }
           );
-        } catch (error) {
-          console.error("获取子节点失败:", error);
-          this.loading = false;
         }
-      } else {
-        this.loading = true;
-        this.executeAxios(
-          "/plugin/auth/authChange",
-          "post",
-          authChangeCondition,
-          (res) => {
-            // 重新加载权限
-            this.loadAuth();
-            this.loading = false;
-          }
-        );
       }
     },
     // 需要层层获取子节点

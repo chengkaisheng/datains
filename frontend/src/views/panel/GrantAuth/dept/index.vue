@@ -25,18 +25,58 @@
             <div>
               <span class="auth-span">
                 <el-checkbox v-model="data.checked" @change="nodeStatusChange(data)" />
+                <!-- ★ 权限配置按钮 -->
+                <el-button
+                  v-if="data.checked"
+                  type="text"
+                  size="mini"
+                  icon="el-icon-setting"
+                  style="margin-left:8px;color:#409EFF;"
+                  @click="openAuthDialog(data)"
+                />
               </span>
             </div>
           </span>
         </span>
       </el-tree>
     </el-row>
+    <el-dialog
+      title="权限配置"
+      :visible="authDialogVisible"
+      width="400px"
+      append-to-body
+    >
+      <!-- <div class="auth-line">
+        <label>已选组织：</label>
+        <span>{{ currentNode?.name }}</span>
+      </div> -->
+      <!-- <el-divider /> -->
+      <div class="auth-line">
+        <label>授权权限：</label>
+      </div>
+      <el-checkbox-group v-model="currentAuth">
+        <el-checkbox
+          v-for="opt in optionsData"
+          :key="opt.privilegeExtend"
+          :label="opt.privilegeExtend"
+          :disabled="opt.privilegeExtend === 'view'"
+        >
+          {{ opt.privilegeName || opt.label }}
+        </el-checkbox>
+      </el-checkbox-group>
+
+      <div slot="footer">
+        <el-button size="mini" @click="authDialogVisible = false">取消</el-button>
+        <el-button size="mini" type="primary" @click="saveAuth">确定</el-button>
+      </div>
+    </el-dialog>
   </el-col>
 </template>
 
 <script>
 import { getDeptTree, loadTable } from '@/api/system/dept'
 import { loadShares } from '@/api/panel/share'
+import { execute } from '@/api/system/dynamic'
 export default {
   name: 'GrantDept',
   props: {
@@ -45,6 +85,10 @@ export default {
       default: null
     },
     keyWord: {
+      type: String,
+      default: ''
+    },
+    authPrivileges: {
       type: String,
       default: ''
     }
@@ -69,7 +113,15 @@ export default {
         }
       },
       expandNodeIds: [],
-      sharesLoad: false
+      sharesLoad: false,
+      OptionsData: [],
+      authAlreadyExists: [],
+      authAlreadyExistsOption: [],
+      optionsTemplate: [],
+      optionsData: [],
+      authDialogVisible: false,
+      currentNode: null,
+      currentAuth: [] // 当前节点已选权限
     }
   },
   watch: {
@@ -80,6 +132,13 @@ export default {
     }
   },
   created() {
+    this.executeAxios(
+      '/plugin/auth/authDetailsModel/' + 'panel',
+      'get',
+      {},
+      (res) => {
+      }
+    )
     this.search()
   },
   methods: {
@@ -189,9 +248,7 @@ export default {
     },
 
     getSelected() {
-      return {
-        deptIds: this.shares
-      }
+      return this.shares
     },
 
     cancel() {
@@ -210,29 +267,147 @@ export default {
     queryShareNodeIds(callBack) {
       const param = { resourceId: this.resourceId, type: this.type }
       loadShares(param).then(res => {
-        const shares = res.data
-        const nodeIds = shares.map(share => share.targetId)
-        this.shares = nodeIds
-
+        // const shares = res.data
+        // const nodeIds = shares.map(share => share.targetId)
+        // this.shares = nodeIds
+        this.authAlreadyExists = res.data
         callBack && callBack()
       })
     },
 
+    // setCheckExpandNodes(rows) {
+    //   rows.forEach(node => {
+    //     const nodeId = node.deptId
+    //     this.shares.includes(nodeId) && (node.checked = true)
+    //   })
+    // },
     setCheckExpandNodes(rows) {
       rows.forEach(node => {
-        const nodeId = node.deptId
-        this.shares.includes(nodeId) && (node.checked = true)
+        const shares = this.authAlreadyExists.map(share => share.targetId)
+        this.authAlreadyExists.forEach(share => {
+          if (share.targetId === node.deptId) {
+            const privileges = share && share.privileges.split(',').filter(Boolean) || []
+            privileges.forEach(privilege => {
+              const useItem = this.optionsTemplate.find(i => i.privilegeExtend === privilege)
+              this.shares.push(
+                {
+                  authTarget: node.deptId,
+                  authTargetType: 'dept',
+                  privilegeType: useItem.privilegeType,
+                  privilegeValue: 1
+                }
+              )
+            })
+          }
+        })
+        const exists = shares.includes(node.deptId) && (node.checked = true)
+        this.$set(node, 'checked', exists)
       })
     },
 
+    // nodeStatusChange(val) {
+    //   if (val.checked) {
+    //     if (!this.shares.includes(val.deptId)) {
+    //       this.shares.push(val.deptId)
+    //     }
+    //   } else {
+    //     this.shares = this.shares.filter(deptId => deptId !== val.deptId)
+    //   }
+    // }
     nodeStatusChange(val) {
+      const deptId = val.deptId
       if (val.checked) {
-        if (!this.shares.includes(val.deptId)) {
-          this.shares.push(val.deptId)
+        // 若已存在则不再 push
+        if (!this.shares.some(s => s.authTarget === deptId)) {
+          const useItem = this.optionsTemplate.find(i => i.privilegeExtend === 'view')
+          this.shares.push({
+            authTarget: deptId,
+            authTargetType: 'dept',
+            privilegeType: useItem.privilegeType,
+            privilegeValue: 1
+          })
         }
       } else {
-        this.shares = this.shares.filter(deptId => deptId !== val.deptId)
+        // 取消勾选：移除该部门对象
+        this.shares = this.shares.filter(s => s.authTarget !== deptId)
       }
+    },
+
+    executeAxios(url, type, data, callBack) {
+      const param = {
+        url: url,
+        type: type,
+        data: data,
+        callBack: callBack
+      }
+      execute(param).then(res => {
+        this.optionsTemplate = res.data
+      })
+    },
+    openAuthDialog(node) {
+      this.currentNode = node
+
+      // 1. 根据后台配置的权限生成可选项（可能不含 view）
+      this.optionsData = this.authPrivileges
+        .split(',')
+        .map(v => this.optionsTemplate.find(item => item.privilegeExtend === v))
+        .filter(Boolean)
+
+      // 2. ★ 若 view 不在列表里，手动补回（用于展示 & 禁用）
+      const hasUse = this.optionsData.some(o => o.privilegeExtend === 'view')
+      if (!hasUse) {
+        const useTpl = this.optionsTemplate.find(i => i.privilegeExtend === 'view')
+        if (useTpl) this.optionsData.unshift(useTpl) // 放最前面
+      }
+
+      // 3. 回显已授权限（含 view）
+      const share = this.authAlreadyExists.find(s => s.targetId === node.deptId)
+      const arr = share ? share.privileges.split(',').filter(Boolean) : []
+      if (!arr.includes('view')) arr.push('view')
+      this.currentAuth = arr
+      this.authDialogVisible = true
+    },
+    // 保存授权
+    saveAuth() {
+      const node = this.currentNode
+      // 1. 生成新结构 shares（每条权限一个对象）
+      const newShares = this.currentAuth.map(ext => {
+        const opt = this.optionsTemplate.find(i => i.privilegeExtend === ext)
+        return {
+          authTarget: node.deptId,
+          authTargetType: 'dept',
+          privilegeType: opt ? opt.privilegeType : 1, // 兜底
+          privilegeValue: 1
+        }
+      })
+
+      // 2. 先取出当前弹窗权限的旧值
+      const oldSharesList = this.shares.filter(s => s.authTarget === newShares[0].authTarget)
+      // 旧值 oldSharesList 和 新值 newShares 对比 判断 获取旧值中不存在新值中的数据 要获取 旧值中存在、但新值中不存在的项（即被删除的项）。
+      const removedShares = oldSharesList.filter(oldItem =>
+        !newShares.some(newItem =>
+          newItem.authTargetType === oldItem.authTargetType &&
+          newItem.privilegeType === oldItem.privilegeType &&
+          newItem.privilegeValue === oldItem.privilegeValue
+        )
+      )
+      // 从 removedShares 里拿到所有被删除的项，保持其他字段不变，只把 privilegeValue 改为 0。
+      // 可以直接用 .map() 来生成新的数组 👇
+      const removedSharesWithZero = removedShares.map(item => ({
+        ...item,
+        privilegeValue: 0
+      }))
+      const mergedShares = [...newShares, ...removedSharesWithZero]
+      // 获取要去掉的 authTarget 列表
+      const targetAuths = mergedShares.map(item => item.authTarget)
+      // 从 this.shares 里过滤掉相同 authTarget 的项
+      const targetSet = new Set(targetAuths) // 去重后判断
+      this.shares = this.shares.filter(s => !targetSet.has(s.authTarget))
+      // 再追加新数据
+      this.shares.push(...mergedShares)
+      // 关闭弹窗
+      this.authDialogVisible = false
+      this.$message.success('权限配置已保存')
     }
 
   }
@@ -296,5 +471,13 @@ export default {
 
 .my_table>>>.el-table-column--selection .cell{
   text-align: center;
+}
+.auth-line {
+  margin-bottom: 10px;
+}
+.el-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 </style>
