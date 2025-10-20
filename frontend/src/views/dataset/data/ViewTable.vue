@@ -140,7 +140,7 @@ export default {
       },
       tabActive: 'dataPreview',
       tableViewRowForm: {
-        row: 1000
+        row: 100
       },
       tabStatus: false,
       isPluginLoaded: false,
@@ -182,7 +182,7 @@ export default {
   },
   methods: {
     initTable(id) {
-      // this.resetPage()
+      this.resetPage()
       // this.tableViewRowForm.row = 1000
       this.tableViewRowForm.row = this.currentPageform.pageSize
       this.page.pageSize = this.currentPageform.pageSize
@@ -304,10 +304,15 @@ export default {
     },
 
     resetPage() {
-      this.page = {
-        page: 1,
-        pageSize: 1000,
-        show: 1000
+      this.currentPageform = {
+        pageSize: 100, // 🔹 每页条数
+        currentPage: 1, // 🔹 当前页
+        total: 0 // 🔹 总条数
+      }
+      this.tableViewRowForm = {
+        row: 100, // 🔹 每页条数
+        filterArray: [], // 🔹 筛选条件
+        sortFields: [] // 🔹 排序字段
       }
     },
 

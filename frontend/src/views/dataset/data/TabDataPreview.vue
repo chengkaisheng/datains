@@ -173,6 +173,11 @@ export default {
         this.currentPage.show = parseInt(this.form.row)
       }
     },
+    table() {
+      this.filterArray = []
+      this.sortField = ''
+      this.sortType = ''
+    },
     currentPageform: {
       handler(newVal) {
         this.currentPageforms = {
@@ -239,6 +244,7 @@ export default {
     },
     getFilterValue(fieldId) {
       const item = this.filterArray.find(f => f.fieldId === fieldId)
+      console.log(item)
       return item ? item.value : ''
     },
     formatFilterValue(val) {
@@ -292,7 +298,6 @@ export default {
           ? this.filterArray.push(item)
           : this.$set(this.filterArray, index, item)
       }
-      console.log(this.filterArray)
       this.currentPageforms.currentPage = 1
       this.emitSearch()
     },
