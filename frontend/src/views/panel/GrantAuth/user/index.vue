@@ -66,7 +66,7 @@
 <script>
 import { userListsWithOutPage } from '@/api/system/user'
 import { formatCondition } from '@/utils/index'
-import { loadShares } from '@/api/dataset/dataset'
+import { loadShares } from '@/api/panel/share'
 import { execute } from '@/api/system/dynamic'
 
 export default {
