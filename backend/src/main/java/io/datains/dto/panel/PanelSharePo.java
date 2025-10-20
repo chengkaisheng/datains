@@ -16,5 +16,6 @@ public class PanelSharePo {
     private String creator;
     @ApiModelProperty("分享人ID")
     private Long userId;
-
+    @ApiModelProperty("权限")
+    private String privileges;
 }

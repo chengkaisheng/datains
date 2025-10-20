@@ -22,6 +22,12 @@ public interface ExtDatasetShareMapper {
 
     List<DatasetShare> queryWithResource(DatasetShareSearchRequest request);
 
+    DatasetShare queryByShareId(@Param("shareId") String shareId);
+
+    List<DatasetShare> queryByDatasetId(@Param("datasetId") String datasetId);
+
+    List<DatasetShare> queryByTarget(@Param("targetId") Long targetId, @Param("targetType") Integer targetType);
+
     List<DatasetShareOutDTO> queryTargets(@Param("datasetId") String datasetId, @Param("userName") String userName);
 
     void removeShares(@Param("request") DatasetShareRemoveRequest request);

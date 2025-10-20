@@ -1,9 +1,7 @@
 package io.datains.controller.dataset.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.datains.auth.annotation.DePermission;
 import io.datains.base.domain.DatasetShare;
-import io.datains.commons.constants.DePermissionType;
 import io.datains.controller.request.dataset.DatasetShareFineDto;
 import io.datains.controller.request.dataset.DatasetShareRemoveRequest;
 import io.datains.controller.request.dataset.DatasetShareSearchRequest;
@@ -44,7 +42,6 @@ public interface DatasetShareApi {
     @ApiImplicitParam(paramType = "path", value = "数据集ID", name = "datasetId", required = true, dataType = "String")
     List<DatasetShareOutDTO> queryTargets(@PathVariable("datasetId") String datasetId);
 
-    @DePermission(type = DePermissionType.DATASET, value = "resourceId")
     @ApiOperation("创建分享")
     @PostMapping("/fineSave")
     void fineSave(DatasetShareFineDto datasetShareFineDto);

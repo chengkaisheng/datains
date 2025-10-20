@@ -26,5 +26,6 @@ public class XpackSysAuthDetailDTO {
     private String createUser;
     private Long createTime;
     private Long updateTime;
+    private Boolean isShared;
     private static final long serialVersionUID = 1L;
 }

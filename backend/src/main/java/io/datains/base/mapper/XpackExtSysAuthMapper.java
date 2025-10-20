@@ -19,6 +19,9 @@ public interface XpackExtSysAuthMapper {
 
     List<XpackSysAuthDetailDTO> search(XpackSysAuthRequest paramXpackSysAuthRequest);
 
+    List<XpackSysAuthDetailDTO> getAll(@Param("authSource") String authSource, @Param("authTarget") String authTarget, @Param("authSourceType") String authSourceType,
+                                       @Param("authTargetType") String authTargetType, @Param("privilegeType") Integer privilegeType);
+
     List<XpackSysAuthDetailDTO> getSysAuthByAuthSource(@Param("authSource") String authSource, @Param("authTarget") String authTarget, @Param("authSourceType") String authSourceType,
                                                        @Param("authTargetType") String authTargetType);
 
@@ -29,5 +32,7 @@ public interface XpackExtSysAuthMapper {
 
     int insertSysAuthBatch(List<XpackSysAuthDetailDTO> list);
 
-    List<XpackSysAuthDetailDTO> getAllByAuthSource(@Param("authTarget") String authTarget ,@Param("authTargetType") String authTargetType, @Param("authSources") List<String> authSources);
+    List<XpackSysAuthDetailDTO> getByAuthSource(@Param("authTarget") String authTarget, @Param("authTargetType") String authTargetType, @Param("authSources") List<String> authSources);
+
+    List<XpackSysAuthDetailDTO> getAllByAuthSourcesAndAuthTargets(@Param("authSources") List<String> authSources, @Param("authSourceType") String authSourceType, @Param("authTargets") List<String> authTargets, @Param("authTargetType") String authTargetType);
 }

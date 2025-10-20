@@ -33,4 +33,21 @@ public interface AuthXpackService {
     void authBatchDelForDeptLeader(Long user, List<String> authSources);
 
     List<XpackSysAuthDetail> authDetailsModel(String authType);
+
+    /**
+     * 用于分享模块查询权限
+     */
+    List<XpackSysAuthDetailDTO> selectListForShare(List<String> authSources, String authSourceType, List<String> authTargets, String authTargetType);
+
+    /**
+     * 用于分享模块中新增权限
+     * 单次更改
+     */
+    void authAddForShare(String authSource, String authTarget, String authSourceType, String authTargetType, String createUser, Integer privilegeType);
+
+    /**
+     * 用于分享模块中删除权限
+     * 单次更改
+     */
+    void authDelForShare(String authSource, String authTarget, String authSourceType, String authTargetType, String createUser, Integer privilegeType);
 }

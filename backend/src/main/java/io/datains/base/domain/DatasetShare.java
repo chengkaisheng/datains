@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class DatasetShare implements Serializable {
     @ApiModelProperty("分享ID")
     private Long shareId;
-    @ApiModelProperty("仪表板ID")
+    @ApiModelProperty("数据集ID")
     private String datasetId;
     @ApiModelProperty("目标ID")
     private Long targetId;
@@ -19,6 +19,8 @@ public class DatasetShare implements Serializable {
     private Integer type;
     @ApiModelProperty("数据集类型")
     private String datasetType;
+    @ApiModelProperty("权限")
+    private String privileges;
 
     private static final long serialVersionUID = 1L;
 }
