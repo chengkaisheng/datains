@@ -3,7 +3,7 @@
   <el-popover
     v-model="visible"
     placement="bottom-start"
-    width="220"
+    width="230"
     trigger="click"
     :append-to-body="true"
     popper-class="column-filter-popper"
@@ -18,11 +18,13 @@
     />
     <el-date-picker
       v-if="columnKey.deType === 1"
-      :value="localValue"
+      v-model="dateRange"
       style="width:100%;"
       clearable
       size="mini"
       type="daterange"
+      format="yyyy-MM-dd"
+      value-format="yyyy-MM-dd"
       range-separator="至"
       start-placeholder="开始日期"
       end-placeholder="结束日期"
@@ -48,12 +50,19 @@ export default {
     return {
       visible: false,
       localValue: this.value || '', // 临时值（输入框显示）
-      lastConfirmedValue: this.value || '' // 正式值（上次确定或重置）
+      lastConfirmedValue: this.value || '', // 正式值（上次确定或重置）
+      dateRange: [] // 日期范围
     }
   },
   watch: {
     // 父组件重置后同步
     value(val) {
+      this.localValue = val || ''
+      // 同步到日期
+      console.log(val)
+      this.dateRange = Array.isArray(val) ? val : []
+    },
+    dateRange(val) {
       this.localValue = val || ''
     },
     visible(val) {
@@ -73,6 +82,7 @@ export default {
     reset() {
       this.localValue = ''
       this.lastConfirmedValue = ''
+      this.dateRange = []
       this.$emit('input', '')
       this.$emit('change', '', this.columnKey)
     }

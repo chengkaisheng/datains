@@ -241,44 +241,56 @@ export default {
       const item = this.filterArray.find(f => f.fieldId === fieldId)
       return item ? item.value : ''
     },
+    formatFilterValue(val) {
+      if (val === null) return []
+      if (Array.isArray(val)) return val
+      return [val]
+    },
     onFilterChange(value, keyObj) {
       // keyObj 就是 columnKey（field 对象）
       const { id: fieldId, deType: deType } = keyObj
       // 1. 找到是否已存在该字段的筛选
       const index = this.filterArray.findIndex(f => f.field.id === fieldId)
       // 2. 空值 => 删除
-      if (!value || value.trim() === '') {
-        if (index !== -1) this.filterArray.splice(index, 1)
+      //
+      const isEmpty = !value || (typeof value === 'string' && value.trim() === '') || (Array.isArray(value) && value.length === 0)
+      if (isEmpty && index !== -1) {
+        this.filterArray.splice(index, 1)
       } else {
         // 3. 有值 => 新增 or 覆盖
+        // 非日期类型 'like'  日期类型 'between'
+        let item
         if (deType !== 1) {
-          // 非日期类型 => 模糊查询
-          const item = {
+          item = {
             field: keyObj,
             filter: [
               {
-                fieldId, term: 'like', value
+                fieldId,
+                term: 'like',
+                value: value
               }
             ]
           }
-          index === -1
-            ? this.filterArray.push(item)
-            : this.$set(this.filterArray, index, item)
         } else {
-          // 日期类型 => 范围查询
-          console.log(value)
-          const item = {
+          item = {
             field: keyObj,
             filter: [
               {
-                fieldId, term: 'between', value
+                fieldId,
+                term: 'ge',
+                value: value[0]
+              },
+              {
+                fieldId,
+                term: 'le',
+                value: value[1]
               }
             ]
           }
-          index === -1
-            ? this.filterArray.push(item)
-            : this.$set(this.filterArray, index, item)
         }
+        index === -1
+          ? this.filterArray.push(item)
+          : this.$set(this.filterArray, index, item)
       }
       console.log(this.filterArray)
       this.currentPageforms.currentPage = 1
