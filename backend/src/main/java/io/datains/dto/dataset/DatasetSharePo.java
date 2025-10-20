@@ -18,4 +18,6 @@ public class DatasetSharePo {
     private Long userId;
     @ApiModelProperty("数据集类型")
     private String datasetType;
+    @ApiModelProperty("权限")
+    private String privileges;
 }

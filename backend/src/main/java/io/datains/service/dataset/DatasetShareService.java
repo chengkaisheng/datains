@@ -5,9 +5,11 @@ import io.datains.auth.api.dto.CurrentRoleDto;
 import io.datains.auth.api.dto.CurrentUserDto;
 import io.datains.base.domain.DatasetShare;
 import io.datains.base.domain.DatasetTable;
+import io.datains.base.domain.XpackSysAuthDetailDTO;
 import io.datains.base.mapper.DatasetTableMapper;
 import io.datains.base.mapper.ext.ExtDatasetShareMapper;
 import io.datains.commons.model.AuthURD;
+import io.datains.commons.model.ShareAuthInfo;
 import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.BeanUtils;
 import io.datains.controller.request.dataset.DatasetShareFineDto;
@@ -17,6 +19,7 @@ import io.datains.dto.dataset.DatasetShareDto;
 import io.datains.dto.dataset.DatasetShareOutDTO;
 import io.datains.dto.dataset.DatasetSharePo;
 import io.datains.service.message.DeMsgutil;
+import io.datains.service.sys.impl.AuthXpackDefaultService;
 import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +38,8 @@ public class DatasetShareService {
 
     @Resource
     private ExtDatasetShareMapper extDatasetShareMapper;
+    @Resource
+    private AuthXpackDefaultService authXpackDefaultService;
 
     /**
      * 1.查询当前节点已经分享给了哪些目标
@@ -54,14 +59,30 @@ public class DatasetShareService {
         List<Long> redShareIdLists = new ArrayList<>();// 取消的分享
 
         String datasetId = datasetShareFineDto.getResourceId();
-        AuthURD authURD = datasetShareFineDto.getAuthURD();
         AuthURD sharedAuthURD = new AuthURD();
         AuthURD addAuthURD = new AuthURD();
-
+        Set<Long> userIds = new HashSet<>();
+        Set<Long> deptIds = new HashSet<>();
+        Set<Long> roleIds = new HashSet<>();
+        if (CollectionUtils.isNotEmpty(datasetShareFineDto.getShareAuthInfos())) {
+            for (ShareAuthInfo shareAuthInfo : datasetShareFineDto.getShareAuthInfos()) {
+                switch (shareAuthInfo.getAuthTargetType()) {
+                    case "user":
+                        userIds.add(Long.valueOf(shareAuthInfo.getAuthTarget()));
+                        break;
+                    case "dept":
+                        deptIds.add(Long.valueOf(shareAuthInfo.getAuthTarget()));
+                        break;
+                    case "role":
+                        roleIds.add(Long.valueOf(shareAuthInfo.getAuthTarget()));
+                        break;
+                }
+            }
+        }
         Map<Integer, List<Long>> authURDMap = new HashMap<>();
-        authURDMap.put(0, authURD.getUserIds());
-        authURDMap.put(1, authURD.getRoleIds());
-        authURDMap.put(2, authURD.getDeptIds());
+        authURDMap.put(0, new ArrayList<>(userIds));
+        authURDMap.put(1, new ArrayList<>(roleIds));
+        authURDMap.put(2, new ArrayList<>(deptIds));
 
         DatasetShareSearchRequest request = new DatasetShareSearchRequest();
         request.setCurrentUserName(AuthUtils.getUser().getUsername());
@@ -74,7 +95,7 @@ public class DatasetShareService {
         for (Map.Entry<Integer, List<Long>> entry : authURDMap.entrySet()) {
             Integer key = entry.getKey();
             List<TempShareNode> shareNodes;
-            if (null == typeSharedMap || null == typeSharedMap.get(key)) {
+            if (null == typeSharedMap.get(key)) {
                 shareNodes = new ArrayList<>();
             } else {
                 shareNodes = typeSharedMap.get(key);
@@ -83,8 +104,7 @@ public class DatasetShareService {
             if (null != authURDMap.get(key)) {
                 Map<String, Object> dataMap = filterData(authURDMap.get(key), shareNodes);
                 List<Long> newIds = (List<Long>) dataMap.get("add");
-                for (int i = 0; i < newIds.size(); i++) {
-                    Long id = newIds.get(i);
+                for (Long id : newIds) {
                     DatasetShare share = new DatasetShare();
                     share.setCreateTime(System.currentTimeMillis());
                     share.setDatasetId(datasetId);
@@ -113,7 +133,43 @@ public class DatasetShareService {
         if (CollectionUtils.isNotEmpty(addShares)) {
             extDatasetShareMapper.batchInsert(addShares, AuthUtils.getUser().getUsername());
         }
-
+        //进行权限方面的操作
+        List<ShareAuthInfo> shareAuthInfos = datasetShareFineDto.getShareAuthInfos();
+        if (CollectionUtils.isNotEmpty(shareAuthInfos)) {
+            for (ShareAuthInfo shareAuthInfo : shareAuthInfos) {
+                if (1 == shareAuthInfo.getPrivilegeValue()) {
+                    authXpackDefaultService.authAddForShare(datasetId,
+                            shareAuthInfo.getAuthTarget(),
+                            "dataset",
+                            shareAuthInfo.getAuthTargetType(),
+                            "share",
+                            shareAuthInfo.getPrivilegeType());
+                } else {
+                    authXpackDefaultService.authDelForShare(datasetId,
+                            shareAuthInfo.getAuthTarget(),
+                            "dataset",
+                            shareAuthInfo.getAuthTargetType(),
+                            "share",
+                            shareAuthInfo.getPrivilegeType());
+                }
+            }
+        }
+        if (CollectionUtils.isNotEmpty(redShareIdLists)) {
+            // 去除删除的分享的权限
+            for (Long shareId : redShareIdLists) {
+                for (DatasetShare item : datasetShares) {
+                    if (item.getShareId().equals(shareId)) {
+                        authXpackDefaultService.authDelForShare(
+                                datasetId,
+                                item.getTargetId().toString(),
+                                "dataset",
+                                getAuthTargetType(String.valueOf(item.getType())),
+                                "share",
+                                null);
+                    }
+                }
+            }
+        }
         // 以上是业务代码
         // 下面是消息发送
         Set<Long> addUserIdSet = AuthUtils.userIdsByURD(addAuthURD);
@@ -161,11 +217,9 @@ public class DatasetShareService {
     private Map<String, Object> filterData(List<Long> newTargets, List<TempShareNode> shareNodes) {
         Map<String, Object> result = new HashMap<>();
         List<Long> newUserIds = new ArrayList<>();
-        for (int i = 0; i < newTargets.size(); i++) {
-            Long newTargetId = newTargets.get(i);
-            Boolean isNew = true;
-            for (int j = 0; j < shareNodes.size(); j++) {
-                TempShareNode shareNode = shareNodes.get(j);
+        for (Long newTargetId : newTargets) {
+            boolean isNew = true;
+            for (TempShareNode shareNode : shareNodes) {
                 Long sharedId = shareNode.getTargetId();
                 if (newTargetId.equals(sharedId)) {
                     shareNode.setMatched(true); // 已分享 重新命中
@@ -186,7 +240,7 @@ public class DatasetShareService {
     }
 
     @Data
-    private class TempShareNode {
+    private static class TempShareNode {
         private Long shareId;
         private Integer type;
         private Long targetId;
@@ -213,7 +267,9 @@ public class DatasetShareService {
 
     public List<DatasetSharePo> queryShareOut() {
         String username = AuthUtils.getUser().getUsername();
-        return extDatasetShareMapper.queryOut(username);
+        List<DatasetSharePo> list = extDatasetShareMapper.queryOut(username);
+        privilegesHandle(list);
+        return list;
     }
 
     public List<DatasetShareDto> queryTree() {
@@ -228,6 +284,7 @@ public class DatasetShareService {
         param.put("roleIds", roleIds);
 
         List<DatasetSharePo> datas = extDatasetShareMapper.query(param);
+        privilegesHandle(datas);
         List<DatasetShareDto> dtoLists = datas.stream().map(po -> BeanUtils.copyBean(new DatasetShareDto(), po))
                 .collect(Collectors.toList());
         return convertTree(dtoLists);
@@ -251,7 +308,39 @@ public class DatasetShareService {
     public List<DatasetShare> queryWithResource(DatasetShareSearchRequest request) {
         String username = AuthUtils.getUser().getUsername();
         request.setCurrentUserName(username);
-        return extDatasetShareMapper.queryWithResource(request);
+        List<DatasetShare> list = extDatasetShareMapper.queryWithResource(request);
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
+
+        List<String> authTargets = list.stream().map(item -> item.getTargetId().toString()).collect(Collectors.toList());
+        //拼装权限信息
+        List<XpackSysAuthDetailDTO> auth = authXpackDefaultService.selectListForShare(
+                Collections.singletonList(request.getResourceId()),
+                "dataset",
+                authTargets,
+                getAuthTargetType(request.getType())
+        );
+        if (!CollectionUtils.isEmpty(auth)) {
+            //因为只有一个数据集，所以根据目标id进行分类
+            Map<String, List<XpackSysAuthDetailDTO>> authMap = auth.stream()
+                    .collect(Collectors.groupingBy(XpackSysAuthDetailDTO::getAuthTarget));
+            for (DatasetShare item : list) {
+                //进行权限组装
+                Set<String> privileges = new HashSet<>();
+                if (authMap.containsKey(item.getTargetId().toString())) {
+                    //理论上一个人一个数据集只会有一组权限
+                    List<XpackSysAuthDetailDTO> auths = authMap.get(item.getTargetId().toString());
+                    for (XpackSysAuthDetailDTO a : auths) {
+                        if (a.getPrivilegeExtend() != null && 1 == a.getPrivilegeValue()) {
+                            privileges.add(a.getPrivilegeExtend());
+                        }
+                    }
+                }
+                item.setPrivileges(String.join(",", privileges));
+            }
+        }
+        return list;
     }
 
     public List<DatasetShareOutDTO> queryTargets(String datasetId) {
@@ -263,8 +352,68 @@ public class DatasetShareService {
                 .collect(Collectors.toList());
     }
 
-    public void removeShares(DatasetShareRemoveRequest removeRequest) {
-        extDatasetShareMapper.removeShares(removeRequest);
+    public List<DatasetShare> queryByTarget(Long targetId, Integer targetType) {
+        return extDatasetShareMapper.queryByTarget(targetId, targetType);
     }
 
+    @Transactional
+    public void removeShares(DatasetShareRemoveRequest removeRequest) {
+        List<DatasetShare> list = extDatasetShareMapper.queryByDatasetId(removeRequest.getDatasetId());
+        //删除分享
+        extDatasetShareMapper.removeShares(removeRequest);
+        //去除权限
+        for (DatasetShare datasetShare : list) {
+            authXpackDefaultService.authDelForShare(
+                    datasetShare.getDatasetId(),
+                    datasetShare.getTargetId().toString(),
+                    "dataset",
+                    getAuthTargetType(String.valueOf(datasetShare.getType())),
+                    "share",
+                    null);
+        }
+    }
+
+    private void privilegesHandle(List<DatasetSharePo> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return;
+        }
+
+        List<String> authSources = list.stream().map(DatasetSharePo::getId).collect(Collectors.toList());
+        //拼装权限信息
+        List<XpackSysAuthDetailDTO> auth = authXpackDefaultService.selectListForShare(
+                authSources,
+                "dataset",
+                Collections.singletonList(AuthUtils.getUser().getUserId().toString()),
+                "user"
+        );
+        if (!CollectionUtils.isEmpty(auth)) {
+            //因为只有一个用户，所以根据数据集id进行分类
+            Map<String, List<XpackSysAuthDetailDTO>> authMap = auth.stream()
+                    .collect(Collectors.groupingBy(XpackSysAuthDetailDTO::getAuthSource));
+            for (DatasetSharePo item : list) {
+                //进行权限组装
+                Set<String> privileges = new HashSet<>();
+                if (authMap.containsKey(item.getId())) {
+                    //理论上一个人一个数据集只会有一组权限
+                    List<XpackSysAuthDetailDTO> auths = authMap.get(item.getId());
+                    for (XpackSysAuthDetailDTO a : auths) {
+                        if (a.getPrivilegeExtend() != null && 1 == a.getPrivilegeValue()) {
+                            privileges.add(a.getPrivilegeExtend());
+                        }
+                    }
+                }
+                item.setPrivileges(String.join(",", privileges));
+            }
+        }
+    }
+
+    private String getAuthTargetType(String type) {
+        if ("0".equals(type)) {
+            return "user";
+        } else if ("1".equals(type)) {
+            return "role";
+        } else {
+            return "dept";
+        }
+    }
 }

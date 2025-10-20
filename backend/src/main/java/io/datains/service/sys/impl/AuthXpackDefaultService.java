@@ -15,7 +15,11 @@ import io.datains.base.mapper.XpackExtVAuthModelMapper;
 import io.datains.base.mapper.XpackSysAuthDetailMapper;
 import io.datains.commons.utils.IsNullUtils;
 import io.datains.dto.authModel.AuthChangeForDeptLeaderDTO;
+import io.datains.service.dataset.DatasetShareService;
+import io.datains.service.panel.ShareService;
 import io.datains.service.sys.AuthXpackService;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -35,6 +39,12 @@ public class AuthXpackDefaultService implements AuthXpackService {
 
     @Resource
     private XpackSysAuthDetailMapper xpackSysAuthDetailMapper;
+    @Resource
+    @Lazy
+    private DatasetShareService datasetShareService;
+    @Resource
+    @Lazy
+    private ShareService shareService;
 
     public List<XpackVAuthModelDTO> searchAuthModelTree(XpackBaseTreeRequest xpackBaseTreeRequest, Long long_, Boolean bool) {
         xpackBaseTreeRequest.setCreateBy(String.valueOf(long_));
@@ -47,6 +57,39 @@ public class AuthXpackDefaultService implements AuthXpackService {
 
     public Map<String, List<XpackSysAuthDetailDTO>> searchAuthDetails(XpackSysAuthRequest xpackSysAuthRequest) {
         List<XpackSysAuthDetailDTO> xpackSysAuthDetails = this.B.search(xpackSysAuthRequest);
+        //判断有没有被分享
+        int type;
+        if ("user".equals(xpackSysAuthRequest.getAuthTargetType())) {
+            type = 0;
+        } else if ("dept".equals(xpackSysAuthRequest.getAuthTargetType())) {
+            type = 2;
+        } else {
+            type = 1;
+        }
+        if (xpackSysAuthRequest.getAuthSourceType().equals("dataset")) {
+            List<DatasetShare> datasetShares = datasetShareService.queryByTarget(Long.valueOf(xpackSysAuthRequest.getAuthTarget()), type);
+            if (datasetShares != null && !datasetShares.isEmpty()) {
+                for (XpackSysAuthDetailDTO xpackSysAuthDetailDTO : xpackSysAuthDetails) {
+                    for (DatasetShare datasetShare : datasetShares) {
+                        if (datasetShare.getDatasetId().equals(xpackSysAuthDetailDTO.getAuthSource())) {
+                            xpackSysAuthDetailDTO.setIsShared(true);
+                        }
+                    }
+                }
+            }
+        }
+        if (xpackSysAuthRequest.getAuthSourceType().equals("panel")) {
+            List<PanelShare> panelShares = shareService.queryByTarget(Long.valueOf(xpackSysAuthRequest.getAuthTarget()), type);
+            if (panelShares != null && !panelShares.isEmpty()) {
+                for (XpackSysAuthDetailDTO xpackSysAuthDetailDTO : xpackSysAuthDetails) {
+                    for (PanelShare panelShare : panelShares) {
+                        if (panelShare.getPanelGroupId().equals(xpackSysAuthDetailDTO.getAuthSource())) {
+                            xpackSysAuthDetailDTO.setIsShared(true);
+                        }
+                    }
+                }
+            }
+        }
         if (xpackSysAuthDetails == null) {
             xpackSysAuthDetails = new ArrayList<>();
         }
@@ -90,7 +133,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
             }
         }
         arrayList.add(sysAuthByAuthSource.get(0).getId());
-        this.changeAuth(xpackSysAuthRequest.getAuthSourceType(), xpackSysAuthDetail.getPrivilegeValue(), xpackSysAuthDetail.getPrivilegeType(), arrayList);
+        this.changeAuth(xpackSysAuthRequest.getAuthSourceType(), xpackSysAuthDetail.getPrivilegeValue(), xpackSysAuthDetail.getPrivilegeType(), arrayList, str);
     }
 
     @Override
@@ -159,22 +202,22 @@ public class AuthXpackDefaultService implements AuthXpackService {
         //批量给予权限
         if (!authIds.isEmpty()) {
             XpackSysAuthDetail xpackSysAuthDetail = list.get(0).getAuthDetail();
-            this.changeAuth(list.get(0).getAuthSourceType(), xpackSysAuthDetail.getPrivilegeValue(), xpackSysAuthDetail.getPrivilegeType(), authIds);
+            this.changeAuth(list.get(0).getAuthSourceType(), xpackSysAuthDetail.getPrivilegeValue(), xpackSysAuthDetail.getPrivilegeType(), authIds, str);
         }
     }
 
-    private void changeAuth(String authSourceType, Integer privilegeValue, Integer privilegeType, List<String> authIds) {
+    private void changeAuth(String authSourceType, Integer privilegeValue, Integer privilegeType, List<String> authIds, String user) {
         if (PluginSystemConstants.PRIVILEGE_VALUE.ON.equals(privilegeValue)) {
             if (authSourceType.equalsIgnoreCase("panel")) {
-                this.i.authDetailsChange3(PluginSystemConstants.PRIVILEGE_VALUE.OFF, privilegeType, authIds);
+                this.i.authDetailsChange3(PluginSystemConstants.PRIVILEGE_VALUE.OFF, privilegeType, authIds, user);
             } else {
-                this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.OFF, privilegeType, authIds);
+                this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.OFF, privilegeType, authIds, user);
             }
         } else {
             if (authSourceType.equalsIgnoreCase("panel")) {
-                this.i.authDetailsChange3(PluginSystemConstants.PRIVILEGE_VALUE.ON, privilegeType, authIds);
+                this.i.authDetailsChange3(PluginSystemConstants.PRIVILEGE_VALUE.ON, privilegeType, authIds, user);
             } else {
-                this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.ON, privilegeType, authIds);
+                this.i.authDetailsChange(PluginSystemConstants.PRIVILEGE_VALUE.ON, privilegeType, authIds, user);
             }
         }
     }
@@ -193,7 +236,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
         //储存全部的authId
         List<String> authIds = new ArrayList<>();
         //首先需要根据用户和资源id查询出已经存在的权限
-        List<XpackSysAuthDetailDTO> sysAuthByAuthSourceList = B.getAllByAuthSource(roleId.toString(), "role", a.stream().map(AuthChangeForDeptLeaderDTO::getAuthSource).collect(Collectors.toList()));
+        List<XpackSysAuthDetailDTO> sysAuthByAuthSourceList = B.getByAuthSource(roleId.toString(), "role", a.stream().map(AuthChangeForDeptLeaderDTO::getAuthSource).collect(Collectors.toList()));
         authIds.addAll(sysAuthByAuthSourceList.stream().map(XpackSysAuthDetailDTO::getId).collect(Collectors.toList()));
         Map<String, XpackSysAuthDetailDTO> sysAuthByAuthSourceMap = sysAuthByAuthSourceList.stream().collect(Collectors.toMap(XpackSysAuthDetailDTO::getAuthSource, item -> item));
         //筛选出需要新创建的
@@ -264,7 +307,7 @@ public class AuthXpackDefaultService implements AuthXpackService {
         //储存全部的authId
         List<String> authIds = new ArrayList<>();
         //首先需要根据用户和资源id查询出已经存在的权限
-        List<XpackSysAuthDetailDTO> sysAuthByAuthSourceList = B.getAllByAuthSource(userId.toString(), "user", a.stream().map(AuthChangeForDeptLeaderDTO::getAuthSource).collect(Collectors.toList()));
+        List<XpackSysAuthDetailDTO> sysAuthByAuthSourceList = B.getByAuthSource(userId.toString(), "user", a.stream().map(AuthChangeForDeptLeaderDTO::getAuthSource).collect(Collectors.toList()));
         authIds.addAll(sysAuthByAuthSourceList.stream().map(XpackSysAuthDetailDTO::getId).collect(Collectors.toList()));
         Map<String, XpackSysAuthDetailDTO> sysAuthByAuthSourceMap = sysAuthByAuthSourceList.stream().collect(Collectors.toMap(XpackSysAuthDetailDTO::getAuthSource, item -> item));
         //筛选出需要新创建的
@@ -343,5 +386,54 @@ public class AuthXpackDefaultService implements AuthXpackService {
             authDetails.add(0, xpackSysAuthDetail);
         }
         return authDetails;
+    }
+
+    @Override
+    public List<XpackSysAuthDetailDTO> selectListForShare(List<String> authSources, String authSourceType, List<String> authTargets, String authTargetType) {
+        return B.getAllByAuthSourcesAndAuthTargets(authSources, authSourceType, authTargets, authTargetType);
+    }
+
+    @Override
+    public void authAddForShare(String authSource, String authTarget, String authSourceType, String authTargetType, String createUser, Integer privilegeType) {
+        List<String> arrayList = new ArrayList<>();
+        List<XpackSysAuthDetailDTO> sysAuthByAuthSource = B.getSysAuthByAuthSource(authSource, authTarget, authSourceType, authTargetType);
+        if (IsNullUtils.isNull(sysAuthByAuthSource)) {
+            XpackSysAuthDetailDTO sysAuthDetailDTO = new XpackSysAuthDetailDTO();
+            sysAuthDetailDTO.setAuthSource(authSource);
+            sysAuthDetailDTO.setAuthSourceType(authSourceType);
+            sysAuthDetailDTO.setAuthTarget(authTarget);
+            sysAuthDetailDTO.setAuthTargetType(authTargetType);
+            sysAuthDetailDTO.setAuthUser(createUser);
+            B.insertSysAuth(sysAuthDetailDTO);
+            sysAuthByAuthSource = B.getSysAuthByAuthSource(authSource, authTarget, authSourceType, authTargetType);
+            List<XpackSysAuthDetail> xpackSysAuthDetails = this.authDetailsModel(authSourceType);
+            for (XpackSysAuthDetail sysAuthDetail : xpackSysAuthDetails) {
+                XpackSysAuthDetail xpackSysAuthDetail1 = new XpackSysAuthDetail();
+                xpackSysAuthDetail1.setAuthId(sysAuthByAuthSource.get(0).getId());
+                xpackSysAuthDetail1.setPrivilegeName(sysAuthDetail.getPrivilegeName());
+                xpackSysAuthDetail1.setPrivilegeType(sysAuthDetail.getPrivilegeType());
+                xpackSysAuthDetail1.setPrivilegeValue(sysAuthDetail.getPrivilegeValue());
+                xpackSysAuthDetail1.setPrivilegeExtend(sysAuthDetail.getPrivilegeExtend());
+                xpackSysAuthDetail1.setRemark(sysAuthDetail.getRemark());
+                xpackSysAuthDetail1.setCreateUser(createUser);
+                xpackSysAuthDetail1.setCreateTime(System.currentTimeMillis());
+                xpackSysAuthDetailMapper.insertDetail(xpackSysAuthDetail1);
+            }
+        }
+        arrayList.add(sysAuthByAuthSource.get(0).getId());
+        this.changeAuth(authSourceType, 0, privilegeType, arrayList, createUser);
+    }
+
+    @Override
+    public void authDelForShare(String authSource, String authTarget, String authSourceType, String authTargetType, String createUser, Integer privilegeType) {
+        List<XpackSysAuthDetailDTO> list = B.getAll(authSource, authTarget, authSourceType, authTargetType, privilegeType);
+        if (CollectionUtils.isEmpty(list)) {
+            return;
+        }
+        if (privilegeType == null) {
+            this.i.authDetailsChange2(0, Collections.singletonList(list.get(0).getAuthId()), createUser);
+        } else {
+            this.changeAuth(authSourceType, 1, privilegeType, Collections.singletonList(list.get(0).getAuthId()), createUser);
+        }
     }
 }

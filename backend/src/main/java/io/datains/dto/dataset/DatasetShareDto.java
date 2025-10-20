@@ -11,9 +11,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class DatasetShareDto extends DatasetSharePo {
-
     @ApiModelProperty("子节点")
     private List<DatasetShareDto> children;
-
-
 }

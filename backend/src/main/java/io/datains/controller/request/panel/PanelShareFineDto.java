@@ -1,10 +1,11 @@
 package io.datains.controller.request.panel;
 
-import io.datains.commons.model.AuthURD;
+import io.datains.commons.model.ShareAuthInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 
 @Data
@@ -15,5 +16,5 @@ public class PanelShareFineDto implements Serializable {
     @ApiModelProperty("资源ID")
     private  String resourceId;
     @ApiModelProperty("分享信息")
-    private AuthURD authURD;
+    private List<ShareAuthInfo> shareAuthInfos;
 }

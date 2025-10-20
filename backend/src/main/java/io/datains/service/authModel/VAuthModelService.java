@@ -1,10 +1,12 @@
 package io.datains.service.authModel;
 
+import io.datains.base.domain.DatasetShare;
 import io.datains.base.mapper.ext.ExtVAuthModelMapper;
 import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.TreeUtils;
 import io.datains.controller.request.authModel.VAuthModelRequest;
 import io.datains.dto.authModel.VAuthModelDTO;
+import io.datains.service.dataset.DatasetShareService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ public class VAuthModelService {
 
     @Resource
     private ExtVAuthModelMapper extVAuthModelMapper;
+    @Resource
+    private DatasetShareService datasetShareService;
 
     public List<VAuthModelDTO> queryAuthModel(VAuthModelRequest request) {
         request.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
@@ -38,7 +42,17 @@ public class VAuthModelService {
             return vAuthModelDTOS;
         }
         if ("dataset".equals(request.getModelType())) {
-            return TreeUtils.mergeTree(result, "dataset_list");
+            //进行分享过滤，过滤掉通过分享得来的数据集
+            List<DatasetShare> datasetShare = datasetShareService.queryByTarget(AuthUtils.getUser().getUserId(), 0);
+            List<VAuthModelDTO> result1 = result.stream().filter(vAuthModelDTO -> {
+                for (DatasetShare datasetShare1 : datasetShare) {
+                    if (vAuthModelDTO.getId().equals(datasetShare1.getDatasetId())) {
+                        return false;
+                    }
+                }
+                return true;
+            }).collect(Collectors.toList());
+            return TreeUtils.mergeTree(result1, "dataset_list");
         }
         return TreeUtils.mergeTree(result);
     }

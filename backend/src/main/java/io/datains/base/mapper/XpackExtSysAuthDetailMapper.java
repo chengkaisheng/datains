@@ -11,11 +11,11 @@ import java.util.List;
  * @Description
  */
 public interface XpackExtSysAuthDetailMapper {
-    void authDetailsChange(@Param("privilegeValue") Integer paramInteger1, @Param("privilegeType") Integer paramInteger2, @Param("authIds") List<String> paramList);
+    void authDetailsChange(@Param("privilegeValue") Integer paramInteger1, @Param("privilegeType") Integer paramInteger2, @Param("authIds") List<String> paramList, @Param("user") String user);
 
-    void authDetailsChange2(@Param("privilegeValue") Integer paramInteger1, @Param("privilegeType") Integer paramInteger2, @Param("authIds") List<String> paramList);
+    void authDetailsChange2(@Param("privilegeValue") Integer paramInteger1, @Param("authIds") List<String> paramList, @Param("user") String user);
 
-    void authDetailsChange3(@Param("privilegeValue") Integer paramInteger1, @Param("privilegeType") Integer paramInteger2, @Param("authIds") List<String> paramList);
+    void authDetailsChange3(@Param("privilegeValue") Integer paramInteger1, @Param("privilegeType") Integer paramInteger2, @Param("authIds") List<String> paramList, @Param("user") String user);
 
     void authDetailsChange4(@Param("privilegeValue") Integer paramInteger1, @Param("authIds") List<String> paramList);
 

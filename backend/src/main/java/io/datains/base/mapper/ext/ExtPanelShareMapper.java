@@ -22,6 +22,12 @@ public interface ExtPanelShareMapper {
 
     List<PanelShare> queryWithResource(PanelShareSearchRequest request);
 
+    PanelShare queryByShareId(@Param("shareId") String shareId);
+
+    List<PanelShare> queryByPanelGroupId(@Param("panelGroupId") String panelGroupId);
+
+    List<PanelShare> queryByTarget(@Param("targetId") Long targetId, @Param("targetType") Integer targetType);
+
     List<PanelShareOutDTO> queryTargets(@Param("panelId") String panelId, @Param("userName") String userName);
 
     void removeShares(@Param("request") PanelShareRemoveRequest request);

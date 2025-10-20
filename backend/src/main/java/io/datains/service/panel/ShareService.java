@@ -6,28 +6,30 @@ import io.datains.auth.api.dto.CurrentUserDto;
 import io.datains.base.domain.PanelGroup;
 import io.datains.base.domain.PanelShare;
 import io.datains.base.domain.PanelShareExample;
+import io.datains.base.domain.XpackSysAuthDetailDTO;
 import io.datains.base.mapper.PanelGroupMapper;
 import io.datains.base.mapper.PanelShareMapper;
 import io.datains.base.mapper.ext.ExtPanelShareMapper;
 import io.datains.commons.model.AuthURD;
+import io.datains.commons.model.ShareAuthInfo;
 import io.datains.commons.utils.AuthUtils;
 import io.datains.commons.utils.BeanUtils;
-import io.datains.commons.utils.CommonBeanFactory;
 import io.datains.controller.request.panel.PanelShareFineDto;
 import io.datains.controller.request.panel.PanelShareRemoveRequest;
-import io.datains.controller.request.panel.PanelShareRequest;
 import io.datains.controller.request.panel.PanelShareSearchRequest;
 import io.datains.controller.sys.base.BaseGridRequest;
 import io.datains.dto.panel.PanelShareDto;
 import io.datains.dto.panel.PanelShareOutDTO;
 import io.datains.dto.panel.PanelSharePo;
 import io.datains.service.message.DeMsgutil;
+import io.datains.service.sys.impl.AuthXpackDefaultService;
 import lombok.Data;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,6 +45,8 @@ public class ShareService {
 
     @Resource
     private ExtPanelShareMapper extPanelShareMapper;
+    @Resource
+    private AuthXpackDefaultService authXpackDefaultService;
 
     /**
      * 1.查询当前节点已经分享给了哪些目标
@@ -52,7 +56,7 @@ public class ShareService {
      * 5.批量新增
      * 6.发送取消分享消息
      * 7.发送新增分享消息
-     * 
+     *
      * @param panelShareFineDto
      */
     @Transactional
@@ -62,14 +66,30 @@ public class ShareService {
         List<Long> redShareIdLists = new ArrayList<>();// 取消的分享
 
         String panelGroupId = panelShareFineDto.getResourceId();
-        AuthURD authURD = panelShareFineDto.getAuthURD();
         AuthURD sharedAuthURD = new AuthURD();
         AuthURD addAuthURD = new AuthURD();
-
+        Set<Long> userIds = new HashSet<>();
+        Set<Long> deptIds = new HashSet<>();
+        Set<Long> roleIds = new HashSet<>();
+        if (CollectionUtils.isNotEmpty(panelShareFineDto.getShareAuthInfos())) {
+            for (ShareAuthInfo shareAuthInfo : panelShareFineDto.getShareAuthInfos()) {
+                switch (shareAuthInfo.getAuthTargetType()) {
+                    case "user":
+                        userIds.add(Long.valueOf(shareAuthInfo.getAuthTarget()));
+                        break;
+                    case "dept":
+                        deptIds.add(Long.valueOf(shareAuthInfo.getAuthTarget()));
+                        break;
+                    case "role":
+                        roleIds.add(Long.valueOf(shareAuthInfo.getAuthTarget()));
+                        break;
+                }
+            }
+        }
         Map<Integer, List<Long>> authURDMap = new HashMap<>();
-        authURDMap.put(0, authURD.getUserIds());
-        authURDMap.put(1, authURD.getRoleIds());
-        authURDMap.put(2, authURD.getDeptIds());
+        authURDMap.put(0, new ArrayList<>(userIds));
+        authURDMap.put(1, new ArrayList<>(roleIds));
+        authURDMap.put(2, new ArrayList<>(deptIds));
 
         /*
          * PanelShareExample example = new PanelShareExample();
@@ -87,7 +107,7 @@ public class ShareService {
         for (Map.Entry<Integer, List<Long>> entry : authURDMap.entrySet()) {
             Integer key = entry.getKey();
             List<TempShareNode> shareNodes;
-            if (null == typeSharedMap || null == typeSharedMap.get(key)) {
+            if (null == typeSharedMap.get(key)) {
                 shareNodes = new ArrayList<>();
             } else {
                 shareNodes = typeSharedMap.get(key);
@@ -96,8 +116,7 @@ public class ShareService {
             if (null != authURDMap.get(key)) {
                 Map<String, Object> dataMap = filterData(authURDMap.get(key), shareNodes);
                 List<Long> newIds = (List<Long>) dataMap.get("add");
-                for (int i = 0; i < newIds.size(); i++) {
-                    Long id = newIds.get(i);
+                for (Long id : newIds) {
                     PanelShare share = new PanelShare();
                     share.setCreateTime(System.currentTimeMillis());
                     share.setPanelGroupId(panelGroupId);
@@ -125,7 +144,43 @@ public class ShareService {
         if (CollectionUtils.isNotEmpty(addShares)) {
             extPanelShareMapper.batchInsert(addShares, AuthUtils.getUser().getUsername());
         }
-
+        //进行权限方面的操作
+        List<ShareAuthInfo> shareAuthInfos = panelShareFineDto.getShareAuthInfos();
+        if (CollectionUtils.isNotEmpty(shareAuthInfos)) {
+            for (ShareAuthInfo shareAuthInfo : shareAuthInfos) {
+                if (1 == shareAuthInfo.getPrivilegeValue()) {
+                    authXpackDefaultService.authAddForShare(panelGroupId,
+                            shareAuthInfo.getAuthTarget(),
+                            "panel",
+                            shareAuthInfo.getAuthTargetType(),
+                            "share",
+                            shareAuthInfo.getPrivilegeType());
+                } else {
+                    authXpackDefaultService.authDelForShare(panelGroupId,
+                            shareAuthInfo.getAuthTarget(),
+                            "panel",
+                            shareAuthInfo.getAuthTargetType(),
+                            "share",
+                            shareAuthInfo.getPrivilegeType());
+                }
+            }
+        }
+        if (CollectionUtils.isNotEmpty(redShareIdLists)) {
+            // 去除删除的分享的权限
+            for (Long shareId : redShareIdLists) {
+                for (PanelShare item : panelShares) {
+                    if (item.getShareId().equals(shareId)) {
+                        authXpackDefaultService.authDelForShare(
+                                panelGroupId,
+                                item.getTargetId().toString(),
+                                "panel",
+                                getAuthTargetType(String.valueOf(item.getType())),
+                                "share",
+                                null);
+                    }
+                }
+            }
+        }
         // 以上是业务代码
         // 下面是消息发送
         Set<Long> addUserIdSet = AuthUtils.userIdsByURD(addAuthURD);
@@ -173,11 +228,9 @@ public class ShareService {
     private Map<String, Object> filterData(List<Long> newTargets, List<TempShareNode> shareNodes) {
         Map<String, Object> result = new HashMap<>();
         List<Long> newUserIds = new ArrayList<>();
-        for (int i = 0; i < newTargets.size(); i++) {
-            Long newTargetId = newTargets.get(i);
-            Boolean isNew = true;
-            for (int j = 0; j < shareNodes.size(); j++) {
-                TempShareNode shareNode = shareNodes.get(j);
+        for (Long newTargetId : newTargets) {
+            boolean isNew = true;
+            for (TempShareNode shareNode : shareNodes) {
                 Long sharedId = shareNode.getTargetId();
                 if (newTargetId.equals(sharedId)) {
                     shareNode.setMatched(true); // 已分享 重新命中
@@ -198,7 +251,7 @@ public class ShareService {
     }
 
     @Data
-    private class TempShareNode {
+    private static class TempShareNode {
         private Long shareId;
         private Integer type;
         private Long targetId;
@@ -213,64 +266,9 @@ public class ShareService {
         return BeanUtils.copyBean(new TempShareNode(), panelShare);
     }
 
-    @Transactional
-    public void save(PanelShareRequest request) {
-        List<PanelGroup> panelGroups = queryGroup(request.getPanelIds());
-        // 1.先根据仪表板删除所有已经分享的
-        Integer type = request.getType();
-        List<String> panelIds = request.getPanelIds();
-        List<Long> targetIds = request.getTargetIds();
-        // 使用原生对象会导致事物失效 所以这里需要使用spring代理对象
-        if (CollectionUtils.isNotEmpty(panelIds)) {
-            ShareService proxy = CommonBeanFactory.getBean(ShareService.class);
-            panelIds.forEach(panelId -> proxy.delete(panelId, type));
-        }
-        if (CollectionUtils.isEmpty(targetIds))
-            return;
-
-        long now = System.currentTimeMillis();
-        List<PanelShare> shares = panelIds.stream().flatMap(panelId -> targetIds.stream().map(targetId -> {
-            PanelShare share = new PanelShare();
-            share.setCreateTime(now);
-            share.setPanelGroupId(panelId);
-            share.setTargetId(targetId);
-            share.setType(type);
-            return share;
-        })).collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(shares)) {
-            extPanelShareMapper.batchInsert(shares, AuthUtils.getUser().getUsername());
-        }
-
-        // 下面是发送提醒消息逻辑
-        Set<Long> userIdSet;
-        AuthURD authURD = new AuthURD();
-        if (type == 0) {
-            authURD.setUserIds(targetIds);
-        }
-        if (type == 1) {
-            authURD.setRoleIds(targetIds);
-        }
-        if (type == 2) {
-            authURD.setDeptIds(targetIds);
-        }
-        userIdSet = AuthUtils.userIdsByURD(authURD);
-
-        CurrentUserDto user = AuthUtils.getUser();
-        String msg = StringUtils.joinWith("，",
-                panelGroups.stream().map(PanelGroup::getName).collect(Collectors.toList()));
-        Gson gson = new Gson();
-        userIdSet.forEach(userId -> DeMsgutil.sendMsg(userId, 2L, user.getNickName() + " 分享了仪表板【" + msg + "】给您，请查收!",
-                gson.toJson(panelIds)));
-
-    }
-
-    private List<PanelGroup> queryGroup(List<String> panelIds) {
-        return panelIds.stream().map(panelGroupMapper::selectByPrimaryKey).collect(Collectors.toList());
-    }
-
     /**
      * panel_group_id建了索引 效率不会很差
-     * 
+     *
      * @param panel_group_id
      */
     @Transactional
@@ -284,13 +282,11 @@ public class ShareService {
         mapper.deleteByExample(example);
     }
 
-    public List<PanelSharePo> shareOut() {
-        return null;
-    }
-
     public List<PanelSharePo> queryShareOut() {
         String username = AuthUtils.getUser().getUsername();
-        return extPanelShareMapper.queryOut(username);
+        List<PanelSharePo> list = extPanelShareMapper.queryOut(username);
+        privilegesHandle(list);
+        return list;
     }
 
     public List<PanelShareDto> queryTree(BaseGridRequest request) {
@@ -305,6 +301,7 @@ public class ShareService {
         param.put("roleIds", roleIds);
 
         List<PanelSharePo> datas = extPanelShareMapper.query(param);
+        privilegesHandle(datas);
         List<PanelShareDto> dtoLists = datas.stream().map(po -> BeanUtils.copyBean(new PanelShareDto(), po))
                 .collect(Collectors.toList());
         return convertTree(dtoLists);
@@ -328,7 +325,39 @@ public class ShareService {
     public List<PanelShare> queryWithResource(PanelShareSearchRequest request) {
         String username = AuthUtils.getUser().getUsername();
         request.setCurrentUserName(username);
-        return extPanelShareMapper.queryWithResource(request);
+        List<PanelShare> list = extPanelShareMapper.queryWithResource(request);
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
+
+        List<String> authTargets = list.stream().map(item -> item.getTargetId().toString()).collect(Collectors.toList());
+        //拼装权限信息
+        List<XpackSysAuthDetailDTO> auth = authXpackDefaultService.selectListForShare(
+                Collections.singletonList(request.getResourceId()),
+                "panel",
+                authTargets,
+                getAuthTargetType(request.getType())
+        );
+        if (!CollectionUtils.isEmpty(auth)) {
+            //因为只有一个数据集，所以根据目标id进行分类
+            Map<String, List<XpackSysAuthDetailDTO>> authMap = auth.stream()
+                    .collect(Collectors.groupingBy(XpackSysAuthDetailDTO::getAuthTarget));
+            for (PanelShare item : list) {
+                //进行权限组装
+                Set<String> privileges = new HashSet<>();
+                if (authMap.containsKey(item.getTargetId().toString())) {
+                    //理论上一个人一个数据集只会有一组权限
+                    List<XpackSysAuthDetailDTO> auths = authMap.get(item.getTargetId().toString());
+                    for (XpackSysAuthDetailDTO a : auths) {
+                        if (a.getPrivilegeExtend() != null && 1 == a.getPrivilegeValue()) {
+                            privileges.add(a.getPrivilegeExtend());
+                        }
+                    }
+                }
+                item.setPrivileges(String.join(",", privileges));
+            }
+        }
+        return list;
     }
 
     public List<PanelShareOutDTO> queryTargets(String panelId) {
@@ -340,8 +369,68 @@ public class ShareService {
                 .collect(Collectors.toList());
     }
 
-    public void removeShares(PanelShareRemoveRequest removeRequest) {
-        extPanelShareMapper.removeShares(removeRequest);
+    public List<PanelShare> queryByTarget(Long targetId, Integer targetType) {
+        return extPanelShareMapper.queryByTarget(targetId, targetType);
     }
 
+    @Transactional
+    public void removeShares(PanelShareRemoveRequest removeRequest) {
+        List<PanelShare> list = extPanelShareMapper.queryByPanelGroupId(removeRequest.getPanelId());
+        //删除分享
+        extPanelShareMapper.removeShares(removeRequest);
+        //去除权限
+        for (PanelShare share : list) {
+            authXpackDefaultService.authDelForShare(
+                    share.getPanelGroupId(),
+                    share.getTargetId().toString(),
+                    "panel",
+                    getAuthTargetType(String.valueOf(share.getType())),
+                    "share",
+                    null);
+        }
+    }
+
+    private void privilegesHandle(List<PanelSharePo> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return;
+        }
+
+        List<String> authSources = list.stream().map(PanelSharePo::getId).collect(Collectors.toList());
+        //拼装权限信息
+        List<XpackSysAuthDetailDTO> auth = authXpackDefaultService.selectListForShare(
+                authSources,
+                "panel",
+                Collections.singletonList(AuthUtils.getUser().getUserId().toString()),
+                "user"
+        );
+        if (!CollectionUtils.isEmpty(auth)) {
+            //因为只有一个用户，所以根据数据集id进行分类
+            Map<String, List<XpackSysAuthDetailDTO>> authMap = auth.stream()
+                    .collect(Collectors.groupingBy(XpackSysAuthDetailDTO::getAuthSource));
+            for (PanelSharePo item : list) {
+                //进行权限组装
+                Set<String> privileges = new HashSet<>();
+                if (authMap.containsKey(item.getId())) {
+                    //理论上一个人一个数据集只会有一组权限
+                    List<XpackSysAuthDetailDTO> auths = authMap.get(item.getId());
+                    for (XpackSysAuthDetailDTO a : auths) {
+                        if (a.getPrivilegeExtend() != null && 1 == a.getPrivilegeValue()) {
+                            privileges.add(a.getPrivilegeExtend());
+                        }
+                    }
+                }
+                item.setPrivileges(String.join(",", privileges));
+            }
+        }
+    }
+
+    private String getAuthTargetType(String type) {
+        if ("0".equals(type)) {
+            return "user";
+        } else if ("1".equals(type)) {
+            return "role";
+        } else {
+            return "dept";
+        }
+    }
 }

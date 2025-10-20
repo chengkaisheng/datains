@@ -20,7 +20,7 @@
 
     <insert id="batchInsert" parameterType="io.datains.base.domain.PanelShare">
         INSERT INTO panel_share (panel_group_id,target_id,granter,create_time,type)
-        VALUES 
+        VALUES
         <foreach collection="shares" item="share" separator=",">
             (#{share.panelGroupId}, #{share.targetId}, #{userName}, #{share.createTime}, #{share.type})
         </foreach>
@@ -63,10 +63,10 @@
     </select>
 
     <select id="queryWithResource" parameterType="io.datains.controller.request.panel.PanelShareSearchRequest" resultMap="io.datains.base.mapper.PanelShareMapper.BaseResultMap">
-        select s.* 
+        select s.*
         from panel_share s
         left join panel_group g on g.id = s.panel_group_id
-        where 
+        where
         s.panel_group_id = #{resourceId}
          <if test="type != null">
             and s.type = #{type}
@@ -116,7 +116,22 @@
             #{deptId}
         </foreach>
     </select>
-
+    <select id="queryByShareId" resultType="io.datains.base.domain.PanelShare">
+        select *
+        from panel_share
+        where share_id = #{shareId}
+    </select>
+    <select id="queryByTarget" resultType="io.datains.base.domain.PanelShare">
+        select *
+        from panel_share
+        where target_id = #{targetId}
+          and type = #{targetType}
+    </select>
+    <select id="queryByPanelGroupId" resultType="io.datains.base.domain.PanelShare">
+        select *
+        from panel_share
+        where panel_group_id = #{panelGroupId}
+    </select>
     <delete id="removeShares" parameterType="io.datains.controller.request.panel.PanelShareRemoveRequest">
         delete from panel_share
         where panel_group_id = #{request.panelId}

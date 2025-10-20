@@ -128,6 +128,22 @@
             #{deptId}
         </foreach>
     </select>
+    <select id="queryByShareId" resultType="io.datains.base.domain.DatasetShare">
+        select *
+        from dataset_share
+        where share_id = #{shareId}
+    </select>
+    <select id="queryByTarget" resultType="io.datains.base.domain.DatasetShare">
+        select *
+        from dataset_share
+        where target_id = #{targetId}
+          and type = #{targetType}
+    </select>
+    <select id="queryByDatasetId" resultType="io.datains.base.domain.DatasetShare">
+        select *
+        from dataset_share
+        where dataset_id = #{datasetId}
+    </select>
 
     <delete id="removeShares" parameterType="io.datains.controller.request.dataset.DatasetShareRemoveRequest">
         delete from dataset_share

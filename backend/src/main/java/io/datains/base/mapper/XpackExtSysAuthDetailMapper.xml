@@ -38,7 +38,8 @@
 
     <update id="authDetailsChange">
         UPDATE sys_auth_detail
-        SET privilege_value = #{privilegeValue}
+        SET privilege_value = #{privilegeValue},
+        create_user = #{user}
         <where>
             auth_id in
             <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
@@ -53,20 +54,17 @@
             </if>
         </where>
     </update>
-
     <update id="authDetailsChange2">
         UPDATE sys_auth_detail
-        SET privilege_value = #{privilegeValue}
-        <where>
-            auth_id in
-            <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
-            and privilege_type = #{privilegeType}
-        </where>
+        SET privilege_value = #{privilegeValue},
+        create_user = #{user}
+        where auth_id in
+        <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
     </update>
-
     <update id="authDetailsChange3">
         UPDATE sys_auth_detail
-        SET privilege_value = #{privilegeValue}
+        SET privilege_value = #{privilegeValue},
+        create_user = #{user}
         <where>
             auth_id in
             <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
@@ -102,14 +100,16 @@
     </update>
     <update id="authDetailsChange4">
         UPDATE sys_auth_detail
-        SET privilege_value = #{privilegeValue}
+        SET privilege_value = #{privilegeValue},
+        create_user = 'dept'
         where auth_id in
         <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
         and privilege_name != 'i18n_auth_export'
     </update>
     <update id="authDetailsChange5">
         UPDATE sys_auth_detail
-        SET privilege_value = #{privilegeValue}
+        SET privilege_value = #{privilegeValue},
+        create_user = 'auto'
         where auth_id in
         <foreach collection='authIds' item='authId' open='(' separator=',' close=')'>#{authId}</foreach>
     </update>
@@ -122,6 +122,7 @@
         <foreach collection='authSources' item='authSource' open='(' separator=',' close=')'>#{authSource}</foreach>
         and sa.auth_target = #{userId}
         and sa.auth_target_type = 'user'
+        and sad.create_user = 'dept'
         )
     </update>
 </mapper>

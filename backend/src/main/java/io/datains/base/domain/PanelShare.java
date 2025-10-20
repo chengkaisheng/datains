@@ -1,9 +1,9 @@
 package io.datains.base.domain;
 
-import java.io.Serializable;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 public class PanelShare implements Serializable {
@@ -17,6 +17,7 @@ public class PanelShare implements Serializable {
     private Long createTime;
     @ApiModelProperty("类型")
     private Integer type;
-
+    @ApiModelProperty("权限")
+    private String privileges;
     private static final long serialVersionUID = 1L;
 }
