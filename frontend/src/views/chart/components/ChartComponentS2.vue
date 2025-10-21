@@ -215,7 +215,8 @@ export default {
         const attr = JSON.parse(this.chart.customAttr)
         this.currentPage.pageSize = this.pageChangeFlag ? this.currentPage.pageSize : parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         datas = this.processData(this.fields, JSON.parse(JSON.stringify(this.chart.data.tableRow)))
-        if ((this.chart.type === 'table-info' || this.chart.type === 'table-pivot') && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
+        //  && this.chart.totalItems > this.currentPage.pageSize // 即使只有一页也显示分页
+        if ((this.chart.type === 'table-info' || this.chart.type === 'table-pivot') && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode)) {
           this.currentPage.show = this.chart.totalItems
           this.showPage = true
           // 前端计算分页

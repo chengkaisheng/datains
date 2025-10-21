@@ -20,7 +20,7 @@
           <!-- <el-button size="mini" @click="cancel">
             {{ $t("dataset.cancel") }}
           </el-button> -->
-          <el-button v-if="param.type !== 'datasetShare'" size="mini" type="primary" @click="save">
+          <el-button v-if="hasDataPermission('manage', param.privileges)" size="mini" type="primary" @click="save">
             <!-- {{ $t("dataset.confirm") }} -->保存
           </el-button>
         </el-row>
@@ -75,7 +75,8 @@ export default {
       isMaskShow: false,
       name: '',
       file: null,
-      showLuckysheet: false
+      showLuckysheet: false,
+      params: null
     }
   },
   watch: {
@@ -100,6 +101,7 @@ export default {
         post('/dataset/table/getWithPermission/' + this.param.id, null)
           .then((response) => {
             this.getFile(response.data.info)
+            this.params = response.data
             // this.init(JSON.parse(this.fromBase64(response.data.info)));
           })
           .catch((res) => {
@@ -146,17 +148,26 @@ export default {
           // 添加只读模式配置
           showtoolbar: !this.isReadOnly, // 是否显示工具栏
           showinfobar: !this.isReadOnly, // 是否显示信息栏
-          allowEdit: this.param.type === 'datasetShare' ? false : !this.isReadOnly, // 是否允许编辑
-          enableAddRow: this.param.type === 'datasetShare' ? false : !this.isReadOnly, // 是否允许添加行
-          enableAddCol: this.param.type === 'datasetShare' ? false : !this.isReadOnly, // 是否允许添加列
+          allowEdit: this.hasDataPermission('manage', this.param.privileges), // 是否允许编辑
+          enableAddRow: this.hasDataPermission('manage', this.param.privileges), // 是否允许添加行
+          enableAddCol: this.hasDataPermission('manage', this.param.privileges), // 是否允许添加列
           allowCopy: 0,
-          authority: this.param.type === 'datasetShare' ? { // 权限配置 只读模式下可以使用 工具栏的筛选排序功能 单元格不可配置
+          authority: this.hasDataPermission('manage', this.param.privileges) ? { // 权限配置 只读模式下可以使用 工具栏的筛选排序功能 单元格不可配置
             sheet: true,
             filter: 1
           } : null
         })
         this.exportXlsx()
       })
+    },
+    hasDataPermission(pTarget, pSource) {
+      if (this.$store.state.user.user.isAdmin) {
+        return true
+      }
+      if (pSource && pTarget) {
+        return pSource.indexOf(pTarget) > -1
+      }
+      return false
     },
 
     exportXlsx() {
@@ -357,9 +368,9 @@ export default {
       //   "info",
       //   this.toBase64(JSON.stringify(luckysheet.getAllSheets()))
       // );
-      formData.append('id', this.param.id || '')
-      formData.append('name', this.param.name || '')
-      formData.append('sceneId', this.param.pid || '')
+      formData.append('id', this.params.id || '')
+      formData.append('name', this.params.name || '')
+      formData.append('sceneId', this.params.sceneId || '')
       formData.append('type', 'onLineExcel')
       post('/dataset/table/save/onLineExcel', formData).then((response) => {
         this.$emit('saveSuccess', {})

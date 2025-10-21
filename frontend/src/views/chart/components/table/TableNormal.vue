@@ -324,8 +324,8 @@ export default {
           this.fields,
           JSON.parse(JSON.stringify(this.chart.data.tableRow))
         )
-
-        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
+        //  && this.chart.totalItems > this.currentPage.pageSize // 分页只有一页时依然显示分页
+        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode)) {
           this.currentPage.show = this.chart.totalItems
           this.showPage = true
           // 前端计算分页
