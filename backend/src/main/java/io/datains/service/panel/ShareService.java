@@ -10,6 +10,7 @@ import io.datains.base.domain.XpackSysAuthDetailDTO;
 import io.datains.base.mapper.PanelGroupMapper;
 import io.datains.base.mapper.PanelShareMapper;
 import io.datains.base.mapper.ext.ExtPanelShareMapper;
+import io.datains.commons.constants.AuthConstants;
 import io.datains.commons.model.AuthURD;
 import io.datains.commons.model.ShareAuthInfo;
 import io.datains.commons.utils.AuthUtils;
@@ -21,6 +22,7 @@ import io.datains.controller.sys.base.BaseGridRequest;
 import io.datains.dto.panel.PanelShareDto;
 import io.datains.dto.panel.PanelShareOutDTO;
 import io.datains.dto.panel.PanelSharePo;
+import io.datains.listener.util.CacheUtils;
 import io.datains.service.message.DeMsgutil;
 import io.datains.service.sys.impl.AuthXpackDefaultService;
 import lombok.Data;
@@ -145,6 +147,8 @@ public class ShareService {
             extPanelShareMapper.batchInsert(addShares, AuthUtils.getUser().getUsername());
         }
         //进行权限方面的操作
+        //清理权限缓存
+        CacheUtils.removeAll(AuthConstants.USER_PANEL_NAME);
         List<ShareAuthInfo> shareAuthInfos = panelShareFineDto.getShareAuthInfos();
         if (CollectionUtils.isNotEmpty(shareAuthInfos)) {
             for (ShareAuthInfo shareAuthInfo : shareAuthInfos) {
@@ -192,15 +196,15 @@ public class ShareService {
 
         List<String> msgParam = new ArrayList<>();
         msgParam.add(panelGroupId);
-        addUserIdSet.forEach(userId -> {
-            if (!redUserIdSet.contains(userId) && !user.getUserId().equals(userId)) {
-                DeMsgutil.sendMsg(userId, 2L, user.getNickName() + " 分享了仪表板【" + msg + "】，请查收!", gson.toJson(msgParam));
+        addUserIdSet.forEach(i -> {
+            if (!redUserIdSet.contains(i) && !user.getUserId().equals(i)) {
+                DeMsgutil.sendMsg(i, 2L, user.getNickName() + " 分享了仪表板【" + msg + "】，请查收!", gson.toJson(msgParam));
             }
         });
 
-        redUserIdSet.forEach(userId -> {
-            if (!addUserIdSet.contains(userId) && !user.getUserId().equals(userId)) {
-                DeMsgutil.sendMsg(userId, 3L, user.getNickName() + " 取消分享了仪表板【" + msg + "】，请查收!",
+        redUserIdSet.forEach(i -> {
+            if (!addUserIdSet.contains(i) && !user.getUserId().equals(i)) {
+                DeMsgutil.sendMsg(i, 3L, user.getNickName() + " 取消分享了仪表板【" + msg + "】，请查收!",
                         gson.toJson(msgParam));
             }
         });
@@ -379,6 +383,8 @@ public class ShareService {
         //删除分享
         extPanelShareMapper.removeShares(removeRequest);
         //去除权限
+        //清理权限缓存
+        CacheUtils.removeAll(AuthConstants.USER_PANEL_NAME);
         for (PanelShare share : list) {
             authXpackDefaultService.authDelForShare(
                     share.getPanelGroupId(),

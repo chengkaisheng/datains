@@ -8,6 +8,7 @@ import io.datains.base.domain.DatasetTable;
 import io.datains.base.domain.XpackSysAuthDetailDTO;
 import io.datains.base.mapper.DatasetTableMapper;
 import io.datains.base.mapper.ext.ExtDatasetShareMapper;
+import io.datains.commons.constants.AuthConstants;
 import io.datains.commons.model.AuthURD;
 import io.datains.commons.model.ShareAuthInfo;
 import io.datains.commons.utils.AuthUtils;
@@ -18,6 +19,7 @@ import io.datains.controller.request.dataset.DatasetShareSearchRequest;
 import io.datains.dto.dataset.DatasetShareDto;
 import io.datains.dto.dataset.DatasetShareOutDTO;
 import io.datains.dto.dataset.DatasetSharePo;
+import io.datains.listener.util.CacheUtils;
 import io.datains.service.message.DeMsgutil;
 import io.datains.service.sys.impl.AuthXpackDefaultService;
 import lombok.Data;
@@ -134,6 +136,8 @@ public class DatasetShareService {
             extDatasetShareMapper.batchInsert(addShares, AuthUtils.getUser().getUsername());
         }
         //进行权限方面的操作
+        //删除权限缓存
+        CacheUtils.removeAll(AuthConstants.USER_DATASET_NAME);
         List<ShareAuthInfo> shareAuthInfos = datasetShareFineDto.getShareAuthInfos();
         if (CollectionUtils.isNotEmpty(shareAuthInfos)) {
             for (ShareAuthInfo shareAuthInfo : shareAuthInfos) {
@@ -181,15 +185,15 @@ public class DatasetShareService {
 
         List<String> msgParam = new ArrayList<>();
         msgParam.add(datasetId);
-        addUserIdSet.forEach(userId -> {
-            if (!redUserIdSet.contains(userId) && !user.getUserId().equals(userId)) {
-                DeMsgutil.sendMsg(userId, 10L, user.getNickName() + " 分享了数据集【" + msg + "】，请查收!", gson.toJson(msgParam));
+        addUserIdSet.forEach(i -> {
+            if (!redUserIdSet.contains(i) && !user.getUserId().equals(i)) {
+                DeMsgutil.sendMsg(i, 10L, user.getNickName() + " 分享了数据集【" + msg + "】，请查收!", gson.toJson(msgParam));
             }
         });
 
-        redUserIdSet.forEach(userId -> {
-            if (!addUserIdSet.contains(userId) && !user.getUserId().equals(userId)) {
-                DeMsgutil.sendMsg(userId, 11L, user.getNickName() + " 取消分享了数据集【" + msg + "】，请查收!",
+        redUserIdSet.forEach(i -> {
+            if (!addUserIdSet.contains(i) && !user.getUserId().equals(i)) {
+                DeMsgutil.sendMsg(i, 11L, user.getNickName() + " 取消分享了数据集【" + msg + "】，请查收!",
                         gson.toJson(msgParam));
             }
         });
@@ -362,6 +366,8 @@ public class DatasetShareService {
         //删除分享
         extDatasetShareMapper.removeShares(removeRequest);
         //去除权限
+        //删除权限缓存
+        CacheUtils.removeAll(AuthConstants.USER_DATASET_NAME);
         for (DatasetShare datasetShare : list) {
             authXpackDefaultService.authDelForShare(
                     datasetShare.getDatasetId(),

@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class DePermissionAnnotationHandler {
 
     @Around(value = "@annotation(io.datains.auth.annotation.DePermissions)")
-    public Object PermissionsAround(ProceedingJoinPoint point) throws Throwable{
+    public Object PermissionsAround(ProceedingJoinPoint point) throws Throwable {
 
         if (AuthUtils.getUser().getIsAdmin()) {
             return point.proceed(point.getArgs());
@@ -78,7 +78,7 @@ public class DePermissionAnnotationHandler {
     }
 
     @Around(value = "@annotation(io.datains.auth.annotation.DePermission)")
-    public Object PermissionAround(ProceedingJoinPoint point) throws Throwable{
+    public Object PermissionAround(ProceedingJoinPoint point) throws Throwable {
         Boolean access = false;
         try {
             if (AuthUtils.getUser().getIsAdmin()) {
@@ -115,7 +115,7 @@ public class DePermissionAnnotationHandler {
             boolean permissionValid = resourceIds.contains(arg);
             if (permissionValid)
                 return true;
-            throw new UnauthorizedException("Subject does not have permission[" + annotation.level().name() + ":"
+            throw new UnauthorizedException("用户没有相应的权限 [" + annotation.level().getName() + ":"
                     + annotation.type() + ":" + arg + "]");
         } else if (isArray(parameterType)) {
             for (int i = 0; i < Array.getLength(arg); i++) {

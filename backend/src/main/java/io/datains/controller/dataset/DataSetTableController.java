@@ -64,10 +64,8 @@ public class DataSetTableController {
         }
     }
 
-    @DePermissions(value = {
-            @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE),
-            @DePermission(type = DePermissionType.DATASET, value = "sceneId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
-    }, logical = Logical.AND)
+
+    @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("新增在线表格")
     @PostMapping("save/onLineExcel")
     public void saveOnLineExcel(DataSetOnLineExcelRequest datasetTable) {
