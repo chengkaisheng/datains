@@ -1009,7 +1009,7 @@ export default {
     async clickAuth(node, data, auth) {
       console.log(node, data, auth)
       if (auth && auth.isShared) {
-        this.$confirm('权限变更将同步修改分享授权, 是否继续?', '提示', {
+        this.$confirm('权限变更将修改分享授权, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

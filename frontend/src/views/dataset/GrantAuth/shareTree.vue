@@ -168,7 +168,7 @@ export default {
         datasetId: node.id
       }
 
-      this.$confirm(this.$t('panel.remove_share_confirm'), '', {
+      this.$confirm('确认取消当前数据集所有分享？', '', {
         confirmButtonText: this.$t('commons.confirm'),
         cancelButtonText: this.$t('commons.cancel'),
         type: 'warning'

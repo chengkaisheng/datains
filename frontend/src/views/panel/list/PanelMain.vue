@@ -104,7 +104,11 @@ export default {
       })
     },
     editPanel() {
-      this.$refs.panelList.editFromPanelViewShow()
+      if (this.activeName === 'PanelList') {
+        this.$refs.panelList.editFromPanelViewShow()
+      } else if (this.activeName === 'panels_share') {
+        this.$refs.share_tree.editFromPanelViewShow()
+      }
     }
 
   }

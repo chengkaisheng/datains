@@ -92,7 +92,7 @@ export default {
       })
     },
     cancel() {
-      this.$refs[this.activeName].cancel()
+      // this.$refs[this.activeName].cancel()
       this.$emit('close-grant', 0)
     }
   }

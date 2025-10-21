@@ -109,7 +109,6 @@ import proportion from 'vue-proportion-directive'
 Vue.use(proportion)
 
 Vue.prototype.hasDataPermission = function(pTarget, pSource) {
-  // debugger
   if (this.$store.state.user.user.isAdmin) {
     return true
   }

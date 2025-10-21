@@ -130,9 +130,16 @@ export default {
     this.queryTreeDatas()
   },
   methods: {
+    // filterNode(value, data) {
+    //   if (!value) return true
+    //   return data.name.indexOf(value) !== -1
+    // },
     filterNode(value, data) {
       if (!value) return true
-      return data.name.indexOf(value) !== -1
+      const key = String(value).toLowerCase()
+      const name = String(data.name || '').toLowerCase()
+      const id = String(data.id || '').toLowerCase()
+      return name.includes(key) || id.includes(key)
     },
     showSearchWidget() {
       this.showSearchInput = true

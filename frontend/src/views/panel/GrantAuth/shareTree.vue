@@ -52,6 +52,10 @@ import { loadTree, loadShareOutTree, removeShares } from '@/api/panel/share'
 import { uuid } from 'vue-uuid'
 import { initPanelData } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
+import { deepCopy } from '@/components/canvas/utils/utils'
+import {
+  DEFAULT_COMMON_CANVAS_STYLE_STRING
+} from '@/views/panel/panel'
 import bus from '@/utils/bus'
 export default {
   name: 'ShareTree',
@@ -69,12 +73,21 @@ export default {
         label: 'name'
       },
       expandNodes: [],
-      outDatas: []
+      outDatas: [],
+      lastActiveNode: null,
+      lastActiveNodeData: null
     }
   },
   computed: {
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    }
+  },
+  watch: {
+    '$store.state.panel.mainActiveName': function(newVal, oldVal) {
+      if (newVal === 'PanelMain' && this.lastActiveNode && this.lastActiveNodeData) {
+        this.activeNodeAndClickOnly(this.lastActiveNodeData)
+      }
     }
   },
   created() {
@@ -103,16 +116,65 @@ export default {
     initOutData() {
       return loadShareOutTree()
     },
-    handleNodeClick(data) {
+    // handleNodeClick(data) {
+    //   if (!data || !data.userId || !data.id) {
+    //     return
+    //   }
+    //   const param = { userId: data.userId }
+    //   proxyInitPanelData(data.id, param, function() {
+    //     bus.$emit('set-panel-show-type', 1)
+    //     // bus.$emit('set-panel-show-type', 0)
+    //     bus.$emit('set-panel-share-user', data.userId)
+    //   })
+    //   this.$refs['botTree'].setCurrentKey(null)
+    // },
+    handleNodeClick(data, node) {
       if (!data || !data.userId || !data.id) {
         return
       }
-      const param = { userId: data.userId }
-      proxyInitPanelData(data.id, param, function() {
-        bus.$emit('set-panel-show-type', 1)
-        bus.$emit('set-panel-share-user', data.userId)
+      this.lastActiveNode = node
+      this.lastActiveNodeData = data
+      this.$store.commit('setComponentDataCache', null)
+      initPanelData(data.id, function(response) {
+        bus.$emit('set-panel-show-type', 0)
       })
-      this.$refs['botTree'].setCurrentKey(null)
+    },
+    edit(data, node) {
+      this.lastActiveNodeData = data
+      this.lastActiveNode = node
+      // 清空当前缓存,快照
+      this.$store.commit('refreshSnapshot')
+      this.$store.commit('setComponentData', [])
+      if (this.isPanelStyle) {
+        const canvasStyle = deepCopy(DEFAULT_COMMON_CANVAS_STYLE_STRING)
+        canvasStyle.width = this.panelStyleData.canvasWidth
+        canvasStyle.height = this.panelStyleData.canvasHeight
+        canvasStyle.refreshViewLoading = this.panelStyleData.refreshViewLoading
+        canvasStyle.refreshUnit = this.panelStyleData.refreshUnit
+        canvasStyle.refreshTime = this.panelStyleData.refreshTime
+        canvasStyle.panel = this.panelStyleData.panel
+        this.$store.commit('setCanvasStyle', canvasStyle)
+      } else {
+        this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
+      }
+      this.$store.dispatch('panel/setPanelInfo', data)
+      bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
+    },
+    editFromPanelViewShow() {
+      this.edit(this.lastActiveNodeData, this.lastActiveNode)
+    },
+    activeNodeAndClickOnly(panelInfo) {
+      if (panelInfo) {
+        this.$nextTick(() => {
+          // 延迟设置 CurrentKey
+          this.$refs.topTree.setCurrentKey(panelInfo.id)
+          // 去除 bottomTree 的 影响
+          this.$refs.botTree.setCurrentKey(null)
+          this.$nextTick(() => {
+            document.querySelector('.is-current').firstChild.click()
+          })
+        })
+      }
     },
     viewMyShare(data) {
       initPanelData(data.id, function() {

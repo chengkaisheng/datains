@@ -801,23 +801,54 @@ export default {
       this.tGroup = val
       this.groupMoveConfirmDisabled = false
     },
+    // filterNode(value, data) {
+    //   if (!value) return true
+    //   if (this.searchType === 'folder') {
+    //     if (data.nodeType === 'folder' && data.label.indexOf(value) !== -1) {
+    //       this.searchPids.push(data.id)
+    //       return true
+    //     }
+    //     if (this.searchPids.indexOf(data.pid) !== -1) {
+    //       if (data.nodeType === 'folder') {
+    //         this.searchPids.push(data.id)
+    //       }
+    //       return true
+    //     }
+    //   } else {
+    //     return data.label.indexOf(value) !== -1
+    //   }
+    //   return false
+    // },
     filterNode(value, data) {
       if (!value) return true
+
+      // 统一转字符串，避免数字匹配失败
+      const key = String(value).toLowerCase()
+      const label = String(data.label || '').toLowerCase()
+      const id = String(data.id || '').toLowerCase()
+
+      // 命中 label 或 id 任意一个即可
+      const hit = label.includes(key) || id.includes(key)
+
       if (this.searchType === 'folder') {
-        if (data.nodeType === 'folder' && data.label.indexOf(value) !== -1) {
+        // 1. 当前节点是 folder 且命中 → 记录 pid 并展示
+        if (data.nodeType === 'folder' && hit) {
           this.searchPids.push(data.id)
           return true
         }
-        if (this.searchPids.indexOf(data.pid) !== -1) {
+        // 2. 父节点已命中 → 展示当前节点（folder 继续记录 pid）
+        if (this.searchPids.includes(data.pid)) {
           if (data.nodeType === 'folder') {
             this.searchPids.push(data.id)
           }
           return true
         }
-      } else {
-        return data.label.indexOf(value) !== -1
+        // 3. 未命中也不展开
+        return false
       }
-      return false
+
+      // 普通模式：只判断命中
+      return hit
     },
     searchTypeClick(searchTypeInfo) {
       this.searchType = searchTypeInfo
