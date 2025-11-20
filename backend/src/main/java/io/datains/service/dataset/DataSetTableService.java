@@ -838,9 +838,15 @@ public class DataSetTableService {
                 DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
             }
             try {
-                datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
-                        Integer.valueOf(dataSetTableRequest.getRow()), false, ds, customFilter));
-                dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
+                int total = 0;
+                String sqlTmp = datasourceRequest.getQuery();
+                datasourceRequest.setQuery("SELECT COUNT(*) from (" + qp.createQuerySQL(table, fields, false, ds, customFilter) + ") COUNT_TEMP");
+                List<String[]> count = jdbcProvider.getData(datasourceRequest);
+                if (count != null && !count.isEmpty()) {
+                    total = Integer.parseInt(count.get(0)[0]);
+                }
+                dataSetPreviewPage.setTotal(total);
+                datasourceRequest.setQuery(sqlTmp);
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());

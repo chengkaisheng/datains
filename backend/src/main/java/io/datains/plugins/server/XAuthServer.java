@@ -45,7 +45,7 @@ public class XAuthServer {
         return sysAuthService.searchAuthDetails(request);
     }
 
-    @RequiresPermissions("auth:read")
+//    @RequiresPermissions("auth:read")
     @GetMapping("/authDetailsModel/{authType}")
     @I18n
     public List<XpackSysAuthDetail> authDetailsModel(@PathVariable String authType) {

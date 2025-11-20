@@ -139,6 +139,14 @@ public class DorisQueryProvider extends QueryProvider {
                         .fieldName(fieldName)
                         .fieldAlias(fieldAlias)
                         .build());
+                // 处理排序
+                if (StringUtils.isNotEmpty(f.getSort()) && !StringUtils.equalsIgnoreCase(f.getSort(), "none")) {
+                    xOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection(f.getSort())
+                            .build());
+                }
             }
         }
 
@@ -151,6 +159,14 @@ public class DorisQueryProvider extends QueryProvider {
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
+        if (CollectionUtils.isEmpty(xOrders)) {
+            xOrders.add(SQLObj.builder()
+                    .orderField(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
+                    .orderAlias(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
+                    .orderDirection("ASC")
+                    .build());
+        }
+        st_sql.add("orders", xOrders);
 
         return st_sql.render();
     }

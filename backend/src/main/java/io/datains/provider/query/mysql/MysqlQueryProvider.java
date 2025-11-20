@@ -251,7 +251,14 @@ public class MysqlQueryProvider extends QueryProvider {
                     originField = calcFieldRegex(y.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
                     originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
-                } else {
+                }
+//                else if (ObjectUtils.isNotEmpty(y.getProportionOne()) && ObjectUtils.isNotEmpty(y.getProportionTwo())) {
+//                    List<DatasetTableField> allFields = getTableFieldListByIds(yAxis.get(0).getTableId());
+//                    DatasetTableField one = allFields.stream().filter(item -> StringUtils.equals(item.getDatainsName(), y.getProportionOne())).findFirst().orElse(null);
+//                    DatasetTableField two = allFields.stream().filter(item -> StringUtils.equals(item.getDatainsName(), y.getProportionTwo())).findFirst().orElse(null);
+//                    originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), one.getOriginName()) + "/" + String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), two.getOriginName()) + "*100";
+//                }
+                else {
                     originField = String.format(MySQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);

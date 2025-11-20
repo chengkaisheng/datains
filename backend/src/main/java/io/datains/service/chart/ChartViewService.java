@@ -378,6 +378,7 @@ public class ChartViewService {
             List<ChartViewFieldDTO> xAxisExt = new Gson().fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
             }.getType());
             xAxis.addAll(xAxisExt);
+            fieldOrder(requestList, xAxisExt);
         }
         List<ChartViewFieldDTO> yAxis = new Gson().fromJson(view.getYAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
@@ -386,6 +387,7 @@ public class ChartViewService {
             List<ChartViewFieldDTO> yAxisExt = new Gson().fromJson(view.getYAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
             }.getType());
             yAxis.addAll(yAxisExt);
+            fieldOrder(requestList, yAxisExt);
         }
 
         List<ChartViewFieldDTO> extStack = new Gson().fromJson(view.getExtStack(), new TypeToken<List<ChartViewFieldDTO>>() {
