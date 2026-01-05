@@ -121,13 +121,13 @@ public class DmExtDDLProvider extends DefaultExtDDLProvider {
                 str.append(") ");
                 break;
             case number:
-                str.append("BIGINT(");
-                if (field.getSize() != null && field.getSize() > 0) {
-                    str.append(field.getSize());
-                } else {
-                    str.append(20);
-                }
-                str.append(") ");
+                str.append("BIGINT");
+//                if (field.getSize() != null && field.getSize() > 0) {
+//                    str.append(field.getSize());
+//                } else {
+//                    str.append(20);
+//                }
+//                str.append(") ");
                 break;
             case decimal:
                 str.append("DECIMAL(");

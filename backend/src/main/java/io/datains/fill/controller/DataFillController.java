@@ -14,20 +14,20 @@ import io.datains.fill.entry.DataFillFormWithBLOBs;
 import io.datains.fill.request.*;
 import io.datains.fill.response.DataFillFormTableDataResponse;
 import io.datains.fill.service.*;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.util.*;
 
-@ApiIgnore
 @RequestMapping("dataFilling")
 @RestController
+@Api("表单管理")
 public class DataFillController {
 
     @Resource
@@ -39,7 +39,7 @@ public class DataFillController {
     @Resource
     private DataFillDataService dataFillDataService;
 
-    @ApiIgnore
+    @ApiOperation("查询")
     @PostMapping("/form/selectForm/{goPage}/{pageSize}")
     public Pager<List<DataFillFormDTO>> selectForm(@PathVariable int goPage, @PathVariable int pageSize,
                                                    @RequestBody DataFillFormRequest request) {
@@ -47,10 +47,10 @@ public class DataFillController {
         return PageUtils.setPageInfo(page, dataFillService.selectForm(request));
     }
 
-    @ApiIgnore
+    @ApiOperation("创建")
     @PostMapping("/form/save")
     public ResultHolder saveForm(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
-        if (dataFillForm.getName() == null || dataFillForm.getName().isEmpty()){
+        if (dataFillForm.getName() == null || dataFillForm.getName().isEmpty()) {
             return ResultHolder.error("表单名称不能为空");
         }
         if ("selfReport".equals(dataFillForm.getNodeType()) || "selfReport_template".equals(dataFillForm.getNodeType())) {
@@ -64,25 +64,25 @@ public class DataFillController {
         }
     }
 
-    @ApiIgnore
+    @ApiOperation("更新名称")
     @PostMapping("/form/updateName")
     public ResultHolder updateFormName(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
         return dataFillService.updateForm(dataFillForm, null);
     }
 
-    @ApiIgnore
+    @ApiOperation("更新")
     @PostMapping("/form/update")
     public ResultHolder updateForm(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
         return dataFillService.updateForm(dataFillForm);
     }
 
-    @ApiIgnore
+    @ApiOperation("更新状态")
     @GetMapping("/form/updateStatus")
     public void updateFormStatus(@RequestParam("id") String id, @RequestParam("status") Integer status) throws Exception {
         dataFillService.updateFormStatus(id, status);
     }
 
-    @ApiIgnore
+    @ApiOperation("移动")
     @PostMapping("/form/move")
     public ResultHolder moveForm(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
         return dataFillService.updateForm(dataFillForm, "move");
@@ -93,12 +93,13 @@ public class DataFillController {
         return dataFillService.getWithPrivileges(id);
     }
 
+    @ApiOperation("获取详情")
     @PostMapping("/form/get/{id}")
     public DataFillFormWithBLOBs get(@PathVariable String id) throws Exception {
         return dataFillService.get(id);
     }
 
-    @ApiIgnore
+    @ApiOperation("删除")
     @PostMapping("/form/delete/{id}")
     public void deleteForm(@PathVariable String id) throws Exception {
         dataFillService.deleteForm(id);
@@ -110,39 +111,39 @@ public class DataFillController {
         return dataFillService.tree(request);
     }
 
-    @ApiIgnore
+    @ApiOperation("获取表单填报数据")
     @PostMapping("/form/{id}/tableData")
     public DataFillFormTableDataResponse tableData(@PathVariable String id, @RequestBody DataFillFormTableDataRequest request) throws Exception {
         request.setId(id);
         return dataFillDataService.listData(request);
     }
 
-    @ApiIgnore
+    @ApiOperation("获取字段")
     @PostMapping("/form/fields/{id}")
     public List<ExtTableField> listFields(@PathVariable String id) throws Exception {
         return dataFillService.listFields(id);
     }
 
-    @ApiIgnore
+    @ApiOperation("删除数据")
     @PostMapping("/form/{formId}/delete/{id}")
     public void deleteRowData(@PathVariable String formId, @PathVariable String id) throws Exception {
         dataFillDataService.deleteRowData(formId, id);
     }
 
-    @ApiIgnore
+    @ApiOperation("新增数据")
     @PostMapping("/form/{formId}/rowData/save")
     public String newRowData(@PathVariable String formId, @RequestBody Map<String, Object> data) throws Exception {
         return dataFillDataService.updateOrInsertRowData(formId, Collections.singletonList(new RowDataDatum().setData(data))).get(0);
     }
 
-    @ApiIgnore
+    @ApiOperation("新增数据")
     @PostMapping("/form/{formId}/rowData/save/{id}")
     public String updateRowData(@PathVariable String formId, @PathVariable String id, @RequestBody Map<String, Object> data) throws Exception {
         return dataFillDataService.updateOrInsertRowData(formId, Collections.singletonList(new RowDataDatum().setId(id).setData(data))).get(0);
     }
 
 
-    @ApiIgnore
+    @ApiOperation("查询日志")
     @PostMapping("/form/{formId}/commitLog/{goPage}/{pageSize}")
     public Pager<List<DataFillCommitLogDTO>> commitLogs(@PathVariable String formId, @PathVariable int goPage, @PathVariable int pageSize, @RequestBody DataFillCommitLogSearchRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
@@ -151,7 +152,7 @@ public class DataFillController {
         return PageUtils.setPageInfo(page, logs);
     }
 
-    @ApiIgnore
+    @ApiOperation("查询任务")
     @PostMapping("/form/{formId}/task/{goPage}/{pageSize}")
     public Pager<List<DataFillTaskDTO>> tasks(@PathVariable String formId, @PathVariable int goPage, @PathVariable int pageSize, @RequestBody DataFillTaskSearchRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
@@ -160,7 +161,7 @@ public class DataFillController {
         return PageUtils.setPageInfo(page, tasks);
     }
 
-    @ApiIgnore
+    @ApiOperation("保存任务")
     @PostMapping("/form/{formId}/task/save")
     public void saveTask(@PathVariable String formId, @RequestBody DataFillTaskSearchRequest request) throws Exception {
 
@@ -168,7 +169,7 @@ public class DataFillController {
 
     }
 
-    @ApiIgnore
+    @ApiOperation("删除任务")
     @PostMapping("/form/task/{taskId}/delete")
     public void deleteTask(@PathVariable Long taskId) {
 
@@ -176,7 +177,7 @@ public class DataFillController {
 
     }
 
-    @ApiIgnore
+    @ApiOperation("开启任务")
     @PostMapping("/form/task/{taskId}/enable")
     public void enableTask(@PathVariable Long taskId) throws Exception {
 
@@ -184,7 +185,7 @@ public class DataFillController {
 
     }
 
-    @ApiIgnore
+    @ApiOperation("关闭任务")
     @PostMapping("/form/task/{taskId}/disable")
     public void disableTask(@PathVariable Long taskId) throws Exception {
 
@@ -192,7 +193,7 @@ public class DataFillController {
 
     }
 
-    @ApiIgnore
+    @ApiOperation("查询我的任务")
     @PostMapping("/myTask/{type}/{goPage}/{pageSize}")
     public Pager<List<DataFillUserTaskDTO>> userTasks(@PathVariable String type, @PathVariable int goPage, @PathVariable int pageSize, @RequestBody DataFillUserTaskSearchRequest request) {
         Long userId = AuthUtils.getUser().getUserId();
@@ -203,13 +204,13 @@ public class DataFillController {
     }
 
 
-    @ApiIgnore
+    @ApiOperation("我的任务")
     @PostMapping("/myTask/fill/{taskId}")
     public void userFillData(@PathVariable String taskId, @RequestBody List<Map<String, Object>> data) throws Exception {
         dataFillService.fillFormData(taskId, data);
     }
 
-    @ApiIgnore
+    @ApiOperation("下载模版")
     @PostMapping("/form/{formId}/excel/template")
     public void getExcelTemplate(@PathVariable String formId, HttpServletResponse response) throws Exception {
         try {
@@ -241,69 +242,62 @@ public class DataFillController {
         }
     }
 
-    @ApiIgnore
+    @ApiOperation("导出表单数据")
     @GetMapping("/form/{formId}/excel/exportExcelData")
     public void exportExcelData(@PathVariable String formId, @RequestParam("password") String password, HttpServletResponse response) throws Exception {
         dataFillService.getExcelData(formId, password, response);
     }
 
-    @ApiIgnore
+    @ApiOperation("导入表单数据")
     @PostMapping("/form/{formId}/excel/upload")
     public void excelUpload(@RequestParam("file") MultipartFile file, @PathVariable String formId) throws Exception {
         String filename = file.getOriginalFilename();
         dataFillDataService.importExcelData(file, formId);
     }
 
-    @ApiIgnore
+    @ApiOperation("导入表单数据")
     @PostMapping("/form/{optionDatasource}/options")
     public List<ExtTableField.Option> listColumnData(@PathVariable String optionDatasource, @RequestBody DatasourceOptionsRequest request) throws Exception {
         return dataFillDataService.listColumnData(optionDatasource, request.getOptionTable(), request.getOptionColumn(), request.getOptionOrder());
     }
 
     @ApiOperation("导入表格形成表单")
-    @ApiIgnore
     @PostMapping("/form/excel/excelUploadToFrom/{pid}")
     public void excelUploadToFrom(@RequestParam("file") MultipartFile file, @PathVariable String pid) throws Exception {
         dataFillService.excelUploadToFrom(file, pid);
     }
 
     @ApiOperation("保存自主填报文件")
-    @ApiIgnore
     @PostMapping("/form/saveFormData/{formId}")
     public void saveFormDate(MultipartFile file, @PathVariable String formId) {
         dataFillService.saveFormData(formId, file);
     }
 
     @ApiOperation("获取自主填报版本文件列表")
-    @ApiIgnore
     @GetMapping("/form/getFormData/{formId}")
     public List<DataFillData> getFormData(@PathVariable String formId) {
         return dataFillService.getFormData(formId);
     }
 
     @ApiOperation("导出自主填报某个版本的文件")
-    @ApiIgnore
     @GetMapping("/form/exportFormDataData/{formId}/{id}")
     public void exportFormDataData(@PathVariable String formId, @PathVariable String id, @RequestParam String password, HttpServletResponse response) {
         dataFillService.exportFormDataData(formId, id, password, response);
     }
 
     @ApiOperation("获取自主填报某个版本的文件")
-    @ApiIgnore
     @GetMapping("/form/getFormDataData/{formId}/{id}")
     public void getFormDataData(@PathVariable String formId, @PathVariable String id, HttpServletResponse response) {
         dataFillService.getFormDataData(formId, id, response);
     }
 
     @ApiOperation("获取自主填报模版")
-    @ApiIgnore
     @GetMapping("/form/getSelfReportTemplate/{formId}")
     public void getSelfReportTemplate(@PathVariable String formId, HttpServletResponse response) {
         dataFillService.getSelfReportTemplate(formId, response);
     }
 
     @ApiOperation("批量导出文件夹下所有填报")
-    @ApiIgnore
     @GetMapping("/form/exportBatch/{pid}")
     public void exportBatch(@PathVariable String pid, @RequestParam String taskId, @RequestParam String password, HttpServletResponse response) {
         dataFillService.exportBatch(taskId, pid, password, response);
