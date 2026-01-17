@@ -66,6 +66,16 @@ export function viewData(id, panelId, data, loading = true) {
     data
   })
 }
+// 获取当前数据集有数据的日期
+export function getDateInTable(datasetId, fieldId, data, loading = true) {
+  console.log('view/getData/2222222222------')
+  return request({
+    url: '/chart/view/getDateInTable/' + datasetId + '/' + fieldId + '?format=' + data.format,
+    method: 'get',
+    hideMsg: false,
+    loading: loading,
+  })
+}
 export function viewDataExport(id, panelId, data) {
   console.log('view/getDataExport/2222222222------')
   return request({
