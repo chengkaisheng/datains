@@ -316,6 +316,9 @@ export default {
         const attr = JSON.parse(this.chart.customAttr)
         this.tableHeaderMinWidth = attr.size.tableHeaderMinWidth ? attr.size.tableHeaderMinWidth : 200
         this.currentPage.pageSize = this.pageChangeFlag ? this.currentPage.pageSize : parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
+        console.log('123123xaxis', xaxis);
+        console.log('123123xaxis', this.fields);
+        
         this.fields = this.fields.filter(field => {
           let xaxisItem = xaxis.find(item => item.datainsName === field.datainsName)
           return xaxisItem ? xaxisItem.hidden !== true : true

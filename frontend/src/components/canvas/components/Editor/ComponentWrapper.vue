@@ -7,7 +7,7 @@
     @mousedown="elementMouseDown"
   >
     <div :style="commonStyle" class="main_view">
-      <edit-bar :show="componentActiveFlag" :currentComponentType="currentComponentType" :element="config" @exportDetailData="exportDetailData" @printDetailData="printDetailData" @showViewDetails="showViewDetails" />
+      <edit-bar :showHideFileds="true" :show="componentActiveFlag" :currentComponentType="currentComponentType" :element="config" @hideFields="hideFields" @exportDetailData="exportDetailData" @printDetailData="printDetailData" @showViewDetails="showViewDetails" />
       <close-bar v-if="previewVisible" @closePreview="closePreview" />
       <de-out-widget
         v-if="config.type==='custom'"
@@ -209,6 +209,8 @@ export default {
     ])
   },
   mounted() {
+    console.log('123123', this.config.component);
+    
     runAnimation(this.$el, this.config.animations)
     console.log('全屏展示。。。。。。')
   },
@@ -295,6 +297,10 @@ export default {
     },
     showViewDetails() {
       this.$refs.wrapperChild.openChartDetailsDialog()
+    },
+    hideFields() {
+      console.log('23测试4');
+      this.$refs.wrapperChild.hideFields()
     },
     exportDetailData() {
       this.$refs.wrapperChild.exportDetailData()

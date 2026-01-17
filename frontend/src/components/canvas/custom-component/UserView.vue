@@ -14,6 +14,7 @@
       :type="chart.type"
       :view-id="element.propValue.viewId"
       @showViewDetails="openChartDetailsDialog"
+      @hideFields="hideFields"
       @exportDetailData="exportDetailData"
       @printDetailData="printDetailData"
     />
@@ -169,6 +170,33 @@
     <div style="position: absolute; left: 8px; bottom: 8px">
       <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
     </div>
+    <!-- 添加显示隐藏列字段名弹窗 -->
+    <el-dialog
+      title="选择隐藏字段"
+      :visible.sync="hideFieldsDialogVisible"
+      width="30%"
+      :close-on-click-modal="false"
+      @confirm="hideFieldsConfirm"
+    >
+      <div>
+        <el-checkbox-group
+          v-model="checkedValues"
+          @change="handleChange"
+        >
+          <el-checkbox
+            v-for="item in fieldsList"
+            :key="item.datainsName"
+            :label="item.datainsName"
+          >
+            {{ item.name }}
+          </el-checkbox>
+        </el-checkbox-group>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="hideFieldsDialogVisible = false">{{ $t('commons.cancel') }}</el-button>
+        <el-button type="primary" @click="hideFieldsConfirm">{{ $t('commons.confirm') }}</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -308,7 +336,10 @@ export default {
         show: 0
       },
       pageChangeFlag: false,
-      fieldOrder: []
+      fieldOrder: [],
+      hideFieldsDialogVisible: false,
+      fieldsList: [],
+      checkedValues: [],
     }
   },
 
@@ -2054,6 +2085,35 @@ export default {
         chart: this.chart,
         tableChart: tableChart
       })
+    },
+    hideFields() {
+      this.checkedValues = []
+      this.hideFieldsDialogVisible = true
+      const xaxis = JSON.parse(this.chart.xaxis)
+      xaxis.map(x =>{
+        if( x.hidden) {
+          this.checkedValues.push(x.datainsName)
+        }
+      })
+      this.fieldsList = JSON.parse(JSON.stringify(this.chart.data.fields))
+      console.log('23测试2', this.fieldsList);
+      // eventBus.$emit('hideFields', {
+      //   chart: this.chart
+      // })
+    },
+    hideFieldsConfirm() {
+      console.log('23测试5', this.checkedValues);
+      let xaxis = JSON.parse(this.chart.xaxis)
+      xaxis.forEach(x => {
+        x.hidden = this.checkedValues.includes(x.datainsName) ? true : false
+      })
+      console.log('xaxis', xaxis);
+      
+      this.chart = {
+        ...this.chart,
+        xaxis: JSON.stringify(xaxis)
+      }
+      this.hideFieldsDialogVisible = false
     },
     exportDetailData() {
       eventBus.$emit('exportDetailData', {

@@ -40,6 +40,7 @@
         :element="element"
         @showViewDetails="showViewDetails"
         @exportDetailData="exportDetailData"
+        @hideFields="hideFields"
         @printDetailData="printDetailData"
         @amRemoveItem="amRemoveItem"
         @amAddItem="amAddItem"
@@ -1956,6 +1957,10 @@ export default {
     },
     showViewDetails() {
       this.$emit('showViewDetails')
+    },
+    hideFields() {
+      console.log('23测试3');
+      this.$emit('hideFields')
     },
     exportDetailData() {
       this.$emit('exportDetailData')

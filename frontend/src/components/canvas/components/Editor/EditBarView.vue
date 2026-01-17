@@ -6,6 +6,9 @@
     <div v-if="hasDataPermission('print',panelInfo.privileges) && show && type.includes('table')" :class="[hasDataPermission('export',panelInfo.privileges) ? 'print' : '']" class="download" @click.stop="printDetailData">
       <i class="el-icon-printer" ></i>
     </div>
+    <div v-if="show && hideFiledsFlag" class="download view" @click.stop="hideFields">
+      <i class="el-icon-view" ></i>
+    </div>
     <div v-if="show" :class="['bar-main', hasDataPermission('export',panelInfo.privileges) && type.includes('table') ? 'bar-main-right' : '']">
       <div>
         <span v-if="isEdit" :title="$t('panel.edit')">
@@ -61,6 +64,10 @@ export default {
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
+    hideFiledsFlag() {
+      // console.log('123', this.element, this.currentComponentType);
+      return this.element && this.element.type==='view' && (this.currentComponentType.includes('table') || this.currentComponentType === 'vertical-ele')
+    },
     ...mapState([
       'linkageSettingStatus',
       'componentData',
@@ -86,6 +93,9 @@ export default {
     showViewDetails() {
       this.$emit('showViewDetails')
     },
+    hideFields() {
+      this.$emit('hideFields')
+    },
     exportDetailData() {
       this.$emit('exportDetailData')
     },
@@ -107,6 +117,12 @@ export default {
     // padding-right: 2px;
     cursor:pointer!important;
     background-color: #0a7be0;
+  }
+  .view {
+    right: 48px;
+  }
+  .print {
+    right: 24px;
   }
   .download i {
     width: 24px;

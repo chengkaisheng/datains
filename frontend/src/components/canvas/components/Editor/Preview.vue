@@ -79,6 +79,8 @@
             <el-button type="primary" @click="handlePrintConfirm">{{ $t('commons.confirm') }}</el-button>
           </span>
         </el-dialog>
+
+        
       </div>
     </div>
   </div>
@@ -174,7 +176,7 @@ export default {
       printCountDialogVisible: false,
       printForm: {
         count: 10
-      }
+      },
     }
   },
   created() {
@@ -412,6 +414,7 @@ export default {
     })
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     eventBus.$on('exportDetailData', this.exportDetailData)
+    eventBus.$on('hideFields', this.hideFields)
     eventBus.$on('printDetailData', this.printDetailData)
     _this.$store.commit('clearLinkageSettingInfo', false)
     _this.canvasStyleDataInit()
@@ -567,6 +570,8 @@ export default {
       } else {
         this.mobileChartDetailsVisible = true
       }
+    },
+    hideFields(chartInfo) {
     },
     exportDetailData(chartInfo) {
       this.showChartInfo = chartInfo.chart

@@ -57,6 +57,7 @@
       @refLineParams="getRefLineParams"
       @showViewDetails="showViewDetails(index)"
       @exportDetailData="exportDetailData(index)"
+      @hideFields="hideFields(index)"
       @printDetailData="printDetailData(index)"
       @resizeView="resizeView(index,item)"
       @onResizeStart="startResize"
@@ -1739,6 +1740,10 @@ export default {
     exportDetailData(index) {
       console.log('第几个？', index)
       this.$refs.wrapperChild[index].exportDetailData()
+    },
+    hideFields(index) {
+      console.log('第几个？hideFields', index)
+      this.$refs.wrapperChild[index].hideFields()
     },
     printDetailData(index) {
       console.log('第几个？', index)

@@ -6,6 +6,9 @@
     <div v-if="hasDataPermission('print',panelInfo.privileges) && downloadFlag" :class="[hasDataPermission('export',panelInfo.privileges) ? 'print' : '']" class="download" @click.stop="printDetailData">
       <i class="el-icon-printer" ></i>
     </div>
+    <div v-if="showHideFileds && hideFiledsFlag" class="download view" @click.stop="hideFields">
+      <i class="el-icon-view" ></i>
+    </div>
     <div v-if="show" :class="['bar-main', hasDataPermission('export',panelInfo.privileges) && downloadFlag ? 'bar-main-right' : '']" :style="setNewValue">
       <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
       <div v-if="linkageAreaShow" style="margin-right: -1px;">
@@ -109,6 +112,11 @@ export default {
       required: false,
       default: false
     },
+    showHideFileds: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     element: {
       type: Object,
       required: true
@@ -157,6 +165,10 @@ export default {
     downloadFlag() {
       // console.log('123', this.element, this.currentComponentType);
       return this.element && this.element.type==='view' && (this.currentComponentType.includes('table') || this.currentComponentType === 'roll-elemnt' || this.currentComponentType === 'vertical-ele')
+    },
+    hideFiledsFlag() {
+      // console.log('123', this.element, this.currentComponentType);
+      return this.element && this.element.type==='view' && (this.currentComponentType.includes('table') || this.currentComponentType === 'vertical-ele')
     },
     // 联动区域按钮显示
     linkageAreaShow() {
@@ -228,6 +240,11 @@ export default {
   beforeDestroy() {
   },
   methods: {
+    hideFields() {
+      console.log('23测试1');
+      
+      this.$emit('hideFields')
+    },
     exportDetailData() {
       this.$emit('exportDetailData')
     },
@@ -450,6 +467,9 @@ export default {
     // padding-right: 2px;
     cursor:pointer!important;
     background-color: #0a7be0;
+  }
+  .view {
+    right: 48px;
   }
   .print {
     right: 24px;
